@@ -16,6 +16,17 @@
 
 <br/>
 
+* **Open-source, MIT license**
+* **Build new applications & replace legacy systems.**
+* **Deliver enterprise and SaaS applications 60% faster thanks to ready-to-use features.**
+* **Unlimited users. No proprietary technologies. No vendor lock-in.**
+* **Pre-built application templates:** 
+	 - **Embedded Insurance**
+	 - **Claim Management** 
+	 - **Policy Management**
+   	 - **Property Management** 
+   	 - **Time Tracking** 
+
 ### When to choose Openkoda
 
 * **Enterprise foundation**. Start with authentication, role-based security, advanced user management, multitenancy, multiple organizations support, SQL reporting, REST API, file & resource management, full audit trail, application & data automated backup, and admin dashboard already in place.
