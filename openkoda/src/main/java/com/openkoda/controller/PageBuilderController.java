@@ -62,6 +62,31 @@ import java.util.*;
 import static com.openkoda.controller.common.URLConstants.*;
 import static org.springframework.web.util.ServletRequestPathUtils.PATH_ATTRIBUTE;
 
+/**
+ * MVC controller for dynamic dashboard and page-builder feature with embedded widget rendering.
+ * <p>
+ * Handles create/edit/save flows for FrontendResource dashboards. Composes embedded widget HTML 
+ * by dispatching to other controllers (RestrictedFrontendResourceController, CRUDControllerHtml) 
+ * using request wrapper pattern. Wraps requests with EmbeddedHttpServletRequest/FakeHttpServletRequest, 
+ * deserializes dashboard JSON via JsonHelper, uses Thymeleaf TemplateEngine.process to render 
+ * delegated ModelAndView fragments. Assembles complete dashboard from individual widget responses.
+ * </p>
+ * <p>
+ * Request mappings support both global and organization-scoped page builders with base paths 
+ * "/page-builder" or "/dashboard". Dashboard configuration is stored as JSON in FrontendResource 
+ * content field, defining widget layout and settings.
+ * </p>
+ * <p>
+ * Thread-safety: Stateless controller, thread-safe. Request wrapping is per-request.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see FrontendResource
+ * @see RestrictedFrontendResourceController
+ * @see CRUDControllerHtml
+ */
 @Controller
 @RequestMapping({_HTML_ORGANIZATION_ORGANIZATIONID + _PAGEBUILDER, _HTML + _PAGEBUILDER})
 public class PageBuilderController extends AbstractController implements HasSecurityRules {
@@ -69,8 +94,34 @@ public class PageBuilderController extends AbstractController implements HasSecu
     @Inject
     HtmlCRUDControllerConfigurationMap crudControllerConfigurationMap;
 
+    /**
+     * Data transfer record for available embeddable widget components in page builder.
+     * <p>
+     * Aggregates all component types that can be embedded in dashboard: FrontendResource 
+     * widgets, UI components, CRUD table configurations, and image files for visual content.
+     * </p>
+     *
+     * @param frontendResources List of embeddable FrontendResource definitions
+     * @param uiComponents List of embeddable UI component definitions
+     * @param tables Set of exposed CRUD controller configurations for table widgets
+     * @param images List of image files available for dashboard backgrounds and content
+     */
     public record EmbeddableComponents(List<Tuple> frontendResources, List<Tuple> uiComponents, Set<Map.Entry<String, CRUDControllerConfiguration>> tables, List<File> images){};
 
+    /**
+     * Displays form for creating new dashboard.
+     * <p>
+     * Loads available embeddable components (frontend resources, UI components, CRUD tables, 
+     * images) and initializes empty PageBuilderForm. Renders page builder editor interface 
+     * where users can drag-drop widgets and configure dashboard layout.
+     * </p>
+     * <p>
+     * HTTP mapping: GET /page-builder/new
+     * </p>
+     *
+     * @param organizationId Optional organization ID for organization-scoped dashboards, null for global
+     * @return ModelAndView with empty dashboard form and available widget types
+     */
     @GetMapping({_NEW_SETTINGS})
     @ResponseBody
     @PreAuthorize(CHECK_CAN_ACCESS_GLOBAL_SETTINGS)
@@ -86,7 +137,21 @@ public class PageBuilderController extends AbstractController implements HasSecu
             .execute().mav("page/builder");
     }
 
-
+    /**
+     * Displays dashboard editor with existing configuration.
+     * <p>
+     * Loads FrontendResource entity by ID and populates PageBuilderForm with saved dashboard 
+     * JSON configuration. Provides same embeddable component catalog as new dashboard flow. 
+     * Users can modify widget layout, add/remove widgets, update configurations.
+     * </p>
+     * <p>
+     * HTTP mapping: GET /page-builder/{id}
+     * </p>
+     *
+     * @param organizationId Optional organization ID for organization-scoped dashboards, null for global
+     * @param id FrontendResource ID of dashboard to edit
+     * @return ModelAndView with dashboard JSON configuration loaded into editor
+     */
     @GetMapping({_ID_SETTINGS})
     @ResponseBody
     @PreAuthorize(CHECK_CAN_ACCESS_GLOBAL_SETTINGS)
@@ -104,6 +169,22 @@ public class PageBuilderController extends AbstractController implements HasSecu
             .execute().mav("page/builder");
     }
 
+    /**
+     * Saves new dashboard configuration to FrontendResource.
+     * <p>
+     * Validates PageBuilderForm, creates new FrontendResource entity with dashboard JSON 
+     * content, persists to database via secure repository. Redirects to edit page for 
+     * newly created dashboard.
+     * </p>
+     * <p>
+     * HTTP mapping: POST /page-builder/new
+     * </p>
+     *
+     * @param organizationId Optional organization ID for organization-scoped dashboard, null for global
+     * @param form PageBuilderForm with dashboard JSON configuration, name, and metadata
+     * @param br BindingResult for validation errors
+     * @return RedirectView to dashboard edit page on success
+     */
     @PostMapping({_NEW_SETTINGS})
     @ResponseBody
     @PreAuthorize(CHECK_CAN_ACCESS_GLOBAL_SETTINGS)
@@ -118,6 +199,24 @@ public class PageBuilderController extends AbstractController implements HasSecu
                 .execute().get(frontendResourceEntity);
         return new RedirectView(_HTML + _PAGEBUILDER + "/" + fr.getId() + _SETTINGS);
     }
+
+    /**
+     * Saves updated dashboard configuration to existing FrontendResource.
+     * <p>
+     * Loads existing FrontendResource by ID, validates PageBuilderForm, populates updated 
+     * dashboard JSON content to entity, persists changes via secure repository. Redirects 
+     * back to edit page to show saved changes.
+     * </p>
+     * <p>
+     * HTTP mapping: POST /page-builder/{id}
+     * </p>
+     *
+     * @param organizationId Optional organization ID for organization-scoped dashboard, null for global
+     * @param form PageBuilderForm with updated dashboard JSON configuration
+     * @param frontendResourceId FrontendResource ID of dashboard to update
+     * @param br BindingResult for validation errors
+     * @return RedirectView to dashboard edit page on success
+     */
     @PostMapping({_ID_SETTINGS})
     @ResponseBody
     @PreAuthorize(CHECK_CAN_ACCESS_GLOBAL_SETTINGS)
@@ -135,7 +234,17 @@ public class PageBuilderController extends AbstractController implements HasSecu
 
     }
 
-
+    /**
+     * HttpServletRequest wrapper for embedded widget rendering with view parameter override.
+     * <p>
+     * Wraps original dashboard request to inject "__view=embedded" parameter when delegating 
+     * to widget controllers. This signals widget controllers to render in embedded mode 
+     * without full page chrome. Preserves all other request parameters and attributes.
+     * </p>
+     * <p>
+     * Usage: EmbeddedHttpServletRequest wrapped = new EmbeddedHttpServletRequest(originalRequest);
+     * </p>
+     */
     public static class EmbeddedHttpServletRequest extends HttpServletRequestWrapper {
 
         /**
@@ -148,6 +257,16 @@ public class PageBuilderController extends AbstractController implements HasSecu
             super(request);
         }
 
+        /**
+         * Overrides parameter retrieval to inject embedded view parameter.
+         * <p>
+         * Returns "embedded" for "__view" parameter name to signal embedded rendering mode.
+         * All other parameters delegate to wrapped request.
+         * </p>
+         *
+         * @param name Parameter name to retrieve
+         * @return "embedded" if name is "__view", otherwise delegates to wrapped request
+         */
         @Override
         public String getParameter(String name) {
             if ("__view".equals(name)) {
@@ -156,12 +275,39 @@ public class PageBuilderController extends AbstractController implements HasSecu
             return super.getParameter(name);
         }
     }
+
+    /**
+     * HttpServletRequest wrapper for widget dispatching with customizable URI and query parameters.
+     * <p>
+     * Wraps original request to override requestURI, queryString, and requestURL for delegating 
+     * to widget controllers. Allows dashboard controller to dispatch to specific widget endpoints 
+     * (e.g., table CRUD, frontend resource page) while preserving authentication and session context.
+     * Essential for request handler mapping to route to correct widget controller.
+     * </p>
+     * <p>
+     * All other request attributes (cookies, headers, authentication, session) delegate to wrapped 
+     * request for security and context preservation.
+     * </p>
+     * <p>
+     * Usage: FakeHttpServletRequest fake = new FakeHttpServletRequest(original, "/widget-path", "param=value", null);
+     * </p>
+     *
+     * @see RequestPath
+     */
     public static class FakeHttpServletRequest extends HttpServletRequestWrapper {
 
         private final String requestURI;
         private final String queryString;
         private final String requestURL;
 
+        /**
+         * Constructs request wrapper with custom URI and query string for widget dispatch.
+         *
+         * @param request Original HttpServletRequest to wrap
+         * @param newRequestURI Custom request URI for widget endpoint routing
+         * @param newQueryString Custom query string with widget-specific parameters
+         * @param newRequestURL Custom request URL (typically http://localhost:8080 + newRequestURI)
+         */
         public FakeHttpServletRequest(HttpServletRequest request,  String newRequestURI, String newQueryString, String newRequestURL) {
             super(request);
             this.requestURI = newRequestURI;
@@ -169,16 +315,31 @@ public class PageBuilderController extends AbstractController implements HasSecu
             this.requestURL = "http://localhost:8080" + newRequestURI;
         }
 
+        /**
+         * Returns custom request URI for widget endpoint routing.
+         *
+         * @return Custom requestURI if set during construction, otherwise delegates to wrapped request
+         */
         @Override
         public String getRequestURI() {
             return requestURI != null ? requestURI : super.getRequestURI();
         }
 
+        /**
+         * Returns custom query string with widget-specific parameters.
+         *
+         * @return Custom queryString if set during construction, otherwise delegates to wrapped request
+         */
         @Override
         public String getQueryString() {
             return queryString != null ? queryString : super.getQueryString();
         }
 
+        /**
+         * Returns custom request URL for widget dispatch.
+         *
+         * @return Custom requestURL as StringBuffer if set, otherwise delegates to wrapped request
+         */
         @Override
         public StringBuffer getRequestURL() {
             return new StringBuffer(requestURL != null ? requestURL : super.getRequestURL().toString());
@@ -294,6 +455,17 @@ public class PageBuilderController extends AbstractController implements HasSecu
             return super.getTrailerFields();
         }
 
+        /**
+         * Returns request attribute with special handling for RequestPath.
+         * <p>
+         * Parses custom requestURI into RequestPath for PATH_ATTRIBUTE to enable Spring 
+         * request handler mapping with overridden URI. Essential for routing widget dispatch 
+         * to correct controller endpoints.
+         * </p>
+         *
+         * @param name Attribute name to retrieve
+         * @return RequestPath parsed from custom URI if PATH_ATTRIBUTE, otherwise delegates to wrapped request
+         */
         @Override
         public Object getAttribute(String name) {
             if (PATH_ATTRIBUTE.equals(name)) {
@@ -324,8 +496,43 @@ public class PageBuilderController extends AbstractController implements HasSecu
     @Autowired
     ApplicationContext context;
 
-
-
+    /**
+     * Renders complete dashboard by composing widget fragments.
+     * <p>
+     * Loads FrontendResource dashboard definition by ID or name, deserializes dashboard JSON 
+     * configuration containing widget array. Iterates each widget definition, creates 
+     * EmbeddedHttpServletRequest wrapping original request with widget-specific parameters, 
+     * dispatches to appropriate widget controller endpoint based on widget type (webEndpoint, 
+     * frontendResource, table). Captures ModelAndView response from widget controller, processes 
+     * through Thymeleaf TemplateEngine to render HTML fragment, assembles all widget HTML 
+     * fragments into complete dashboard grid layout.
+     * </p>
+     * <p>
+     * Widget dispatch mechanism uses FakeHttpServletRequest/Response to capture sub-controller 
+     * responses without HTTP round-trip. Preserves authentication and session context from 
+     * original request while routing to widget-specific endpoints.
+     * </p>
+     * <p>
+     * HTTP mapping: GET /page-builder/{id}/view
+     * </p>
+     * <p>
+     * Supported widget types:
+     * <ul>
+     *   <li>webEndpoint: Dispatches to RestrictedFrontendResourceController.openFrontendResourcePage by name</li>
+     *   <li>frontendResource: Dispatches to RestrictedFrontendResourceController.openFrontendResourcePage by ID</li>
+     *   <li>table: Dispatches to CRUDControllerHtml.getAll for CRUD table widget</li>
+     * </ul>
+     * </p>
+     *
+     * @param organizationId Optional organization ID for organization-scoped dashboard, null for global
+     * @param id Dashboard FrontendResource ID
+     * @param commonSearch Common search parameter passed to table widgets
+     * @param requestParams All request parameters passed through to widget controllers
+     * @param request Original HttpServletRequest for wrapping and context preservation
+     * @param response HttpServletResponse for widget controller invocation
+     * @return ModelAndView with assembled HTML containing all widget fragments rendered in dashboard layout
+     * @throws Exception If widget controller throws exception during dispatch or rendering fails
+     */
     @GetMapping(_ID + "/view")
     @ResponseBody
     public Object invokeUrls(@PathVariable(value = ORGANIZATIONID, required = false) Long organizationId,
