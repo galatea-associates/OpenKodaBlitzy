@@ -33,22 +33,81 @@ import reactor.util.function.Tuple2;
 import java.util.*;
 
 /**
- * <p>Token Service</p>
- * The tokens can be user to authenticate request (either as GET request token parameter or HTTP Header in API call)
+ * Service for generating and managing authentication tokens for users.
+ * <p>
+ * This service handles the creation, validation, and lifecycle management of various token types
+ * used throughout the OpenKoda platform. Tokens authenticate API requests and web sessions,
+ * either via GET request parameters or HTTP headers. Each token type serves specific security
+ * and authentication purposes with configurable expiration and privilege constraints.
+ * </p>
+ * <p>
+ * Supported token types and use cases:
+ * </p>
+ * <ul>
+ * <li><b>Standard Access Tokens:</b> Session tokens for authenticated user requests with full user privileges</li>
+ * <li><b>Multiple-Use Tokens:</b> Reusable tokens valid until expiration, useful for API integrations</li>
+ * <li><b>Privilege-Restricted Tokens:</b> Tokens with narrowed privilege sets for least-privilege access</li>
+ * <li><b>Refresher Tokens:</b> Long-lived tokens (default 30 days) used exclusively to obtain new access tokens</li>
+ * <li><b>Single-Use Tokens:</b> One-time tokens invalidated after first use, suitable for password resets</li>
+ * </ul>
+ * <p>
+ * Token lifecycle management includes creation via user entity, validation with privilege checking,
+ * automatic expiration based on configured timeouts, and explicit invalidation for single-use scenarios.
+ * All tokens are persisted to the database via {@code Token} entity and queried through
+ * {@code TokenRepository}.
+ * </p>
+ * <p>
+ * Security considerations: Refresher tokens are restricted to {@link Privilege#canRefreshTokens}
+ * privilege only to prevent privilege escalation. Token validation enforces expiration checks
+ * and privilege set verification before granting access.
+ * </p>
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
+ * @author OpenKoda Team
+ * @version 1.7.1
  * @since 2018-12-14
- *
+ * @see Token
+ * @see User
+ * @see Privilege
+ * @see com.openkoda.repository.user.TokenRepository
  */
 @Service
 public class TokenService extends ComponentProvider {
+    
+    /**
+     * Privilege set for refresher tokens containing only {@link Privilege#canRefreshTokens}.
+     * <p>
+     * This constant defines the exact privilege set required for refresher tokens to prevent
+     * privilege escalation attacks. Refresher tokens must have no other privileges beyond
+     * the ability to refresh tokens.
+     * </p>
+     */
     private static final Set<Enum> REFRESHER_PRIVILEGE_SET = Collections.singleton(Privilege.canRefreshTokens);
 
+    /**
+     * Expiration time in seconds for refresher tokens.
+     * <p>
+     * Configurable via application property {@code tokens.refresher.expiration}.
+     * Default value is 2,592,000 seconds (30 days). Refresher tokens remain valid
+     * for this duration unless explicitly revoked.
+     * </p>
+     */
     @Value("${tokens.refresher.expiration:2592000}")
     int refresherTokenExpiration;
 
     /**
-     * Creates multiple use token for the given userId.
+     * Creates a reusable token for a user identified by user ID with custom expiration and privileges.
+     * <p>
+     * This token can be used multiple times within the expiration period. Each request authenticated
+     * with this token grants the user only the specified privileges, providing least-privilege access
+     * for API integrations or external systems.
+     * </p>
+     *
+     * @param id the user ID for whom to create the token
+     * @param expirationTimeInSeconds the token validity period in seconds from creation time
+     * @param allowedPrivileges the privilege set to grant when authenticating with this token,
+     *                          restricts user access to only these privileges
+     * @return the newly created and persisted {@link Token} entity
      */
     public Token createMultipleUseTokenForUser(Long id, int expirationTimeInSeconds, PrivilegeBase ... allowedPrivileges) {
         debug("[createMultipleUseTokenForUser] {}", id);
@@ -56,7 +115,17 @@ public class TokenService extends ComponentProvider {
     }
 
     /**
-     * Creates multiple use token for the given userId.
+     * Creates a reusable token for a user identified by user ID with custom privileges and default expiration.
+     * <p>
+     * This token can be used multiple times until the default expiration period. The token grants
+     * only the specified privileges when used for authentication, suitable for long-term API access
+     * with restricted permissions.
+     * </p>
+     *
+     * @param id the user ID for whom to create the token
+     * @param allowedPrivileges the privilege set to grant when authenticating with this token,
+     *                          restricts user access to only these privileges
+     * @return the newly created and persisted {@link Token} entity with default expiration
      */
     public Token createMultipleUseTokenForUser(Long id, PrivilegeBase ... allowedPrivileges) {
         debug("[createMultipleUseTokenForUser] {}", id);
@@ -64,7 +133,15 @@ public class TokenService extends ComponentProvider {
     }
 
     /**
-     * Creates token for the given user.
+     * Creates a standard access token for the specified user with full privileges.
+     * <p>
+     * This token grants the user all their assigned privileges when used for authentication.
+     * Suitable for standard web sessions and trusted API access where full user permissions
+     * are required.
+     * </p>
+     *
+     * @param user the user entity for whom to create the token, must not be null
+     * @return the newly created and persisted {@link Token} entity with user's full privileges
      */
     public Token createTokenForUser(User user) {
         debug("[createTokenForUser] {}", user.getId());
@@ -72,8 +149,17 @@ public class TokenService extends ComponentProvider {
     }
 
     /**
-     * Creates token for the given user with narrowed privileges.
-     * Once the request is authenticated, the user should have narrowed privileges only to these in the token.
+     * Creates a token for the specified user with restricted privileges for least-privilege access.
+     * <p>
+     * Once a request is authenticated with this token, the user gains only the specified privileges
+     * regardless of their actual role assignments. This enables secure delegation of limited
+     * capabilities to external systems or untrusted contexts.
+     * </p>
+     *
+     * @param user the user entity for whom to create the token, must not be null
+     * @param allowedPrivileges the privilege set to grant when authenticating with this token,
+     *                          narrows user access to only these privileges
+     * @return the newly created and persisted {@link Token} entity with restricted privileges
      */
     public Token createTokenForUser(User user, PrivilegeBase... allowedPrivileges) {
         debug("[createTokenForUser] {} with privileges {}", user.getId(), Arrays.toString(allowedPrivileges));
@@ -81,8 +167,18 @@ public class TokenService extends ComponentProvider {
     }
 
     /**
-     * Creates token for the given user with narrowed privileges and expiration time.
-     * Once the request is authenticated, the user should have narrowed privileges only to these in the token.
+     * Creates a token for the specified user with custom expiration and restricted privileges.
+     * <p>
+     * Once a request is authenticated with this token, the user gains only the specified privileges
+     * for the duration of the expiration period. Useful for time-limited API access with controlled
+     * permissions, such as temporary integrations or trial access.
+     * </p>
+     *
+     * @param user the user entity for whom to create the token, must not be null
+     * @param expirationTimeInSeconds the token validity period in seconds from creation time
+     * @param allowedPrivileges the privilege set to grant when authenticating with this token,
+     *                          narrows user access to only these privileges
+     * @return the newly created and persisted {@link Token} entity with expiration and restricted privileges
      */
     public Token createTokenForUser(User user, int expirationTimeInSeconds, PrivilegeBase ... allowedPrivileges) {
         debug("[createTokenForUser] {} with privileges {}", user.getId(), Arrays.toString(allowedPrivileges));
@@ -90,7 +186,22 @@ public class TokenService extends ComponentProvider {
     }
 
     /**
-     * This is useful method for tokens that are valid only for one use.
+     * Verifies a token and immediately invalidates it for single-use scenarios.
+     * <p>
+     * This method is essential for one-time token workflows such as password reset flows,
+     * email verification, or secure action confirmations. The token is queried from the
+     * repository, validated for expiration and authenticity, then marked as invalid and
+     * persisted immediately via {@code saveAndFlush} to prevent reuse.
+     * </p>
+     * <p>
+     * Token validation checks include expiration time and validity flag. If the token
+     * is found and valid, it is invalidated in memory and immediately flushed to the
+     * database before returning.
+     * </p>
+     *
+     * @param base64UserIdToken the base64-encoded token string to verify and invalidate
+     * @return the {@link Token} entity if found and valid before invalidation, or null if
+     *         the token was not found, already expired, or previously invalidated
      */
     public Token verifyAndInvalidateToken(String base64UserIdToken) {
         debug("[verifyAndInvalidateToken]");
@@ -105,9 +216,22 @@ public class TokenService extends ComponentProvider {
     }
 
     /**
-     * Method to obtain refresher token that can be used to retrieve short living tokens.
-     * @param user obtaining refresher token
-     * @return refresher token, raises NullPointerException when supplied user is null
+     * Creates a long-lived refresher token used to obtain short-lived access tokens.
+     * <p>
+     * Refresher tokens provide a secure mechanism for obtaining new access tokens without
+     * requiring the user to re-authenticate. The refresher token has only the
+     * {@link Privilege#canRefreshTokens} privilege and a long expiration period (default 30 days,
+     * configurable via {@code tokens.refresher.expiration} property).
+     * </p>
+     * <p>
+     * Refresher tokens are restricted to a single privilege ({@code canRefreshTokens}) to prevent
+     * privilege escalation attacks. They cannot be used for regular API calls or data access,
+     * only for obtaining new access tokens via {@link #createTokenForRefresher(String)}.
+     * </p>
+     *
+     * @param user the user entity for whom to create the refresher token, must not be null
+     * @return the newly created and persisted refresher {@link Token} entity with long expiration
+     * @throws NullPointerException if the supplied user is null
      */
     public Token createRefresherTokenForUser(User user) {
         user = Objects.requireNonNull(user);
@@ -116,12 +240,28 @@ public class TokenService extends ComponentProvider {
         return repositories.unsecure.token.saveAndFlush(token);
     }
 
-    /** Method to obtain token from refresher, validating if refresher token only privilege (!) is to refresh user tokens
+    /**
+     * Creates a new access token from a valid refresher token after strict validation.
+     * <p>
+     * This method validates that the refresher token's privilege set exactly equals
+     * {@link #REFRESHER_PRIVILEGE_SET} (containing only {@link Privilege#canRefreshTokens})
+     * to prevent privilege escalation attacks. If the refresher token has any additional
+     * privileges, it is rejected as invalid.
+     * </p>
+     * <p>
+     * Security enforcement: The method rejects refresher tokens with privileges beyond
+     * {@code canRefreshTokens} to ensure that compromised refresher tokens cannot be used
+     * for unauthorized access. Only tokens with the exact expected privilege set are accepted.
+     * </p>
+     * <p>
+     * Upon successful validation, a new standard access token is created for the user
+     * with their full privileges and default expiration.
+     * </p>
      *
-     * Method rejects the refresher token if it has other privileges than Privilege.canRefreshTokens, just to confuse the russians.
-     *
-     * @param refresherTokenBase64 base64 representation of refresher token
-     * @return newly generated default user token
+     * @param refresherTokenBase64 the base64-encoded refresher token string, must not be null
+     * @return a newly generated standard access {@link Token} with user's full privileges,
+     *         or null if the refresher token is invalid, expired, or has incorrect privileges
+     * @throws NullPointerException if refresherTokenBase64 is null
      */
     public Token createTokenForRefresher(String refresherTokenBase64) {
         debug("[createTokenForRefresher]");
