@@ -35,20 +35,65 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.openkoda.controller.common.URLConstants._HTML;
 
 /**
- * Handles requests for global search. The search is performed among entities implementing interface {@link com.openkoda.model.common.SearchableEntity}
- * which requires implementation of {@link SearchableEntity#getIndexString()}. The implementation is done on the repository level by means of the annotation value
- * {@link SearchableRepositoryMetadata#searchIndexFormula()}.
- * The field {@link SearchableEntity#getIndexString()} for every searchable entity is updated continuously as configured in {@link JobsScheduler#searchIndexUpdaterJob()}.
- * The initial setup of {@link SearchableRepositories#getSearchIndexUpdates()} required for this update is done on the application startup in {@link SearchableRepositories#discoverSearchableRepositories()}
+ * REST controller implementing global search endpoint under HTML namespace.
+ * <p>
+ * Concrete implementation of {@link AbstractGlobalSearchController}. Provides search functionality 
+ * accessible from main navigation. Injects {@code @Qualifier("search")} Pageable and 
+ * {@code @RequestParam("search_search")} query parameter. Delegates to 
+ * {@link AbstractGlobalSearchController#findSearchResult(Pageable, String)}, returns ModelAndView 
+ * with 'search' view name. Thin adapter with lightweight logging.
+ * </p>
+ * <p>
+ * The search is performed among entities implementing {@link SearchableEntity} interface which 
+ * requires implementation of {@link SearchableEntity#getIndexString()}. The implementation is 
+ * done at repository level via {@link SearchableRepositoryMetadata#searchIndexFormula()} annotation. 
+ * The {@link SearchableEntity#getIndexString()} field for every searchable entity is updated 
+ * continuously as configured in {@link JobsScheduler#searchIndexUpdaterJob()}. Initial setup of 
+ * {@link SearchableRepositories#getSearchIndexUpdates()} required for this update occurs at 
+ * application startup in {@link SearchableRepositories#discoverSearchableRepositories()}.
+ * </p>
+ * <p>
+ * Request mapping: Typically "/search" under HTML namespace. Returns HTML view for browser rendering.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see AbstractGlobalSearchController
+ * @see SearchableEntity
+ * @see SearchableRepositories
  */
 @RestController
 @RequestMapping(_HTML)
 public class GlobalSearchController extends AbstractGlobalSearchController {
 
-    /** Returns results for global search with {@param search} as the search term
-     * @param searchPageable
-     * @param search
-     * @return
+    /**
+     * Executes platform-wide search and renders results page.
+     * <p>
+     * HTTP mapping: {@code GET /search}
+     * </p>
+     * <p>
+     * Delegates to {@link AbstractGlobalSearchController#findSearchResult(Pageable, String)} which 
+     * performs full-text search across {@link com.openkoda.model.GlobalEntitySearch} entities, 
+     * filters by user privileges, and paginates results. The Flow-based implementation from parent 
+     * class handles search execution and result assembly.
+     * </p>
+     * <p>
+     * Response format: View 'search' with attributes:
+     * </p>
+     * <ul>
+     *   <li>'searchResults' (List): Filtered and paginated search result entities</li>
+     *   <li>'query' (String): Original search query for display</li>
+     *   <li>'pagination' (PageMetadata): Pagination metadata for navigation</li>
+     * </ul>
+     *
+     * @param searchPageable Pagination parameters with {@code @Qualifier("search")} for custom page size.
+     *                       Specifies page number, page size, and sort order for results.
+     * @param search Search query string from {@code @RequestParam("search_search")}. 
+     *               Defaults to empty string if not provided. Used for full-text search across 
+     *               indexed entity fields.
+     * @return ModelAndView with 'search' view name and results populated in PageModelMap. 
+     *         Contains search results, query echo, and pagination metadata for view rendering.
      */
     @GetMapping(value = _SEARCH)
     //TODO Rule 1.4 All methods in non-public controllers must have @PreAuthorize
