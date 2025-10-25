@@ -39,9 +39,73 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import java.sql.SQLException;
 
+/**
+ * Controller for serving static frontend assets (CSS, JavaScript, images, fonts).
+ * <p>
+ * Handles asset requests from FrontendResource configurations. Serves files from filesystem 
+ * or database storage with appropriate content-types and caching headers. Supports versioned 
+ * assets for browser cache invalidation. Routes requests under /assets with dual access patterns:
+ * public access for published assets and privileged access for HTML preview.
+ * </p>
+ * <p>
+ * This controller implements privilege-based access control where assets can be served publicly
+ * (for published frontend resources) or with user privilege verification (for preview mode).
+ * Content-type detection is performed based on file extension (.css, .js, .png, etc.) and
+ * appropriate caching headers are set for immutable assets.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see File
+ * @see AbstractFileController
+ * @see HasSecurityRules
+ */
 @Controller
 public class FrontendResourceAssetController extends AbstractFileController implements HasSecurityRules {
 
+    /**
+     * Serves static asset file with content-type detection and privilege-based access control.
+     * <p>
+     * This method handles dual routing patterns for frontend resource assets:
+     * </p>
+     * <ul>
+     *   <li><b>Public access</b>: FILE_ASSET + {id}/* - Serves only files marked as public 
+     *       (publicFile=true), suitable for published frontend resources</li>
+     *   <li><b>Privileged preview</b>: _HTML + FILE_ASSET + {id}/* - Serves any file if the 
+     *       user has isUser privilege, used for HTML preview in development/admin contexts</li>
+     * </ul>
+     * <p>
+     * <b>Content-Type Detection:</b> Automatically sets appropriate MIME types based on file 
+     * extension (.css → text/css, .js → application/javascript, .png → image/png, etc.).
+     * </p>
+     * <p>
+     * <b>Caching Behavior:</b> Sets Cache-Control: max-age=31536000 for immutable assets to 
+     * optimize browser caching. Versioned assets enable cache invalidation through URL changes.
+     * </p>
+     * <p>
+     * <b>Security Logic:</b> If request URI contains _HTML prefix and user has 
+     * {@link Privilege#isUser} privilege, unrestricted repository access is used 
+     * (unsecure.file.findOne). Otherwise, only public files are served 
+     * (findByIdAndPublicFileTrue).
+     * </p>
+     * <p>
+     * Returns HTTP 404 (SC_NOT_FOUND) if the file does not exist or access is denied.
+     * </p>
+     *
+     * @param frontendResourceFileId ID of the FrontendResource file to serve. Used to lookup 
+     *                               file in repository by ID with optional public file flag check
+     * @param download If true, serves file as attachment with Content-Disposition header forcing 
+     *                 download. If false, serves inline for browser rendering. Defaults to false
+     * @param request HttpServletRequest used to determine request URI for privilege check. 
+     *                If URI contains _HTML prefix and user has isUser privilege, unrestricted 
+     *                repository access is used
+     * @param response HttpServletResponse for streaming file content and setting headers 
+     *                 (Content-Type, Cache-Control, Content-Disposition)
+     * @throws IOException If an I/O error occurs during file content streaming to response output stream
+     * @throws SQLException If a database access error occurs while retrieving file content from 
+     *                      database storage
+     */
     @Transactional(readOnly = true)
     @GetMapping(value = {FILE_ASSET + "{frontendResourceFileId:" + NUMBERREGEX + "$}/*",
             _HTML + FILE_ASSET + "{frontendResourceFileId:" + NUMBERREGEX + "$}/*"})
