@@ -42,9 +42,37 @@ import static com.openkoda.model.Privilege.canCreateReports;
 import static com.openkoda.model.Privilege.canReadReports;
 
 /**
- * Used for registration of generic controllers configurations {@link com.openkoda.core.form.CRUDControllerConfiguration} on application start.
- * It is a place where generic controllers are defined.
- * {@link CRUDControllerHtml} provides request handlers for typical operations which are available out of the box after controller registration
+ * Bootstrap class that registers generic CRUD controller configurations at application startup.
+ * <p>
+ * Spring {@code @Component} implementing {@code @PostConstruct} initialization via
+ * {@link CustomisationService} listener. Registers standard entity CRUD controllers in
+ * {@link HtmlCRUDControllerConfigurationMap} including: organizations, page-builder,
+ * frontend-resources, and query-reports. Each registration binds entity key to repository,
+ * form class, frontend mapping definition, and privilege requirements.
+ * </p>
+ * <p>
+ * Enables automatic CRUD endpoints for registered entities:
+ * <ul>
+ *   <li>{@code GET /{entity}/all} - List view with pagination</li>
+ *   <li>{@code GET /{entity}/{id}} - Detail view</li>
+ *   <li>{@code GET /{entity}/new} - Create form</li>
+ *   <li>{@code POST /{entity}/save} - Submit create/edit form</li>
+ *   <li>{@code GET /{entity}/{id}/edit} - Edit form</li>
+ *   <li>{@code POST /{entity}/{id}/delete} - Delete entity</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Custom modules can register additional CRUD controllers by listening to
+ * {@link CustomisationService#registerOnApplicationStartListener(Consumer)} and calling
+ * {@link HtmlCRUDControllerConfigurationMap#registerCRUDControllerBuilder}.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see HtmlCRUDControllerConfigurationMap
+ * @see CRUDControllerHtml
+ * @see CustomisationService
  */
 @Component
 public class CRUDControllers {
@@ -65,7 +93,31 @@ public class CRUDControllers {
     SecureQueryReportRepository queryReportRepository;
 
     /**
-     * Registers generic controllers using {@link CustomisationService#registerOnApplicationStartListener(Consumer)}
+     * Registers standard CRUD controllers at application startup.
+     * <p>
+     * Invoked by {@link CustomisationService#registerOnApplicationStartListener(Consumer)}
+     * during {@code @PostConstruct} phase. Calls
+     * {@link HtmlCRUDControllerConfigurationMap#registerCRUDController} for each standard
+     * entity with appropriate privileges and configuration.
+     * </p>
+     * <p>
+     * Registered entities and their configurations:
+     * <ul>
+     *   <li><b>organizations</b>: Organization management with {@code readOrgData} and
+     *       {@code manageOrgData} privileges. Table fields: id, name</li>
+     *   <li><b>page-builder</b>: Dashboard builder interface with {@code canAccessGlobalSettings}
+     *       privilege. Filters DASHBOARD resource types. Navigation: configuration tab</li>
+     *   <li><b>frontend-resources</b>: Frontend resource management. Table fields: name,
+     *       includeInSitemap, type. Filters RESOURCE types. Navigation: resources tab</li>
+     *   <li><b>query-reports</b>: AI-powered report generation with {@code canReadReports} and
+     *       {@code canCreateReports} privileges. Table fields: name, organizationId. Navigation:
+     *       reporting tab</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <b>Note:</b> Registration order matters for dependencies. Foundational entities like
+     * organizations are registered first to ensure availability for dependent entities.
+     * </p>
      */
     @PostConstruct
     void init() {
