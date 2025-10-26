@@ -37,21 +37,51 @@ import java.util.Optional;
 import static com.openkoda.core.service.event.ApplicationEvent.USER_LOGGED_IN;
 
 /**
- * This class listens for AuthenticationSuccessEvent's.
- * On each success updates Users entity with actual data of login
+ * Spring ApplicationListener capturing successful authentication events for audit trail and user login tracking.
+ * <p>
+ * Listens for Spring Security AuthenticationSuccessEvent and updates User.lastLogin timestamp upon successful 
+ * authentication. Extracts authenticated user from OrganizationUser principal or username string, persists login 
+ * datetime to user entity, and emits USER_LOGGED_IN application event for downstream processing. Integrates 
+ * authentication events into OpenKoda audit trail and notification systems.
+ * </p>
+ * <p>
+ * Thread-safety: Stateless service with injected dependencies, thread-safe.
+ * </p>
+ *
+ * @see AuthenticationSuccessEvent
+ * @see OrganizationUser
+ * @see ApplicationEventService
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
  */
 @Service
 public class SuccessAuthenticationListener implements ApplicationListener<AuthenticationSuccessEvent>, LoggingComponentWithRequestId {
 
+    /**
+     * Repository for persisting User.lastLogin updates.
+     */
     @Inject
     private UserRepository userRepository;
 
+    /**
+     * Service for emitting USER_LOGGED_IN application events.
+     */
     @Inject
     private ApplicationEventService eventService;
 
     /**
-     * Invoked on successful user authentication
-     * Updates last login datetime and emit event.
+     * Handles successful authentication by updating user's last login timestamp and emitting application event.
+     * <p>
+     * Verifies authentication is successful via event.getAuthentication().isAuthenticated(), extracts User entity 
+     * from principal, sets lastLogin to current LocalDateTime, persists to database, and emits USER_LOGGED_IN 
+     * event with BasicUser DTO. If user extraction fails, silently skips processing.
+     * </p>
+     * <p>
+     * Implementation note: Runs synchronously in authentication thread. Database save may block briefly.
+     * </p>
+     *
+     * @param event Spring Security authentication success event containing authenticated principal
      */
     @Override
     public void onApplicationEvent(AuthenticationSuccessEvent event) {
@@ -67,7 +97,18 @@ public class SuccessAuthenticationListener implements ApplicationListener<Authen
     }
 
     /**
-     * Extracts logged-in user from authentication event
+     * Extracts User entity from authentication event principal with type-based resolution.
+     * <p>
+     * Attempts to extract User in two ways: (1) If principal is OrganizationUser, extracts via getUser() 
+     * accessor. (2) If principal is String username, queries UserRepository.findByLogin(). Returns empty 
+     * Optional if principal type unrecognized.
+     * </p>
+     * <p>
+     * Note: String principal case assumes username-based authentication (line 79).
+     * </p>
+     *
+     * @param event Authentication event containing principal object
+     * @return Optional containing User entity if extraction successful, empty Optional otherwise
      */
     private Optional<User> getUser(AuthenticationSuccessEvent event) {
         debug("[getUser]");
