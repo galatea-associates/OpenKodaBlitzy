@@ -39,24 +39,101 @@ import java.util.function.Supplier;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 /**
- * Abstract repository for Task-based repositories
+ * Generic base repository managing Task entities for background processing queue.
+ * <p>
+ * Provides queries by task type, status, priority, and scheduled execution. Used by JobsScheduler
+ * for asynchronous task execution. Concrete implementations include EmailRepository and
+ * HttpRequestTaskRepository.
+ * </p>
+ * <p>
+ * The {@code @NoRepositoryBean} annotation prevents Spring Data from creating a repository bean
+ * for this abstract interface, allowing only concrete subtype repositories to be instantiated.
+ * </p>
+ *
+ * @param <T> Task subtype (Email, HttpRequestTask, or other Task derivatives)
+ * @author OpenKoda Team
+ * @since 1.7.1
+ * @see FunctionalRepositoryWithLongId
+ * @see Task
+ * @see com.openkoda.model.task.Email
+ * @see com.openkoda.model.task.HttpRequestTask
+ * @see com.openkoda.repository.task.EmailRepository
+ * @see com.openkoda.repository.task.HttpRequestTaskRepository
  */
 @NoRepositoryBean
 public interface TaskRepository<T extends Task> extends FunctionalRepositoryWithLongId<T> {
 
+    /**
+     * Pageable preset for selecting the single oldest task sorted by startAfter timestamp ascending.
+     * <p>
+     * Used for sequential task processing.
+     * </p>
+     */
     Pageable OLDEST_1 = PageRequest.of(0, 1, Sort.Direction.ASC, "startAfter");
+
+    /**
+     * Pageable preset for selecting 10 oldest tasks sorted by startAfter timestamp ascending.
+     * <p>
+     * Commonly used batch size for background job processing.
+     * </p>
+     */
     Pageable OLDEST_10 = PageRequest.of(0, 10, Sort.Direction.ASC, "startAfter");
+
+    /**
+     * Pageable preset for selecting 100 oldest tasks sorted by startAfter timestamp ascending.
+     * <p>
+     * Used for bulk task processing operations.
+     * </p>
+     */
     Pageable OLDEST_100 = PageRequest.of(0, 100, Sort.Direction.ASC, "startAfter");
 
+    /**
+     * Bulk updates task state for the provided list of tasks using JPQL.
+     * <p>
+     * This JPQL bulk update bypasses entity lifecycle callbacks and may desynchronize managed
+     * entity state across persistence contexts. The {@code updatedOn} field is automatically
+     * set to {@code CURRENT_TIMESTAMP} for audit trail purposes.
+     * </p>
+     * <p>
+     * The {@code @Modifying} annotation indicates this query modifies database state and requires
+     * transaction context. Ensure this method is called within an active transaction.
+     * </p>
+     *
+     * @param tasks List of Task entities to update with new state
+     * @param taskState Target state to apply (typically {@code Task.TaskState.DOING})
+     * @return Number of rows affected by the bulk update operation
+     * @see Task.TaskState
+     * @see org.springframework.data.jpa.repository.Modifying
+     */
     @Modifying
     @Query(value = "UPDATE Task t SET t.state = :state, t.updatedOn = CURRENT_TIMESTAMP where t in :tasks")
     int setDoingState(@Param("tasks") List<Task> tasks, @Param("state") Task.TaskState taskState);
 
     /**
-     * This method allows to find tasks and immediately set their status to DOING
-     * This allows to avoid situations where two jobs run the same tasks.
-     * In order to work properly, the query should be a method annotated with
-     * @Lock(PESSIMISTIC_WRITE)
+     * Finds tasks and atomically sets their status to {@code DOING} to prevent concurrent execution.
+     * <p>
+     * This method executes in a new transaction ({@code REQUIRES_NEW}) to ensure atomic claim across
+     * clustered nodes. The supplied query MUST acquire a {@code PESSIMISTIC_WRITE} lock to prevent
+     * two or more nodes from processing the same tasks simultaneously.
+     * </p>
+     * <p>
+     * Usage example:
+     * <pre>{@code
+     * Page<Email> tasks = emailRepository.findTasksAndSetStateDoing(
+     *     () -> emailRepository.findByCanBeStartedTrue(OLDEST_10)
+     * );
+     * }</pre>
+     * </p>
+     * <p>
+     * This pattern provides concurrency control for distributed background task processing,
+     * ensuring each task is executed exactly once across multiple application instances.
+     * </p>
+     *
+     * @param query Supplier providing a Page of tasks with {@code PESSIMISTIC_WRITE} lock
+     *              (e.g., {@code () -> findByCanBeStartedTrue(OLDEST_10)})
+     * @return Page of tasks with state atomically set to {@code DOING} within a new transaction
+     * @see Task.TaskState#DOING
+     * @see org.springframework.transaction.annotation.Propagation#REQUIRES_NEW
      */
     @Transactional(propagation = REQUIRES_NEW)
     default Page<T> findTasksAndSetStateDoing(Supplier<Page<T>> query) {
