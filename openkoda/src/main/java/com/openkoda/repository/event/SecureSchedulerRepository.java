@@ -29,11 +29,45 @@ import org.springframework.stereotype.Repository;
 import static com.openkoda.controller.common.URLConstants.SCHEDULER;
 
 /**
- * A Repository for {@link Scheduler} entity.
- * It basically allows to use JPARepository's methods and to perform searches among Schedulers records in database.
+ * Secure repository for managing {@link Scheduler} entities with privilege-based access control and full-text search capabilities.
+ * <p>
+ * This interface extends {@link SecureRepository} to provide privilege-enforced access to scheduler records that manage cron-based
+ * job scheduling and scheduled event emissions. All repository operations automatically verify user privileges before granting access
+ * to scheduler entities, ensuring secure multi-tenant data isolation.
+ * </p>
+ * <p>
+ * The repository integrates with the OpenKoda job scheduling framework ({@code JobsScheduler}) to support background task execution,
+ * recurring event emissions, and time-based workflow automation. Schedulers define cron expressions that determine when events
+ * should be emitted into the event-driven processing pipeline.
+ * </p>
+ * <p>
+ * <b>Search and Indexing</b>
+ * <br>
+ * The {@link SearchableRepositoryMetadata} annotation configures advanced search capabilities:
+ * </p>
+ * <ul>
+ * <li><b>Description Formula:</b> Generates user-friendly display text combining the cron expression and event data:
+ * {@code (''|| cron_expression || ', Event data = "' || event_data || '"')}. This formula creates readable scheduler
+ * descriptions in search results and administrative interfaces.</li>
+ * <li><b>Search Index Formula:</b> Builds full-text search tokens by concatenating lowercase cron expression, event data,
+ * organization identifier (for tenant scoping), and the scheduler's reference formula:
+ * {@code lower(cron_expression || ' ' || event_data || ' orgid:' || COALESCE(CAST(organization_id as text), '') || ' ' || Scheduler.REFERENCE_FORMULA)}.
+ * This enables searching schedulers by cron pattern, event payload, and organization scope.</li>
+ * </ul>
+ * <p>
+ * <b>Usage Patterns:</b>
+ * </p>
+ * <pre>
+ * SecureSchedulerRepository repo = ...;
+ * Optional&lt;Scheduler&gt; scheduler = repo.findOne(schedulerId); // privilege-checked
+ * </pre>
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-03-20
+ * @see Scheduler
+ * @see SecureRepository
+ * @see SchedulerRepository
+ * @see SearchableRepositoryMetadata
  */
 @Repository
 @SearchableRepositoryMetadata(
