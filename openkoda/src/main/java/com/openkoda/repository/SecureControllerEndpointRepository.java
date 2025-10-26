@@ -30,6 +30,38 @@ import java.util.List;
 import static com.openkoda.controller.common.URLConstants.CONTROLLER_ENDPOINT;
 import static com.openkoda.model.common.ModelConstants.DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA;
 
+/**
+ * Secure repository marker interface for ControllerEndpoint with SearchableRepositoryMetadata configuration.
+ * <p>
+ * This interface extends {@link SecureRepository} to provide privilege-enforced data access operations
+ * for {@link ControllerEndpoint} entities. All repository methods automatically enforce read and write
+ * privileges based on the current security context, ensuring that only authorized users can access
+ * or modify controller endpoint definitions.
+ * </p>
+ * <p>
+ * The interface is annotated with {@link SearchableRepositoryMetadata} to enable dynamic repository
+ * discovery and search indexing. This metadata configuration defines:
+ * <ul>
+ *   <li>Entity key for URL routing and identification (CONTROLLER_ENDPOINT)</li>
+ *   <li>Description formula for generating human-readable entity descriptions (sub_path)</li>
+ *   <li>Search index formula for organization-scoped search functionality</li>
+ * </ul>
+ * These metadata attributes are used by SearchableRepositories at runtime to build entity metadata
+ * maps and enable generic search and discovery capabilities across the application.
+ * </p>
+ * <p>
+ * As a Spring Data JPA repository interface, this provides standard CRUD operations through the
+ * SecureRepository parent interface, along with custom query methods defined in this interface.
+ * All operations are automatically transactional and privilege-checked.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see SecureRepository
+ * @see ControllerEndpoint
+ * @see SearchableRepositoryMetadata
+ */
 @Repository
 @SearchableRepositoryMetadata(
         entityKey = CONTROLLER_ENDPOINT,
@@ -39,6 +71,28 @@ import static com.openkoda.model.common.ModelConstants.DEFAULT_ORGANIZATION_RELA
 )
 public interface SecureControllerEndpointRepository extends SecureRepository<ControllerEndpoint> {
 
+    /**
+     * Finds a ControllerEndpoint by its frontend resource ID, HTTP method, and subpath.
+     * <p>
+     * This method performs a global-scope search to locate a controller endpoint matching
+     * the specified criteria. The search uses JPA Criteria API with three equality conditions
+     * combined with AND logic. The HTTP method string is converted to the
+     * {@link ControllerEndpoint.HttpMethod} enum value for comparison.
+     * </p>
+     * <p>
+     * The search operates with {@link SecurityScope#GLOBAL}, meaning it searches across all
+     * accessible organizations based on the current user's privileges. If multiple endpoints
+     * match the criteria (which should not occur due to uniqueness constraints), only the
+     * first result is returned.
+     * </p>
+     *
+     * @param frontendResourceId the ID of the frontend resource to which the endpoint belongs
+     * @param httpMethod the HTTP method as a string (e.g., "GET", "POST"), which will be
+     *                   converted to {@link ControllerEndpoint.HttpMethod} enum value
+     * @param subPath the subpath of the endpoint (e.g., "/api/users")
+     * @return the matching ControllerEndpoint, or {@code null} if no endpoint matches the criteria
+     *         or if the result list is empty
+     */
     default ControllerEndpoint findByFrontendResourceAndHttpMethodAndSubPath(Long frontendResourceId, String httpMethod, String subPath) {
         List<ControllerEndpoint> result = search(SecurityScope.GLOBAL, (root, query, builder) ->
                 builder.and(
