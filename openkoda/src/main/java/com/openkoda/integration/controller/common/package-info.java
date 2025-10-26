@@ -19,4 +19,25 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ * Common controller utilities for the integration module including page attributes, URL constants, and shared controller components.
+ * <p>
+ * This package provides centralized routing keys and model binding descriptors used by IntegrationControllerHtml
+ * and Thymeleaf views. It contains interface-based constant definitions that establish consistent naming conventions
+ * for integration-related endpoints and page model attributes.
+ * </p>
+ * <p>
+ * Key classes include IntegrationPageAttributes for typed model descriptors used in integration form binding,
+ * and IntegrationURLConstants for URL path constants that define integration routing patterns.
+ * These artifacts ensure type-safe access to model attributes and URL paths across the integration controller layer.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.integration.controller
+ * @see com.openkoda.integration.controller.IntegrationControllerHtml
+ * @see com.openkoda.integration.controller.common.IntegrationPageAttributes
+ * @see com.openkoda.integration.controller.common.IntegrationURLConstants
+ */
 package com.openkoda.integration.controller.common;
