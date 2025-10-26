@@ -30,8 +30,22 @@ import java.util.Set;
 
 
 /**
- * Data object for keeping system health information.
- * See {@link SystemHealthStatusService}
+ * Data transfer object capturing system health metrics for monitoring and diagnostics.
+ * <p>
+ * Holds JVM heap memory statistics (current, maximum, free), PostgreSQL logging configuration
+ * (log_statement, log_min_duration_statement), disk partition space (free/total), operating system
+ * detection (Windows/Linux), sysstat tool availability, and pidstat process metrics. Populated by
+ * SystemHealthStatusService and consumed by health monitoring endpoints and admin dashboards.
+ * </p>
+ * <p>
+ * This mutable JavaBean provides no synchronization. Instances are not thread-safe and should be
+ * accessed from a single thread or externally synchronized.
+ * </p>
+ *
+ * @see SystemHealthStatusService
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
  */
 public class SystemHealthStatus {
 
@@ -93,96 +107,215 @@ public class SystemHealthStatus {
      */
     private String[] pidstatHeader;
 
+    /**
+     * Stores disk space metrics for the specified partition path.
+     *
+     * @param path the partition path identifier (e.g., "/", "/home", "C:\\")
+     * @param freeSpace the available space in bytes on the partition
+     * @param totalSpace the total capacity in bytes of the partition
+     */
     public void setDiskSpace(String path, long freeSpace, long totalSpace) {
         freePartitionSpace.put(path, freeSpace);
         totalPartitionSpace.put(path, totalSpace);
     }
 
+    /**
+     * Returns all partition paths with recorded disk space metrics.
+     *
+     * @return set of partition paths for which disk space has been recorded
+     */
     public Set<String> getPartitions() {
         return freePartitionSpace.keySet();
     }
 
+    /**
+     * Returns the free space for the specified partition.
+     *
+     * @param partition the partition path to query
+     * @return free space in bytes, or null if partition not found
+     */
     public Long getFreeSpace(String partition) {
         return freePartitionSpace.get(partition);
     }
 
+    /**
+     * Returns the total space for the specified partition.
+     *
+     * @param partition the partition path to query
+     * @return total space in bytes, or null if partition not found
+     */
     public Long getTotalSpace(String partition) {
         return totalPartitionSpace.get(partition);
     }
 
+    /**
+     * Returns the current total heap memory size.
+     *
+     * @return current size of heap in bytes
+     */
     public long getTotalHeapMemory() {
         return totalHeapMemory;
     }
 
+    /**
+     * Sets the current total heap memory size.
+     *
+     * @param totalHeapMemory the current heap size in bytes
+     */
     public void setTotalHeapMemory(long totalHeapMemory) {
         this.totalHeapMemory = totalHeapMemory;
     }
 
+    /**
+     * Returns the maximum heap memory size.
+     *
+     * @return maximum size of heap in bytes
+     */
     public long getMaxHeapMemory() {
         return maxHeapMemory;
     }
 
+    /**
+     * Sets the maximum heap memory size.
+     *
+     * @param maxHeapMemory the maximum heap size in bytes
+     */
     public void setMaxHeapMemory(long maxHeapMemory) {
         this.maxHeapMemory = maxHeapMemory;
     }
 
+    /**
+     * Returns the free heap memory size.
+     *
+     * @return free memory within the heap in bytes
+     */
     public long getFreeHeapMemory() {
         return freeHeapMemory;
     }
 
+    /**
+     * Sets the free heap memory size.
+     *
+     * @param freeHeapMemory the free heap memory in bytes
+     */
     public void setFreeHeapMemory(long freeHeapMemory) {
         this.freeHeapMemory = freeHeapMemory;
     }
 
+    /**
+     * Returns the PostgreSQL log_statement configuration value.
+     *
+     * @return the log_statement setting from pg_settings
+     */
     public String getDbLogStatement() {
         return dbLogStatement;
     }
 
+    /**
+     * Sets the PostgreSQL log_statement configuration value.
+     *
+     * @param dbLogStatement the log_statement setting from pg_settings
+     */
     public void setDbLogStatement(String dbLogStatement) {
         this.dbLogStatement = dbLogStatement;
     }
 
+    /**
+     * Returns the PostgreSQL log_min_duration_statement configuration value.
+     *
+     * @return the log_min_duration_statement setting from pg_settings
+     */
     public String getLogMinDurationStatement() {
         return logMinDurationStatement;
     }
 
+    /**
+     * Sets the PostgreSQL log_min_duration_statement configuration value.
+     *
+     * @param logMinDurationStatement the log_min_duration_statement setting from pg_settings
+     */
     public void setLogMinDurationStatement(String logMinDurationStatement) {
         this.logMinDurationStatement = logMinDurationStatement;
     }
 
+    /**
+     * Sets whether the sysstat tool is enabled for process monitoring.
+     *
+     * @param systatEnabled true when running on Linux with sysstat tool enabled
+     */
     public void setSysstatEnabled(boolean systatEnabled) {
         this.sysstatEnabled = systatEnabled;
     }
 
+    /**
+     * Returns whether the sysstat tool is enabled.
+     *
+     * @return true when running on Linux with sysstat tool enabled
+     */
     public boolean isSysstatEnabled() {
         return sysstatEnabled;
     }
 
+    /**
+     * Sets whether the sysstat tool is installed on the system.
+     *
+     * @param systatEnabled true when running on Linux with sysstat tool installed
+     */
     public void setSysstatInstalled(boolean systatEnabled) {
         this.sysstatInstalled = systatEnabled;
     }
 
+    /**
+     * Returns whether the sysstat tool is installed.
+     *
+     * @return true when running on Linux with sysstat tool installed
+     */
     public boolean isSysstatInstalled() {
         return sysstatInstalled;
     }
 
+    /**
+     * Returns whether the application is running on Windows.
+     *
+     * @return true when application runs on Windows operating system
+     */
     public boolean isWindows() {
         return isWindows;
     }
 
+    /**
+     * Sets whether the application is running on Windows.
+     *
+     * @param isWindows true when application runs on Windows operating system
+     */
     public void setIsWindows(boolean isWindows) {
         this.isWindows = isWindows;
     }
 
+    /**
+     * Parses pidstat output rows and stores header separately from data rows.
+     *
+     * @param pidstatRows list of pidstat rows where first row is header and subsequent rows are process data
+     */
     public void setPidstatData(List<String[]> pidstatRows) {
         this.pidstatHeader = pidstatRows.get(0);
         this.pidstatData = pidstatRows.subList(1, pidstatRows.size());
     }
 
+    /**
+     * Returns the pidstat process data rows.
+     *
+     * @return list of pidstat data rows excluding header, or null if not set
+     */
     public List<String[]> getPidstatData() {
         return this.pidstatData;
     }
 
+    /**
+     * Returns the pidstat column headers.
+     *
+     * @return array of pidstat column headers, or null if not set
+     */
     public String[] getPidstatHeader() {
         return pidstatHeader;
     }
