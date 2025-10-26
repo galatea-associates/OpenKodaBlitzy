@@ -30,15 +30,26 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Arrays;
 
-@Service
 /**
- * <p>IpService class.</p>
+ * Utility service for extracting client IP addresses from HTTP requests with proxy support for audit logging.
+ * <p>
+ * Extracts client IP addresses from incoming HTTP requests, honoring X-Forwarded-For headers for proxied traffic.
+ * Used by audit trail system to record client IPs in Audit entities. Provides IP allowlist validation for access control.
+ * Handles both direct connections and reverse proxy scenarios.
+ * </p>
+ * <p>
+ * Implementation note: Contains redundant double-call to getAddressForProxiedRequest in getIpFromRequest method at line 79.
+ * </p>
+ * <p>
+ * Thread-safety: Stateless service, thread-safe.
+ * </p>
  *
- * <p>Extracts Ip address for incoming requests, including proxied traffic.</p>
- *
- * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- * 
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see PropertyChangeListener
  */
+@Service
 public class IpService implements LoggingComponentWithRequestId {
 
    /**
@@ -47,7 +58,7 @@ public class IpService implements LoggingComponentWithRequestId {
     * of user browser and proxy servers. If current thread is not bound to
     * client request, returns null.
     *
-    * @return current client ip address if can obtain it, otherwise null.
+    * @return Client IP address from current request context, or null if not in request scope.
     */
    public String getCurrentUserIpAddress() {
       debug( "[getCurrentUserIpAddress]" );
@@ -59,10 +70,27 @@ public class IpService implements LoggingComponentWithRequestId {
       return null;
    }
 
+   /**
+    * Validates whether the request's client IP is in the allowed IPs list.
+    * <p>
+    * Note: Tokens are not trimmed, CIDR ranges not supported.
+    * </p>
+    *
+    * @param allowedIps Comma-separated list of allowed IP addresses, or blank to allow all.
+    * @param request HTTP request containing client IP.
+    * @return true if IP is allowed or allowedIps is blank, false otherwise.
+    */
    public boolean checkIPAllowed(String allowedIps, HttpServletRequest request) {
       return checkIPAllowed(allowedIps, getIpFromRequest(request));
    }
    
+   /**
+    * Validates whether the given IP address is in the allowed IPs list.
+    *
+    * @param allowedIps Comma-separated list of allowed IP addresses, or blank to allow all.
+    * @param requestIP Client IP address to validate.
+    * @return true if IP is allowed or allowedIps is blank, false otherwise.
+    */
    private boolean checkIPAllowed(String allowedIps, String requestIP){
       debug("[checkIPAllowed] allowedIps: {} requestIP: {}", allowedIps, requestIP);
       return StringUtils.isBlank(allowedIps) || Arrays.asList(allowedIps.split(",")).contains(requestIP);
@@ -70,9 +98,12 @@ public class IpService implements LoggingComponentWithRequestId {
    /**
     * This method returns ip address of a client. Works for connections with
     * proxies.
+    * <p>
+    * Note: Calls getAddressForProxiedRequest twice (line 79) - optimization opportunity.
+    * </p>
     * 
-    * @param request
-    * @return ip of client that sent given request
+    * @param request HTTP request.
+    * @return Client IP address from X-Forwarded-For header if proxied, otherwise from RemoteAddr.
     */
    private String getIpFromRequest(HttpServletRequest request) {
       debug( "[getIpFromRequest] {}" , request );
@@ -81,8 +112,14 @@ public class IpService implements LoggingComponentWithRequestId {
 
 
    /**
-    * Extracts client's IP from "X-Forwarded-For" header from the request
+    * Extracts client's IP from "X-Forwarded-For" header from the request.
     * Useful for requests behind reverse proxy.
+    * <p>
+    * Returns leftmost token from comma-separated list per standard proxy behavior.
+    * </p>
+    *
+    * @param request HTTP request with potential X-Forwarded-For header.
+    * @return Leftmost IP from X-Forwarded-For header, or null if header absent/empty.
     */
    private String getAddressForProxiedRequest(HttpServletRequest request) {
       debug( "[getAddressForProxiedRequest] {}" , request );
@@ -93,6 +130,9 @@ public class IpService implements LoggingComponentWithRequestId {
    /**
     * Extracts client's IP from the request.
     * For application behind reverse proxy it's usually localhost, see {@link #getAddressForProxiedRequest}
+    *
+    * @param request HTTP request.
+    * @return Client IP from request.getRemoteAddr(), typically localhost if behind reverse proxy.
     */
    private String getAddressForNotProxiedRequest(HttpServletRequest request) {
       debug( "[getAddressForNotProxiedRequest] {}" , request );
