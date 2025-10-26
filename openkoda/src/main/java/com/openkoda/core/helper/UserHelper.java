@@ -32,46 +32,96 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
- *<p>UserHelper provides a set of static methods for provides operations on user</p>
+ * Provides convenient access to current user information from the UserProvider context.
+ * <p>
+ * This helper component offers null-safe methods for accessing user details with appropriate
+ * default values for unauthenticated users. All methods return non-null values, providing
+ * empty collections or default primitives when no authenticated user is present in the context.
+ * </p>
+ * <p>
+ * The helper retrieves user information from the thread-local UserProvider context, making it
+ * safe for concurrent use across multiple requests. Each method handles the case where no user
+ * is authenticated by returning sensible defaults rather than null values or throwing exceptions.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>
+ * String name = userHelper.getFullName(); // Returns "Unlogged" if not authenticated
+ * Long userId = userHelper.getUserId();   // Returns -1L if not authenticated
+ * </pre>
+ * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see UserProvider
+ * @see OrganizationUser
  */
 @Component("user")
 public class UserHelper {
 
     /**
-     * <p>Returns set of organizations.</p>
+     * Returns map entries of organization ID to name for the current authenticated user.
+     * <p>
+     * Each entry contains the organization ID as the key and organization name as the value,
+     * representing all organizations to which the current user belongs. If no user is
+     * authenticated or the user belongs to no organizations, returns an empty set.
+     * </p>
      *
-     * @return a {@link java.util.Set} object.
+     * @return a {@link java.util.Set} of map entries containing organization IDs and names,
+     *         or an empty set for unlogged users
      */
     public Set<Map.Entry<Long, String>> organizations() {
         return UserProvider.getFromContext().map( OrganizationUser::getOrganizationNames ).map(Map::entrySet).orElse(Collections.emptySet());
     }
 
     /**
-     * <p>Check if user has organizations.</p>
+     * Checks if the current authenticated user belongs to any organizations.
+     * <p>
+     * This method provides a convenient way to determine whether the user has organization
+     * memberships without needing to retrieve and check the organization collection size.
+     * Returns false for unauthenticated users or users with no organization memberships.
+     * </p>
      *
-     * @return a boolean.
+     * @return {@code true} if the current user belongs to at least one organization,
+     *         {@code false} for unlogged users or users with no organizations
      */
     public boolean hasOrganizations() {
         return UserProvider.getFromContext().map( OrganizationUser::getOrganizationNames ).map(a -> a.size() > 0).orElse(false);
     }
 
     /**
-     * <p>Returns user id.</p>
+     * Returns the unique identifier for the current authenticated user.
+     * <p>
+     * This method provides null-safe access to the user ID, returning a default sentinel
+     * value of -1L for unauthenticated users instead of null. This ensures callers can
+     * safely use the returned value without null checks while still distinguishing
+     * unauthenticated sessions.
+     * </p>
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the user ID as a {@link java.lang.Long}, or -1L as default for unlogged users
      */
     public Long getUserId() {
         return UserProvider.getFromContext().map( OrganizationUser::getUser).map(User::getId ).orElse( -1L );
     }
 
     /**
-     * <p>Returns user first name and lastname if exist, email address otherwise.</p>
+     * Returns the full name or identifier for the current authenticated user using priority logic.
+     * <p>
+     * The method applies the following priority for constructing the user's display name:
+     * </p>
+     * <ol>
+     *   <li>If both first name and last name are present and non-blank: returns "FirstName LastName"</li>
+     *   <li>If either name is missing or blank: returns the user's email address</li>
+     *   <li>If no authenticated user exists: returns "Unlogged"</li>
+     * </ol>
+     * <p>
+     * This provides a consistent, non-null display value suitable for UI rendering and logging
+     * without requiring explicit null handling by callers.
+     * </p>
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the user's full name, email, or "Unlogged" as a {@link java.lang.String}
      */
     public String getFullName() {
         return UserProvider.getFromContext().map( OrganizationUser::getUser)
@@ -80,9 +130,15 @@ public class UserHelper {
     }
 
     /**
-     * <p>Returns user email.</p>
+     * Returns the email address for the current authenticated user.
+     * <p>
+     * This method provides null-safe access to the user's email address, returning an
+     * empty string for unauthenticated users. The returned value is always non-null,
+     * allowing safe use in string operations without null checks.
+     * </p>
      *
-     * @return a {@link java.lang.Long} object.
+     * @return the user's email address as a {@link java.lang.String},
+     *         or an empty string for unlogged users
      */
     public String getEmail() {
         return UserProvider.getFromContext().map(OrganizationUser::getUser).map(User::getEmail).orElse("");
