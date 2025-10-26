@@ -61,7 +61,41 @@ import java.util.concurrent.TimeUnit;
 import static com.openkoda.core.service.FrontendResourceService.frontendResourceTemplateNamePrefix;
 
 /**
- * <p>Configuration class for MVC configuration, ie. routes configuration, interceptors, template resolving, etc.</p>
+ * Central Spring MVC configuration class implementing WebMvcConfigurer.
+ * <p>
+ * Annotated with {@code @Configuration} to register Spring MVC customizations for the OpenKoda platform.
+ * This class configures critical MVC infrastructure including view mappings, resource handlers, interceptors,
+ * exception resolution, argument resolvers, and template resolvers for multi-tenant Thymeleaf rendering.
+ * </p>
+ * <p>
+ * Key configurations provided:
+ * <ul>
+ *   <li>Root view mapping to homepage</li>
+ *   <li>Resource handlers for vendor assets (/vendor/**) with 7-day cache control</li>
+ *   <li>Three custom interceptors: modelEnricherInterceptor (common model attributes),
+ *       modulesInterceptor (module-specific processing), slashEndingUrlInterceptor (URL normalization)</li>
+ *   <li>ErrorLoggingExceptionResolver for uncaught exception handling with requestId tracking</li>
+ *   <li>MapFormArgumentResolver for automatic MapEntity form binding in controller methods</li>
+ *   <li>FrontendResourceOrClassLoaderTemplateResolver for tenant-aware template loading from database or classpath</li>
+ *   <li>StringTemplateResolver for inline template string resolution</li>
+ *   <li>Request-scoped getUserInOrganization bean (MutableUserInOrganization) for authenticated user context</li>
+ *   <li>Multi-datasource configuration via datasources() bean bound to application properties</li>
+ * </ul>
+ * </p>
+ * <p>
+ * This configuration integrates Thymeleaf template resolution, custom argument resolvers for form handling,
+ * comprehensive exception handling, and multi-datasource support for tenant isolation.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+ * @see FrontendResourceOrClassLoaderTemplateResolver
+ * @see ErrorLoggingExceptionResolver
+ * @see MapFormArgumentResolver
+ * @see Datasources
+ * @see MutableUserInOrganization
  */
 @Configuration
 @EnableSpringDataWebSupport
@@ -95,16 +129,53 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
     @Inject
     public ClasspathComponentImportService classpathComponentImportService;
 
+    /**
+     * Registers root URL '/' to redirect to homepage view.
+     * <p>
+     * Maps the empty path to the default landing page configured via
+     * {@code default.pages.homeview} property. The view name is prefixed
+     * with {@code frontendResourceTemplateNamePrefix} to enable tenant-aware
+     * template resolution through the FrontendResourceOrClassLoaderTemplateResolver.
+     * </p>
+     *
+     * @param registry ViewControllerRegistry for view controller mappings
+     */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName( frontendResourceTemplateNamePrefix + homeViewName);
     }
 
+    /**
+     * Configures static resource handlers for vendor assets served from classpath.
+     * <p>
+     * Maps requests to {@code /vendor/**} paths to {@code classpath:/public/vendor/} location
+     * with 7-day cache control headers. This enables efficient serving of JavaScript libraries,
+     * CSS frameworks, and other static assets packaged in JARs (e.g., WebJars).
+     * The public cache control allows both browser and CDN caching for optimal performance.
+     * </p>
+     *
+     * @param registry ResourceHandlerRegistry for static resource mapping configuration
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/vendor/**").addResourceLocations("classpath:/public/vendor/").setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
     }
 
+    /**
+     * Registers three custom interceptors executed for all HTTP requests.
+     * <p>
+     * Interceptors are executed in registration order:
+     * <ul>
+     *   <li>{@code modelEnricherInterceptor} - Adds common model attributes to all views</li>
+     *   <li>{@code modulesInterceptor} - Performs module-specific request processing</li>
+     *   <li>{@code slashEndingUrlInterceptor} - Normalizes URLs by handling trailing slashes</li>
+     * </ul>
+     * These interceptors provide cross-cutting request handling functionality including
+     * model enrichment, module lifecycle hooks, and URL consistency enforcement.
+     * </p>
+     *
+     * @param registry InterceptorRegistry for interceptor registration and ordering
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(modelEnricherInterceptor);
@@ -112,22 +183,76 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
         registry.addInterceptor(slashEndingUrlInterceptor);
     }
 
+    /**
+     * Configures exception resolvers for handling uncaught exceptions in controller methods.
+     * <p>
+     * Creates and registers {@link ErrorLoggingExceptionResolver} for comprehensive exception handling.
+     * This resolver maps exceptions to the /error view with requestId tracking, provides conditional
+     * logging based on exception type and severity, and implements noise suppression for client-abort
+     * scenarios. User agents matching the {@code user.agent.excluded.from.error.log} pattern are
+     * excluded from error logging to reduce log noise from bots and scanners.
+     * </p>
+     *
+     * @param exceptionResolvers List of HandlerExceptionResolver instances to be configured
+     * @see ErrorLoggingExceptionResolver
+     */
     @Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
         exceptionResolvers.add(new ErrorLoggingExceptionResolver(userAgentExcludedFromErrorLog));
     }
 
+    /**
+     * Creates request-scoped MutableUserInOrganization bean holding current user context.
+     * <p>
+     * Scope {@code REQUEST} ensures a new instance is created for each HTTP request.
+     * This bean is populated by the security infrastructure with the authenticated user's
+     * information and organization context. Controllers and services can inject this bean
+     * to access the current user's identity and tenant association without passing
+     * context explicitly through method parameters.
+     * </p>
+     *
+     * @return request-scoped MutableUserInOrganization for current authenticated user context
+     * @see MutableUserInOrganization
+     */
     @Bean
     @Scope("request")
     public MutableUserInOrganization getUserInOrganization() {
         return new MutableUserInOrganization();
     }
 
+    /**
+     * Configures CORS (Cross-Origin Resource Sharing) mappings.
+     * <p>
+     * Currently disabled. When enabled, this method can configure CORS policies
+     * for specific URL patterns to allow cross-origin requests from designated
+     * origins. This is useful for enabling API access from frontend applications
+     * hosted on different domains (e.g., separate Angular or React applications).
+     * </p>
+     *
+     * @param registry CorsRegistry for CORS configuration
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
 //        registry.addMapping("/data/**").allowedOrigins("http://localhost:4200");
     }
 
+    /**
+     * Creates Datasources configuration bean bound to application properties.
+     * <p>
+     * Binds multi-tenant datasource configurations from application.properties using
+     * the {@code datasources} property prefix via {@code @ConfigurationProperties}.
+     * This enables external configuration of multiple datasources with properties like:
+     * <ul>
+     *   <li>datasources.list[i].name - datasource identifier</li>
+     *   <li>datasources.list[i].config.* - datasource-specific configuration (URL, credentials, pool settings)</li>
+     * </ul>
+     * The returned POJO provides structured access to multi-datasource configuration
+     * for tenant isolation and data partitioning strategies.
+     * </p>
+     *
+     * @return Datasources POJO bound to application properties for multi-datasource configuration
+     * @see Datasources
+     */
     @Bean
     @ConfigurationProperties(prefix = "datasources")
     public Datasources datasources() {
@@ -135,6 +260,27 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
     }
 
 
+    /**
+     * Creates FrontendResourceOrClassLoaderTemplateResolver for tenant-aware template loading.
+     * <p>
+     * This resolver enables templates to be loaded from either the database (per-organization customization)
+     * or classpath resources (default templates). It supports dynamic template resolution with
+     * the prefix {@code frontend-resource#} and suffix {@code .html}, rendering in HTML5 mode.
+     * Template caching is controlled by the {@code frontendresource.load.always.from.resources} flag.
+     * Order 1 ensures this resolver is evaluated before the StringTemplateResolver (order 2).
+     * </p>
+     * <p>
+     * This enables per-organization template customization where tenants can override default
+     * templates with custom versions stored in the database while falling back to classpath
+     * resources when customizations don't exist.
+     * </p>
+     *
+     * @param queryExecutor QueryExecutor for database template queries
+     * @param frontendResourceService FrontendResourceService for template loading logic
+     * @param filteringProcessor TemplatePathFilteringProcessor for template path validation
+     * @return configured ITemplateResolver for database and classpath template resolution
+     * @see FrontendResourceOrClassLoaderTemplateResolver
+     */
     @Bean
     @Description("Thymeleaf template resolver serving HTML 5")
     public ClassLoaderTemplateResolver templateResolver(QueryExecutor queryExecutor, FrontendResourceService frontendResourceService, TemplatePathFilteringProcessor filteringProcessor) {
@@ -156,6 +302,18 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
     }
 
 
+    /**
+     * Creates StringTemplateResolver for inline template string resolution.
+     * <p>
+     * This resolver enables dynamic template generation from string sources rather than
+     * file-based templates. Template mode is set to HTML, and order is 1 (evaluated
+     * alongside the database/classpath resolver). This resolver acts as a fallback
+     * mechanism enabling runtime template generation from strings, useful for
+     * dynamic content rendering scenarios where templates are constructed programmatically.
+     * </p>
+     *
+     * @return configured ITemplateResolver for string-based template resolution
+     */
     @Bean
     @Description("Thymeleaf string resolver serving HTML 5")
     public StringTemplateResolver stringTemplateResolver() {
@@ -180,11 +338,41 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
     @Inject
     public UrlHelper urlHelper;
 
+    /**
+     * Registers custom argument resolvers including MapFormArgumentResolver.
+     * <p>
+     * Creates and registers {@link MapFormArgumentResolver} for automatic MapEntity form binding.
+     * This enables controller method parameters annotated with {@code @ModelAttribute} of type
+     * MapEntity to be automatically resolved and populated from HTTP request data.
+     * The resolver uses reflection-based mapping to convert form data to MapEntity instances,
+     * leveraging htmlCrudControllerConfigurationMap for CRUD configuration, frontendMappingMap
+     * for field mappings, and urlHelper for URL resolution.
+     * </p>
+     * <p>
+     * This enables Spring MVC to resolve custom parameter types in controller methods,
+     * simplifying form handling for dynamic entity types.
+     * </p>
+     *
+     * @param argumentResolvers List of HandlerMethodArgumentResolver instances to be registered
+     * @see MapFormArgumentResolver
+     */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new MapFormArgumentResolver(htmlCrudControllerConfigurationMap, frontendMappingMap, urlHelper));
     }
 
+    /**
+     * Creates SessionLocaleResolver for locale management in user sessions.
+     * <p>
+     * Configures a session-based locale resolver with English as the default locale.
+     * The locale is stored in the session under the attribute name defined by
+     * {@code SessionData.LOCALE}. This enables per-user locale preferences that
+     * persist across requests within the same session, supporting internationalization
+     * of the application UI.
+     * </p>
+     *
+     * @return configured LocaleResolver for session-based locale management
+     */
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
