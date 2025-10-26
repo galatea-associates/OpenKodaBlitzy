@@ -37,21 +37,73 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Optional;
 
 /**
- * <p>Configuration class that configures bean that
- * extracts username used to {@link org.springframework.data.annotation.CreatedBy}
- * and {@link org.springframework.data.annotation.LastModifiedBy} annotated fields in entity classes.
+ * Spring configuration class for JPA auditing infrastructure and Hibernate interceptor setup.
+ * <p>
+ * Annotated with {@link Configuration} and {@link EnableJpaAuditing} to activate Spring Data JPA
+ * auditing for {@link org.springframework.data.annotation.CreatedDate},
+ * {@link org.springframework.data.annotation.LastModifiedDate},
+ * {@link org.springframework.data.annotation.CreatedBy}, and
+ * {@link org.springframework.data.annotation.LastModifiedBy} annotations on entities.
  * </p>
+ * <p>
+ * Registers three beans:
+ * <ul>
+ * <li>{@link #auditorProvider()} for capturing current user UID as auditor</li>
+ * <li>{@link #logsProvider()} for request-correlated debug logging</li>
+ * <li>{@link #hibernatePropertiesCustomizer(PropertyChangeInterceptor)} for injecting
+ * PropertyChangeInterceptor into Hibernate SessionFactory</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Enables comprehensive entity change tracking and audit trail generation throughout the application.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see SpringSecurityAuditorAware
+ * @see PropertyChangeInterceptor
+ * @see org.springframework.data.jpa.repository.config.EnableJpaAuditing
  */
 @Configuration
 @EnableJpaAuditing
 public class AuditConfig {
 
+    /**
+     * Nested AuditorAware implementation that extracts current user UID from Spring Security context.
+     * <p>
+     * Uses {@link SecurityContextHolder} to access the current {@link Authentication}. Casts principal
+     * to {@link OrganizationUser} and retrieves UID containing username and user ID. Returns UNKNOWN
+     * UID sentinel if security context is not available or principal is not of OrganizationUser type.
+     * </p>
+     * <p>
+     * Thread-safe as SecurityContext is thread-local storage managed by Spring Security.
+     * </p>
+     *
+     * @author OpenKoda Team
+     * @version 1.7.1
+     * @since 1.7.1
+     * @see AuditorAware
+     * @see SecurityContextHolder
+     * @see OrganizationUser
+     */
     public static class SpringSecurityAuditorAware implements AuditorAware<UID>, LoggingComponent {
 
         private static final UID UNKNOWN = new UID();
 
         /**
-         * @return UID extracted from SecurityContextHolder
+         * Retrieves the current auditor UID from Spring Security context for JPA auditing.
+         * <p>
+         * Extracts {@link Authentication} from {@link SecurityContextHolder}, verifies authentication
+         * is valid, and casts principal to {@link OrganizationUser}. Returns UID containing username
+         * and user ID for population of @CreatedBy and @LastModifiedBy entity fields.
+         * </p>
+         * <p>
+         * Always returns {@link Optional#of(Object)} with either authenticated user UID or UNKNOWN
+         * sentinel UID to ensure auditing fields are never null.
+         * </p>
+         *
+         * @return Optional containing UID of authenticated user or UNKNOWN UID if no valid security context
          */
         public Optional<UID> getCurrentAuditor() {
             debug("[getCurrentAuditor]");
@@ -75,16 +127,58 @@ public class AuditConfig {
         }
     }
 
+    /**
+     * Creates AuditorAware bean for JPA auditing to capture current user as entity modifier.
+     * <p>
+     * Returns {@link SpringSecurityAuditorAware} implementation (nested class) that maps
+     * {@link SecurityContextHolder} Authentication to UID. Extracts {@link OrganizationUser}
+     * from principal and returns UID containing username and user ID. Supplies UNKNOWN UID
+     * sentinel if security context is not initialized.
+     * </p>
+     * <p>
+     * Always returns Optional.of(UID) for auditing to ensure @CreatedBy and @LastModifiedBy
+     * fields are never null.
+     * </p>
+     *
+     * @return AuditorAware&lt;UID&gt; implementation for JPA @CreatedBy and @LastModifiedBy population
+     * @see SpringSecurityAuditorAware
+     * @see SecurityContextHolder
+     * @see OrganizationUser
+     */
     @Bean
     public AuditorAware<UID> auditorProvider() {
         return new SpringSecurityAuditorAware();
     }
 
+    /**
+     * Creates debug logging decorator with request ID correlation for audit subsystem.
+     * <p>
+     * Returns {@link DebugLogsDecoratorWithRequestId} for request-scoped logging with trace IDs.
+     * Used by audit interceptors for diagnostic logging to correlate audit events with HTTP
+     * requests and background jobs.
+     * </p>
+     *
+     * @return DebugLogsDecoratorWithRequestId for audit logging with request correlation
+     * @see DebugLogsDecoratorWithRequestId
+     */
     @Bean
     public DebugLogsDecoratorWithRequestId logsProvider() {
         return new DebugLogsDecoratorWithRequestId();
     }
 
+    /**
+     * Creates HibernatePropertiesCustomizer that injects PropertyChangeInterceptor into Hibernate configuration.
+     * <p>
+     * Writes interceptor under hibernate.session_factory.interceptor property key. Interceptor is
+     * bound at SessionFactory creation to capture onSave/onFlushDirty/onDelete events for audit
+     * trail generation. Enables property-level change detection for auditable entities.
+     * </p>
+     *
+     * @param interceptor Hibernate interceptor for entity property change capture and audit record creation
+     * @return HibernatePropertiesCustomizer that configures SessionFactory with audit interceptor
+     * @see PropertyChangeInterceptor
+     * @see com.openkoda.core.audit.AuditInterceptor
+     */
     @Bean
     public HibernatePropertiesCustomizer hibernatePropertiesCustomizer(PropertyChangeInterceptor interceptor) {
         return props -> props.put("hibernate.session_factory.interceptor", interceptor);
