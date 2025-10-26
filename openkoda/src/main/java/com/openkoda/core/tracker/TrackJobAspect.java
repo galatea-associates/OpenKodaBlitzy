@@ -28,22 +28,76 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 /**
- * Aspect which picks up every @Scheduled annotated method and performs actions before run and after its completion
+ * AspectJ aspect that instruments scheduled jobs with correlation IDs for log tracing across job executions.
+ * <p>
+ * Intercepts all methods annotated with {@code @Scheduled}, injects a unique correlation ID into SLF4J MDC
+ * before execution, and cleans up MDC after completion (including exception cases). Enables distributed tracing
+ * for scheduled and cron jobs by ensuring each job execution has a unique identifier in log messages.
+ * Uses Spring AOP with AspectJ annotations for declarative pointcut definitions.
+ * </p>
+ * <p>
+ * The pointcut expression {@code @annotation(org.springframework.scheduling.annotation.Scheduled)} matches all
+ * methods with Spring's {@code @Scheduled} annotation. This aspect is discovered via {@code @Component} and
+ * {@code @Aspect} scanning, woven at runtime by Spring AOP proxy mechanism.
+ * </p>
+ * <p>
+ * Example usage - automatic instrumentation:
+ * <pre>{@code
+ * @Scheduled(cron = "0 0 * * * *")
+ * public void hourlyReport() {
+ *     // Job ID automatically in MDC, appears in all log messages
+ * }
+ * }</pre>
+ * </p>
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-07-26
+ * @version 1.7.1
+ * @see RequestIdHolder
+ * @see org.slf4j.MDC
+ * @see org.springframework.scheduling.annotation.Scheduled
  */
 @Aspect
 @Component
 public class TrackJobAspect {
 
-//    Before every scheduled method set job id for its thread
+    /**
+     * Injects unique job correlation ID into MDC before scheduled method execution.
+     * <p>
+     * Before advice that executes before any {@code @Scheduled} method. Generates a unique job ID via
+     * {@link RequestIdHolder#generate()} and stores it in SLF4J MDC under key {@code PARAM_CRON_JOB_ID}.
+     * The ID propagates through all logging statements during job execution, enabling trace correlation.
+     * Thread-safe as MDC is ThreadLocal-based.
+     * </p>
+     * <p>
+     * Side effects: Modifies thread's MDC context by adding job ID entry.
+     * </p>
+     *
+     * @see RequestIdHolder#generate()
+     * @see org.slf4j.MDC#put(String, String)
+     */
     @Before("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     public void setJobIdForThread() {
         MDC.put(RequestIdHolder.PARAM_CRON_JOB_ID, RequestIdHolder.generate());
     }
 
-//    After every scheduled method clear the thread context
+    /**
+     * Clears MDC context after scheduled method completion.
+     * <p>
+     * After advice that executes after any {@code @Scheduled} method completes (including exception cases).
+     * Calls {@link org.slf4j.MDC#clear()} to remove all MDC entries, preventing job ID leakage when thread
+     * is returned to executor pool and reused for subsequent jobs. Critical for thread pool hygiene in
+     * scheduled task executors.
+     * </p>
+     * <p>
+     * Side effects: Clears all entries from thread's MDC context.
+     * </p>
+     * <p>
+     * Note: Executes even if scheduled method throws exception, ensuring cleanup in all cases.
+     * </p>
+     *
+     * @see org.slf4j.MDC#clear()
+     */
     @After("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     public void clearJobIdForThread() {
         MDC.clear();
