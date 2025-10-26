@@ -27,28 +27,105 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 /**
- * <p>Entity storing facebook user information.</p>
+ * JPA entity for Facebook OAuth authentication provider integration.
+ * <p>
+ * This entity stores Facebook user profile data retrieved during the OAuth 2.0 authentication flow,
+ * enabling social login via Facebook and linking Facebook identities to OpenKoda User accounts.
+ * Profile fields are synchronized from Facebook Graph API responses during authentication.
+ * </p>
+ * <p>
+ * Persisted to the 'fb_users' table with a shared primary key relationship to the User entity
+ * via {@code @MapsId}. The {@code @DynamicUpdate} annotation enables Hibernate optimization
+ * to update only modified columns during persistence operations.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>
+ * FacebookUser fbUser = new FacebookUser(facebookId, firstName, lastName, ...);
+ * fbUser.setUser(user);
+ * </pre>
+ * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see User
+ * @see LoggedUser
+ * @see com.openkoda.integration.controller.FacebookController
  */
 @Entity
 @DynamicUpdate
 @Table(name = "fb_users")
 public class FacebookUser extends LoggedUser {
 
+    /**
+     * Primary key shared with the User entity via {@code @MapsId}.
+     * <p>
+     * This field uses the same value as the associated User's id, enforcing a one-to-one
+     * relationship between FacebookUser and User entities.
+     * </p>
+     */
     @Id
     private Long id;
 
+    /**
+     * Facebook unique identifier from the OAuth provider (Facebook User ID).
+     * <p>
+     * This value is obtained from the Facebook Graph API during OAuth authentication
+     * and uniquely identifies the user within Facebook's system.
+     * </p>
+     */
     private String facebookId;
 
+    /**
+     * User's first name from Facebook profile.
+     */
     private String firstName;
+    
+    /**
+     * User's last name from Facebook profile.
+     */
     private String lastName;
+    
+    /**
+     * User's full display name from Facebook profile.
+     */
     private String name;
+    
+    /**
+     * User's email address from Facebook profile.
+     * <p>
+     * Requires the 'email' permission scope in the OAuth flow.
+     * </p>
+     */
     private String email;
+    
+    /**
+     * URL to the user's Facebook cover photo.
+     */
     private String coverPicture;
+    
+    /**
+     * URL to the user's Facebook profile picture.
+     */
     private String picture;
+    
+    /**
+     * Minimum age range value from Facebook.
+     * <p>
+     * Example: "21" for users in the 21+ age range.
+     * </p>
+     */
     private String ageRangeMin;
 
+    /**
+     * One-to-one relationship with the User entity.
+     * <p>
+     * Uses {@code @MapsId} with {@code @JoinColumn(name="user_id")} to share the primary key.
+     * Annotated with {@code @JsonIgnore} to prevent JSON serialization of the user reference.
+     * </p>
+     */
     @MapsId
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -56,22 +133,30 @@ public class FacebookUser extends LoggedUser {
     private User user;
 
     /**
-     * <p>Constructor for FacebookUser.</p>
+     * No-argument constructor for JPA entity instantiation.
+     * <p>
+     * Required by JPA specification for entity creation and reflection-based operations.
+     * </p>
      */
     public FacebookUser() {
     }
 
     /**
-     * <p>Constructor for FacebookUser.</p>
+     * Convenience constructor for creating a FacebookUser with all profile fields.
+     * <p>
+     * Initializes a FacebookUser entity with data retrieved from the Facebook Graph API
+     * during OAuth authentication. The User relationship must be set separately via
+     * {@link #setUser(User)}.
+     * </p>
      *
-     * @param facebookId   a {@link java.lang.String} object.
-     * @param firstName    a {@link java.lang.String} object.
-     * @param lastName     a {@link java.lang.String} object.
-     * @param name         a {@link java.lang.String} object.
-     * @param email        a {@link java.lang.String} object.
-     * @param coverPicture a {@link java.lang.String} object.
-     * @param picture      a {@link java.lang.String} object.
-     * @param ageRangeMin  a {@link java.lang.String} object.
+     * @param facebookId   Facebook unique identifier (Facebook User ID)
+     * @param firstName    User's first name from Facebook profile
+     * @param lastName     User's last name from Facebook profile
+     * @param name         User's full display name from Facebook profile
+     * @param email        User's email address from Facebook profile (requires email scope)
+     * @param coverPicture URL to user's Facebook cover photo
+     * @param picture      URL to user's Facebook profile picture
+     * @param ageRangeMin  Minimum age range value (e.g., "21" for 21+)
      */
     public FacebookUser(String facebookId,
                         String firstName,
@@ -92,142 +177,154 @@ public class FacebookUser extends LoggedUser {
     }
 
     /**
-     * <p>Getter for the field <code>facebookId</code>.</p>
+     * Returns the Facebook unique identifier.
      *
-     * @return a {@link java.lang.String} object.
+     * @return Facebook User ID from OAuth provider, or null if not set
      */
     public String getFacebookId() {
         return facebookId;
     }
 
     /**
-     * <p>Getter for the field <code>firstName</code>.</p>
+     * Returns the user's first name from Facebook profile.
      *
-     * @return a {@link java.lang.String} object.
+     * @return first name, or null if not provided
      */
     public String getFirstName() {
         return firstName;
     }
 
     /**
-     * <p>Setter for the field <code>firstName</code>.</p>
+     * Sets the user's first name from Facebook profile.
      *
-     * @param firstName a {@link java.lang.String} object.
+     * @param firstName user's first name
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
     /**
-     * <p>Getter for the field <code>lastName</code>.</p>
+     * Returns the user's last name from Facebook profile.
      *
-     * @return a {@link java.lang.String} object.
+     * @return last name, or null if not provided
      */
     public String getLastName() {
         return lastName;
     }
 
     /**
-     * <p>Setter for the field <code>lastName</code>.</p>
+     * Sets the user's last name from Facebook profile.
      *
-     * @param lastName a {@link java.lang.String} object.
+     * @param lastName user's last name
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * Returns the user's full display name from Facebook profile.
      *
-     * @return a {@link java.lang.String} object.
+     * @return full display name, or null if not provided
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * Sets the user's full display name from Facebook profile.
      *
-     * @param name a {@link java.lang.String} object.
+     * @param name user's full display name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * <p>Getter for the field <code>email</code>.</p>
+     * Returns the user's email address from Facebook profile.
+     * <p>
+     * This value is only available if the OAuth flow includes the 'email' permission scope.
+     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return email address, or null if not provided or email scope not granted
      */
     public String getEmail() {
         return email;
     }
 
     /**
-     * <p>Setter for the field <code>email</code>.</p>
+     * Sets the user's email address from Facebook profile.
      *
-     * @param email a {@link java.lang.String} object.
+     * @param email user's email address
      */
     public void setEmail(String email) {
         this.email = email;
     }
 
     /**
-     * <p>Getter for the field <code>coverPicture</code>.</p>
+     * Returns the URL to the user's Facebook cover photo.
      *
-     * @return a {@link java.lang.String} object.
+     * @return cover photo URL, or null if not available
      */
     public String getCoverPicture() {
         return coverPicture;
     }
 
     /**
-     * <p>Setter for the field <code>coverPicture</code>.</p>
+     * Sets the URL to the user's Facebook cover photo.
      *
-     * @param coverPicture a {@link java.lang.String} object.
+     * @param coverPicture cover photo URL
      */
     public void setCoverPicture(String coverPicture) {
         this.coverPicture = coverPicture;
     }
 
     /**
-     * <p>Getter for the field <code>picture</code>.</p>
+     * Returns the URL to the user's Facebook profile picture.
      *
-     * @return a {@link java.lang.String} object.
+     * @return profile picture URL, or null if not available
      */
     public String getPicture() {
         return picture;
     }
 
     /**
-     * <p>Setter for the field <code>picture</code>.</p>
+     * Sets the URL to the user's Facebook profile picture.
      *
-     * @param picture a {@link java.lang.String} object.
+     * @param picture profile picture URL
      */
     public void setPicture(String picture) {
         this.picture = picture;
     }
 
     /**
-     * <p>Getter for the field <code>ageRangeMin</code>.</p>
+     * Returns the minimum age range value from Facebook.
+     * <p>
+     * Example: "21" indicates the user is in the 21+ age range.
+     * </p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return minimum age range value, or null if not provided
      */
     public String getAgeRangeMin() {
         return ageRangeMin;
     }
 
     /**
-     * <p>Setter for the field <code>ageRangeMin</code>.</p>
+     * Sets the minimum age range value from Facebook.
      *
-     * @param ageRangeMin a {@link java.lang.String} object.
+     * @param ageRangeMin minimum age range value (e.g., "21")
      */
     public void setAgeRangeMin(String ageRangeMin) {
         this.ageRangeMin = ageRangeMin;
     }
 
     /**
-     * {@inheritDoc}
+     * Returns a formatted string representation for audit trail purposes.
+     * <p>
+     * Generates a human-readable identification string containing the user's name and email,
+     * suitable for audit logging and tracking.
+     * </p>
+     *
+     * @return formatted string with name and email (e.g., "John Doe john@example.com")
      */
     @Override
     public String toAuditString() {
@@ -235,25 +332,38 @@ public class FacebookUser extends LoggedUser {
     }
 
     /**
-     * <p>Getter for the field <code>user</code>.</p>
+     * Returns the associated User entity.
+     * <p>
+     * This represents the one-to-one relationship between FacebookUser and User,
+     * with a shared primary key enforced via {@code @MapsId}.
+     * </p>
      *
-     * @return a {@link com.openkoda.model.User} object.
+     * @return associated User entity
      */
     public User getUser() {
         return user;
     }
 
     /**
-     * <p>Setter for the field <code>user</code>.</p>
+     * Sets the associated User entity.
+     * <p>
+     * This must be called to establish the relationship before persisting a new FacebookUser.
+     * </p>
      *
-     * @param user a {@link com.openkoda.model.User} object.
+     * @param user the User entity to associate with this FacebookUser
      */
     public void setUser(User user) {
         this.user = user;
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the primary key shared with the User entity.
+     * <p>
+     * This value is identical to the associated User's id due to the {@code @MapsId}
+     * shared primary key pattern.
+     * </p>
+     *
+     * @return shared primary key value
      */
     @Override
     public Long getId() {
@@ -261,9 +371,12 @@ public class FacebookUser extends LoggedUser {
     }
 
     /**
-     * <p>Setter for the field <code>id</code>.</p>
+     * Sets the primary key value.
+     * <p>
+     * Typically managed automatically by JPA when the User relationship is established.
+     * </p>
      *
-     * @param id a {@link java.lang.Long} object.
+     * @param id primary key value (must match associated User's id)
      */
     public void setId(Long id) {
         this.id = id;
