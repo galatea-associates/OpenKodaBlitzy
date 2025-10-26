@@ -19,4 +19,46 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ * Integration configuration models for third-party service integrations.
+ * <p>
+ * This package provides configuration management at two levels: global settings from
+ * application.properties and per-organization settings from database storage. These models
+ * enable both system-wide and tenant-specific integration credentials and settings.
+ * </p>
+ *
+ * <h2>Key Classes</h2>
+ * <ul>
+ *   <li><b>IntegrationModuleGlobalConfiguration</b> - Spring-managed configuration bean that
+ *       loads global integration settings from application.properties. This provides default
+ *       values and system-wide credentials for integrations like OAuth providers, API keys,
+ *       and service endpoints.</li>
+ *   <li><b>IntegrationModuleOrganizationConfiguration</b> - JPA entity that stores
+ *       tenant-scoped integration credentials in the database. Each organization can maintain
+ *       its own API keys, OAuth client IDs, and custom integration parameters, enabling
+ *       multi-tenancy support for third-party services.</li>
+ * </ul>
+ *
+ * <h2>Usage Context</h2>
+ * <p>
+ * These configuration models are used throughout the integration subsystem to manage
+ * credentials and settings for:
+ * </p>
+ * <ul>
+ *   <li>OAuth authentication flows with providers like GitHub, Google, and Microsoft</li>
+ *   <li>Third-party service integrations including Trello, Jira, and Basecamp</li>
+ *   <li>REST API consumers requiring authentication tokens or API keys</li>
+ *   <li>Per-organization customization of integration behavior and credentials</li>
+ * </ul>
+ * <p>
+ * Global configurations provide fallback defaults, while organization-specific configurations
+ * override these values when tenant-scoped credentials are required. This two-tier approach
+ * supports both single-tenant and multi-tenant deployment scenarios.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.integration
+ */
 package com.openkoda.integration.model.configuration;
