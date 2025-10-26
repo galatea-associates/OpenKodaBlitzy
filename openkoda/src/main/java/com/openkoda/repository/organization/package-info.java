@@ -19,4 +19,71 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ * Repositories for managing Organization entities in OpenKoda's multi-tenant architecture.
+ * <p>
+ * This package provides both secure and unsecured repository interfaces for tenant management,
+ * organization hierarchy operations, and properties bag persistence. The repositories enforce
+ * tenant boundaries through security-aware JPQL queries and privilege validation.
+ * </p>
+ *
+ * <h2>Key Concepts</h2>
+ *
+ * <h3>Tenant Isolation</h3>
+ * <p>
+ * Repositories enforce tenant boundaries using security JPQL fragments that filter queries
+ * based on user privileges and organization context. This ensures data isolation between
+ * different tenants while allowing authorized cross-tenant operations where needed.
+ * </p>
+ *
+ * <h3>Organization Hierarchy</h3>
+ * <p>
+ * Supports parent-child organization relationships for modeling enterprise structures.
+ * Hierarchical queries enable operations across organization trees while maintaining
+ * proper access control at each level.
+ * </p>
+ *
+ * <h3>Properties Bag Pattern</h3>
+ * <p>
+ * Organizations use a JSONB properties column for flexible configuration storage. This
+ * allows dynamic attributes without schema changes, supporting customization per tenant.
+ * Repositories persist and retrieve these properties as Map structures.
+ * </p>
+ *
+ * <h3>Security Enforcement</h3>
+ * <p>
+ * The package distinguishes between secure and unsecured operations. Secure repositories
+ * apply privilege checks before data access, while unsecured variants support internal
+ * system operations that bypass normal authorization rules.
+ * </p>
+ *
+ * <h2>Key Classes</h2>
+ * <ul>
+ *   <li><b>OrganizationRepository</b> - Primary Spring Data JPA repository with security-aware
+ *       queries for finding organizations by name, ID, or active status. Provides custom
+ *       JPQL methods for hierarchical queries and bulk operations.</li>
+ *   <li><b>SecureOrganizationRepository</b> - Secure marker interface implementing
+ *       SearchableRepositoryMetadata for privilege-checked access. Used by application
+ *       controllers and services requiring authorization enforcement.</li>
+ * </ul>
+ *
+ * <h2>Integration Points</h2>
+ * <ul>
+ *   <li><b>OrganizationService</b> - Business logic layer using these repositories for tenant
+ *       provisioning, organization lifecycle management, and schema operations.</li>
+ *   <li><b>TenantResolver</b> - Uses organization data to resolve multi-tenancy context from
+ *       request parameters, establishing the active organization for the current session.</li>
+ *   <li><b>SearchableRepositoryMetadata</b> - Integrates with the indexing subsystem to enable
+ *       full-text search across organization names and properties.</li>
+ * </ul>
+ *
+ * <h2>Usage Example</h2>
+ * <pre><code>
+ * Organization org = organizationRepository.findByName("TenantName");
+ * List&lt;Long&gt; activeIds = organizationRepository.findActiveOrganizationIdsAsList();
+ * </code></pre>
+ *
+ * @author OpenKoda Team
+ * @since 1.7.1
+ */
 package com.openkoda.repository.organization;
