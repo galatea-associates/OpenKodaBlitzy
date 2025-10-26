@@ -27,6 +27,57 @@ import com.openkoda.repository.SecureRepository;
 
 import static com.openkoda.controller.common.URLConstants.NOTIFICATION;
 
+/**
+ * Secure marker interface enforcing privilege checks on Notification entity access operations.
+ * <p>
+ * This interface extends {@link SecureRepository} to wrap notification repository operations
+ * with automatic privilege enforcement, ensuring that all database queries respect the current
+ * user's role-based access control (RBAC) permissions. The security layer intercepts repository
+ * methods to filter results based on organization membership and privilege grants.
+ * </p>
+ * <p>
+ * The interface is annotated with {@link SearchableRepositoryMetadata} to enable full-text search
+ * across notification content. The {@code searchIndexFormula} concatenates message, type, reference
+ * information, organization ID, and user ID into a lowercased searchable string for efficient
+ * text-based queries.
+ * </p>
+ * <p>
+ * Search formula components:
+ * </p>
+ * <ul>
+ *   <li><b>message</b>: Notification message content</li>
+ *   <li><b>type</b>: Notification type identifier</li>
+ *   <li><b>reference</b>: Generated via {@link Notification#REFERENCE_FORMULA} for consistent reference string creation</li>
+ *   <li><b>orgid:</b> prefix: Organization ID for filtered searches by tenant (e.g., "orgid:123")</li>
+ *   <li><b>userid:</b> prefix: User ID for filtered searches by recipient (e.g., "userid:456")</li>
+ * </ul>
+ * <p>
+ * The search index formula is used by indexing tooling and search subsystems that read the
+ * {@code @SearchableRepositoryMetadata} annotation to build full-text search capabilities.
+ * Modifying the {@code searchIndexFormula} affects indexing and search behavior across the
+ * application, requiring reindexing of existing notification data.
+ * </p>
+ * <p>
+ * Example usage:
+ * </p>
+ * <pre>
+ * SecureNotificationRepository repo = ...;
+ * Optional&lt;Notification&gt; notification = repo.findOne(notificationId);
+ * </pre>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see SecureRepository
+ * @see Notification
+ * @see SearchableRepositoryMetadata
+ * @see com.openkoda.repository.NotificationRepository
+ */
+// entityKey: URL constant (NOTIFICATION) identifying notification entity type in routing
+// entityClass: Notification.class for type-safe repository operations and metadata resolution
+// searchIndexFormula: SQL formula for full-text search index generation, concatenates notification
+//                     fields (message, type, reference, organization_id, user_id) with lowercased
+//                     text and prefixed identifiers for efficient filtered searching
 @SearchableRepositoryMetadata(
         entityKey = NOTIFICATION,
         entityClass = Notification.class,
