@@ -24,14 +24,67 @@ package com.openkoda.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Simple Data Transfer Object (DTO) that carries global organization role names.
+ * <p>
+ * This DTO is used for role assignment and authorization workflows where role
+ * information needs to be transferred between application layers. It provides
+ * a mutable container for a list of role name strings.
+ * </p>
+ * <p>
+ * Note: This class follows a mutable design pattern with direct list access.
+ * The getter returns a live list (not a defensive copy), allowing callers to
+ * modify the list directly. This design prioritizes simplicity and performance
+ * over immutability for internal data transfer scenarios.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * GlobalOrgRoleDto dto = new GlobalOrgRoleDto();
+ * dto.getGlobalOrganizationRoles().add("ROLE_ADMIN");
+ * dto.getGlobalOrganizationRoles().add("ROLE_USER");
+ * }</pre>
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ */
 public class GlobalOrgRoleDto {
 
+    /**
+     * List storing global organization role names as strings.
+     * <p>
+     * Initialized to an empty ArrayList to prevent null pointer exceptions.
+     * This is a mutable collection that callers can modify directly through
+     * the getter method.
+     * </p>
+     */
     public List<String> globalOrganizationRoles = new ArrayList<>();
 
+    /**
+     * Returns the list of global organization role names.
+     * <p>
+     * Note: This method returns the live list (not a defensive copy).
+     * Modifications to the returned list will directly affect the state
+     * of this DTO.
+     * </p>
+     *
+     * @return the list of global organization role names; never null
+     */
     public List<String> getGlobalOrganizationRoles() {
         return globalOrganizationRoles;
     }
 
+    /**
+     * Sets the list of global organization role names.
+     * <p>
+     * Replaces the current list with the provided list. While the field
+     * is initialized to a non-null value, this method accepts null values.
+     * </p>
+     *
+     * @param globalOrganizationRoles the list of role names to set; may be null
+     */
     public void setGlobalOrganizationRoles(List<String> globalOrganizationRoles) {
         this.globalOrganizationRoles = globalOrganizationRoles;
     }
