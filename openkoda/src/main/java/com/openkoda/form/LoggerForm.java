@@ -29,18 +29,78 @@ import org.springframework.validation.BindingResult;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Form for binding logger configuration data from HTTP requests.
+ * <p>
+ * This request-scoped form manages debug logging configuration by binding to {@link LoggerDto}.
+ * When constructed with the parameterized constructor, it pre-seeds the buffer size field
+ * (converting maxEntries to String) and extracts class names from the provided debug logger classes.
+ * The {@link #validate(BindingResult)} method ensures the buffer size field is present and
+ * contains valid numeric content, rejecting invalid values with standard validation error codes.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * LoggerForm form = new LoggerForm(debugClasses, 100);
+ * form.validate(bindingResult);
+ * }</pre>
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see AbstractForm
+ * @see LoggerDto
+ * @see FrontendMappingDefinitions#loggerForm
+ */
 public class LoggerForm extends AbstractForm<LoggerDto> {
 
+    /**
+     * Initializes a new logger form with an empty DTO and default frontend mapping.
+     * <p>
+     * Creates a new instance with a fresh {@link LoggerDto} and binds it to
+     * {@link FrontendMappingDefinitions#loggerForm} for request binding.
+     * </p>
+     */
     public LoggerForm() {
         super(new LoggerDto(), FrontendMappingDefinitions.loggerForm);
     }
 
+    /**
+     * Initializes a logger form pre-seeded with debug logger configuration.
+     * <p>
+     * Creates a new instance with a fresh {@link LoggerDto} and binds it to
+     * {@link FrontendMappingDefinitions#loggerForm}. The DTO is pre-populated with
+     * the maximum buffer size (converted to String) and a set of fully-qualified class names
+     * extracted from the provided debug logger classes.
+     * </p>
+     *
+     * @param debugLoggers Set of Class instances for which debug logging should be enabled
+     * @param maxEntries Maximum buffer size for log entries (converted to String for bufferSizeField)
+     */
     public LoggerForm(Set<Class> debugLoggers, int maxEntries) {
         super(new LoggerDto(), FrontendMappingDefinitions.loggerForm);
         dto.bufferSizeField = String.valueOf(maxEntries);
         dto.loggingClasses = debugLoggers.stream().map(Class::getName).collect(Collectors.toSet());
     }
 
+    /**
+     * Validates form data using custom logic for buffer size field.
+     * <p>
+     * Performs two validation checks on the buffer size field:
+     * </p>
+     * <ol>
+     *   <li>Presence check: Rejects with error code 'not.empty' if the field is blank</li>
+     *   <li>Numeric check: Rejects with error code 'is.number' if the field contains
+     *       non-numeric characters (validated using regex pattern {@code \d+})</li>
+     * </ol>
+     * <p>
+     * Returns this form instance to support fluent method chaining in controller workflows.
+     * </p>
+     *
+     * @param br BindingResult for collecting validation errors
+     * @return This form instance for fluent chaining
+     */
     @Override
     public LoggerForm validate(BindingResult br) {
         if (StringUtils.isBlank(dto.bufferSizeField)) {
