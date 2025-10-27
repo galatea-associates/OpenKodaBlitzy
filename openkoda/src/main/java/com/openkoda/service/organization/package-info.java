@@ -19,4 +19,57 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ * Provides multi-tenant organization provisioning and lifecycle management services.
+ * <p>
+ * This package contains services responsible for creating, managing, and deleting tenant organizations
+ * within OpenKoda's multi-tenancy architecture. Organizations serve as the root entity in the tenant
+ * hierarchy, with all tenant-scoped data linked via organization_id foreign keys.
+ * </p>
+ *
+ * <h2>Key Services</h2>
+ * <ul>
+ *   <li>{@code OrganizationService} - Core service for organization CRUD operations, tenant provisioning,
+ *       and cascade deletion of organization-scoped resources</li>
+ *   <li>{@code OrganizationCreationStrategy} - Enumeration defining organization creation strategies
+ *       (with or without initial data setup)</li>
+ * </ul>
+ *
+ * <h2>Multi-Tenancy Architecture</h2>
+ * <p>
+ * Organizations form the foundation of OpenKoda's multi-tenancy isolation:
+ * </p>
+ * <ul>
+ *   <li><b>Tenant Hierarchy Root</b>: Organization entity serves as the top-level tenant container,
+ *       with all tenant-specific entities linked via organization_id foreign key relationships</li>
+ *   <li><b>FK Pattern</b>: Tenant-scoped entities use organization_id columns to enforce data isolation
+ *       at the database level</li>
+ *   <li><b>Secure Repository Enforcement</b>: All repository queries automatically filter by current
+ *       organization context through SecureRepository wrappers</li>
+ *   <li><b>Dynamic Entities</b>: Runtime-generated entities are automatically provisioned as
+ *       tenant-aware with organization_id columns</li>
+ *   <li><b>Tenant Resolution</b>: MultitenancyService resolves the current organization context
+ *       from request attributes or authentication tokens</li>
+ * </ul>
+ *
+ * <h2>Organization Lifecycle</h2>
+ * <p>
+ * Organization provisioning involves schema setup, initial role creation, privilege assignment,
+ * and optional seed data population. Organization deletion cascades to all dependent tenant resources
+ * including users, roles, dynamic entities, and file storage.
+ * </p>
+ *
+ * <h2>Usage Example</h2>
+ * <pre>{@code
+ * OrganizationService orgService = ...;
+ * Organization tenant = orgService.createOrganization("TenantCo");
+ * }</pre>
+ *
+ * @see com.openkoda.model.Organization
+ * @see com.openkoda.core.multitenancy.MultitenancyService
+ * @see com.openkoda.core.multitenancy
+ * @since 1.7.1
+ * @version 1.7.1
+ * @author OpenKoda Team
+ */
 package com.openkoda.service.organization;

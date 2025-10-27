@@ -26,13 +26,40 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
- * Spring postprocessor to register custom Spring scope
+ * Spring BeanFactoryPostProcessor for registering custom Hazelcast-aware session scope.
+ * <p>
+ * Implements postProcessBeanFactory() to programmatically register OAuthClientContextHazelcastSessionScope
+ * with scope name SESSION_HAZELCAST_AWARE. This processor enables the application to define session-scoped
+ * beans that leverage Hazelcast for distributed session replication in clustered environments.
+ * </p>
+ * <p>
+ * Note: Registration line is currently commented out, making processor inert. If enabled, must run before
+ * beans referencing custom scope are instantiated. Spring invokes BeanFactoryPostProcessor implementations
+ * early in the container lifecycle (after bean definitions loaded, before bean instantiation).
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see BeanFactoryPostProcessor
+ * @see com.openkoda.core.security.oauth.OAuthClientContextHazelcastSessionScope
  */
 public class HazelcastBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
     public HazelcastBeanFactoryPostProcessor() {
     }
 
+    /**
+     * Intended to register custom scope but currently disabled via commented code.
+     * <p>
+     * Would call factory.registerScope() to add Hazelcast-aware session scope, enabling Spring beans
+     * to use the custom scope annotation. When enabled, registers OAuthClientContextHazelcastSessionScope
+     * instance with scope name SESSION_HAZELCAST_AWARE for distributed session management.
+     * </p>
+     *
+     * @param factory the ConfigurableListableBeanFactory for scope registration
+     * @throws BeansException if scope registration fails (when enabled)
+     */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory factory) throws BeansException {
 //        factory.registerScope(OAuthClientContextHazelcastSessionScope.SESSION_HAZELCAST_AWARE, new OAuthClientContextHazelcastSessionScope());

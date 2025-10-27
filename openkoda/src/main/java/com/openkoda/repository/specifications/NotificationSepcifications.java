@@ -28,11 +28,51 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Set;
 
+/**
+ * JPA Criteria API Specification builders for Notification entity queries with read-status filtering.
+ * <p>
+ * Provides static factory methods that return {@link Specification} instances for constructing type-safe
+ * notification queries using the JPA Criteria API. Specifications implement complex visibility logic
+ * including user-specific, organization-specific, and global notification filtering, combined with
+ * read/unread status tracking via subqueries. Uses {@link Subquery} to filter out notifications that
+ * appear in the ReadNotification join table. These specifications are composable via {@code and()}/{@code or()}
+ * operators for building complex notification retrieval queries.
+ * </p>
+ * <p>
+ * Note: The filename contains a typo ('Sepcifications' instead of 'Specifications'). Uses string-based
+ * attribute names which are fragile to entity refactoring.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.model.notification.Notification
+ * @see com.openkoda.model.notification.ReadNotification
+ * @see jakarta.persistence.criteria.Subquery
+ * @see org.springframework.data.jpa.domain.Specification
+ */
 public class NotificationSepcifications {
 
     /**
-     * <p>findAllUnreadNotificationsSpecification</p>
-     * Generates query for getting all Unread Notifications
+     * Creates a Specification that retrieves all unread notifications visible to the specified user.
+     * <p>
+     * Constructs a complex predicate that: (1) filters notifications based on visibility rules
+     * (user-specific, organization-specific, or global), (2) excludes notifications hidden from
+     * their author, and (3) uses a {@code NOT IN} subquery to filter out notifications present
+     * in the ReadNotification table. The visibility logic considers three notification types:
+     * notifications targeted to the specific user (userId matches, organizationId null),
+     * notifications scoped to user's organizations (userId null, organizationId in set), and
+     * global notifications (both userId and organizationId null).
+     * </p>
+     * <p>
+     * Usage example: {@code allUnreadForUser(userId, orgIds).and(additionalFilters)}
+     * </p>
+     *
+     * @param id the user ID to retrieve unread notifications for. Must not be null
+     * @param organizationIds set of organization IDs the user belongs to. If empty, only user-specific
+     *                        and global notifications are included. Must not be null
+     * @return Specification for Notification filtering that returns only unread notifications visible
+     *         to the specified user
      */
     public static Specification<Notification> allUnreadForUser(Long id, Set<Long> organizationIds) {
         return new Specification<Notification>() {
@@ -53,7 +93,23 @@ public class NotificationSepcifications {
     }
 
     /**
-     * Generates query for all 3 cases described above
+     * Helper method that constructs the visibility predicate for user-accessible notifications.
+     * <p>
+     * Builds a composite predicate that implements the notification visibility model:
+     * (1) Excludes notifications where hiddenFromAuthor is true AND the user is the creator,
+     * (2) Includes user-specific notifications (userId equals parameter, organizationId null),
+     * (3) Includes global notifications (both userId and organizationId null),
+     * (4) Optionally includes organization-scoped notifications (userId null, organizationId in
+     * provided set) when organizationIds is non-empty. All predicates are combined with OR logic
+     * for inclusion, wrapped with the hiddenFromAuthor exclusion using AND.
+     * </p>
+     *
+     * @param root the Criteria API Root for Notification entity
+     * @param cb the CriteriaBuilder for constructing predicates
+     * @param id the user ID to filter notifications for
+     * @param organizationIds set of organization IDs for organization-scoped notifications.
+     *                        Empty set excludes organization notifications
+     * @return composite Predicate representing the visibility rules for user-accessible notifications
      */
     static Predicate getAllUserNotificationsPredicate(Root<Notification> root, CriteriaBuilder cb, Long id, Set<Long> organizationIds) {
 

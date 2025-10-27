@@ -19,4 +19,109 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ * Email sending infrastructure for OpenKoda with template processing and multiple delivery implementations.
+ * <p>
+ * This package provides a comprehensive email subsystem that supports Thymeleaf template-based email composition,
+ * multiple sender implementations (SMTP, Mailgun, and development stub), per-organization SMTP configuration,
+ * asynchronous delivery via background jobs, and file attachment support.
+ * </p>
+ *
+ * <h2>Package Structure</h2>
+ *
+ * <h3>Core Components</h3>
+ * <ul>
+ * <li>{@link com.openkoda.core.service.email.EmailService} - High-level orchestration API for sending emails</li>
+ * <li>{@link com.openkoda.core.service.email.EmailConstructor} - Thymeleaf template rendering and Email entity assembly</li>
+ * <li>{@link com.openkoda.core.service.email.EmailSender} - Abstract base class for sender implementations with lifecycle management</li>
+ * </ul>
+ *
+ * <h3>Sender Implementations</h3>
+ * <ul>
+ * <li>{@link com.openkoda.core.service.email.SmtpEmailSender} - Production SMTP implementation using Spring's JavaMailSender</li>
+ * <li>{@link com.openkoda.core.service.email.MailgunEmailSender} - Mailgun HTTP API implementation via RestTemplate</li>
+ * <li>{@link com.openkoda.core.service.email.FakeSysoutEmailSender} - Development/testing stub that logs to console</li>
+ * </ul>
+ *
+ * <h3>Supporting Components</h3>
+ * <ul>
+ * <li>{@link com.openkoda.core.service.email.EmailConfigJavaMailSender} - JavaMailSender wrapper with database-backed SMTP configuration</li>
+ * <li>{@link com.openkoda.core.service.email.EmailAttachment} - Attachment data provider interface</li>
+ * <li>{@link com.openkoda.core.service.email.StandardEmailTemplates} - Canonical Thymeleaf template name constants</li>
+ * </ul>
+ *
+ * <h2>Email Workflow</h2>
+ *
+ * <p>The typical email sending flow:</p>
+ * <ol>
+ * <li>Application calls {@code EmailService.sendAndSaveEmail()}</li>
+ * <li>{@code EmailConstructor.prepareEmailWithTitleFromTemplate()} renders Thymeleaf template</li>
+ * <li>Email entity is persisted to database</li>
+ * <li>{@code EmailSenderJob} background job polls database for unsent emails</li>
+ * <li>{@code EmailSender.sendMail()} delegates to appropriate sender implementation</li>
+ * <li>SMTP/Mailgun/Fake sender delivers email based on active Spring profile</li>
+ * </ol>
+ *
+ * <h2>Configuration</h2>
+ *
+ * <h3>Spring Profile-Based Sender Selection</h3>
+ * <ul>
+ * <li>{@code @Profile("local")} activates {@code FakeSysoutEmailSender} (prevents real delivery)</li>
+ * <li>{@code @Profile("mailgun")} activates {@code MailgunEmailSender}</li>
+ * <li>{@code @Profile("smtp")} or default activates {@code SmtpEmailSender}</li>
+ * </ul>
+ *
+ * <h3>Per-Organization SMTP Settings</h3>
+ * <p>
+ * {@code EmailConfig} entities store organization-specific SMTP configuration including host, port,
+ * credentials, and SSL/TLS settings. These override application.properties defaults at send time.
+ * </p>
+ *
+ * <h3>Application Properties</h3>
+ * <ul>
+ * <li>{@code mail.from} - Default sender address</li>
+ * <li>{@code mail.replyTo} - Default reply-to address</li>
+ * <li>{@code mailgun.apikey} - Mailgun API key</li>
+ * <li>{@code mailgun.apiurl} - Mailgun API endpoint URL</li>
+ * <li>{@code base.url} - Application base URL for links in emails</li>
+ * </ul>
+ *
+ * <h2>Integration</h2>
+ *
+ * <h3>Thymeleaf Template Processing</h3>
+ * <p>
+ * Email templates are processed by Thymeleaf {@code TemplateEngine} with model variables provided by the caller.
+ * Templates are located in {@code frontend-resource/global/email/} directory and referenced using
+ * {@code StandardEmailTemplates} constants.
+ * </p>
+ *
+ * <h3>File Attachments</h3>
+ * <p>
+ * {@code EmailAttachment} implementations provide {@code byte[]} content for MIME attachments. File entities
+ * from the {@code com.openkoda.model.file.File} domain are mapped to {@code Email.filesId} for attachment references.
+ * Attachment URLs are materialized via {@code EmailSender.prepareTempAttachmentFile()} which downloads content
+ * and creates temporary files for MIME composition.
+ * </p>
+ *
+ * <h2>Usage Example</h2>
+ *
+ * <pre>{@code
+ * emailService.sendAndSaveEmail(user, StandardEmailTemplates.WELCOME);
+ * }</pre>
+ *
+ * <h2>Operational Notes</h2>
+ *
+ * <ul>
+ * <li><b>Async Delivery:</b> Email sending is decoupled from request handling via database-backed queue,
+ * allowing transaction boundaries and retry logic</li>
+ * <li><b>Database-Backed Queue:</b> Emails are persisted before sending, enabling tracking, retry, and audit trail</li>
+ * <li><b>Profile Conflicts:</b> {@code @Primary} annotations resolve sender conflicts when multiple profiles are active</li>
+ * <li><b>Development Safety:</b> {@code FakeSysoutEmailSender} prevents accidental email delivery in local profile</li>
+ * <li><b>Memory Considerations:</b> {@code EmailAttachment.getData()} returns full {@code byte[]} in memory,
+ * which may impact performance for large attachments</li>
+ * </ul>
+ *
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 package com.openkoda.core.service.email;

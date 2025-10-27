@@ -21,6 +21,39 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.openkoda.core.flow;
 
+/**
+ * Functional interface for lambda-friendly mapping from {@link ResultAndModel} to result type.
+ * <p>
+ * This interface is used in Flow pipelines to transform intermediate results and model state
+ * into new results. It enables concise lambda expressions that extract or compute values from
+ * the combined result and model context.
+ * </p>
+ * <p>
+ * Example usage in Flow pipeline:
+ * <pre>{@code
+ * ResultAndModelFunction<User, Organization> mapper = 
+ *     (resultAndModel) -> resultAndModel.result;
+ * }</pre>
+ * </p>
+ * 
+ * @param <R> the result type returned by this function
+ * @param <I> the input result type from ResultAndModel
+ * @see ResultAndModel
+ * @see PageModelFunction
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 public interface ResultAndModelFunction<R, I> {
-	 R getResult(ResultAndModel<I, ?> model);
+	
+	/**
+	 * Gets the result value by transforming the provided ResultAndModel.
+	 * <p>
+	 * This method extracts or computes a value of type R from the ResultAndModel
+	 * carrier, which bundles the intermediate result, model data, services, and parameters.
+	 * </p>
+	 * 
+	 * @param model the ResultAndModel containing result, PageModelMap, services and parameters
+	 * @return the computed or extracted result of type R
+	 */
+	R getResult(ResultAndModel<I, ?> model);
 }

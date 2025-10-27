@@ -35,38 +35,165 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 /**
- * Authentication provider that supports Login And password (delegated to superclass)
- * and Request Token Authentication
+ * Primary secure authentication provider handling both form-based password authentication and token-based authentication.
+ * <p>
+ * This provider extends Spring Security's {@link DaoAuthenticationProvider} to inherit BCrypt password verification,
+ * UserDetailsService integration, and account status checks. It supports dual authentication mechanisms:
+ * password login via {@link UsernamePasswordAuthenticationToken} and token-based authentication via 
+ * {@link RequestTokenAuthenticationToken}.
+ * </p>
+ * <p>
+ * Password authentication delegates to superclass {@code additionalAuthenticationChecks()} for BCrypt verification
+ * against the user's stored password. Token authentication applies privilege narrowing and sets single-request flags
+ * based on token metadata.
+ * </p>
+ * <p>
+ * The privilege narrowing mechanism allows API tokens to restrict (but not extend) a user's full privileges.
+ * When a token specifies limited privileges via {@code Token.privileges}, the {@link OrganizationUser#retainPrivileges(Set)}
+ * method removes any privileges not in the token's allowed set, ensuring token-based authentication operates with 
+ * minimal required permissions.
+ * </p>
+ * <p>
+ * Registered as {@code @Service("loginByPasswordOrTokenAuthenticationProvider")}, this provider integrates with 
+ * Spring Security's AuthenticationManager provider chain to handle authentication requests.
+ * </p>
+ * <p>
+ * Usage examples:
+ * </p>
+ * <pre>
+ * // Form login: LoginAndPasswordAuthenticationFilter creates token
+ * UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+ * // This provider validates password via superclass
+ * 
+ * // API token: AbstractTokenAuthenticationFilter creates token
+ * RequestTokenAuthenticationToken tokenAuth = new RequestTokenAuthenticationToken(token);
+ * // This provider applies privilege narrowing
+ * </pre>
+ *
+ * @see RequestTokenAuthenticationToken
+ * @see OrganizationUser#retainPrivileges(Set)
+ * @see DaoAuthenticationProvider
+ * @see AbstractTokenAuthenticationFilter
+ * @since 1.7.1
+ * @author OpenKoda Team
  */
 @Service("loginByPasswordOrTokenAuthenticationProvider")
 public class LoginByPasswordOrTokenAuthenticationProvider extends DaoAuthenticationProvider
         implements URLConstants, HasSecurityRules, LoggingComponentWithRequestId {
 
-    /** {@inheritDoc} */
+    /**
+     * Configures the UserDetailsService for loading user details during authentication.
+     * <p>
+     * This setter injection method receives an {@link OrganizationUserDetailsService} instance that loads
+     * {@code User} entities and builds {@link OrganizationUser} principals. The service is delegated to
+     * the superclass to enable {@link DaoAuthenticationProvider}'s password verification mechanism.
+     * </p>
+     * <p>
+     * Spring calls this setter during bean wiring to connect the authentication provider to the user loading
+     * service, establishing the link between authentication requests and user data retrieval.
+     * </p>
+     *
+     * @param userDetailsService the {@link OrganizationUserDetailsService} instance for loading user details
+     */
     @Inject
     @Override
     public void setUserDetailsService(UserDetailsService userDetailsService) {
         super.setUserDetailsService(userDetailsService);
     }
 
+    /**
+     * Repository for querying Token entity metadata.
+     * <p>
+     * Note: This field is injected but not currently used in this class. It may be a legacy field
+     * from previous implementations.
+     * </p>
+     */
     @Inject
     private TokenRepository tokenRepository;
 
+    /**
+     * Declares support for both password and token authentication types.
+     * <p>
+     * This provider supports {@link UsernamePasswordAuthenticationToken} for password-based login
+     * (inherited from superclass) and {@link RequestTokenAuthenticationToken} for token-based
+     * authentication. Spring Security calls this method to route Authentication instances to the
+     * appropriate provider.
+     * </p>
+     * <p>
+     * Dual support enables a single provider to handle both password and token authentication flows,
+     * simplifying the authentication configuration.
+     * </p>
+     *
+     * @param authentication the Class type of Authentication being checked
+     * @return {@code true} if authentication is {@link UsernamePasswordAuthenticationToken} or 
+     *         {@link RequestTokenAuthenticationToken} subclass, {@code false} otherwise
+     */
     @Override
     public boolean supports(Class<?> authentication) {
         return (super.supports(authentication) || RequestTokenAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
+    /**
+     * Creates a new authentication provider instance.
+     * <p>
+     * The constructor retrieves {@code preAuthenticationChecks} from the superclass, which performs
+     * account status validation (enabled, non-expired, non-locked) before authentication. Currently,
+     * the checks are retrieved but not modified, which may indicate legacy code.
+     * </p>
+     */
     public LoginByPasswordOrTokenAuthenticationProvider() {
         UserDetailsChecker checks = getPreAuthenticationChecks();
     }
 
+    /**
+     * Creates an authenticated token after successful authentication.
+     * <p>
+     * Delegates to the superclass to create an authenticated {@link UsernamePasswordAuthenticationToken}
+     * with the user's principal and authorities. No custom logic is needed as the superclass handles
+     * standard authentication token creation.
+     * </p>
+     *
+     * @param principal typically an {@link OrganizationUser} from UserDetailsService
+     * @param authentication the original unauthenticated Authentication request
+     * @param user the UserDetails loaded from {@link OrganizationUserDetailsService}
+     * @return authenticated {@link UsernamePasswordAuthenticationToken} with OrganizationUser principal and authorities
+     */
     @Override
     protected Authentication createSuccessAuthentication(Object principal, Authentication authentication, UserDetails user) {
         return super.createSuccessAuthentication(principal, authentication, user);
     }
 
 
+    /**
+     * Performs authentication-type-specific validation.
+     * <p>
+     * This method handles three authentication types:
+     * </p>
+     * <ol>
+     * <li><b>PreauthenticatedReloadUserToken</b>: Logs warning "not supported" and skips checks.
+     *     The reload flow is handled elsewhere in the system.</li>
+     * <li><b>RequestTokenAuthenticationToken</b>: Applies privilege narrowing and configures token-specific settings:
+     *     <ul>
+     *       <li>If the token has privileges, calls {@link OrganizationUser#retainPrivileges(Set)} to remove
+     *           any privileges not in the token's allowed set</li>
+     *       <li>Sets single-request auth flag if the token is one-time-use, triggering invalidation after use</li>
+     *       <li>Sets authentication method to TOKEN for audit logging</li>
+     *     </ul>
+     * </li>
+     * <li><b>UsernamePasswordAuthenticationToken</b>: Delegates to superclass for BCrypt password verification
+     *     against {@code UserDetails.password}</li>
+     * </ol>
+     * <p>
+     * The privilege narrowing mechanism ensures token-based authentication operates with minimal required permissions.
+     * Tokens can restrict but not extend a user's full privilege set.
+     * </p>
+     *
+     * @param userDetails the {@link OrganizationUser} principal loaded from {@link OrganizationUserDetailsService}
+     * @param authentication the Authentication request ({@link UsernamePasswordAuthenticationToken}, 
+     *                       {@link RequestTokenAuthenticationToken}, or {@link PreauthenticatedReloadUserToken})
+     * @throws org.springframework.security.authentication.BadCredentialsException if password verification fails
+     *         (superclass behavior for UsernamePasswordAuthenticationToken)
+     */
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) {
         debug("[additionalAuthenticationChecks]");

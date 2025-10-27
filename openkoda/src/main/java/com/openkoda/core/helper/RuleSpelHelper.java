@@ -43,15 +43,80 @@ import reactor.util.function.Tuples;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Provides Spring Expression Language (SpEL) utilities for parsing and serializing ternary rule expressions.
+ * <p>
+ * This helper class enables conversion between string-based SpEL expressions and structured rule data transfer objects.
+ * It validates literal tokens with a whitelist regex pattern to prevent code injection, traverses the SpEL Abstract
+ * Syntax Tree (AST) to produce structural maps, and builds JPA Criteria API Predicate objects from expressions.
+ * </p>
+ * <p>
+ * Key capabilities:
+ * <ul>
+ *   <li>Parse SpEL expressions into structured RuleDto objects</li>
+ *   <li>Serialize RuleDto objects back to SpEL expression strings</li>
+ *   <li>Validate SpEL rule syntax and literal value safety</li>
+ *   <li>Generate JPA Criteria Predicates from SpEL rules</li>
+ *   <li>Convert rules to SQL CASE WHEN statements</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * boolean valid = RuleSpelHelper.isRuleValid("field == 'value'");
+ * RuleDto dto = RuleSpelHelper.parseToRuleDto("status == 'active' ? 1 : 0");
+ * }</pre>
+ * </p>
+ * <p>
+ * <b>Important warnings:</b>
+ * <ul>
+ *   <li>Runtime exceptions propagate for invalid AST structures</li>
+ *   <li>SpEL evaluation can be slow - cache parsed results when possible</li>
+ *   <li>Whitelist regex (VALUE_REGEX) prevents code injection in literal values</li>
+ *   <li>SpEL parsing is expensive - avoid in performance-critical loops</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Thread-safety: All methods are static and stateless, safe for concurrent use.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see org.springframework.expression.spel.standard.SpelExpressionParser
+ * @see jakarta.persistence.criteria.Predicate
+ * @see com.openkoda.dto.RuleDto
+ */
 @Component
 public class RuleSpelHelper {
 
+    /** Ternary operator question mark separator in SpEL expressions. */
     public static final String QUESTION_MARK = " ? ";
+    
+    /** Ternary operator colon separator in SpEL expressions. */
     public static final String COLON = " : ";
+    
+    /** Single quote character for string literal values. */
     public static final String VALUE_APOSTROPHE = "'";
+    
+    /** Whitelist regex pattern allowing alphanumeric characters, spaces, commas, periods, underscores, and hyphens. */
     public static final String VALUE_REGEX = "^([a-zA-Z0-9,. _-]+)$";
+    
+    /** Default value for empty else clause in ternary expressions. */
     public static final String EMPTY_ELSE = "null";
 
+    /**
+     * Converts a RuleDto object to its SpEL expression string representation.
+     * <p>
+     * Traverses the structured rule data transfer object and produces a ternary SpEL expression
+     * in the format: {@code condition ? thenValue : elseValue}. Validates that both if-condition
+     * and then-statement operators are present before generating the expression.
+     * </p>
+     *
+     * @param ruleDto the rule data transfer object containing if/then/else statement components
+     * @return the SpEL expression string, or empty string if required operators are missing
+     * @see #parseToRuleDto(String)
+     */
     public static String parseToString(RuleDto ruleDto) {
         if(ruleDto.getIfStatements().get(0L).get(RuleDto.StatementKey.Operator) != null
                 && ruleDto.getThenStatements().get(0L).get(RuleDto.StatementKey.Operator) != null) {
@@ -67,6 +132,24 @@ public class RuleSpelHelper {
         return "";
     }
 
+    /**
+     * Parses a SpEL expression string into a structured RuleDto data transfer object.
+     * <p>
+     * Converts the string-based SpEL rule into separate if/then/else statement components by traversing
+     * the Abstract Syntax Tree (AST). Each statement is decomposed into fields, operators, and values
+     * stored in a map structure for programmatic access and manipulation.
+     * </p>
+     * <p>
+     * The method expects ternary expressions with the pattern: {@code condition ? thenValue : elseValue}.
+     * The else clause is optional.
+     * </p>
+     *
+     * @param rule the SpEL expression string to parse (e.g., "status == 'active' ? 1 : 0")
+     * @return structured RuleDto with separated if/then/else statement maps, or empty RuleDto if rule is null/empty
+     * @throws org.springframework.expression.ParseException if the SpEL syntax is invalid
+     * @see #parseToString(RuleDto)
+     * @see com.openkoda.dto.RuleDto
+     */
     public static RuleDto parseToRuleDto(String rule) {
         RuleDto ruleDto = new RuleDto();
         if(StringUtils.isEmpty(rule)) {
@@ -85,6 +168,22 @@ public class RuleSpelHelper {
         return ruleDto;
     }
 
+    /**
+     * Validates whether a string is a syntactically correct SpEL rule expression.
+     * <p>
+     * Attempts to parse the rule using Spring's SpEL parser. Returns true if parsing succeeds,
+     * indicating valid SpEL syntax. Returns false if parsing throws a ParseException, indicating
+     * invalid syntax.
+     * </p>
+     * <p>
+     * Note: This method only validates SpEL syntax, not semantic correctness or whitelist compliance.
+     * For security validation of literal values, see {@link #validateRuleValue(String)}.
+     * </p>
+     *
+     * @param rule the SpEL expression string to validate
+     * @return true if the rule has valid SpEL syntax, false otherwise
+     * @see org.springframework.expression.spel.standard.SpelExpressionParser#parseExpression(String)
+     */
     public static boolean isRuleValid(String rule) {
         SpelExpressionParser parser = new SpelExpressionParser();
         try {
@@ -95,6 +194,22 @@ public class RuleSpelHelper {
         }
     }
 
+    /**
+     * Converts a SpEL ternary rule expression into an SQL CASE WHEN statement.
+     * <p>
+     * Parses the SpEL rule and generates a corresponding SQL SELECT statement using CASE WHEN syntax.
+     * This enables direct database-level evaluation of rules that were originally defined in SpEL format.
+     * </p>
+     * <p>
+     * The generated SQL follows the pattern:
+     * {@code SELECT CASE WHEN condition THEN value1 ELSE value2 FROM tableName}
+     * </p>
+     *
+     * @param rule the SpEL ternary expression (e.g., "status == 'active' ? 1 : 0")
+     * @param tableName the database table name to use in the FROM clause
+     * @return SQL SELECT statement with CASE WHEN logic, or empty string if rule is not a ternary expression
+     * @see org.springframework.expression.spel.SpelNode#toStringAST()
+     */
     public static String getSelect(String rule, String tableName) {
         SpelExpressionParser parser = new SpelExpressionParser();
         SpelExpression exp = parser.parseRaw(rule);
@@ -105,6 +220,32 @@ public class RuleSpelHelper {
                 " FROM " + tableName : "";
     }
 
+    /**
+     * Recursively parses a SpEL Abstract Syntax Tree (AST) node into rule components and JPA Criteria Predicate.
+     * <p>
+     * This is the core parsing method that traverses the SpEL AST recursively, extracting rule components
+     * (fields, operators, values) and optionally building JPA Criteria API predicates for database queries.
+     * The method handles different AST node types including method references, operators, property references,
+     * and inline lists.
+     * </p>
+     * <p>
+     * The method supports logical operators (AND, OR) and comparison operators (equals, notEquals, greaterThan,
+     * lessThan, contains, in) by delegating to specialized handler methods.
+     * </p>
+     *
+     * @param <R> the entity type for JPA Criteria Root
+     * @param index the current statement index in the rule parts map
+     * @param ruleParts the accumulated map of statement components (modified in place)
+     * @param root the JPA Criteria Root for building predicates (null if not generating predicates)
+     * @param fieldName the current field name being processed
+     * @param values the list of values for IN operator clauses
+     * @param entityManager the EntityManager for creating Criteria Builder (null if not generating predicates)
+     * @param ast the SpEL AST node to parse recursively
+     * @return Tuple2 containing the updated rule parts map and the generated JPA Predicate (null if entityManager is null)
+     * @see #handleMethodReference(long, Map, Root, String, List, EntityManager, SpelNode)
+     * @see #handleLogicalOperator(long, Map, Root, String, List, EntityManager, org.springframework.expression.spel.ast.Operator)
+     * @see #handleOperands(long, Map, Root, EntityManager, org.springframework.expression.spel.ast.Operator)
+     */
     public static<R> Tuple2<Map<Long, Map<RuleDto.StatementKey, Object>>, Predicate> parse(long index, Map<Long, Map<RuleDto.StatementKey, Object>> ruleParts, Root<R> root, String fieldName, List<String> values, EntityManager entityManager, SpelNode ast) {
         ruleParts.computeIfAbsent(index, k -> new TreeMap<>());
 
@@ -147,6 +288,22 @@ public class RuleSpelHelper {
         return Tuples.of(ruleParts, entityManager != null ? entityManager.getCriteriaBuilder().disjunction() : null);
     }
 
+    /**
+     * Handles comparison operators (equals, notEquals, greaterThan, lessThan) in the SpEL AST.
+     * <p>
+     * Extracts the field name from the left operand and the comparison value from the right operand.
+     * If an EntityManager is provided, generates the corresponding JPA Criteria API predicate for
+     * database query construction.
+     * </p>
+     *
+     * @param <R> the entity type for JPA Criteria Root
+     * @param index the current statement index
+     * @param ruleParts the rule components map to populate
+     * @param root the JPA Criteria Root for building predicates
+     * @param entityManager the EntityManager for creating predicates (null to skip predicate generation)
+     * @param operator the comparison operator AST node
+     * @return Tuple2 with updated rule parts and generated JPA Predicate (null if entityManager is null)
+     */
     private static <R> Tuple2<Map<Long, Map<RuleDto.StatementKey, Object>>, Predicate> handleOperands(long index, Map<Long, Map<RuleDto.StatementKey, Object>> ruleParts, Root<R> root, EntityManager entityManager, org.springframework.expression.spel.ast.Operator operator) {
         ruleParts.get(index).put(RuleDto.StatementKey.Field, operator.getLeftOperand().toStringAST());
         ruleParts.get(index).put(RuleDto.StatementKey.Value, operator.getRightOperand().toStringAST()
@@ -190,6 +347,24 @@ public class RuleSpelHelper {
         return null;
     }
 
+    /**
+     * Handles logical operators (AND, OR) in the SpEL AST by recursively parsing left and right operands.
+     * <p>
+     * Creates a new statement index for the right operand and recursively parses both sides of the
+     * logical operator. If an EntityManager is provided, combines the resulting predicates using
+     * JPA Criteria Builder's and() or or() methods.
+     * </p>
+     *
+     * @param <R> the entity type for JPA Criteria Root
+     * @param index the current statement index for the left operand
+     * @param ruleParts the rule components map to populate
+     * @param root the JPA Criteria Root for building predicates
+     * @param fieldName the current field name being processed
+     * @param values the list of values for IN operator clauses
+     * @param entityManager the EntityManager for creating predicates (null to skip predicate generation)
+     * @param operator the logical operator (AND or OR) AST node
+     * @return Tuple2 with updated rule parts and combined JPA Predicate (null if entityManager is null)
+     */
     private static <R> Tuple2<Map<Long, Map<RuleDto.StatementKey, Object>>, Predicate> handleLogicalOperator(long index, Map<Long, Map<RuleDto.StatementKey, Object>> ruleParts, Root<R> root, String fieldName, List<String> values, EntityManager entityManager, org.springframework.expression.spel.ast.Operator operator) {
         long nextIndex = index + 1;
         ruleParts.computeIfAbsent(nextIndex, k -> new TreeMap<>());
@@ -219,6 +394,24 @@ public class RuleSpelHelper {
         return null;
     }
 
+    /**
+     * Handles method references in the SpEL AST, specifically for contains and IN operators.
+     * <p>
+     * Processes method calls like {@code contains()} which map to SQL LIKE or IN operations depending
+     * on the context. When the contains method is called on an inline list, it generates an IN predicate.
+     * When called with a string argument, it generates a LIKE predicate with wildcards.
+     * </p>
+     *
+     * @param <R> the entity type for JPA Criteria Root
+     * @param index the current statement index
+     * @param ruleParts the rule components map to populate
+     * @param root the JPA Criteria Root for building predicates
+     * @param fieldName the current field name being processed
+     * @param values the list of values for IN operator clauses
+     * @param entityManager the EntityManager for creating predicates (null to skip predicate generation)
+     * @param ast the method reference AST node
+     * @return Tuple2 with updated rule parts and generated JPA Predicate (null if not applicable)
+     */
     private static <R> Tuple2<Map<Long, Map<RuleDto.StatementKey, Object>>, Predicate> handleMethodReference(long index, Map<Long, Map<RuleDto.StatementKey, Object>> ruleParts, Root<R> root, String fieldName, List<String> values, EntityManager entityManager, SpelNode ast) {
         MethodReference method = (MethodReference) ast;
         if(EnumUtils.isValidEnum(Operator.class, method.getName())) {
@@ -251,6 +444,22 @@ public class RuleSpelHelper {
         return null;
     }
 
+    /**
+     * Concatenates structured statement components into a SpEL expression string.
+     * <p>
+     * Iterates through the statement map, building a SpEL expression by combining fields, operators,
+     * and values. Handles special formatting for IN operator (inline list syntax) and validates all
+     * literal values against the whitelist regex to prevent code injection.
+     * </p>
+     * <p>
+     * The method enforces security by calling {@link #validateRuleValue(String)} on all literal values.
+     * </p>
+     *
+     * @param statements the map of statement components indexed by position
+     * @return concatenated SpEL expression string
+     * @throws RuntimeException if any value fails whitelist validation
+     * @see #validateRuleValue(String)
+     */
     private static String concatRulePart(Map<Long, Map<RuleDto.StatementKey, Object>> statements) {
         StringBuilder ruleSB = new StringBuilder();
         for (Map.Entry<Long, Map<RuleDto.StatementKey, Object>> statementIndex : statements.entrySet()) {
@@ -275,6 +484,18 @@ public class RuleSpelHelper {
         return ruleSB.toString();
     }
 
+    /**
+     * Validates a literal value against the whitelist regex pattern to prevent code injection.
+     * <p>
+     * Ensures that rule values contain only safe characters (alphanumeric, spaces, commas, periods,
+     * underscores, hyphens) as defined by {@link #VALUE_REGEX}. This is a critical security measure
+     * to prevent malicious code injection through user-supplied rule values.
+     * </p>
+     *
+     * @param value the literal value to validate
+     * @throws RuntimeException with message "Rule statement value invalid!" if validation fails
+     * @see #VALUE_REGEX
+     */
     private static void validateRuleValue(String value) {
         if(!value.matches(VALUE_REGEX)) {
             throw new RuntimeException("Rule statement value invalid!");

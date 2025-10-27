@@ -35,31 +35,89 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * <p>Class that aggregates all Services, Repositories and Controllers so that it can be extended by other
- * Spring components and reduce the need for injecting beans.</p>
+ * Abstract base class aggregating core platform components (Services, Repositories, Controllers, Messages)
+ * for convenient dependency injection.
+ * <p>
+ * Provides single-injection pattern for accessing platform beans. Aggregates Services, Repositories,
+ * Controllers, and Messages singletons. Implements InitializingBean to register service and repository
+ * beans in static resources map after Spring initialization. Subclassed by DefaultComponentProvider as
+ * concrete {@code @Component} for Spring DI. Used throughout controllers to access platform services
+ * without multiple {@code @Autowired} fields.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * public class MyController extends ComponentProvider {
+ *     public void doSomething() {
+ *         User user = services.user.findById(userId);
+ *         Organization org = repositories.secure.organization.findOne(orgId);
+ *     }
+ * }
+ * }</pre>
+ * </p>
  *
- * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- * 
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see DefaultComponentProvider
+ * @see Services
+ * @see Repositories
  */
 public class ComponentProvider implements PageAttributes, LoggingComponentWithRequestId, InitializingBean {
 
+    /**
+     * Autowired Services aggregator providing access to all platform service beans.
+     *
+     * @see Services
+     */
     @Inject
     public Services services;
 
+    /**
+     * Autowired Repositories aggregator providing access to all repository beans.
+     *
+     * @see Repositories
+     */
     @Inject
     public Repositories repositories;
 
+    /**
+     * Autowired Controllers aggregator for inter-controller communication.
+     *
+     * @see Controllers
+     */
     @Inject
     public Controllers controllers;
 
+    /**
+     * Autowired Messages bean for internationalized message retrieval.
+     */
     @Inject
     public Messages messages;
 
     protected Supplier<TransactionalExecutor> transactional = () -> services.transactionalExecutor;
 
+    /**
+     * Static map of platform resources (services, repositories) registered after bean initialization.
+     * <p>
+     * Populated once during startup, read-only afterward. Safe for concurrent access.
+     * </p>
+     */
     public final static Map<String, Object> resources = new HashMap<>();
     private static boolean initialized = false;
 
+    /**
+     * Spring lifecycle callback that registers service and repository beans in static resources map.
+     * <p>
+     * Invoked after all properties set. Iterates Services fields, registers each service bean in
+     * resources map. Repeats for Repositories. Enables reflection-based service and repository discovery.
+     * </p>
+     * <p>
+     * Note: Executes once per application startup.
+     * </p>
+     *
+     * @throws Exception if resource registration fails
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         if(!initialized) {

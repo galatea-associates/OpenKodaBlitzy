@@ -32,14 +32,51 @@ import org.springframework.stereotype.Component;
 
 
 /**
- * <p>Cluster helper provides a set of static methods for getting application cluster node information.</p>
- *
+ * Provides cluster configuration metadata and node detection using Hazelcast.
+ * <p>
+ * This helper computes master and member status from injected properties and exposes
+ * a static API for cluster information access. The static instance is initialized via
+ * {@code @PostConstruct} during Spring bean lifecycle.
+ * </p>
+ * <p>
+ * Hazelcast integration enables multi-node deployments with automatic cluster discovery.
+ * When Hazelcast is not configured, the helper operates in single-node mode.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * if (ClusterHelper.isMaster()) {
+ *     // Schedule cluster-wide job
+ * }
+ * }</pre>
+ * </p>
+ * <p>
+ * <b>Warning:</b> Static methods return null or default values before the Spring
+ * {@code @PostConstruct} initialization completes. Ensure Spring context is fully
+ * loaded before accessing cluster information.
+ * </p>
+ * <p>
+ * <b>Thread Safety:</b> Static methods read instance fields that are set once during
+ * startup. Safe for concurrent access after initialization.
+ * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
  */
 @Component("cluster")
 public class ClusterHelper implements LoggingComponentWithRequestId {
 
+    /**
+     * Hazelcast topic name for cluster-wide event broadcasting.
+     * <p>
+     * Use this constant to publish and subscribe to events that should be
+     * distributed across all cluster nodes. The topic enables inter-node
+     * communication for cache invalidation, configuration updates, and
+     * application-level notifications.
+     * </p>
+     */
     public static final String CLUSTER_EVENT_TOPIC = "clusterEvent";
 
     private static ClusterHelper instance;
@@ -58,6 +95,16 @@ public class ClusterHelper implements LoggingComponentWithRequestId {
     @Autowired(required = false)
     private HazelcastInstance hazelcastInstance;
 
+    /**
+     * Checks if Hazelcast is configured and cluster mode is enabled.
+     * <p>
+     * Detection occurs by verifying the presence of a {@link HazelcastInstance} bean.
+     * When Hazelcast is not configured (instance is null), the application runs in
+     * single-node mode without cluster coordination.
+     * </p>
+     *
+     * @return true if Hazelcast is configured and cluster mode is active, false otherwise
+     */
     public static boolean isCluster() {
         return instance.hazelcastInstance != null;
     }
@@ -71,12 +118,33 @@ public class ClusterHelper implements LoggingComponentWithRequestId {
     }
 
     /**
-     * @return true if current instance is a master node
+     * Checks if the current node is the designated master node.
+     * <p>
+     * Master status is determined by comparing this node's address with the
+     * {@code master.node} property. The master node typically handles cluster-wide
+     * responsibilities such as scheduled jobs, cache coordination, and administrative
+     * tasks.
+     * </p>
+     * <p>
+     * In single-node deployments, the sole node is always the master.
+     * </p>
+     *
+     * @return true if this node matches the configured master.node property, false otherwise
      */
     public static boolean isMaster() {
         return instance.isMaster;
     }
 
+    /**
+     * Checks if the cluster consists of a single node or is not clustered.
+     * <p>
+     * Returns true in two scenarios: when Hazelcast is configured with exactly one
+     * member, or when clustering is disabled entirely. This method is useful for
+     * scheduling decisions where certain tasks should run only once across the cluster.
+     * </p>
+     *
+     * @return true if the cluster has exactly one member or clustering is disabled, false otherwise
+     */
     public static boolean isSingleNodeCluster() {
         return isCluster() ? instance.hazelcastMembers.length == 1 : true;
     }
@@ -110,13 +178,31 @@ public class ClusterHelper implements LoggingComponentWithRequestId {
     }
 
     /**
-     * @return array of node members
+     * Retrieves all cluster member addresses in "host:port" format.
+     * <p>
+     * Queries the Hazelcast cluster for active members and returns their network
+     * addresses. Each member address includes the hostname and server port attribute.
+     * Use this method to iterate over cluster nodes for distributed operations or
+     * monitoring.
+     * </p>
+     *
+     * @return array of member addresses in "host:port" format from the Hazelcast cluster
      */
     public static String[] getMembers() {
         return instance.hazelcastInstance.getCluster().getMembers().stream().map(
                 m -> m.getSocketAddress().getHostString() + ":" + m.getAttribute("server.port")).toArray(String[]::new);
     }
 
+    /**
+     * Provides direct access to the Hazelcast instance for advanced cluster operations.
+     * <p>
+     * Returns the injected {@link HazelcastInstance} bean, or null if Hazelcast is not
+     * configured. Use this for advanced operations such as distributed data structures,
+     * topic publishing, or custom cluster event handling.
+     * </p>
+     *
+     * @return the Hazelcast instance if clustering is enabled, null otherwise
+     */
     public static HazelcastInstance getHazelcastInstance() {
         return instance.hazelcastInstance;
     }

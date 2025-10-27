@@ -35,17 +35,85 @@ import static com.openkoda.core.controller.generic.AbstractController._HTML;
 import static com.openkoda.core.security.HasSecurityRules.CHECK_CAN_READ_SUPPORT_DATA;
 
 /**
- * <p>AuditController class.</p>
- * <p>Controller for Audit related actions.</p>
+ * MVC controller exposing HTTP endpoints for audit trail browsing, search, and audit content retrieval.
+ * <p>
+ * This concrete {@code @Controller} implements the admin audit interface, mapping HTTP requests to 
+ * Flow-based helper methods inherited from {@link AbstractAuditController}. Provides paginated audit 
+ * listing with full-text search ({@link #getAll}) and individual audit content download ({@link #downloadContent}).
+ * All endpoints require audit read privileges enforced via {@code @PreAuthorize}.
+ * </p>
+ * <p>
+ * Audit records track entity changes, user actions, and system events for compliance and debugging. The controller
+ * displays audit records with entity type, operation (CREATE/UPDATE/DELETE), user, timestamp, and JSON content.
+ * All queries use {@code repositories.secure.audit} for privilege-enforced data access, ensuring only users with
+ * {@code CHECK_CAN_READ_SUPPORT_DATA} privilege can view audit trails.
+ * </p>
+ * <p>
+ * <b>Request Mapping:</b> Base path {@code /html/audit} (constructed from {@code AbstractController._HTML + _AUDIT})
+ * </p>
+ * <p>
+ * <b>Security:</b> Requires {@code CHECK_CAN_READ_SUPPORT_DATA} privilege for all endpoints
+ * </p>
+ * <p>
+ * <b>Response Types:</b> Returns HTML views via {@code ModelAndView} for listing UI, plain text {@code @ResponseBody} 
+ * for content download
+ * </p>
+ * <p>
+ * <b>Thread-safety:</b> This controller is stateless and thread-safe.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * GET /html/audit/all?audit_search=User&page=0&size=20
+ * GET /html/audit/123/content
+ * }</pre>
+ * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- *
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see AbstractAuditController for Flow-based audit retrieval implementation
+ * @see com.openkoda.model.Audit for audit entity structure
+ * @see com.openkoda.repository.admin.AuditRepository for secure audit repository
  */
 
 @Controller
 @RequestMapping(_HTML + _AUDIT)
 public class AuditController extends AbstractAuditController {
 
+    /**
+     * Retrieves paginated audit records with optional full-text search.
+     * <p>
+     * This endpoint provides the main audit trail browsing interface for administrators. Results are paginated
+     * with default descending sort by ID (newest records first). The search parameter filters audit records 
+     * across content and entity fields. Executes {@code findAll(auditPageable, search)} helper method inherited
+     * from {@link AbstractAuditController} and renders results in the "audit-all" Thymeleaf view.
+     * </p>
+     * <p>
+     * <b>HTTP Mapping:</b> {@code GET /html/audit/all}
+     * </p>
+     * <p>
+     * <b>Security:</b> Requires {@code CHECK_CAN_READ_SUPPORT_DATA} privilege via {@code @PreAuthorize}
+     * </p>
+     * <p>
+     * Example requests:
+     * <pre>{@code
+     * GET /html/audit/all?audit_search=User&page=0&size=20
+     * GET /html/audit/all?page=1&sort=id,asc
+     * }</pre>
+     * </p>
+     *
+     * @param auditPageable pagination and sorting parameters, qualified as "audit" to distinguish from other
+     *                      page parameters. Default sort by ID descending via {@code @SortDefault}. Supports
+     *                      standard Spring Data pagination (page, size, sort parameters)
+     * @param search full-text search query string that searches across audit content and entity fields. 
+     *               Defaults to empty string if not provided (unfiltered results). Parameter name is "audit_search"
+     * @param request {@link HttpServletRequest} context (unused in current implementation, available for 
+     *                request attribute access if needed)
+     * @return {@link Object} resolving to {@code ModelAndView} with view name "audit-all". Model is populated 
+     *         by {@code findAll(auditPageable, search)} with key "auditPage" containing {@code Page<Audit>} result.
+     *         Used by admin audit trail UI with filtering, pagination, and sorting controls
+     */
     @PreAuthorize(CHECK_CAN_READ_SUPPORT_DATA)
     @GetMapping(_ALL)
     public Object getAll(
@@ -59,6 +127,38 @@ public class AuditController extends AbstractAuditController {
     }
 
 
+    /**
+     * Downloads individual audit record content as plain text.
+     * <p>
+     * This endpoint retrieves the detailed content field of a specific audit record, typically containing
+     * a JSON representation of the entity state at the time of the audited operation. The content field
+     * captures the complete entity snapshot for CREATE/UPDATE operations or the entity state before DELETE.
+     * Executes {@code repositories.secure.audit.findOne(auditId).getContent()} with privilege enforcement.
+     * </p>
+     * <p>
+     * <b>HTTP Mapping:</b> {@code GET /html/audit/{id}/content} where {@code {id}} is the audit record identifier
+     * </p>
+     * <p>
+     * <b>Security:</b> Requires {@code CHECK_CAN_READ_SUPPORT_DATA} privilege via {@code @PreAuthorize}.
+     * Privilege is enforced by the secure repository ensuring only authorized users can access audit content
+     * </p>
+     * <p>
+     * <b>Response Type:</b> {@code @ResponseBody} returns raw String content (typically JSON)
+     * </p>
+     * <p>
+     * Example request:
+     * <pre>{@code
+     * GET /html/audit/123/content
+     * }</pre>
+     * </p>
+     *
+     * @param auditId unique identifier of the audit record to retrieve. Path variable mapped from {@code {id}}
+     *                in the URL pattern. Must be a valid Long value representing an existing audit record ID
+     * @return {@link String} containing the audit content field, typically a JSON representation of the entity
+     *         state. Used by admin UI "View Content" button for detailed audit inspection and debugging
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks {@code CHECK_CAN_READ_SUPPORT_DATA} privilege
+     * @throws jakarta.persistence.EntityNotFoundException if audit record with specified ID does not exist
+     */
     @GetMapping(_ID + _CONTENT)
     @PreAuthorize(CHECK_CAN_READ_SUPPORT_DATA)
     @ResponseBody

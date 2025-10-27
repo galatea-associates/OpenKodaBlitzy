@@ -19,4 +19,38 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ * Provides common utility services for cross-cutting transaction management concerns.
+ * This package contains foundation services used throughout the OpenKoda application.
+ * These services are not specific to any business domain but provide shared infrastructure.
+ * <p>
+ * The primary component in this package is the transaction execution service, which offers
+ * programmatic transaction control when declarative Spring {@code @Transactional} annotations
+ * are insufficient. This enables fine-grained transaction demarcation for complex workflows
+ * that require dynamic transaction boundaries or multiple transaction scopes within a single
+ * operation.
+ * </p>
+ * <p>
+ * Key features include:
+ * <ul>
+ *   <li>Programmatic transaction execution with custom propagation and isolation levels</li>
+ *   <li>Integration with Spring's {@code PlatformTransactionManager} infrastructure</li>
+ *   <li>Support for nested transactions and savepoint management</li>
+ *   <li>Exception handling and rollback control for transactional operations</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Use cases for services in this package include:
+ * <ul>
+ *   <li>Dynamic entity operations requiring transaction control during runtime class generation</li>
+ *   <li>Batch processing operations with custom transaction boundaries</li>
+ *   <li>Integration scenarios where external system calls must be isolated from local transactions</li>
+ *   <li>Flow pipeline execution requiring explicit transaction management</li>
+ * </ul>
+ * </p>
+ *
+ * @see com.openkoda.core.service.common.TransactionalExecutorImpl
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 package com.openkoda.core.service.common;

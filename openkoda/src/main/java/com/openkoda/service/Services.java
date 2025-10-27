@@ -57,10 +57,66 @@ import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**
- *
+ * Convenience aggregator exposing 50+ service beans for injection as single dependency.
+ * <p>
+ * Legacy pattern enabling controllers and components to inject a single Services bean instead of many individual 
+ * service interfaces. Exposes all application services as public {@code @Inject} fields for programmatic access. 
+ * Used extensively in older code and integration points that predate constructor injection patterns.
+ * </p>
+ * <p>
+ * This aggregator provides access to:
+ * </p>
+ * <ul>
+ * <li><b>Core Services:</b> applicationEvent, transactionalExecutor, validation, sessionService, systemStatus</li>
+ * <li><b>User Management:</b> user, role, privilege, apiKey, token, userRole</li>
+ * <li><b>Multi-Tenancy:</b> organization, tenantResolver</li>
+ * <li><b>Communication:</b> email, emailConstructor, emailService, notification, websocket</li>
+ * <li><b>Content Management:</b> frontendResource, file, form, frontendMappingDefinition, thymeleaf</li>
+ * <li><b>Dynamic Entities:</b> dynamicEntityRegistration, dynamicEntity</li>
+ * <li><b>Component Management:</b> module, customisation, componentExport, zipComponentImport</li>
+ * <li><b>Integrations:</b> serverJSRunner, jsParser, restClient, chatGPTService, captcha</li>
+ * <li><b>Utilities:</b> url, zipService, csv, pdfConstructor, logConfig, databaseValidation</li>
+ * <li><b>Events &amp; Scheduling:</b> scheduler, eventListener, clusterEventSender</li>
+ * <li><b>Security:</b> runAs (privilege elevation)</li>
+ * <li><b>UI Components:</b> data (LiveDataServices), util (UtilServices)</li>
+ * </ul>
+ * <p>
+ * <b>Design Pattern:</b>
+ * Passive holder with no business logic. All fields are public and non-final for Jakarta {@code @Inject} field 
+ * injection. Spring component scanning automatically populates fields at application startup.
+ * </p>
+ * <p>
+ * <b>Known Issues:</b>
+ * Contains duplicate DatabaseValidationService injection (fields {@code databaseValidationService} and 
+ * {@code databaseValidation}) - both reference the same bean. This duplication is maintained for backward 
+ * compatibility with existing code.
+ * </p>
+ * <p>
+ * <b>Thread Safety:</b>
+ * Thread-safe as a stateless Spring singleton. All exposed service beans manage their own thread safety.
+ * </p>
+ * <p>
+ * <b>Usage Example:</b>
+ * <pre>
+ * &#64;Inject
+ * private Services services;
+ * 
+ * Organization org = services.organization.createOrganization(name);
+ * User user = services.user.createUser(email, password);
+ * </pre>
+ * </p>
+ * <p>
+ * <b>Migration Note:</b>
+ * Modern code should inject specific service interfaces directly rather than using this aggregator. 
+ * Constructor injection is preferred over field injection for testability.
+ * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- * 
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.0.0
+ * @see jakarta.inject.Inject
+ * @see org.springframework.stereotype.Component
  */
 @Component("allServices")
 public class Services {

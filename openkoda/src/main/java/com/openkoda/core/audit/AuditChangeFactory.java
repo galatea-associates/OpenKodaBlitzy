@@ -28,21 +28,42 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
- * This factory creates change description for audit logs.
+ * Stateless factory service formatting AuditedObjectState snapshots into human-readable HTML change descriptions for audit trail display.
+ * <p>
+ * Converts entity change snapshots into HTML-formatted audit descriptions for display in audit UI. Handles three operation types:
+ * ADD (entity creation), EDIT (property updates), DELETE (entity removal). Uses StringUtils.splitByCharacterTypeCamelCase to generate
+ * human-readable field labels from camel case property names. Returns composed HTML strings with bold labels and line breaks.
+ * Does not render large content payloads (intentional design - only adds 'Content' label without payload body at line 119).
+ * </p>
+ * <p>
+ * Stateless service with no fields. Contains minor HTML fragment inconsistencies: uses '&lt;br/&gt;' (lines 70, 81, 106) and
+ * '&lt;/br&gt;' (line 118) variants. Debug tracing via LoggingComponentWithRequestId mixin.
+ * </p>
+ * <p>
+ * Thread-safety: Stateless and thread-safe.
+ * </p>
  *
- * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- * 
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see AuditedObjectState
+ * @see PropertyChangeListener
+ * @see AuditableEntity#toAuditString()
  */
 @Service
 public class AuditChangeFactory implements LoggingComponentWithRequestId {
 
     /**
-     * This method creates change description
+     * Creates HTML-formatted change description for audit log entry based on operation type.
+     * <p>
+     * Dispatches to operation-specific formatters: getAddChangeDescription for ADD, getEditChangeDescription for EDIT,
+     * getDeleteChangeDescription for DELETE. Returns empty string for unknown operations (default case line 61).
+     * </p>
      *
-     * @param auditedObject   object that is subject of audit
-     * @param aos             state of the object that is subject of audit
-     * @param entityClassName a {@link java.lang.String} object.
-     * @return Change description prepared for audit log.
+     * @param auditedObject   Entity being audited, must implement AuditableEntity.toAuditString() for EDIT/DELETE descriptions
+     * @param aos             Immutable snapshot of entity state with properties, changes, operation type, and optional content
+     * @param entityClassName Simple class name for display (e.g., 'Organization', 'User')
+     * @return HTML-formatted change description with bold labels and &lt;br/&gt; line breaks, or empty string for unknown operation
      * @see AuditableEntityOrganizationRelated
      * @see PropertyChangeListener
      */
@@ -63,7 +84,12 @@ public class AuditChangeFactory implements LoggingComponentWithRequestId {
     }
 
     /**
-     * Creates change log for new object created.
+     * Formats ADD operation as 'EntityClass created with: &lt;properties&gt;'.
+     *
+     * @param aos         State snapshot containing properties map
+     * @param entityClass Entity class name for display
+     * @param change      StringBuilder initialized with entity class name
+     * @return HTML string like 'Organization created with:&lt;br/&gt;&lt;b&gt;Name&lt;/b&gt; from &lt;b&gt;&lt;/b&gt; to &lt;b&gt;TenantCo&lt;/b&gt;&lt;br/&gt;'
      */
     private String getAddChangeDescription(AuditedObjectState aos, String entityClass, StringBuilder change) {
         debug("[getAddChangeDescription] entityClass: {}", entityClass);
@@ -74,7 +100,13 @@ public class AuditChangeFactory implements LoggingComponentWithRequestId {
     }
 
     /**
-     * Creates change log for object update.
+     * Formats EDIT operation as 'EntityClass [auditString] &lt;properties&gt;'.
+     *
+     * @param p           Audited entity providing toAuditString() identifier
+     * @param aos         State snapshot containing changed properties
+     * @param entityClass Entity class name for display
+     * @param change      StringBuilder initialized with entity class name
+     * @return HTML string like 'Organization TenantCo&lt;br/&gt;&lt;b&gt;Logo Id&lt;/b&gt; from &lt;b&gt;123&lt;/b&gt; to &lt;b&gt;456&lt;/b&gt;&lt;br/&gt;'
      */
     private String getEditChangeDescription(AuditableEntity p, AuditedObjectState aos, String entityClass, StringBuilder change) {
         debug("[getEditChangeDescription] entityClass: {}", entityClass);
@@ -85,7 +117,12 @@ public class AuditChangeFactory implements LoggingComponentWithRequestId {
     }
 
     /**
-     * Creates change log for object deleted.
+     * Formats DELETE operation as 'Deleted EntityClass [auditString]'.
+     *
+     * @param p           Deleted entity providing toAuditString() identifier
+     * @param entityClass Entity class name for display
+     * @param change      StringBuilder initialized with entity class name
+     * @return HTML string like 'Deleted Organization TenantCo'
      */
     private String getDeleteChangeDescription(AuditableEntity p, String entityClass, StringBuilder change) {
         debug("[getDeleteChangeDescription] entityClass: {}", entityClass);
@@ -94,7 +131,13 @@ public class AuditChangeFactory implements LoggingComponentWithRequestId {
     }
 
     /**
-     * Writes object properties changelog into given string builder
+     * Appends HTML-formatted property changes to StringBuilder with bold labels.
+     * <p>
+     * Returns early if properties map is empty (line 101-102). Uses getDefaultFieldLabel for human-readable field names.
+     * </p>
+     *
+     * @param aos    State snapshot with properties map (propertyName -&gt; HTML change description)
+     * @param change StringBuilder to append formatted properties
      */
     private void writeProperties(AuditedObjectState aos, StringBuilder change) {
         debug("[writeProperties] {} {}", aos, change);
@@ -108,7 +151,14 @@ public class AuditChangeFactory implements LoggingComponentWithRequestId {
     }
 
     /**
-     * Writes object content changelog into given string builder
+     * Appends content label to StringBuilder but intentionally omits large payload body.
+     * <p>
+     * Does not render aos.getContent() payload - only adds 'Content' label at line 119. Design decision to avoid bloating
+     * audit descriptions with large payloads.
+     * </p>
+     *
+     * @param aos    State snapshot with optional content field
+     * @param change StringBuilder to append content indicator
      */
     private void writeContent(AuditedObjectState aos, StringBuilder change) {
         debug("[writeContent] {} {}", aos, change);
@@ -120,9 +170,14 @@ public class AuditChangeFactory implements LoggingComponentWithRequestId {
     }
 
     /**
-     * Creates a label for the given field by convention. <br/>
+     * Creates a label for the given field by convention.
+     * <p>
      * The routine is to split fieldName by camel case and make words upper case.
-     * @return generated default label for a given field.
+     * Example: Input 'organizationName' produces output 'Organization Name'.
+     * </p>
+     *
+     * @param fieldName Camel case field name (e.g., 'logoId', 'firstName')
+     * @return Human-readable label with spaces and title case (e.g., 'Logo Id', 'First Name')
      */
     private String getDefaultFieldLabel(String fieldName) {
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(fieldName)), ' ');

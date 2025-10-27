@@ -34,19 +34,115 @@ import java.time.format.DateTimeFormatter;
 import static com.openkoda.controller.common.URLConstants.EXTERNAL_SESSION_ID;
 
 /**
- * Helper component to provide a request id of current web request (from {@link WebRequestIdHolder} or in case of cron
- * job the id is taken from {@link MDC} which is internally attached to the executing thread
+ * Central utility for generating and resolving context-appropriate correlation IDs for distributed tracing.
+ * <p>
+ * Provides ID generation and context-aware resolution for both HTTP requests and scheduled jobs. Automatically 
+ * determines execution context (web request vs cron job) and retrieves the appropriate correlation ID. For web 
+ * requests, delegates to request-scoped {@link WebRequestIdHolder} bean and appends external session ID from 
+ * request attributes. For cron jobs, retrieves job ID from SLF4J MDC (placed by {@link TrackJobAspect}). 
+ * Thread-safe through use of ThreadLocal-based MDC and request-scoped beans.
+ * </p>
+ * <p>
+ * <b>ID Resolution Algorithm:</b>
+ * <ol>
+ * <li>Check if {@link org.springframework.web.context.request.RequestContextHolder} has request attributes</li>
+ * <li>If yes: retrieve {@link WebRequestIdHolder} bean from ApplicationContext + append EXTERNAL_SESSION_ID attribute</li>
+ * <li>If no: fall back to {@link #cronJobId()} which reads from MDC</li>
+ * <li>Return empty string if no context available</li>
+ * </ol>
+ * </p>
+ * <p>
+ * <b>ID Format:</b> Generated IDs follow format: {@code yyyyMMddHHmmss-[8-char-alphanumeric-random]} 
+ * (e.g., {@code 20240115143022-aB3dEf7H})
+ * </p>
+ * <p>
+ * Example - automatic context-aware resolution:
+ * <pre>{@code
+ * String id = RequestIdHolder.getId();
+ * // Returns web request ID if in HTTP context, job ID if in scheduled job, empty string otherwise
+ * }</pre>
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see WebRequestIdHolder
+ * @see TrackJobAspect
+ * @see LoggingComponentWithRequestId
+ * @see org.slf4j.MDC
  */
 @Component
 public class RequestIdHolder {
 
+    /**
+     * MDC key for storing cron job correlation IDs.
+     * <p>
+     * Value: {@code "jobId"}. Used by {@link TrackJobAspect} to inject job IDs into MDC before scheduled 
+     * method execution. Public mutable field - can be changed but not recommended as it breaks integration 
+     * with {@link TrackJobAspect}.
+     * </p>
+     *
+     * @see TrackJobAspect#setJobIdForThread()
+     */
     public static String PARAM_CRON_JOB_ID = "jobId";
+    
+    /**
+     * Thread-safe date-time formatter for ID generation timestamp prefix.
+     * <p>
+     * Pattern: {@code yyyyMMddHHmmss} (e.g., {@code 20240115143022}). Immutable and thread-safe per 
+     * {@link DateTimeFormatter} contract.
+     * </p>
+     */
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
+    /**
+     * Generates a new unique correlation ID with timestamp and random suffix.
+     * <p>
+     * Creates correlation ID by combining current timestamp ({@code yyyyMMddHHmmss} format via 
+     * {@link LocalDateTime#now()}) with 8-character alphanumeric random string from 
+     * {@link RandomStringUtils}. Thread-safe as {@link LocalDateTime} is immutable and 
+     * {@link RandomStringUtils} uses secure random generation. IDs are unique with high probability 
+     * due to timestamp precision and random suffix.
+     * </p>
+     * <p>
+     * Used by {@link WebRequestIdHolder} during bean initialization and {@link TrackJobAspect} 
+     * before scheduled job execution.
+     * </p>
+     *
+     * @return unique correlation ID in format {@code yyyyMMddHHmmss-[8-char-random]} 
+     *         (e.g., {@code 20240115143022-aB3dEf7H})
+     * @see RandomStringUtils#randomAlphanumeric(int)
+     */
     public static String generate() {
         return formatter.format(LocalDateTime.now()) + "-" + RandomStringUtils.randomAlphanumeric(8);
     }
 
+    /**
+     * Resolves context-appropriate correlation ID for current execution (web request or cron job).
+     * <p>
+     * Context-aware ID resolution:
+     * <ol>
+     * <li>Checks {@link RequestContextHolder} for request attributes to detect web request context</li>
+     * <li>If web context exists: retrieves {@link WebRequestIdHolder} bean from ApplicationContext and 
+     *     appends EXTERNAL_SESSION_ID attribute if present</li>
+     * <li>If no web context: delegates to {@link #cronJobId()} to retrieve job ID from MDC</li>
+     * <li>Returns empty string if neither context available</li>
+     * </ol>
+     * Thread-safe through ThreadLocal-based mechanisms.
+     * </p>
+     * <p>
+     * Primary method for retrieving correlation ID in application code. Automatically adapts to 
+     * execution context.
+     * </p>
+     *
+     * @return web request ID (with optional external session ID appended) if in HTTP context, 
+     *         cron job ID if in scheduled job context, empty string if no context available
+     * @throws org.springframework.beans.BeansException if ApplicationContext lookup fails 
+     *         (rare, indicates Spring context not initialized)
+     * @see WebRequestIdHolder#getWebRequestId()
+     * @see #cronJobId()
+     * @see org.springframework.web.context.request.RequestContextHolder
+     */
     public static String getId() {
         return RequestContextHolder.getRequestAttributes() != null ?
                     ApplicationContextProvider.getContext().getBean(WebRequestIdHolder.class).getWebRequestId()
@@ -54,6 +150,23 @@ public class RequestIdHolder {
                 : cronJobId();
     }
 
+    /**
+     * Retrieves cron job correlation ID from SLF4J MDC.
+     * <p>
+     * Reads job ID from SLF4J MDC using key {@link #PARAM_CRON_JOB_ID} ({@code "jobId"}). Returns 
+     * empty string if MDC entry is null or empty. Job IDs are placed into MDC by {@link TrackJobAspect} 
+     * before scheduled method execution. Thread-safe as MDC is ThreadLocal-based.
+     * </p>
+     * <p>
+     * Called by {@link #getId()} when no web request context exists. Public for direct access in 
+     * specialized scenarios.
+     * </p>
+     *
+     * @return job correlation ID if present in MDC under key {@link #PARAM_CRON_JOB_ID}, 
+     *         empty string otherwise
+     * @see TrackJobAspect
+     * @see org.slf4j.MDC#get(String)
+     */
     public static String cronJobId() {
         return StringUtils.isNotEmpty(MDC.get(RequestIdHolder.PARAM_CRON_JOB_ID)) ? MDC.get(PARAM_CRON_JOB_ID) : "";
     }

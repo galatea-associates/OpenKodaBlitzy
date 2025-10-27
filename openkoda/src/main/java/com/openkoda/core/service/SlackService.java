@@ -40,26 +40,97 @@ import org.thymeleaf.context.Context;
 import java.util.Map;
 
 /**
- * Sends messages to Slack using webHooks. Collaborates with Thymeleaf in message generation(via FrontendResource).
+ * Slack webhook integration service for rendering and delivering notification messages.
+ * <p>
+ * Provides message delivery to Slack via webhook URLs with two operational modes:
+ * asynchronous delivery via HttpRequestTask queue (default) and synchronous posting 
+ * via RestTemplate. Renders message payloads using Thymeleaf templates with support 
+ * for CanonicalObject entities.
+ * </p>
+ * <p>
+ * Constructs JSON payloads conforming to Slack webhook API specification with text, 
+ * channel, and username fields. Escapes double quotes in message content for JSON 
+ * safety. Asynchronous messages are enqueued to unsecure repository for background 
+ * job delivery without privilege checks.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>
+ * slackService.sendToSlackWithCanonical(entity, "slack/notification-template", 
+ *     webhookUrl, "#general", "BotName");
+ * </pre>
+ * </p>
+ *
+ * @see HttpRequestTask
+ * @see CanonicalObject
+ * @see RestTemplate
+ * @see TemplateEngine
+ * @see PageModelMap
+ * @see ComponentProvider
+ * @since 1.7.1
+ * @author OpenKoda Team
  */
 @Service
 public class SlackService extends ComponentProvider {
 
+    /**
+     * Thymeleaf template engine for rendering message content from templates.
+     */
     @Inject
     private TemplateEngine templateEngine;
 
+    /**
+     * RestTemplate instance for synchronous HTTP POST operations.
+     * Initialized in {@link #init()} lifecycle callback.
+     */
     private RestTemplate restTemplate;
 
+    /**
+     * Initializes RestTemplate instance for synchronous HTTP operations.
+     * <p>
+     * Lifecycle callback invoked after dependency injection completes.
+     * Creates new RestTemplate without custom configuration or interceptors.
+     * </p>
+     */
     @PostConstruct
     private void init() {
         debug("[init] Preparing RestTemplate object with headers");
         restTemplate = new RestTemplate();
     }
 
+    /**
+     * Sends Slack message for CanonicalObject entity using default channel and username.
+     * <p>
+     * Convenience overload delegating to five-parameter variant with null channel 
+     * and username. Renders message from Thymeleaf template with canonicalObject 
+     * as model attribute.
+     * </p>
+     *
+     * @param object CanonicalObject entity to include in template model
+     * @param templateName Thymeleaf template name for message rendering
+     * @param webHook Slack webhook URL for message delivery
+     * @return true always (actual delivery is asynchronous)
+     */
     public boolean sendToSlackWithCanonical(CanonicalObject object, String templateName, String webHook) {
         return sendToSlackWithCanonical(object, templateName, webHook, null, null);
     }
 
+    /**
+     * Sends Slack message for CanonicalObject entity with optional channel and username.
+     * <p>
+     * Renders message from Thymeleaf template with canonicalObject attribute in model.
+     * Template receives PageModelMap containing the entity for property access.
+     * Delegates to sendMessageToSlack for asynchronous delivery via HttpRequestTask queue.
+     * Returns immediately without waiting for HTTP response.
+     * </p>
+     *
+     * @param object CanonicalObject entity to include in template model
+     * @param templateName Thymeleaf template name for message rendering
+     * @param webHook Slack webhook URL for message delivery
+     * @param channel optional Slack channel override (e.g., "#general"), null for default
+     * @param username optional bot username override, null for default
+     * @return true always (actual delivery is asynchronous)
+     */
     public boolean sendToSlackWithCanonical(CanonicalObject object, String templateName, String webHook, String channel, String username) {
         debug("[sendToSlackWithCanonical]");
         PageModelMap model = new PageModelMap();
@@ -69,10 +140,39 @@ public class SlackService extends ComponentProvider {
         return true;
     }
     
+    /**
+     * Sends text message to Slack webhook using default channel and username.
+     * <p>
+     * Convenience overload delegating to four-parameter variant with null channel 
+     * and username. Message text is escaped and formatted as JSON payload.
+     * </p>
+     *
+     * @param message text content for Slack message
+     * @param webHook Slack webhook URL for message delivery
+     * @return true always (actual delivery is asynchronous)
+     */
     public boolean sendMessageToSlack(String message, String webHook) {
         return sendMessageToSlack(message, webHook, null, null);
     }
     
+    /**
+     * Sends text message to Slack webhook with optional channel and username overrides.
+     * <p>
+     * Constructs Slack JSON payload using String.format, escaping double quotes in 
+     * message text with backslash. Optional channel and username fields are included 
+     * only if non-null. Delegates to sendJSONMessageToSlack for asynchronous enqueue.
+     * </p>
+     * <p>
+     * <b>Warning:</b> Message text is escaped for JSON but not validated. 
+     * Ensure user input is sanitized to prevent injection attacks.
+     * </p>
+     *
+     * @param message text content for Slack message
+     * @param webHook Slack webhook URL for message delivery
+     * @param channel optional Slack channel override (e.g., "#general"), null to omit
+     * @param username optional bot username override, null to omit
+     * @return true always (actual delivery is asynchronous)
+     */
     public boolean sendMessageToSlack(String message, String webHook, String channel, String username) {
         debug("[sendMessageToSlack] Message to {}", webHook);
         String requestJson = String.format("{\"text\":\"%s\"%s%s}",
@@ -83,6 +183,23 @@ public class SlackService extends ComponentProvider {
 
     }
 
+    /**
+     * Enqueues pre-formatted JSON payload for asynchronous Slack delivery.
+     * <p>
+     * Creates HttpRequestTask with webhook URL and JSON message body, persisting 
+     * via unsecure repository for background job delivery. Returns immediately 
+     * without waiting for HTTP response. Actual HTTP POST occurs asynchronously 
+     * via scheduled job processing HttpRequestTask queue.
+     * </p>
+     * <p>
+     * <b>Note:</b> Uses unsecure repository - delivery not subject to privilege checks.
+     * Suitable for system-level notifications.
+     * </p>
+     *
+     * @param requestJson formatted JSON payload conforming to Slack webhook API
+     * @param webHook Slack webhook URL for message delivery
+     * @return true always (enqueue successful, not HTTP response)
+     */
     public boolean sendJSONMessageToSlack(String requestJson, String webHook) {
         debug("[sendMessageToSlack] Message to {}", webHook);
         HttpRequestTask httpRequestTask = new HttpRequestTask(webHook, requestJson);
@@ -91,6 +208,23 @@ public class SlackService extends ComponentProvider {
 
     }
 
+    /**
+     * Posts message to Slack webhook synchronously using RestTemplate.
+     * <p>
+     * Constructs simple JSON payload with text field, escaping double quotes. 
+     * Performs immediate HTTP POST using RestTemplate.postForEntity, blocking 
+     * thread until Slack responds or timeout occurs. Validates webhook URL 
+     * not blank before posting.
+     * </p>
+     * <p>
+     * <b>Note:</b> Synchronous method blocks calling thread. Prefer asynchronous 
+     * sendMessageToSlack methods to avoid blocking request threads.
+     * </p>
+     *
+     * @param message text content for Slack message
+     * @param webHook Slack webhook URL for message delivery
+     * @return true always (even if webhook blank or HTTP fails)
+     */
     public boolean postMessageToSlackWebhook(String message, String webHook) {
         debug("[postMessageToSlackWebhook]");
         String requestJson = String.format("{\"text\":\"%s\"}",
@@ -103,6 +237,18 @@ public class SlackService extends ComponentProvider {
         return true;
     }
 
+    /**
+     * Renders Thymeleaf template with model variables for message content generation.
+     * <p>
+     * Creates Context with current locale from LocaleContextHolder, populates model 
+     * entries as template variables, processes template to string. Enables dynamic 
+     * message content with entity property access and conditional logic in templates.
+     * </p>
+     *
+     * @param templateName Thymeleaf template name for rendering
+     * @param model template variables map for property access
+     * @return rendered message content as string
+     */
     public String prepareContent(String templateName, Map<String, Object> model) {
         debug("[prepareContent] {}", templateName);
         final Context ctx = new Context(LocaleContextHolder.getLocale());

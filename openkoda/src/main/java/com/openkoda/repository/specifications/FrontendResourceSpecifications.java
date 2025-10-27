@@ -33,13 +33,40 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDateTime;
 
 /**
+ * JPA Criteria API Specification builders for dynamic FrontendResource and File entity queries.
+ * <p>
+ * Provides static factory methods that return {@link Specification} instances for type-safe query 
+ * construction using the JPA Criteria API. These specifications are composable via {@code and()}/{@code or()} 
+ * operators to build complex filtering conditions. Used by repositories for flexible search and filtering 
+ * of frontend resources and file entities.
+ * </p>
+ * <p>
+ * Note: Uses string-based attribute names ("name", "resourceType", "createdOn") which are fragile 
+ * to entity refactoring. Consider migrating to JPA metamodel for type safety.
+ * </p>
  *
- *
- * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see org.springframework.data.jpa.domain.Specification
+ * @see com.openkoda.model.component.FrontendResource
+ * @see com.openkoda.model.file.File
+ * @see jakarta.persistence.criteria.CriteriaBuilder
  */
 public class FrontendResourceSpecifications implements ReadableCode {
 
+    /**
+     * Creates a Specification that matches FrontendResource entities by exact name.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * FrontendResourceSpecifications.searchByName("header.js")
+     * }</pre>
+     * </p>
+     *
+     * @param name The exact name to search for. Uses case-sensitive equality matching via {@link CriteriaBuilder#equal}
+     * @return Specification for FrontendResource filtering by name attribute
+     */
     public static Specification<FrontendResource> searchByName(String name) {
 
         return new Specification<FrontendResource>() {
@@ -51,12 +78,41 @@ public class FrontendResourceSpecifications implements ReadableCode {
 
     }
 
+    /**
+     * Creates a time-sensitive Specification that matches File entities created within the specified time window.
+     * <p>
+     * Note: This specification captures {@link LocalDateTime#now()} at construction time, making it 
+     * time-dependent and unsuitable for caching across evaluation points.
+     * </p>
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * searchNotOlderThan(30).and(searchByType(type))
+     * }</pre>
+     * </p>
+     *
+     * @param minutes Number of minutes in the past to search from current time. Files with createdOn timestamps 
+     *                greater than {@code LocalDateTime.now().minusMinutes(minutes)} will match
+     * @return Specification for File filtering by createdOn timestamp
+     */
     public static Specification<File> searchNotOlderThan(int minutes) {
 
         return (root, query, cb) -> cb.greaterThan(root.get("createdOn"), LocalDateTime.now().minusMinutes(minutes));
 
     }
 
+    /**
+     * Creates a Specification that matches FrontendResource entities by resource type.
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * searchByResourceType(ResourceType.JS).or(searchByResourceType(ResourceType.CSS))
+     * }</pre>
+     * </p>
+     *
+     * @param resourceType The {@link FrontendResource.ResourceType} enum value to match. Uses equality comparison
+     * @return Specification for FrontendResource filtering by resourceType attribute
+     */
     public static Specification<FrontendResource> searchByResourceType(FrontendResource.ResourceType resourceType) {
 
         return new Specification<FrontendResource>() {

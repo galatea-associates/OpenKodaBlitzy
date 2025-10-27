@@ -26,11 +26,36 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for custom Spring scopes
+ * Spring configuration class that registers HazelcastBeanFactoryPostProcessor bean.
+ * <p>
+ * Annotated with {@code @Configuration} to enable bean registration. Exposes
+ * {@code beanFactoryPostProcessor()} factory method returning HazelcastBeanFactoryPostProcessor
+ * instance. Spring invokes BeanFactoryPostProcessor in correct lifecycle phase (after definition
+ * loading, before instantiation).
+ * </p>
+ * <p>
+ * This configuration enables custom Hazelcast-based session scopes within the Spring application
+ * context, allowing beans to be scoped to distributed Hazelcast sessions.
+ * </p>
+ *
+ * @see HazelcastBeanFactoryPostProcessor
+ * @since 1.7.1
+ * @author OpenKoda Team
+ * @version 1.7.1
  */
 @Configuration
 public class HazelcastScopeConfig {
 
+    /**
+     * Creates HazelcastBeanFactoryPostProcessor bean for custom scope registration.
+     * <p>
+     * Returns post-processor that will be invoked by Spring during bean factory initialization.
+     * The processor registers Hazelcast-based session scopes in the Spring application context,
+     * enabling distributed session management across clustered environments.
+     * </p>
+     *
+     * @return BeanFactoryPostProcessor for Hazelcast session scope registration
+     */
     @Bean
     public static BeanFactoryPostProcessor beanFactoryPostProcessor() {
         return new HazelcastBeanFactoryPostProcessor();

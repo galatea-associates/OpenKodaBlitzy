@@ -44,23 +44,120 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import java.util.Map;
 
+/**
+ * Spring MVC argument resolver for {@link AbstractOrganizationRelatedEntityForm} parameters.
+ * <p>
+ * This resolver automatically creates and binds form instances in controller methods.
+ * It resolves form instances using {@link CRUDControllerConfiguration} lookup via
+ * {@link UrlHelper} or {@link FrontendMappingMap}, calls {@code createNewForm} or
+ * {@code createNewEntity}, then binds HTTP request parameters to the form using
+ * {@link WebDataBinderFactory} and attaches {@link BindingResult} to the
+ * {@link ModelAndViewContainer}.
+ * </p>
+ * <p>
+ * The resolver implements a two-phase resolution strategy:
+ * </p>
+ * <ol>
+ * <li>URL-based lookup: Extracts mapping key from request URL via {@code getMappingKeyOrNull},
+ * retrieves {@link CRUDControllerConfiguration} from {@code htmlCRUDControllerConfigurationMap},
+ * and creates form using {@code createNewForm()}</li>
+ * <li>Parameter-based lookup: Reads {@code frontendMappingDefinition} parameter,
+ * retrieves {@link FrontendMapping} from {@code frontendMappingMap}, builds dynamic form
+ * configuration with {@link ReflectionBasedEntityForm}, extracts tenant context via
+ * {@link TenantResolver}, and creates organization-scoped form</li>
+ * </ol>
+ * <p>
+ * Example usage:
+ * <pre>
+ * {@code @RequestMapping("/settings/edit")}
+ * public String edit(AbstractOrganizationRelatedEntityForm form) { ... }
+ * </pre>
+ * </p>
+ *
+ * @see AbstractOrganizationRelatedEntityForm
+ * @see CRUDControllerConfiguration
+ * @see MapEntityForm
+ * @see HandlerMethodArgumentResolver
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 public class MapFormArgumentResolver implements HandlerMethodArgumentResolver, HasSecurityRules, ReadableCode {
 
+    /**
+     * Map of URL-based CRUD controller configurations for form resolution.
+     * Used in first phase of resolution strategy to look up configurations by mapping key.
+     */
     private final HtmlCRUDControllerConfigurationMap htmlCRUDControllerConfigurationMap;
+    
+    /**
+     * Map of frontend mapping definitions for parameter-based form resolution.
+     * Used in second phase when {@code frontendMappingDefinition} parameter is present.
+     */
     private final FrontendMappingMap frontendMappingMap;
+    
+    /**
+     * Helper for extracting mapping keys from request URLs.
+     * Enables URL-based configuration lookup in the first resolution phase.
+     */
     private final UrlHelper urlHelper;
 
+    /**
+     * Creates a new MapFormArgumentResolver with required dependencies.
+     *
+     * @param htmlCRUDControllerConfigurationMap map of URL-based CRUD configurations
+     * @param frontendMappingMap map of frontend mapping definitions
+     * @param urlHelper helper for URL mapping key extraction
+     */
     public MapFormArgumentResolver(HtmlCRUDControllerConfigurationMap htmlCRUDControllerConfigurationMap, FrontendMappingMap frontendMappingMap, UrlHelper urlHelper) {
         this.htmlCRUDControllerConfigurationMap = htmlCRUDControllerConfigurationMap;
         this.frontendMappingMap = frontendMappingMap;
         this.urlHelper = urlHelper;
     }
 
+    /**
+     * Determines if this resolver supports the given method parameter.
+     * <p>
+     * Returns {@code true} only when the parameter type is exactly
+     * {@link AbstractOrganizationRelatedEntityForm}, enabling automatic form
+     * resolution for organization-related entity forms in controller methods.
+     * </p>
+     *
+     * @param parameter the method parameter to check
+     * @return {@code true} if parameter type equals AbstractOrganizationRelatedEntityForm, {@code false} otherwise
+     */
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return AbstractOrganizationRelatedEntityForm.class.equals(parameter.getParameterType());
     }
 
+    /**
+     * Resolves and binds an {@link AbstractOrganizationRelatedEntityForm} instance from the web request.
+     * <p>
+     * Implements a two-phase resolution strategy:
+     * </p>
+     * <ol>
+     * <li><b>URL-based lookup</b>: Extracts mapping key via {@code urlHelper.getMappingKeyOrNull()},
+     * retrieves {@link CRUDControllerConfiguration} from {@code htmlCRUDControllerConfigurationMap},
+     * creates form using {@code conf.createNewForm()}, and binds request parameters</li>
+     * <li><b>Parameter-based lookup</b>: Reads {@code frontendMappingDefinition} request parameter,
+     * retrieves {@link FrontendMapping} from {@code frontendMappingMap}, builds configuration with
+     * {@code CRUDControllerConfiguration.getBuilder()} using {@link ReflectionBasedEntityForm},
+     * extracts tenant organization ID via {@link TenantResolver}, creates entity and form using
+     * {@code conf.createNewEntity()} and {@code conf.createNewForm()}, and binds request parameters</li>
+     * </ol>
+     * <p>
+     * Binding uses {@link ServletRequestParameterPropertyValues} to extract request parameters,
+     * {@link WebDataBinderFactory} to create a binder, applies binding with {@code binder.bind()},
+     * and stores {@link BindingResult} in the {@link ModelAndViewContainer}.
+     * </p>
+     *
+     * @param parameter the method parameter to resolve
+     * @param mavContainer the model and view container for storing binding results
+     * @param webRequest the current web request containing parameters
+     * @param binderFactory factory for creating web data binders
+     * @return the resolved and bound form instance, or {@code null} if no configuration found
+     * @throws Exception if form binding or resolution fails
+     */
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         String mappingKey = urlHelper.getMappingKeyOrNull((HttpServletRequest) webRequest.getNativeRequest());
@@ -91,6 +188,21 @@ public class MapFormArgumentResolver implements HandlerMethodArgumentResolver, H
 //        throw new RuntimeException("Cannot resolve AbstractOrganizationRelatedEntityForm for url " + webRequest.getContextPath());
     }
 
+    /**
+     * Binds HTTP request parameters to the given form and stores binding results.
+     * <p>
+     * Uses {@link ServletRequestParameterPropertyValues} to extract request parameters,
+     * creates a {@link WebDataBinder} via {@code binderFactory.createBinder()}, applies
+     * parameter binding with {@code binder.bind()}, retrieves the {@link BindingResult},
+     * and adds it to the {@link ModelAndViewContainer} for validation error handling.
+     * </p>
+     *
+     * @param mavContainer the model and view container for storing binding results
+     * @param webRequest the current web request containing form parameters
+     * @param binderFactory factory for creating web data binders
+     * @param form the form instance to bind parameters to
+     * @throws Exception if parameter binding fails
+     */
     private static void bindForm(ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory, AbstractOrganizationRelatedEntityForm form) throws Exception {
         ServletWebRequest swr = (ServletWebRequest) webRequest;
         PropertyValues pv = new ServletRequestParameterPropertyValues(swr.getRequest());

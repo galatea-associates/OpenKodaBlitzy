@@ -30,17 +30,62 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 
+/**
+ * Spring Data JPA repository managing Notification entities for user notifications, push notifications and in-app alerts.
+ * <p>
+ * This repository provides paginated queries for retrieving notifications with read status, supporting three notification
+ * visibility scopes:
+ * </p>
+ * <ul>
+ *   <li>User-specific notifications (organizationId=null, userId set)</li>
+ *   <li>Organization-specific notifications (userId=null, organizationId set)</li>
+ *   <li>Global notifications (both userId and organizationId null)</li>
+ * </ul>
+ * <p>
+ * The repository uses LEFT JOIN with ReadNotification to efficiently determine read/unread status without N+1 queries.
+ * Results are ordered to prioritize unread notifications (rn.notificationId DESC) and recent notifications (n.id DESC).
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see Notification
+ * @see NotificationKeeper
+ * @see com.openkoda.model.notification.ReadNotification
+ * @see com.openkoda.repository.SecureNotificationRepository
+ */
 public interface NotificationRepository extends UnsecuredFunctionalRepositoryWithLongId<Notification> {
 
     /**
-     * <p>findAll</p>
-     * <p>Returns new object NotificationKeeper which is holding a pair of Notification object and Notification id from ReadNotifications</p>
-     * <p>We query for all Notifications based on 3 conditions: </p>
-     * <p>1. Null organizationId and proper userId - user specific notification</p>
-     * <p>2. Null userId and proper organizationIds - organization specific notification</p>
-     * <p>3. Null userId and organizationId - global notification</p>
-     * <p>Additionally we check priviliges</p>
-     * <p>Return Page of NotificationKeeper ordered so Unread notifications (the ones with null value of rn.notificationId) come 1st</p>
+     * Retrieves paginated notifications for a user with read status included.
+     * <p>
+     * This method uses JPQL SELECT NEW to create NotificationKeeper instances containing the Notification entity
+     * and the read notification ID. The query returns notifications matching three conditions:
+     * </p>
+     * <ol>
+     *   <li>User-specific: null organizationId and matching userId</li>
+     *   <li>Organization-specific: null userId and organizationId in user's organizations</li>
+     *   <li>Global: both userId and organizationId null</li>
+     * </ol>
+     * <p>
+     * Notifications marked hiddenFromAuthor=true are excluded for their creator to prevent self-notification display.
+     * The LEFT JOIN with ReadNotification ensures unread notifications (with null rn.notificationId) are included in results.
+     * </p>
+     * <p>
+     * Ordering strategy: Results are ordered by rn.notificationId DESC (unread notifications first with null sorting last in DESC),
+     * then by n.id DESC (recent notifications first).
+     * </p>
+     * <p>
+     * Typical usage:
+     * <pre>
+     * notificationRepository.findAll(currentUser.getId(), userOrganizationIds, PageRequest.of(0, 20));
+     * </pre>
+     * </p>
+     *
+     * @param userId the ID of the user requesting notifications, must not be null
+     * @param organizationIds the set of organization IDs the user belongs to, may be empty for users without organizations
+     * @param pageable pagination and sorting parameters from Spring Data, must not be null
+     * @return Page of NotificationKeeper instances containing notification entities with read status, empty page if no notifications match
      */
     @Query("SELECT new com.openkoda.repository.notifications.NotificationKeeper(n, rn.notificationId) FROM Notification n " +
             "LEFT JOIN n.readNotifications rn WHERE " +

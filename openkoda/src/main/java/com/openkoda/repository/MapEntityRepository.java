@@ -26,6 +26,38 @@ import com.openkoda.core.security.HasSecurityRules;
 import com.openkoda.model.MapEntity;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Repository managing MapEntity instances for geospatial data with WKT POINT coordinates.
+ * <p>
+ * Manages MapEntity entities storing geographic locations with Well-Known Text (WKT) POINT format
+ * via JTS library. Supports geospatial queries and coordinate-based searches. Used by map services
+ * for location parsing, geocoding, and spatial data visualization. Integrates with JTS Geometry
+ * types for PostGIS compatibility.
+ * </p>
+ * <p>
+ * This repository extends {@link UnsecuredFunctionalRepositoryWithLongId} to provide standard CRUD
+ * operations and query methods for MapEntity objects without additional privilege enforcement.
+ * Geographic coordinates are stored using JTS (Java Topology Suite) geometry types compatible with
+ * PostGIS spatial database extensions.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * MapEntity location = new MapEntity();
+ * location.setCoordinates(wktPoint); // WKT format: "POINT(longitude latitude)"
+ * mapEntityRepository.save(location);
+ * }</pre>
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see MapEntity
+ * @see UnsecuredFunctionalRepositoryWithLongId
+ * @see <a href="https://locationtech.github.io/jts/">JTS Topology Suite</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry">WKT Specification</a>
+ * @see <a href="https://postgis.net/">PostGIS Spatial Database</a>
+ */
 @Repository
 public interface MapEntityRepository extends UnsecuredFunctionalRepositoryWithLongId<MapEntity>, HasSecurityRules {
 

@@ -25,6 +25,43 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
+/**
+ * Singleton registry bean for {@link FrontendMapping} lookups by unique mapping names.
+ * <p>
+ * This class extends {@link HashMap}{@code <String, FrontendMapping>} to store mappings from
+ * unique mapping names (as defined in {@code FrontendMappingDefinition.name}) to their
+ * corresponding {@link FrontendMapping} instances. Each FrontendMapping bundles a form definition
+ * with its associated repository for data access operations.
+ * </p>
+ * <p>
+ * The {@link Component @Component} annotation makes this class an injectable Spring singleton,
+ * ensuring a single shared registry instance across the application. Controllers and services
+ * retrieve registered mappings via Spring dependency injection and map lookups.
+ * </p>
+ * <p>
+ * <strong>Thread-Safety Considerations:</strong><br>
+ * This class inherits mutability from {@link HashMap} and is <strong>not thread-safe</strong>
+ * by default. All mutation operations (put, remove) must be synchronized externally.
+ * {@link BasicCustomisationService} uses the {@code synchronized} keyword when modifying this
+ * map to ensure thread-safe registration during application startup and runtime customization.
+ * </p>
+ * <p>
+ * <strong>Usage Example:</strong>
+ * <pre>{@code
+ * @Autowired
+ * private FrontendMappingMap mappingMap;
+ *
+ * FrontendMapping mapping = mappingMap.get("userForm");
+ * }</pre>
+ * </p>
+ *
+ * @see FrontendMapping
+ * @see CustomisationService#registerFrontendMapping(String, FrontendMapping)
+ * @see CustomisationService#unregisterFrontendMapping(String)
+ * @see BasicCustomisationService
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 @Component
 public class FrontendMappingMap extends HashMap<String, FrontendMapping> {
 }

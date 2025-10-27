@@ -73,6 +73,33 @@
                         </execution>
                     </executions>
                 </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <show>public</show>
+                    <author>true</author>
+                    <version>true</version>
+                    <doctitle>OpenKoda API Documentation</doctitle>
+                    <windowtitle>OpenKoda API</windowtitle>
+                    <source>11</source>
+                    <detectJavaApiLink>true</detectJavaApiLink>
+                    <additionalOptions>
+                        <additionalOption>-Xdoclint:all</additionalOption>
+                        <additionalOption>-Xdoclint:-missing</additionalOption>
+                    </additionalOptions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-javadoc</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

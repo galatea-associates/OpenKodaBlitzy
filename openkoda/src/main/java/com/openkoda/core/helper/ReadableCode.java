@@ -21,8 +21,42 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.openkoda.core.helper;
 
+/**
+ * Provides a named boolean negation method for improved code readability.
+ * <p>
+ * This interface uses Java 8 default methods to offer a more expressive way to negate
+ * boolean values in conditional expressions. The {@code not()} method makes code more
+ * readable by using a natural language construct instead of the {@code !} operator.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * if (not(userExists)) {
+ *     createNewUser();
+ * }
+ * }</pre>
+ * </p>
+ * <p>
+ * Thread-safety: The default method is stateless and safe for concurrent use.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ */
 public interface ReadableCode {
 
+    /**
+     * Provides readable boolean negation for improved code clarity.
+     * <p>
+     * This method returns the logical negation of the provided boolean value,
+     * offering a more expressive alternative to the {@code !} operator in
+     * conditional expressions.
+     * </p>
+     *
+     * @param b the boolean value to negate
+     * @return the logical negation of the input value
+     */
     default boolean not( boolean b) {
         return !b;
     }

@@ -29,6 +29,38 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Formula;
 
+/**
+ * Organization-scoped key-value store entity persisting flexible JSON string with transient typed Map view for configuration and metadata storage.
+ * <p>
+ * Persisted to map_entity table. Provides flexible key-value storage per organization without schema constraints.
+ * Stores data as JSON string in value column (length ~65536*4 = 262144 characters). Exposes transient valueAsMap
+ * property (OrganizationRelatedMap) deserialized via JsonHelper.from(value, OrganizationRelatedMap.class).
+ * </p>
+ * <p>
+ * <strong>WARNING:</strong> setValueAsMap and updateValueFromMap have different serialization behaviors - setValueAsMap
+ * caches in transient field, updateValueFromMap immediately serializes to value column. Extends TimestampedEntity for
+ * audit timestamps.
+ * </p>
+ * <p>
+ * Usage: Store organization-specific configuration, preferences, or metadata that doesn't fit fixed schema. Alternative
+ * to properties Map in Organization entity for bulk key-value storage.
+ * </p>
+ * <p>
+ * JSON handling: Uses JsonHelper for serialization/deserialization. transient valueAsMap field holds parsed Map, value
+ * column holds serialized JSON string.
+ * </p>
+ * <p>
+ * <strong>WARNING:</strong> setValueAsMap vs updateValueFromMap semantics differ. setValueAsMap only updates transient
+ * field and caches for later serialization. updateValueFromMap immediately serializes to value column for persistence.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see Organization
+ * @see OrganizationRelatedMap
+ * @see JsonHelper
+ */
 @Entity
 @Table (name = "map_entity")
 public class MapEntity extends TimestampedEntity implements SearchableOrganizationRelatedEntity, AuditableEntityOrganizationRelated, EntityWithRequiredPrivilege {
@@ -59,9 +91,17 @@ public class MapEntity extends TimestampedEntity implements SearchableOrganizati
     @Column
     private String key;
 
+    /**
+     * JSON string storing serialized key-value Map. Maximum length ~262144 characters (65536*4).
+     * Contains serialized OrganizationRelatedMap.
+     */
     @Column(length = 65536 * 4)
     private String value;
 
+    /**
+     * Transient typed Map view of value JSON string. Lazy-initialized on first getValueAsMap() call
+     * via JsonHelper.from(value, OrganizationRelatedMap.class). Not persisted directly.
+     */
     @Transient
     public OrganizationRelatedMap valueAsMap;
 
@@ -83,7 +123,12 @@ public class MapEntity extends TimestampedEntity implements SearchableOrganizati
         return referenceString;
     }
 
-
+    /**
+     * Returns deserialized Map from value JSON string. Lazy-initializes on first call.
+     * Returns null if value is null.
+     *
+     * @return deserialized OrganizationRelatedMap from value JSON string, or null if value is null
+     */
     public OrganizationRelatedMap getValueAsMap() {
         if (valueAsMap == null) {
             valueAsMap = JsonHelper.from(this.value, OrganizationRelatedMap.class);
@@ -91,10 +136,20 @@ public class MapEntity extends TimestampedEntity implements SearchableOrganizati
         return valueAsMap;
     }
 
+    /**
+     * Sets transient valueAsMap field. Caches Map for later serialization.
+     * Does NOT immediately update value column.
+     *
+     * @param valueMap the OrganizationRelatedMap to cache in transient field
+     */
     public void setValueAsMap(OrganizationRelatedMap valueMap) {
         value = JsonHelper.to(valueMap);
     }
 
+    /**
+     * Serializes valueAsMap to value column immediately via JsonHelper.toJson().
+     * Call before persist/merge to ensure JSON string updated.
+     */
     public void updateValueFromMap() {
         value = JsonHelper.to(valueAsMap);
     }

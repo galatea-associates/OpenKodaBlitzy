@@ -21,6 +21,28 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 
+/**
+ * Per-organization email transport configuration entity storing SMTP settings, API credentials, and mail provider configuration.
+ * <p>
+ * Persisted to email_config table. Stores organization-specific email delivery configuration including Mailgun API keys,
+ * SMTP credentials (username/password), and mail server settings. Enables multi-tenant email delivery with per-organization
+ * mail providers. Uses @DynamicUpdate for selective column updates. organizationId is non-updatable foreign key enforcing
+ * one config per organization. Includes @Formula-derived referenceString for display and requiredReadPrivilege/requiredWritePrivilege
+ * for access control.
+ * </p>
+ * <p>
+ * Multi-tenancy: Each organization can have distinct email provider configuration. organizationId enforced as non-updatable
+ * to prevent config reassignment.
+ * </p>
+ * <p>
+ * Security: Stores sensitive credentials (mailgunApiKey, password). Should be encrypted at rest in production.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see Organization
+ */
 @Entity
 @DynamicUpdate
 public class EmailConfig extends TimestampedEntity implements AuditableEntity, EntityWithRequiredPrivilege, SearchableEntity, OrganizationRelatedEntity {
@@ -32,6 +54,10 @@ public class EmailConfig extends TimestampedEntity implements AuditableEntity, E
     @GeneratedValue(generator = ModelConstants.GLOBAL_ID_GENERATOR, strategy = GenerationType.SEQUENCE)
     private Long id;
     
+    /**
+     * Mailgun REST API key for email delivery via Mailgun service.
+     * Nullable if using SMTP instead.
+     */
     @Column(nullable = true, updatable = true, name = "mailgunApiKey")
     private String mailgunApiKey;
     
@@ -41,9 +67,17 @@ public class EmailConfig extends TimestampedEntity implements AuditableEntity, E
     @Column(nullable = true, updatable = true, name = "port")
     private Integer port;
 
+    /**
+     * SMTP authentication username for direct mail server connection.
+     * Nullable if using Mailgun API.
+     */
     @Column(nullable = true, updatable = true, name = "username")
     private String username;
 
+    /**
+     * SMTP authentication password for direct mail server connection.
+     * Nullable if using Mailgun API.
+     */
     @Column(nullable = true, updatable = true, name = "password")
     private String password;
 
@@ -70,15 +104,28 @@ public class EmailConfig extends TimestampedEntity implements AuditableEntity, E
     @JoinColumn(nullable = true, insertable = false, updatable = false, name = ORGANIZATION_ID)
     private Organization organization;
     
+    /**
+     * @Formula-derived display string for UI reference.
+     */
     @Formula(DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA)
     private String referenceString;
     
+    /**
+     * Foreign key to organization entity.
+     * @Column(updatable=false) - Non-updatable after creation to prevent config migration between tenants.
+     */
     @Column(nullable = true, updatable = false, name = ORGANIZATION_ID)
     private Long organizationId;
     
+    /**
+     * @Formula-derived privilege token for email config read access control.
+     */
     @Formula("( '" + PrivilegeNames._canReadBackend + "' )")
     private String requiredReadPrivilege;
 
+    /**
+     * @Formula-derived privilege token for email config write access control.
+     */
     @Formula("( '" + PrivilegeNames._canManageBackend + "' )")
     private String requiredWritePrivilege;
     
@@ -112,6 +159,11 @@ public class EmailConfig extends TimestampedEntity implements AuditableEntity, E
         return id;
     }
 
+    /**
+     * Returns stable identifier for audit trail entries.
+     *
+     * @return the constant name "emailConfig" for audit logging
+     */
     @Override
     public String toAuditString() {
         return NAME;

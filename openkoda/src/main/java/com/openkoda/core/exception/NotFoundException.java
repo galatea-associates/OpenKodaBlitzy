@@ -26,16 +26,66 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Exception that should be thrown when a resource is not found, AKA 404
+ * Exception thrown when a requested resource cannot be found in the system.
+ * <p>
+ * This exception should be used when an entity lookup fails, such as when querying
+ * for an organization, user, or other resource by ID that does not exist in the database.
+ * It automatically maps to HTTP 404 (Not Found) status when thrown from Spring MVC controllers.
+ * </p>
+ * <p>
+ * The {@code @ResponseStatus} annotation instructs Spring MVC to return an HTTP 404 response
+ * with the reason "Resource Not Found" when this exception is thrown and not caught.
+ * The exception extends {@link HttpStatusException}, allowing programmatic access to the
+ * HTTP status code via {@code getHttpStatus()}.
+ * </p>
+ * <p>
+ * Typical usage in repository or service layers:
+ * <pre>{@code
+ * Organization org = organizationRepository.findById(id)
+ *     .orElseThrow(() -> new NotFoundException("Organization not found: " + id));
+ * }</pre>
+ * </p>
+ * <p>
+ * When uncaught, this exception is handled by {@code ErrorLoggingExceptionResolver},
+ * which logs the error and returns a formatted error response to the client.
+ * The {@code serialVersionUID} ensures serialization stability across application versions.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see HttpStatusException
+ * @see org.springframework.web.bind.annotation.ResponseStatus
  */
 @ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "Resource Not Found")
 public class NotFoundException extends HttpStatusException {
 
+    /**
+     * Serial version UID for serialization compatibility across application versions.
+     */
     private static final long serialVersionUID = 1886015530047410403L;
 
+    /**
+     * Creates a new NotFoundException with a descriptive error message.
+     * <p>
+     * Use this constructor to provide specific details about the missing resource,
+     * such as the entity type and identifier that could not be found.
+     * </p>
+     *
+     * @param message the descriptive error message explaining which resource was not found,
+     *                typically includes the entity type and ID (e.g., "User not found: 123")
+     */
     public NotFoundException(String message) {
         super(HttpStatus.NOT_FOUND, message);
     }
+
+    /**
+     * Creates a new NotFoundException with a default error message.
+     * <p>
+     * Use this no-argument constructor when a generic "not found" error is sufficient
+     * and specific resource details are not needed in the error message.
+     * </p>
+     */
     public NotFoundException() {
         super(HttpStatus.NOT_FOUND);
 

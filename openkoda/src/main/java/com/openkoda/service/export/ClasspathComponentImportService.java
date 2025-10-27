@@ -28,17 +28,80 @@ import java.util.jar.JarFile;
 
 import static com.openkoda.service.export.FolderPathConstants.*;
 
+/**
+ * Discovers and imports OpenKoda component YAML definitions from classpath resources, supporting both filesystem and JAR-packaged deployments.
+ * <p>
+ * Extends {@link YamlComponentImportService} to scan configured base paths ({@link FolderPathConstants#BASE_FILE_PATHS}) and subdirectories
+ * ({@link FolderPathConstants#SUBDIR_FILE_PATHS}) for .yaml files. Handles both file:// URLs (development) and jar:// URLs (packaged WAR/JAR),
+ * parses YAML using SnakeYAML, delegates entity conversion to YamlToEntityConverterFactory, optionally executes /migration/upgrade.sql
+ * database scripts, and triggers search index refresh after import completion.
+ * </p>
+ * <p>
+ * Resource resolution supports organization-specific YAML files in org_{id} subfolders with fallback to common files. For example,
+ * when loading a component for organization 123, the service first searches for {@code components/basePath/accessLevel/org_123/name.yaml},
+ * then falls back to {@code components/basePath/accessLevel/name.yaml} if organization-specific file is not found.
+ * </p>
+ * <p>
+ * Thread-safety: Stateless service safe for concurrent use. However, component import operations should be synchronized at the application
+ * level to prevent duplicate entity creation.
+ * </p>
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * classpathComponentImportService.loadAllComponents();
+ * }</pre>
+ * </p>
+ *
+ * @see YamlComponentImportService
+ * @see FolderPathConstants
+ * @see QueryExecutor
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 @Service
 public class ClasspathComponentImportService extends YamlComponentImportService {
 
+    /**
+     * Query executor for running database migration scripts discovered at /migration/upgrade.sql.
+     * Used to execute SQL commands in a transaction after component YAML files are loaded.
+     */
     @Inject
     QueryExecutor queryExecutor;
+    
+    /**
+     * Search index updater job for refreshing Hibernate Search indexes after component import.
+     * Ensures newly imported entities are immediately searchable.
+     */
     @Inject
     SearchIndexUpdaterJob searchIndexUpdaterJob;
     
+    /**
+     * Database version service for managing schema versioning and migrations.
+     * Used internally for database upgrade operations coordinated with component imports.
+     */
     @Inject
     private DbVersionService dbVersionService;
     
+    /**
+     * Scans classpath folders for component YAML definitions, loads and imports all discovered components, executes database migrations, and refreshes search indexes.
+     * <p>
+     * This method orchestrates the complete component import workflow:
+     * <ol>
+     *   <li>Discovers all .yaml files across configured base paths and subdirectories</li>
+     *   <li>Parses each YAML file and converts to OpenKoda component entities</li>
+     *   <li>Executes optional /migration/upgrade.sql script if present on classpath</li>
+     *   <li>Triggers search index refresh to make imported components searchable</li>
+     * </ol>
+     * </p>
+     * <p>
+     * Typically invoked during application startup to initialize components from packaged resources.
+     * </p>
+     *
+     * @see #getAllYamlFiles()
+     * @see #loadYamlFile(String)
+     * @see QueryExecutor#runQueryFromResourceInTransaction(String)
+     * @see SearchIndexUpdaterJob#updateSearchIndexes()
+     */
     public void loadAllComponents() {
         debug("[loadResourcesFromFiles]");
 
@@ -52,6 +115,30 @@ public class ClasspathComponentImportService extends YamlComponentImportService 
         }
         searchIndexUpdaterJob.updateSearchIndexes();
     }
+    
+    /**
+     * Loads an organization-scoped or common YAML component definition by name and access level with automatic fallback logic.
+     * <p>
+     * Resolution strategy:
+     * <ol>
+     *   <li>First attempts to load organization-specific file: {@code components/basePath/accessLevel/org_{organizationId}/name.yaml}</li>
+     *   <li>If not found, falls back to common file: {@code components/basePath/accessLevel/name.yaml}</li>
+     * </ol>
+     * This allows per-tenant component customization while maintaining shared defaults.
+     * </p>
+     * <p>
+     * Example: Loading a form component for organization 42 with GLOBAL access level from "forms" base path
+     * will search for {@code components/forms/global/org_42/myform.yaml}, then {@code components/forms/global/myform.yaml}.
+     * </p>
+     *
+     * @param basePath the base folder path within components directory (e.g., "forms", "controllers"), must not be null
+     * @param accessLevel the access level subdirectory (GLOBAL, ORGANIZATION, etc.), may be null for root level
+     * @param organizationId the organization identifier for scoped resource lookup, must not be null
+     * @param name the component name without .yaml extension, must not be null
+     * @return the parsed YAML content as Object (typically a Map), or null if resource not found
+     * @see FrontendResource.AccessLevel
+     * @see #loadYamlFile(String)
+     */
     public Object loadResourceFromFile(String basePath, FrontendResource.AccessLevel accessLevel, Long organizationId, String name) {
         debug("[loadResourceFromFile] {} {} {}", name, accessLevel, organizationId);
 
@@ -72,6 +159,20 @@ public class ClasspathComponentImportService extends YamlComponentImportService 
         }
         return null;
     }
+    
+    /**
+     * Discovers all .yaml files across configured base paths and subdirectories by scanning classpath resources.
+     * <p>
+     * Iterates through all combinations of {@link FolderPathConstants#BASE_FILE_PATHS} and {@link FolderPathConstants#SUBDIR_FILE_PATHS},
+     * delegating to {@link #getYamlFilesFromDir(String, String, Set)} for protocol-specific scanning (file:// or jar://).
+     * Collects organization-specific YAML files in org_{id} subfolders as well as common files at each path level.
+     * </p>
+     *
+     * @return a Set of relative classpath paths to discovered .yaml files, never null (may be empty)
+     * @see FolderPathConstants#BASE_FILE_PATHS
+     * @see FolderPathConstants#SUBDIR_FILE_PATHS
+     * @see #getYamlFilesFromDir(String, String, Set)
+     */
     private Set<String> getAllYamlFiles() {
         Set<String> yamlFiles = new HashSet<>();
         List<String> allFilePaths = new ArrayList<>(BASE_FILE_PATHS);
@@ -85,6 +186,22 @@ public class ClasspathComponentImportService extends YamlComponentImportService 
         return yamlFiles;
     }
 
+    /**
+     * Enumerates .yaml files from a specific classpath folder by delegating to protocol-specific handlers.
+     * <p>
+     * Resolves all classpath resources matching the folderPath + subdirPath combination, then dispatches to either
+     * {@link #getFromFile(Set, URL, String, String)} for file:// URLs (filesystem directories in development) or
+     * {@link #getFromJar(Set, String, URL)} for jar:// URLs (packaged WAR/JAR deployments). Accumulates discovered
+     * file paths into the provided yamlFiles set.
+     * </p>
+     *
+     * @param folderPath the base folder path to scan (e.g., "components/forms/"), must not be null
+     * @param subdirPath the subdirectory path relative to folderPath (e.g., "global/"), may be empty string
+     * @param yamlFiles the accumulator set for discovered .yaml file paths, modified in place
+     * @throws ResourceLoadingException if IOException occurs while accessing classpath resources
+     * @see #getFromFile(Set, URL, String, String)
+     * @see #getFromJar(Set, String, URL)
+     */
     private void getYamlFilesFromDir(String folderPath, String subdirPath, Set<String> yamlFiles) {
         try {
             Enumeration<URL> resources = getClass().getClassLoader().getResources(folderPath + subdirPath);
@@ -101,6 +218,22 @@ public class ClasspathComponentImportService extends YamlComponentImportService 
         }
     }
 
+    /**
+     * Scans a filesystem directory for .yaml files including organization-specific subfolders (org_{id}).
+     * <p>
+     * Converts the file:// URL to a filesystem Path and enumerates directory contents. For each subdirectory,
+     * recursively scans for .yaml files (supporting org_{id} folder pattern). For direct .yaml files in the
+     * base directory, constructs relative classpath paths by combining basePath, subdirPath, and filename.
+     * Handles Windows path separators by normalizing to forward slashes.
+     * </p>
+     *
+     * @param yamlFiles the accumulator set for discovered .yaml file paths, modified in place
+     * @param url the file:// URL pointing to the directory to scan, must not be null
+     * @param basePath the base classpath path (e.g., "components/forms/"), used to construct relative paths
+     * @param subdirPath the subdirectory path (e.g., "global/"), may be empty string
+     * @throws ResourceLoadingException if URISyntaxException occurs converting URL to Path, or IOException during directory traversal
+     * @see DirectoryStream
+     */
     private void getFromFile(Set<String> yamlFiles, URL url, String basePath, String subdirPath) {
         try {
             Path resourceFolderPath = Paths.get(url.toURI());
@@ -127,6 +260,25 @@ public class ClasspathComponentImportService extends YamlComponentImportService 
         }
     }
 
+    /**
+     * Scans a JAR file for .yaml entries matching the specified folder path prefix.
+     * <p>
+     * Opens a JarURLConnection to the packaged archive, enumerates all JAR entries, and delegates to
+     * {@link #getMatchingJarEntries(JarURLConnection, String)} to filter entries starting with folderPath
+     * and ending with .yaml extension. Accumulates matching entry names as classpath-relative paths.
+     * </p>
+     * <p>
+     * This method enables component discovery in production deployments where resources are packaged
+     * in WAR or JAR files rather than exploded on the filesystem.
+     * </p>
+     *
+     * @param yamlFiles the accumulator set for discovered .yaml file paths, modified in place
+     * @param folderPath the folder path prefix to match (e.g., "components/forms/"), must not be null
+     * @param url the jar:// URL pointing to the JAR resource, must not be null
+     * @throws ResourceLoadingException if IOException occurs opening JAR connection or reading entries
+     * @see JarURLConnection
+     * @see #getMatchingJarEntries(JarURLConnection, String)
+     */
     private void getFromJar(Set<String> yamlFiles, String folderPath, URL url) {
         try {
             URLConnection urlConnection = url.openConnection();
@@ -139,6 +291,21 @@ public class ClasspathComponentImportService extends YamlComponentImportService 
         }
     }
 
+    /**
+     * Enumerates JAR entries with names starting with the specified folder path and ending with .yaml extension.
+     * <p>
+     * Opens the JAR file from the connection, iterates through all entries, and filters by prefix (folderPath)
+     * and suffix (.yaml). Returns a list of matching entry names as classpath-relative paths suitable for
+     * resource loading. Handles nested organization-specific folders (org_{id}) transparently.
+     * </p>
+     *
+     * @param jarConnection the JarURLConnection to the packaged archive, must not be null
+     * @param folderPath the folder path prefix for filtering entries (e.g., "components/forms/"), must not be null
+     * @return a List of matching entry names (e.g., "components/forms/global/myform.yaml"), never null (may be empty)
+     * @throws IOException if error occurs reading JAR file or enumerating entries
+     * @see JarFile
+     * @see JarEntry
+     */
     private List<String> getMatchingJarEntries(JarURLConnection jarConnection, String folderPath) throws IOException {
         List<String> matchingEntries = new ArrayList<>();
         try (JarFile jarFile = jarConnection.getJarFile()) {
@@ -154,6 +321,22 @@ public class ClasspathComponentImportService extends YamlComponentImportService 
         return matchingEntries;
     }
 
+    /**
+     * Loads and parses a YAML file from classpath, delegating DTO-to-entity conversion to YamlToEntityConverterFactory.
+     * <p>
+     * Opens an InputStream for the specified classpath path using {@link #loadResource(String)}, parses YAML content
+     * with SnakeYAML, and delegates the resulting DTO object to {@code yamlToEntityConverterFactory.processYamlDto()}
+     * for conversion to OpenKoda component entities. Returns the parsed YAML content as an Object (typically a Map).
+     * </p>
+     * <p>
+     * Note: The method attempts resource loading twice as a workaround for potential classloader caching issues.
+     * </p>
+     *
+     * @param yamlFile the classpath-relative path to the .yaml file (e.g., "components/forms/global/myform.yaml"), must not be null
+     * @return the parsed YAML content as Object, or null if resource not found or parsing fails
+     * @see #loadResource(String)
+     * @see Yaml#load(InputStream)
+     */
     private Object loadYamlFile(String yamlFile) {
         InputStream inputStream = loadResource(yamlFile);
         if(inputStream == null){
@@ -166,6 +349,18 @@ public class ClasspathComponentImportService extends YamlComponentImportService 
         return null;
     }
 
+    /**
+     * Opens an InputStream for a classpath resource at the specified path using the thread context classloader.
+     * <p>
+     * Wraps {@code ClassLoader.getResourceAsStream()} to load resources from both filesystem (development) and
+     * packaged archives (JAR/WAR). Returns null if the resource does not exist rather than throwing an exception,
+     * allowing caller to handle missing resources gracefully.
+     * </p>
+     *
+     * @param path the classpath-relative path to the resource (e.g., "components/forms/myform.yaml"), must not be null
+     * @return an InputStream for reading the resource content, or null if resource not found
+     * @see ClassLoader#getResourceAsStream(String)
+     */
     private InputStream loadResource(String path) {
         return this.getClass().getClassLoader().getResourceAsStream(path);
     }
