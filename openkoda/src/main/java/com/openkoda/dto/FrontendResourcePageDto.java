@@ -23,5 +23,23 @@ package com.openkoda.dto;
 
 import com.openkoda.dto.system.FrontendResourceDto;
 
+/**
+ * Specialized subtype of FrontendResourceDto for page-scoped frontend resources.
+ * <p>
+ * This class serves as a marker type with no additional fields or behavior beyond
+ * what is inherited from FrontendResourceDto. It enables type differentiation in CMS
+ * and frontend resource management systems, allowing controllers and services to
+ * distinguish page resources from other resource types such as snippets or templates.
+ * </p>
+ * <p>
+ * The type distinction is useful for routing, filtering, and applying page-specific
+ * business rules without adding runtime overhead or additional data fields.
+ * </p>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see FrontendResourceDto
+ */
 public class FrontendResourcePageDto extends FrontendResourceDto {
 }
