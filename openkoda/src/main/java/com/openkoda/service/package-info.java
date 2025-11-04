@@ -25,11 +25,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Provides Spring-managed service beans implementing business logic, orchestration workflows, and integration with external systems.
  * This package serves as the application's service layer, coordinating between controllers (presentation), repositories (data access),
  * and core framework components.
- * </p>
+ * 
  * <p>
  * The service layer is organized into functional subpackages:
- * </p>
- * <h3>Core Service Capabilities</h3>
+ * 
+ * <b>Core Service Capabilities</b>
  * <ul>
  * <li><b>Services.java</b>: Central aggregator exposing 50+ service beans as injectable fields for legacy code compatibility</li>
  * <li><b>export/</b>: Component export/import orchestration using YAML serialization and ZIP packaging</li>
@@ -39,7 +39,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li><b>user/</b>: User account management, authentication tokens, API keys, roles, and privileges</li>
  * <li><b>upgrade/</b>: Database schema migration orchestration with version tracking and transactional execution</li>
  * </ul>
- * <h3>Supporting Services</h3>
+ * <b>Supporting Services</b>
  * <ul>
  * <li><b>map/</b>: Geospatial WKT POINT parsing via JTS topology library</li>
  * <li><b>notification/</b>: Application notification lifecycle and delivery management</li>
@@ -48,22 +48,22 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li><b>autocomplete/</b>: Reflection-based autocomplete for forms and web endpoints</li>
  * <li><b>captcha/</b>: reCAPTCHA verification for bot protection</li>
  * </ul>
- * <h3>Architectural Patterns</h3>
+ * <b>Architectural Patterns</b>
  * <p>
  * All services follow Spring dependency injection patterns with {@code @Service} or {@code @Component} stereotypes.
  * Services use {@code @Transactional} boundaries for data consistency, inject secure/unsecure repositories for data access,
  * and leverage core framework components (Flow pipelines, MultitenancyService, LoggingComponent) for cross-cutting concerns.
- * </p>
- * <h3>Thread Safety</h3>
+ * 
+ * <b>Thread Safety</b>
  * <p>
  * Most services are stateless and thread-safe. Notable exceptions: DynamicEntityDescriptorFactory uses unsynchronized
  * static registries (external synchronization required), ChatGPTService uses synchronized disk cache writes,
  * RoleModificationsConsumers temporarily switches authentication context (not thread-safe during execution).
- * </p>
- * <h3>Dependencies</h3>
+ * 
+ * <b>Dependencies</b>
  * <p>
  * This package depends on:
- * </p>
+ * 
  * <ul>
  * <li>com.openkoda.core: Foundation framework (Flow, security, caching, auditing)</li>
  * <li>com.openkoda.model: JPA entities and domain model</li>
@@ -73,7 +73,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ul>
  * <p>
  * Example usage:
- * </p>
+ * 
  * <pre>
  * {@code
  * @Autowired

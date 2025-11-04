@@ -67,7 +67,7 @@ import static com.openkoda.core.service.event.ApplicationEvent.*;
  * activation, authentication, profile updates, password management, and deactivation. It integrates with
  * Spring Security for password encoding, the organization service for multi-tenancy support, and the email
  * service for user notifications.
- * </p>
+
  * <p>
  * <b>User Lifecycle:</b>
  * <ol>
@@ -79,22 +79,22 @@ import static com.openkoda.core.service.event.ApplicationEvent.*;
  * <li>Reset passwords using time-limited tokens</li>
  * <li>Deactivate accounts while preserving audit trail</li>
  * </ol>
- * </p>
+
  * <p>
  * <b>Example Usage:</b>
  * <pre>
  * User user = userService.createUser("John", "Doe", "john@example.com");
  * userService.addOrgRoleToUser(user, Tuples.of("ROLE_ORG_ADMIN", organizationId));
  * </pre>
- * </p>
+
  * <p>
  * <b>Thread Safety:</b> This service is stateless and thread-safe. All operations delegate to Spring Data
  * repositories which provide transactional guarantees.
- * </p>
+
  * <p>
  * <b>Configuration:</b> Behavior is controlled via application properties including organization creation strategy,
  * default roles, password length, and base URL for email links.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -113,7 +113,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Determines whether to CREATE a new organization per user or ASSIGN users to a default organization.
      * Configured via application property {@code organization.creation.strategy}.
-     * </p>
+
      *
      * @see OrganizationCreationStrategy
      */
@@ -126,7 +126,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * When creation strategy is ASSIGN, new users are automatically assigned to this organization.
      * Configured via application property {@code organization.creation.strategy.assign.id}.
      * Default: 121
-     * </p>
+
      */
     @Value("${organization.creation.strategy.assign.id:121}")
     Long defaultOrgId;
@@ -138,7 +138,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * belong to at least one organization. Configured via application property
      * {@code organization.creation.strategy.no.organization.users}.
      * Default: false
-     * </p>
+
      */
     @Value("${organization.creation.strategy.no.organization.users:false}")
     boolean canCreateUserWithoutOrg;
@@ -149,7 +149,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * This role is automatically assigned during user registration to grant system-wide permissions.
      * Configured via application property {@code role.global.user}.
      * Default: ROLE_USER
-     * </p>
+
      */
     @Value("${role.global.user:ROLE_USER}")
     private String roleGlobalUser;
@@ -160,7 +160,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Assigned to users who create or are invited as administrators of an organization.
      * Configured via application property {@code role.org.admin}.
      * Default: ROLE_ORG_ADMIN
-     * </p>
+
      */
     @Value("${role.org.admin:ROLE_ORG_ADMIN}")
     private String roleOrgAdmin;
@@ -171,7 +171,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Used to construct absolute URLs in email notifications including password recovery and
      * account verification links. Configured via application property {@code base.url}.
      * Default: http://localhost:8080
-     * </p>
+
      */
     @Value("${base.url:http://localhost:8080}")
     private String baseUrl;
@@ -181,7 +181,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Used in email subject lines and content. Configured via application property {@code application.name}.
      * Default: Default Application
-     * </p>
+
      */
     @Value("${application.name:Default Application}")
     private String applicationName;
@@ -193,7 +193,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * password of this length is generated. Configured via application property
      * {@code user.initial.password.length}.
      * Default: 15 characters
-     * </p>
+
      */
     @Value("${user.initial.password.length:15}")
     private int initialPasswordLength;
@@ -202,7 +202,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Organization service for tenant provisioning and management.
      * <p>
      * Used to create organizations during user registration when creation strategy is CREATE.
-     * </p>
+
      */
     @Inject
     private OrganizationService organizationService;
@@ -212,7 +212,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Uses BCrypt with strength 10. Static to ensure single instance across service lifecycle.
      * Initialized via {@link #setPasswordEncoderOnce(PasswordEncoder)}.
-     * </p>
+
      *
      * @see #setPasswordEncoderOnce(PasswordEncoder)
      */
@@ -222,7 +222,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Internationalized message service for email templates.
      * <p>
      * Provides localized content for email subject lines and notification text.
-     * </p>
+
      */
     @Inject
     private Messages messages;
@@ -233,18 +233,18 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * This is the primary user creation method that handles complete user initialization including
      * global and organization-specific role assignments. The user entity is persisted immediately,
      * and a USER_CREATED event is emitted for downstream processing.
-     * </p>
+
      * <p>
      * <b>Transaction Behavior:</b> This operation is transactional, ensuring atomic creation of
      * user entity and all associated role assignments.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>
      * User user = createUser("John", "Doe", "john@example.com", true,
      *     new String[]{"ROLE_USER"}, new Tuple2[]{Tuples.of("ROLE_ORG_ADMIN", 100L)});
      * </pre>
-     * </p>
+
      *
      * @param firstName the user's first name (nullable, can be empty string)
      * @param lastName the user's last name (nullable, can be empty string)
@@ -280,7 +280,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Convenience method that extracts name and email from the provided User entity and assigns
      * the default global role configured in {@code role.global.user} property.
-     * </p>
+
      *
      * @param user the User entity containing name and email (must not be null)
      * @return the created User entity with generated ID and default global role assigned
@@ -296,14 +296,14 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * This overload simplifies creation of users who need organization-specific roles while
      * automatically assigning the default system-wide role.
-     * </p>
+
      * <p>
      * Example:
      * <pre>
      * User user = createUser("John", "Doe", "john@example.com",
      *     Tuples.of("ROLE_ORG_ADMIN", orgId));
      * </pre>
-     * </p>
+
      *
      * @param firstName the user's first name (nullable)
      * @param lastName the user's last name (nullable)
@@ -326,7 +326,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Use this method for creating users without organization assignments, such as system
      * administrators or global service accounts. Requires {@code canCreateUserWithoutOrg}
      * configuration to be enabled.
-     * </p>
+
      *
      * @param firstName the user's first name (nullable)
      * @param lastName the user's last name (nullable)
@@ -348,13 +348,13 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Creates UserRole associations for each organization-role tuple provided. Each role assignment
      * is persisted immediately and a USER_ROLE_CREATED event is emitted for each successful assignment.
      * Non-existent role names are silently skipped.
-     * </p>
+
      * <p>
      * Example:
      * <pre>
      * addOrgRoleToUser(user, Tuples.of("ROLE_ORG_ADMIN", orgId));
      * </pre>
-     * </p>
+
      *
      * @param u the User entity to receive role assignments (must not be null)
      * @param orgRoles varargs of organization-specific role tuples containing (role name, organization ID),
@@ -386,13 +386,13 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Global roles provide permissions across all organizations and are not scoped to a specific tenant.
      * This method delegates to {@link #addOrgRoleToUser(User, Tuple2[])} with null organization IDs.
-     * </p>
+
      * <p>
      * Example:
      * <pre>
      * addGlobalRoleToUser(user, "ROLE_USER", "ROLE_ADMIN");
      * </pre>
-     * </p>
+
      *
      * @param u the User entity to receive global role assignments (must not be null)
      * @param globalRoles varargs of global role names (e.g., "ROLE_USER", "ROLE_ADMIN"),
@@ -416,7 +416,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Replaces the existing organization role with the new role. If the user has multiple roles
      * for the same organization, the first matching role is replaced. If the new role does not exist,
      * the existing role is preserved.
-     * </p>
+
      *
      * @param u the User entity whose role will be changed (must not be null)
      * @param organizationId the organization ID for which to change the role (must not be null)
@@ -434,7 +434,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Replaces the existing global role with the new role. Requires global settings access privilege.
      * Global roles are not scoped to any specific organization.
-     * </p>
+
      *
      * @param u the User entity whose global role will be changed (must not be null)
      * @param roleName the new global role name to assign (e.g., "ROLE_USER", "ROLE_ADMIN")
@@ -453,7 +453,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Locates the existing role by type (GLOBAL or ORG) and organization ID, deletes it if found,
      * and creates a new UserRole with the specified role name. If the existing and new roles are
      * identical, no change is made.
-     * </p>
+
      *
      * @param u the User entity whose role will be changed
      * @param role tuple containing (role name, organization ID or null for global)
@@ -483,7 +483,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Invites a new or existing user to join an organization.
      * <p>
      * Handles two distinct invitation workflows:
-     * </p>
+
      * <ul>
      * <li><b>New User:</b> Creates user account, generates random password, assigns organization role,
      *     sends invitation email with password recovery link</li>
@@ -493,14 +493,14 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Requires privilege to invite users to organizations. Email is persisted for asynchronous delivery.
      * Password length is configured via {@code user.initial.password.length} property.
-     * </p>
+
      * <p>
      * Example:
      * <pre>
      * Tuple3&lt;Email, User, InviteUserForm&gt; result =
      *     inviteNewOrExistingUser(form, null, organization);
      * </pre>
-     * </p>
+
      *
      * @param userForm the invitation form containing user details (email, name, role)
      * @param user the existing User entity if inviting an existing user, null to create a new user
@@ -563,7 +563,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Extracts the User entity from the current authentication token. Returns null if no user
      * is authenticated (e.g., anonymous requests).
-     * </p>
+
      *
      * @return the authenticated User entity, or null if no user is currently authenticated
      * @see UserProvider
@@ -580,7 +580,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Provides the full OrganizationUser wrapper which includes both the User entity and the
      * current organization context. This is useful for multi-tenant operations that need to know
      * both the user identity and their active organization.
-     * </p>
+
      *
      * @return Optional containing the OrganizationUser if authenticated, empty Optional if anonymous
      * @see UserProvider
@@ -596,7 +596,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Registers a new user or returns existing user with matching email.
      * <p>
      * Convenience method that delegates to full registration with system user privileges enabled.
-     * </p>
+
      *
      * @param registerUserForm the registration form containing user details (name, email, password)
      * @return the User entity (newly created or existing)
@@ -611,7 +611,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Controls whether registration executes with system privileges (asSystemUser=true) or
      * within the current security context.
-     * </p>
+
      *
      * @param registerUserForm the registration form containing user details
      * @param asSystemUser true to execute with system privileges, false to use current authentication
@@ -626,7 +626,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Registers a new user or returns existing user with full control over registration parameters.
      * <p>
      * This is the primary registration method that handles:
-     * </p>
+
      * <ul>
      * <li>Checking for existing user by email (case-insensitive)</li>
      * <li>Creating organization based on configured strategy (CREATE or ASSIGN)</li>
@@ -638,7 +638,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * <b>Transaction Management:</b> Operations execute with system privileges when asSystemUser is true,
      * ensuring authentication context is properly set and cleared.
-     * </p>
+
      *
      * @param registerUserForm the registration form containing user details (name, email, password)
      * @param cookies browser cookies for tracking (nullable, used in USER_REGISTERED event)
@@ -687,10 +687,10 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * This method supports custom registration workflows where the email template and organization
      * are provided externally. If the user already exists, they are assigned the specified organization
      * role. A random password is generated for new users, and a password recovery email is sent.
-     * </p>
+
      * <p>
      * <b>System Privileges:</b> Executes with system authentication context via UserProvider.setCronJobAuthentication().
-     * </p>
+
      *
      * @param firstName the user's first name (last name will be null)
      * @param organization the organization to assign the user to (must not be null)
@@ -744,11 +744,11 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * This method ensures the password encoder is set exactly once during application startup.
      * Subsequent calls are ignored. The encoder is typically BCrypt with strength 10 for secure
      * password hashing.
-     * </p>
+
      * <p>
      * <b>Thread Safety:</b> While this method can be called concurrently, the first successful
      * initialization wins. No synchronization is needed due to idempotent behavior.
-     * </p>
+
      *
      * @param pe the PasswordEncoder instance to use for password hashing and verification (must not be null)
      * @see org.springframework.security.crypto.password.PasswordEncoder
@@ -767,7 +767,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * When strategy is CREATE, derives organization name from email prefix (part before @).
      * When strategy is ASSIGN, returns the pre-configured default organization.
-     * </p>
+
      *
      * @param registerUserForm the registration form containing user email for organization naming
      * @return newly created Organization if CREATE strategy, default Organization if ASSIGN strategy
@@ -784,7 +784,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Registers a user with the appropriate strategy based on organization availability.
      * <p>
      * Handles three scenarios:
-     * </p>
+
      * <ul>
      * <li><b>No organization + allowed:</b> Creates user with global roles only</li>
      * <li><b>No organization + not allowed:</b> Throws NullPointerException</li>
@@ -793,7 +793,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Emits USER_REGISTERED event with registration details and cookies for tracking.
      * Sets user password using BCrypt encoding.
-     * </p>
+
      *
      * @param registerUserForm the registration form with user details
      * @param cookies browser cookies for event tracking (nullable)
@@ -829,11 +829,11 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Creates a new user account unconditionally, assigns organization role, generates random password,
      * and sends customized welcome email. Use this method when existence check is not required or
      * already performed externally.
-     * </p>
+
      * <p>
      * <b>Warning:</b> Does not check for duplicate users. Caller must ensure email uniqueness
      * to avoid constraint violations.
-     * </p>
+
      *
      * @param firstName the user's first name (last name will be null)
      * @param organization the organization to assign the user to (must not be null)
@@ -880,18 +880,18 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * This method supports user onboarding from external authentication providers including social
      * services (OAuth), LDAP, and Salesforce. The organization name is derived from the email address
      * prefix (part before @). The user is assigned both global user role and organization admin role.
-     * </p>
+
      * <p>
      * <b>Use Case:</b> When users authenticate via external providers without pre-existing organizations,
      * this creates their tenant space and grants administrative privileges.
-     * </p>
+
      * <p>
      * Example: User with email "john@example.com" gets organization named "john".
-     * </p>
+
      *
      * @param user the User entity from external authentication (must not be null, must have email set)
      * @return true if organization and roles were successfully created and assigned
-     * @see OrganizationService#createOrganization(String, long)
+     * @see com.openkoda.service.organization.OrganizationService#createOrganization(String, Integer)
      * @see #addGlobalRoleToUser(User, String...)
      * @see #addOrgRoleToUser(User, Tuple2[])
      */
@@ -914,10 +914,10 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Looks up the user by email (case-insensitive) and sends a new verification email with
      * account activation link. Returns false if email is blank or user is not found.
-     * </p>
+
      * <p>
      * <b>Use Case:</b> User registration workflow when verification email is not received or expired.
-     * </p>
+
      *
      * @param email the user's email address (must not be blank)
      * @return true if user was found and email was sent, false if email is blank or user not found
@@ -945,7 +945,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Constructs and persists an email containing the account verification link. The email template
      * and subject line are localized based on the language prefix. Email is queued for asynchronous
      * delivery.
-     * </p>
+
      *
      * @param user the User entity to send verification email to (must not be null)
      * @param languagePrefix language code for localization (e.g., "en", "pl"), empty string for default
@@ -978,17 +978,17 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Encodes the new password using BCrypt (strength 10) and updates the LoginAndPassword entity.
      * The account is automatically enabled upon successful password change. Changes are immediately
      * flushed to the database.
-     * </p>
+
      * <p>
      * <b>Security:</b> Caller must validate password strength before calling this method.
      * No password complexity validation is performed here.
-     * </p>
+
      * <p>
      * Example:
      * <pre>
      * changePassword(user, "newSecurePassword123");
      * </pre>
-     * </p>
+
      *
      * @param user the User entity whose password will be changed (must not be null, must have LoginAndPassword)
      * @param newPassword the new plain text password to set (will be hashed with BCrypt)
@@ -1014,17 +1014,17 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Checks that the provided password matches the BCrypt hash stored in the database and that
      * the user account is enabled. Returns the user entity on successful verification, null otherwise.
-     * </p>
+
      * <p>
      * <b>Use Case:</b> Password authentication during login or password change verification.
-     * </p>
+
      * <p>
      * Example:
      * <pre>
      * User authenticated = verifyPassword(user, "userInputPassword");
      * if (authenticated != null) { /&#42; login successful &#42;/ }
      * </pre>
-     * </p>
+
      *
      * @param user the User entity to verify (must not be null)
      * @param passwordToVerify the plain text password to check against stored hash
@@ -1050,10 +1050,10 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Creates a secure token with {@code canResetPassword} privilege and constructs a full URL
      * for the password recovery page. The token is encoded in Base64 and includes user ID for verification.
      * Token expiration is controlled by the token service configuration (typically 24 hours).
-     * </p>
+
      * <p>
      * <b>URL Format:</b> {baseUrl}/password/recovery/verify?token={base64EncodedToken}
-     * </p>
+
      *
      * @param user the User entity requesting password recovery (must not be null)
      * @return the complete password recovery URL with embedded token
@@ -1075,10 +1075,10 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Creates a secure token with {@code canVerifyAccount} privilege and constructs a full URL
      * for the account verification page. Used during registration to confirm email ownership.
      * Token expiration is controlled by the token service configuration.
-     * </p>
+
      * <p>
      * <b>URL Format:</b> {baseUrl}/register/verify?verifyToken={base64EncodedToken}
-     * </p>
+
      *
      * @param user the User entity requiring account verification (must not be null)
      * @return the complete account verification URL with embedded token
@@ -1100,10 +1100,10 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Generates a time-limited password recovery token and sends an email containing the recovery link.
      * The email is persisted for asynchronous delivery. User can follow the link to set a new password
      * without knowing the current password.
-     * </p>
+
      * <p>
      * <b>Security:</b> Token is valid for limited time (typically 24 hours) and can only be used once.
-     * </p>
+
      * <p>
      * Example workflow:
      * <ol>
@@ -1113,7 +1113,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <li>User clicks link and sets new password</li>
      * <li>Token is consumed and invalidated</li>
      * </ol>
-     * </p>
+
      *
      * @param user the User entity requesting password recovery (must not be null)
      * @return true if password recovery email was successfully queued for delivery
@@ -1143,7 +1143,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * The encoder is initialized once during application startup via {@link #setPasswordEncoderOnce(PasswordEncoder)}.
      * Typically configured as BCrypt with strength 10.
-     * </p>
+
      *
      * @return the PasswordEncoder instance, or null if not yet initialized
      * @see #setPasswordEncoderOnce(PasswordEncoder)
@@ -1159,10 +1159,10 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Looks up the user by email (case-insensitive) and checks for existing UserRole associations
      * with the given organization. If a role exists, adds a validation error to the BindingResult
      * with message key "email.exists.in.organization".
-     * </p>
+
      * <p>
      * <b>Use Case:</b> Form validation during user invitation to prevent duplicate invitations.
-     * </p>
+
      *
      * @param email the user's email address to check (nullable, blank is treated as valid)
      * @param organizationId the organization ID to check for existing roles (must not be null)

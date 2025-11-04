@@ -30,15 +30,15 @@ import java.util.Set;
  * <p>
  * This DTO implements {@link CanonicalObject} to provide notification messages for audit trails and system monitoring.
  * It is designed as a mutable JavaBean without validation, equals/hashCode implementations, or thread-safety guarantees.
- * </p>
+
  * <p>
  * The DTO is used by logging configuration services, admin controllers, and system setup components to manage
  * runtime logging behavior. It supports configuring a logging buffer size (parsed from string to integer) and
  * specifying a set of fully-qualified class names for which detailed logging should be enabled.
- * </p>
+
  * <p>
  * <strong>Important Notes:</strong>
- * </p>
+
  * <ul>
  * <li>This class has a mutable design without validation - external validation is required before use</li>
  * <li>{@link #getBufferSize()} will throw {@link NumberFormatException} if {@code bufferSizeField} is not a valid integer or is null</li>
@@ -52,7 +52,7 @@ import java.util.Set;
  * dto.setBufferSize(1024);
  * dto.setLoggingClasses(Set.of("com.openkoda.service.UserService"));
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -67,7 +67,7 @@ public class LoggerDto implements CanonicalObject {
      * This field stores the buffer size as a string and is parsed to an integer via {@link #getBufferSize()}.
      * If the value is not a valid integer format or is null, {@link NumberFormatException} will be thrown
      * during parsing.
-     * </p>
+
      *
      * @see #getBufferSize()
      * @see #setBufferSize(int)
@@ -80,7 +80,7 @@ public class LoggerDto implements CanonicalObject {
      * This field contains class names (e.g., "com.openkoda.service.UserService") for which the logging
      * system should capture detailed log output. If this field is null when {@link #notificationMessage()}
      * is called, a {@link NullPointerException} will be thrown.
-     * </p>
+
      *
      * @see #getLoggingClasses()
      * @see #setLoggingClasses(Set)
@@ -93,7 +93,7 @@ public class LoggerDto implements CanonicalObject {
      * This method converts the string representation in {@link #bufferSizeField} to an integer
      * using {@link Integer#parseInt(String)}. No null-safety checks are performed, so this method
      * will throw an exception if the field is null or contains an invalid format.
-     * </p>
+
      *
      * @return the parsed buffer size as an integer
      * @throws NumberFormatException if {@code bufferSizeField} is not a valid integer or is null
@@ -109,7 +109,7 @@ public class LoggerDto implements CanonicalObject {
      * This method converts the provided integer buffer size to its string representation
      * using {@link String#valueOf(int)} and stores it in {@link #bufferSizeField}.
      * No validation is performed on the input value.
-     * </p>
+
      *
      * @param bufferSize the buffer size to set (should be non-negative, but no validation is performed)
      * @see #getBufferSize()
@@ -123,7 +123,7 @@ public class LoggerDto implements CanonicalObject {
      * <p>
      * This getter provides direct access to the string field without parsing.
      * The returned value may be null if not yet initialized.
-     * </p>
+
      *
      * @return the raw string representation of buffer size, may be null
      * @see #setBufferSizeField(String)
@@ -137,7 +137,7 @@ public class LoggerDto implements CanonicalObject {
      * <p>
      * This setter accepts a string that should be parseable as an integer for use with {@link #getBufferSize()}.
      * No validation is performed on the input value.
-     * </p>
+
      *
      * @param bufferSizeField the string representation of buffer size, should be parseable as an integer
      * @see #getBufferSizeField()
@@ -151,7 +151,7 @@ public class LoggerDto implements CanonicalObject {
      * <p>
      * This getter provides access to the collection of class names that should have detailed logging.
      * The returned set may be null if not yet initialized, or empty if no classes are configured.
-     * </p>
+
      *
      * @return the set of fully-qualified class names, may be null or empty
      * @see #setLoggingClasses(Set)
@@ -166,14 +166,14 @@ public class LoggerDto implements CanonicalObject {
      * This is a fluent setter that returns the current {@code LoggerDto} instance to enable method chaining.
      * The fluent pattern allows for expressive configuration but violates Rule 5.4, which states that DTOs
      * should not have state-changing methods (only constructors are allowed).
-     * </p>
+
      * <p>
      * Example usage with method chaining:
      * <pre>{@code
      * LoggerDto dto = new LoggerDto()
      *     .setLoggingClasses(Set.of("com.openkoda.service.UserService"));
      * }</pre>
-     * </p>
+
      *
      * @param loggingClasses the set of fully-qualified class names to enable logging for
      * @return this {@code LoggerDto} instance for fluent API method chaining
@@ -191,12 +191,12 @@ public class LoggerDto implements CanonicalObject {
      * This method provides a human-readable description of the logging configuration, including
      * the buffer size and the number of classes configured for detailed logging. The message
      * format is: "Logging config. Buffer: %s. No of classes: %d."
-     * </p>
+
      * <p>
      * <strong>Warning:</strong> This method does not perform null-safety checks. If {@link #loggingClasses}
      * is null when this method is called, a {@link NullPointerException} will be thrown when attempting
      * to call {@code size()} on the null set.
-     * </p>
+
      *
      * @return a formatted notification message describing the logging configuration
      * @throws NullPointerException if {@code loggingClasses} is null

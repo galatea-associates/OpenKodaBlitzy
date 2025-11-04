@@ -29,10 +29,10 @@ package com.openkoda.core.service.email;
  * to render HTML emails. The {@code EMAIL_BASE} constant establishes the base path
  * (frontend-resource/global/email/) and all template constants follow the pattern of base + template name.
  * Templates are resolved by ThymeleafTemplateEngine and must exist in the application resources.
- * </p>
+
  * <p>
  * <b>Template Categories:</b>
- * </p>
+
  * <ul>
  *   <li><b>User Management:</b> INVITE_EXISTING, INVITE_NEW, WELCOME, PASSWORD_RECOVERY</li>
  *   <li><b>Notifications:</b> NOTIFICATION_ORGANIZATION_EMAIL, NOTIFICATION_USER_EMAIL</li>
@@ -44,7 +44,7 @@ package com.openkoda.core.service.email;
  * <pre>{@code
  * emailConstructor.sendEmail(StandardEmailTemplates.WELCOME, recipientEmail, contextMap);
  * }</pre>
- * </p>
+
  *
  * @since 1.7.1
  * @author OpenKoda Team
@@ -59,7 +59,7 @@ public interface StandardEmailTemplates {
      * This constant defines the root directory (frontend-resource/global/email/) where
      * Thymeleaf email templates are located. All template constants in this interface
      * extend this base path to form complete template identifiers.
-     * </p>
+
      */
     String EMAIL_BASE = "frontend-resource/global/email/";
     
@@ -68,7 +68,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used when an existing OpenKoda user is invited to become a member of a new organization.
      * The template includes organization details and acceptance instructions.
-     * </p>
+
      */
     String INVITE_EXISTING = EMAIL_BASE + "invite-existing";
     
@@ -77,7 +77,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used when a new user (not yet registered) is invited to create an account and
      * join an organization. The template includes registration link and onboarding information.
-     * </p>
+
      */
     String INVITE_NEW = EMAIL_BASE + "invite-new";
     
@@ -86,7 +86,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used to notify users when a new invoice is generated for their organization.
      * The template includes invoice details, amount, and payment instructions.
-     * </p>
+
      */
     String NEW_INVOICE_EMAIL = EMAIL_BASE + "new-invoice-email";
     
@@ -95,7 +95,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used for general notifications that apply to an entire organization, such as
      * system updates, policy changes, or organization-level events.
-     * </p>
+
      */
     String NOTIFICATION_ORGANIZATION_EMAIL = EMAIL_BASE + "notification-organization-email";
     
@@ -104,7 +104,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used for personal notifications directed to individual users, such as
      * task assignments, mention alerts, or user-specific system notifications.
-     * </p>
+
      */
     String NOTIFICATION_USER_EMAIL = EMAIL_BASE + "notification-user-email";
     
@@ -113,7 +113,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used when a user requests to reset their password. The template includes
      * a secure password reset link with expiration time and security instructions.
-     * </p>
+
      */
     String PASSWORD_RECOVERY = EMAIL_BASE + "password-recovery";
     
@@ -122,7 +122,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used to notify organization administrators when a payment attempt fails.
      * The template includes failure reason, retry instructions, and support contact information.
-     * </p>
+
      */
     String PAYMENT_FAILED_EMAIL = EMAIL_BASE + "payment-failed-email";
     
@@ -131,7 +131,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used to remind organization administrators about upcoming payments.
      * The template includes payment amount, due date, and payment method options.
-     * </p>
+
      */
     String PAYMENT_IN_14_DAYS = EMAIL_BASE + "payment-in-14-days";
     
@@ -140,7 +140,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used to confirm successful subscription activation or renewal.
      * The template includes subscription details, billing cycle, and next payment date.
-     * </p>
+
      */
     String SUBSCRIPTION_CONFIRMED = EMAIL_BASE + "subscription-confirmed";
     
@@ -149,7 +149,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used to notify users when their trial period has ended.
      * The template includes upgrade options, pricing information, and data retention policy.
-     * </p>
+
      */
     String TRIAL_EXPIRED_EMAIL = EMAIL_BASE + "trial-expired-email";
     
@@ -158,7 +158,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used to warn users that their trial period will expire soon (typically sent a few days before expiration).
      * The template includes days remaining, upgrade call-to-action, and feature comparison.
-     * </p>
+
      */
     String TRIAL_WILL_EXPIRE_EMAIL = EMAIL_BASE + "trial-will-expire-email";
     
@@ -167,7 +167,7 @@ public interface StandardEmailTemplates {
      * <p>
      * Used for user onboarding immediately after successful registration.
      * The template includes getting started guide, key features overview, and support resources.
-     * </p>
+
      */
     String WELCOME = EMAIL_BASE + "welcome";
 }

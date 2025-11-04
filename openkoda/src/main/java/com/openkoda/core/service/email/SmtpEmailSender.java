@@ -56,7 +56,7 @@ import jakarta.transaction.Transactional.TxType;
  * via Spring's {@link JavaMailSender} and {@link MimeMessage}/{@link MimeMessageHelper} for email composition.
  * Registered as Spring {@code @Service} bean with no profile restriction - can be used as default EmailSender
  * or activated explicitly in application configuration.
- * </p>
+
  * <p>
  * <b>Key Features:</b>
  * <ul>
@@ -66,16 +66,16 @@ import jakarta.transaction.Transactional.TxType;
  * <li>Asynchronous email transport via {@link CompletableFuture}</li>
  * <li>Transaction isolation using {@code @Transactional(REQUIRES_NEW)} for sending</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Configuration:</b> SMTP settings configured in application properties (host, port, username, password, etc.).
  * Activated when JavaMailSender bean is available. Logo path customizable via {@code application.logo} property.
- * </p>
+
  * <p>
  * <b>Transaction Pattern:</b> The sendEmail() method composes the message synchronously then schedules
  * asynchronous transport via self-proxy invocation of sendEmailViaMailSender() to enable AOP transaction
  * handling isolated from caller's transaction context.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @since 1.7.1
@@ -91,7 +91,7 @@ public class SmtpEmailSender extends EmailSender {
      * Application logo path injected from {@code application.logo} property.
      * <p>
      * Default value: {@code /vendor/swagger-ui/springfox-swagger-ui/favicon-32x32.png}
-     * </p>
+
      * Used for email branding and visual identity in email templates.
      */
     @Value("${application.logo:/vendor/swagger-ui/springfox-swagger-ui/favicon-32x32.png}")
@@ -109,7 +109,7 @@ public class SmtpEmailSender extends EmailSender {
      * <p>
      * Configured via Spring Boot auto-configuration with SMTP properties from application configuration.
      * Handles MimeMessage transmission to SMTP server.
-     * </p>
+
      */
     @Inject
     private JavaMailSender mailSender;
@@ -127,7 +127,7 @@ public class SmtpEmailSender extends EmailSender {
      * Injected instance is a Spring AOP proxy that intercepts method calls to apply
      * {@code @Transactional} annotations. Direct invocation of transactional methods
      * bypasses AOP; invoking via this proxy ensures transaction demarcation.
-     * </p>
+
      * Used in sendEmail() to invoke sendEmailViaMailSender() with REQUIRES_NEW transaction isolation.
      */
     @Inject SmtpEmailSender self;
@@ -144,15 +144,15 @@ public class SmtpEmailSender extends EmailSender {
      * <li>Processes {@code attachments} File list by reading content streams into ByteArrayResource and adding to message with filename and content-type</li>
      * <li>Schedules asynchronous transport via CompletableFuture.runAsync() delegating to proxied sendEmailViaMailSender() for transaction isolation</li>
      * </ol>
-     * </p>
+
      * <p>
      * <b>Error Handling:</b> Catches MessagingException during composition and MailException during send.
      * All errors are logged; method always returns true to indicate processing attempted.
-     * </p>
+
      * <p>
      * <b>Async Execution:</b> Email sending occurs asynchronously in separate thread to avoid blocking caller.
      * Transaction isolation via REQUIRES_NEW ensures email persistence independent of caller's transaction.
-     * </p>
+
      *
      * @param fullFrom sender email address (may be overridden by EmailConfig.from if configured)
      * @param fullTo recipient email address
@@ -217,12 +217,12 @@ public class SmtpEmailSender extends EmailSender {
      * <b>Transaction Isolation:</b> Annotated with {@code @Transactional(REQUIRES_NEW)} to execute
      * email sending in a new transaction separate from the caller's transaction context.
      * This ensures email delivery persistence is independent and prevents rollback propagation.
-     * </p>
+
      * <p>
      * <b>AOP Invocation Pattern:</b> This method must be invoked via the {@code self} proxy reference
      * (not directly via {@code this}) to enable Spring AOP transaction handling. Direct invocation
      * bypasses the AOP proxy and ignores the @Transactional annotation.
-     * </p>
+
      * <p>
      * <b>Implementation:</b>
      * <ul>
@@ -230,7 +230,7 @@ public class SmtpEmailSender extends EmailSender {
      * <li>Catches {@link MailException} and logs errors without throwing</li>
      * <li>Logs successful send at INFO level with recipient address</li>
      * </ul>
-     * </p>
+
      *
      * @param fullTo recipient email address for logging purposes
      * @param mimeMessage fully composed {@link MimeMessage} ready for transmission

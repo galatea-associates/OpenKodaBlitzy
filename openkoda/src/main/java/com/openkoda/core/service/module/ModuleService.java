@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * This service manages OpenKoda module registration, name-based lookup, and ordered iteration
  * by {@link Module#getOrdinal()}. It orchestrates event-driven configuration creation for users,
  * organizations, and roles through application event listeners.
- * </p>
+
  * <p>
  * <b>Core Responsibilities:</b>
  * <ul>
@@ -57,30 +57,30 @@ import java.util.stream.Collectors;
  *   <li>Event-driven lifecycle hooks for user/organization/role events</li>
  *   <li>Integration configuration management</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Architecture:</b> Extends {@link ComponentProvider} for repositories/services access and
  * implements {@link PageAttributes} for debug() helper. Registered as Spring bean named "modules"
  * via {@code @Service("modules")}. Depends on ApplicationContextProvider being initialized first
  * via {@code @DependsOn("applicationContextProvider")} to ensure ApplicationContext availability
  * before {@link #init()} executes.
- * </p>
+
  * <p>
  * <b>Data Structures:</b> Maintains a {@code TreeSet<Module>} sorted by ordinal for ordered iteration
  * and a {@code HashMap<String, Module>} for O(1) name-based lookups. The service intentionally returns
  * direct views (not defensive copies) to minimize allocations.
- * </p>
+
  * <p>
  * <b>Thread Safety:</b> {@link #registerModule(Module)} is synchronized for thread-safe concurrent
  * registration. However, returned iterators and direct map access present concurrent modification risks.
  * Iterator usage during concurrent registration will throw {@code ConcurrentModificationException}.
- * </p>
+
  * <p>
  * <b>Lifecycle:</b> {@link #init()} method annotated with {@code @PostConstruct} wires event listeners
  * during Spring initialization for six {@link ApplicationEvent} types:
  * USER_CREATED, USER_DELETED, ORGANIZATION_CREATED, ORGANIZATION_DELETED,
  * USER_ROLE_CREATED, USER_ROLE_DELETED.
- * </p>
+
  * <p>
  * <b>Usage Examples:</b>
  * <pre>{@code
@@ -93,7 +93,7 @@ import java.util.stream.Collectors;
  * // Ordered iteration
  * modules.getIterator().forEachRemaining(module -> process(module));
  * }</pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @since 1.7.1
@@ -111,7 +111,7 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * Injected ApplicationContext providing access to Spring beans and application metadata.
      * <p>
      * Used to access Spring-managed components and application configuration during module lifecycle operations.
-     * </p>
+
      */
     @Inject
     ApplicationContext applicationContext;
@@ -122,7 +122,7 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * Provides ordered iteration over modules. The direct iterator returned by {@link #getIterator()}
      * is not thread-safe for concurrent modifications during iteration.
-     * </p>
+
      */
     private final SortedSet<Module> modules = new TreeSet<>(Comparator.comparingInt(Module::getOrdinal));
     
@@ -130,7 +130,7 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * Final HashMap providing O(1) name-based module lookup.
      * <p>
      * Populated by {@link #registerModule(Module)} and directly exposed via {@link #getModuleForName(String)}.
-     * </p>
+
      */
     private final Map<String, Module> modulesByName = new HashMap<>();
 
@@ -140,15 +140,15 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * This synchronized method ensures concurrent registration safety by preventing race conditions during
      * insertion. However, synchronization only protects the registration operation itself; post-registration
      * access to the collections is not protected.
-     * </p>
+
      * <p>
      * <b>Behavior:</b> The module is added to the sorted modules TreeSet and indexed in modulesByName map
      * by its name. Debug logging records the registration via {@code debug("[registerModule] {}", module.getName())}.
-     * </p>
+
      * <p>
      * <b>Duplicate Handling:</b> If a module with the same name already exists, it will be replaced in the
      * modulesByName map but will create a duplicate entry in the modules TreeSet (ordinal allows duplicates).
-     * </p>
+
      *
      * @param module Module instance to register with name, ordinal, and configuration. Must not be null.
      * @return the registered Module instance (same as input parameter)
@@ -167,7 +167,7 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * Injected UserHelper for user-related operations in event handlers.
      * <p>
      * Provides utility methods for user management operations triggered by application events.
-     * </p>
+
      */
     @Inject
     UserHelper userHelper;
@@ -177,7 +177,7 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * This {@code @PostConstruct} method is invoked by Spring after dependency injection completes.
      * It wires six {@link ApplicationEvent} handlers for entity lifecycle events:
-     * </p>
+
      * <ul>
      *   <li><b>USER_CREATED</b> → {@link #createConfigurationsForUser(BasicUser)}</li>
      *   <li><b>USER_DELETED</b> → {@link #deleteConfigurationsForUser(BasicUser)}</li>
@@ -189,7 +189,7 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * This event-driven architecture enables modules to react to entity lifecycle changes and maintain
      * configuration consistency across user, organization, and role operations.
-     * </p>
+
      *
      * @see ApplicationEvent
      * @see jakarta.annotation.PostConstruct
@@ -215,12 +215,12 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * Returns a direct iterator over the modules TreeSet for ordered traversal.
      * <p>
      * <b>Iteration Order:</b> Modules are returned sorted by {@link Module#getOrdinal()} in ascending order.
-     * </p>
+
      * <p>
      * <b>Thread Safety Warning:</b> The returned iterator is NOT thread-safe. Concurrent modifications
      * (such as calling {@link #registerModule(Module)} during iteration) will cause
      * {@code ConcurrentModificationException}.
-     * </p>
+
      *
      * @return Iterator providing ordered traversal of registered modules
      * @see Module
@@ -235,11 +235,11 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * <b>Implementation:</b> Streams the modules TreeSet, filters by {@code moduleNames.contains(name)},
      * and collects results to a List preserving the ordinal-based sort order.
-     * </p>
+
      * <p>
      * <b>Performance Note:</b> Uses {@code contains()} on the moduleNames List which is O(n) per module.
      * For large name lists, consider passing a Set for O(1) lookup performance.
-     * </p>
+
      *
      * @param moduleNames List of module name strings to retrieve. Must not be null.
      * @return List containing only modules with names in moduleNames list, ordered by ordinal.
@@ -256,7 +256,7 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * Retrieves the module registered with the specified name. Lookup is case-sensitive
      * and uses the exact module name string.
-     * </p>
+
      *
      * @param moduleName Unique module name string (case-sensitive). Must not be null as enforced by {@code @NotNull}.
      * @return Module instance if found, null if no module is registered with that name
@@ -273,11 +273,11 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * <b>Current Implementation:</b> Placeholder that logs debug message and returns true.
      * Actual per-user configuration logic is not yet implemented.
-     * </p>
+
      * <p>
      * <b>Intended Purpose:</b> Future module-specific user initialization such as per-user
      * integration credentials, preferences, or default settings.
-     * </p>
+
      *
      * @param user BasicUser DTO containing user ID and metadata for the newly created user
      * @return boolean - currently always returns true (placeholder implementation)
@@ -294,7 +294,7 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * <b>Current Implementation:</b> Placeholder that logs debug message and returns true.
      * Cleanup logic for user-specific configurations is not yet implemented.
-     * </p>
+
      *
      * @param user BasicUser DTO of the deleted user
      * @return boolean - currently always returns true (placeholder implementation)
@@ -312,10 +312,10 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <b>Implementation:</b> Creates an {@link IntegrationModuleOrganizationConfiguration} entity with
      * the organization ID and persists it via {@code repositories.unsecure.integration.save()}, bypassing
      * privilege checks since this is a platform-level system operation.
-     * </p>
+
      * <p>
      * <b>Note:</b> Uses unsecure repository as this is automatic platform initialization, not a user-triggered action.
-     * </p>
+
      *
      * @param organization OrganizationDto containing organizationId and metadata for the newly created organization
      * @return boolean - always returns true after successful persistence
@@ -334,7 +334,7 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * <b>Current Implementation:</b> Placeholder that returns true with no operation performed.
      * Cleanup logic for {@link IntegrationModuleOrganizationConfiguration} is not yet implemented.
-     * </p>
+
      *
      * @param organization OrganizationDto of the deleted organization
      * @return boolean - always returns true (no-op currently)
@@ -350,10 +350,10 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * <b>Implementation:</b> Short-circuits for global roles via {@code ur.isGlobal()} check, returning immediately
      * without configuration creation. For organization-scoped roles, the method currently returns true as a placeholder.
-     * </p>
+
      * <p>
      * <b>Note:</b> Configuration logic for non-global user roles is not yet implemented.
-     * </p>
+
      *
      * @param ur UserRoleDto containing user ID, role ID, organization ID, and global flag
      * @return boolean - always returns true (placeholder for organization-scoped roles)
@@ -372,7 +372,7 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * <b>Current Implementation:</b> Placeholder that logs debug message and returns true.
      * Cleanup logic for user-role configurations is not yet implemented.
-     * </p>
+
      *
      * @param ur UserRoleDto of the deleted user role assignment
      * @return boolean - always returns true (no-op currently)
@@ -390,11 +390,11 @@ public class ModuleService extends ComponentProvider implements PageAttributes {
      * <p>
      * <b>Implementation:</b> Delegates privilege assignment to {@code services.role.addPrivilegesToRole(roleName, privileges)}
      * for actual persistence and role privilege management. Debug logs the operation before delegation.
-     * </p>
+
      * <p>
      * <b>Usage:</b> Modules invoke this method during registration to ensure roles have appropriate permissions
      * for module-specific operations.
-     * </p>
+
      *
      * @param roleName Role name string to which privileges will be granted
      * @param privileges Set of {@link PrivilegeBase} privileges to assign to the role

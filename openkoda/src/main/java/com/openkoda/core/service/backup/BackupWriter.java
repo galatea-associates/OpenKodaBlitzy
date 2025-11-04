@@ -43,7 +43,6 @@ import java.util.List;
  * This service provides comprehensive backup functionality for OpenKoda applications, including database dumps,
  * properties file backup, tar.gz archive creation, GPG encryption, and SCP remote transfer capabilities.
  * It orchestrates external system utilities (pg_dump, tar, gpg, scp) via ProcessBuilder to execute backup workflows.
- * </p>
  * <p>
  * <b>Key Responsibilities:</b>
  * <ul>
@@ -53,7 +52,6 @@ import java.util.List;
  *   <li>GPG encryption: Optionally encrypts backup archives using configured GPG keys</li>
  *   <li>Remote transfer: Copies backup files to remote hosts via SCP when configured</li>
  * </ul>
- * </p>
  * <p>
  * <b>Configuration:</b> All operational parameters are injected via {@code @Value} properties:
  * <ul>
@@ -64,7 +62,6 @@ import java.util.List;
  *   <li>{@code backup.pg_dump.executable}: Path to pg_dump binary (default: "pg_dump")</li>
  * </ul>
  * See constructor parameters for complete configuration reference.
- * </p>
  * <p>
  * <b>Platform Dependencies:</b> Requires external system utilities in PATH or configured via properties:
  * <ul>
@@ -74,22 +71,18 @@ import java.util.List;
  *   <li>{@code scp}: Secure copy for remote transfer (optional, if remote backup enabled)</li>
  * </ul>
  * Missing binaries cause methods to return {@code false} without throwing exceptions.
- * </p>
  * <p>
  * <b>Integration:</b> Implements {@link LoggingComponentWithRequestId} for structured logging with request correlation IDs.
  * Used by higher-level BackupService orchestration components. Backup operations are controlled via
  * {@link BackupOption} enum flags passed to {@link #doBackup(Collection)} and {@link #copyBackupFile(Collection, File)}.
- * </p>
  * <p>
  * <b>Thread Safety:</b> NOT designed for concurrent invocations without external synchronization.
  * Holds transient mutable state (backupDir, backupDateInfo, databaseBackupFile, tarBackupFile) during operations.
  * Multiple simultaneous backup executions may result in file conflicts or corrupted state.
- * </p>
  * <p>
  * <b>Error Handling:</b> Returns boolean success/failure indicators. Logs errors via {@link LoggingComponentWithRequestId}
  * methods and redirects subprocess stderr output to {@code backup_error.log} file for diagnostics.
  * Does not throw exceptions for operational failures to prevent disruption of calling services.
- * </p>
  * <p>
  * <b>Example Usage:</b>
  * <pre>{@code
@@ -104,7 +97,6 @@ import java.util.List;
  * File backupFile = new File(backupWriter.getTarBackupFile() + ".gpg");
  * backupWriter.copyBackupFile(EnumSet.of(BackupOption.SCP_ENABLED), backupFile);
  * }</pre>
- * </p>
  * <p>
  * <b>Operational Risks:</b>
  * <ul>
@@ -113,7 +105,6 @@ import java.util.List;
  *   <li>Misconfigured properties (wrong database credentials, invalid GPG keys) lead to failures logged in backup_error.log</li>
  *   <li>Windows platform: tar and SCP operations are disabled (returns false)</li>
  * </ul>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -197,7 +188,7 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      * <p>
      * All parameters are injected via {@code @Value} annotations from application.properties or environment variables.
      * Empty string defaults for optional parameters (GPG, SCP) disable corresponding features.
-     * </p>
+     * 
      *
      * @param datasourceUrl Database connection URL from {@code spring.datasource.url}. 
      *                      Format: "jdbc:postgresql://host:port/database". Used to extract database name and host for pg_dump.
@@ -265,11 +256,11 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      * <p>
      * Called automatically by Spring after constructor execution via {@code @PostConstruct} annotation.
      * Creates SimpleDateFormat instance from injected date pattern and detects operating system type.
-     * </p>
+     * 
      * <p>
      * OS detection uses {@code os.name} system property. Windows platforms disable tar and SCP operations
      * since these utilities are not natively available. Backup operations on Windows are limited to database dumps only.
-     * </p>
+     * 
      */
     @PostConstruct
     void init() {
@@ -282,7 +273,7 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      * <p>
      * Used for test access and runtime state retrieval. Value is set during {@link #doBackup(Collection)} execution.
      * Returns {@code null} if no backup has been initiated yet.
-     * </p>
+     * 
      *
      * @return backup directory File instance, or {@code null} if not yet initialized
      */
@@ -297,7 +288,7 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      * Format: "[fileDirectory]/[applicationName]_[timestamp].tar.gz"
      * Example: "/backups/OpenKoda_20231215-1430.tar.gz"
      * Returns {@code null} if tar archive has not been created yet.
-     * </p>
+     * 
      *
      * @return tar backup file path, or {@code null} if not yet created
      */
@@ -312,7 +303,7 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      * Format: "[fileDirectory]/[databaseName]_[timestamp].sql"
      * Example: "/backups/openkoda_20231215-1430.sql"
      * Returns {@code null} if database backup has not been performed yet.
-     * </p>
+     * 
      *
      * @return database backup file path, or {@code null} if not yet created
      */
@@ -325,7 +316,7 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      * <p>
      * This is the injected value from {@code backup.application.properties} property.
      * The file is included in backup archives when BackupOption.BACKUP_PROPERTIES is enabled.
-     * </p>
+     * 
      *
      * @return application properties file path from configuration
      */
@@ -339,7 +330,7 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      * Format: "[scpHost]:[scpTargetDirectory]/[filename]" or "[scpTargetDirectory]/[filename]" if no host.
      * Example: "user@backupserver:/backups/openkoda/OpenKoda_20231215-1430.tar.gz.gpg"
      * Returns {@code null} if SCP copy has not been executed yet.
-     * </p>
+     * 
      *
      * @return SCP target path, or {@code null} if not yet set
      */
@@ -351,7 +342,7 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      * Returns the configured SCP target directory on remote host.
      * <p>
      * Package-private accessor for internal use. This is the injected value from {@code backup.scp.target} property.
-     * </p>
+     * 
      *
      * @return SCP target directory from configuration
      */
@@ -364,7 +355,7 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      * <p>
      * This is the injected value from {@code backup.file.directory} property.
      * Directory is created during backup execution if it does not exist.
-     * </p>
+     * 
      *
      * @return local backup directory path from configuration
      */
@@ -382,7 +373,7 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      *   <li>Creates tar.gz archive containing database dump and/or properties file based on options</li>
      *   <li>Encrypts archive with GPG if {@link #gpgKeyName} is configured (imports key if necessary)</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * <b>BackupOption Usage:</b>
      * <ul>
@@ -390,20 +381,20 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      *   <li>{@code BackupOption.BACKUP_PROPERTIES}: Includes application.properties in backup archive</li>
      * </ul>
      * Both options can be combined. If no paths are available for archiving, method returns {@code false}.
-     * </p>
+     * 
      * <p>
      * <b>Platform Restrictions:</b> Tar and GPG operations are disabled on Windows (returns {@code false}).
      * Database dump may succeed on Windows if pg_dump.exe is available and configured.
-     * </p>
+     * 
      * <p>
      * <b>Error Handling:</b> All subprocess errors are logged to {@link #ERROR_LOGS_FILE_NAME} file.
      * Method returns {@code false} on any IOException or InterruptedException without propagating exceptions.
      * Check error log file for detailed diagnostics on failures.
-     * </p>
+     * 
      * <p>
      * <b>State Side Effects:</b> Sets transient fields during execution:
      * {@link #backupDir}, {@link #backupDateInfo}, {@link #databaseBackupFile}, {@link #tarBackupFile}.
-     * </p>
+     * 
      *
      * @param backupOptions Collection of {@link BackupOption} flags controlling which backup tasks to execute.
      *                       Must not be {@code null}. Empty collection results in no-op (returns {@code false}).
@@ -566,7 +557,7 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      * Executes SCP command to copy the specified backup file to the configured remote destination.
      * Operation is conditional on BackupOption.SCP_ENABLED flag and platform compatibility (non-Windows).
      * Requires valid SSH authentication setup (SSH keys or ssh-agent) for passwordless copy.
-     * </p>
+     * 
      * <p>
      * <b>Prerequisites:</b>
      * <ul>
@@ -576,11 +567,11 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      *   <li>Remote directory must exist and be writable by authenticated user</li>
      *   <li>scp executable must be available in PATH or configured via {@link #scpExecutable}</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * <b>BackupOption Usage:</b> Method only executes if {@code backupOptions} contains BackupOption.SCP_ENABLED.
      * If flag is absent, method returns {@code false} without attempting transfer.
-     * </p>
+     * 
      * <p>
      * <b>File Parameter Validation:</b> The {@code fileToCopy} parameter is validated for:
      * <ul>
@@ -589,19 +580,19 @@ public class BackupWriter implements LoggingComponentWithRequestId {
      *   <li>Read permissions for current process</li>
      * </ul>
      * Validation failure returns {@code false} without attempting SCP.
-     * </p>
+     * 
      * <p>
      * <b>Platform Restrictions:</b> SCP operations are disabled on Windows (returns {@code false}).
      * Use alternative transfer methods (SFTP, rsync) on Windows platforms.
-     * </p>
+     * 
      * <p>
      * <b>Error Handling:</b> SCP process stderr is redirected to {@link #ERROR_LOGS_FILE_NAME}.
      * Method returns {@code false} on IOException, InterruptedException, or non-zero SCP exit code.
      * Check error log file for detailed SCP diagnostics (authentication failures, network errors, permission issues).
-     * </p>
+     * 
      * <p>
      * <b>State Side Effects:</b> Sets {@link #scpTargetFile} field with complete remote path during execution.
-     * </p>
+     * 
      *
      * @param backupOptions Collection of {@link BackupOption} flags. Must contain BackupOption.SCP_ENABLED to execute transfer.
      *                       Must not be {@code null}.

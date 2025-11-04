@@ -40,7 +40,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  * This converter implements the YamlToEntityConverter interface to enable import of Form entities
  * from YAML configuration files. Forms represent dynamic data model definitions with associated
  * JavaScript code that define database tables, CRUD operations, and user interface components.
- * </p>
+
  * <p>
  * The converter performs the following critical operations:
  * <ul>
@@ -49,25 +49,25 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *   <li>Privilege string parsing: converts string privilege names to enum values via PrivilegeHelper</li>
  *   <li>JavaScript code loading from either filesystem or in-memory resources Map</li>
  * </ul>
- * </p>
+
  * <p>
  * The annotation @YamlToEntityParentConverter(dtoClass = FormConversionDto.class) enables
  * auto-discovery by the export/import subsystem, allowing this converter to be automatically
  * registered and invoked when importing Form entities.
- * </p>
+
  * <p>
  * <strong>Dynamic Table Creation:</strong> This converter enables runtime schema evolution
  * by ensuring the dynamic database table exists before persisting the form entity. This
  * allows the application to create new entity types at runtime without requiring database
  * migrations or application restarts.
- * </p>
+
  * <p>
  * Dependencies: Requires ComponentProvider for access to repositories.secure.form,
  * repositories.unsecure.form, and services.dynamicEntity.
- * </p>
+
  * <p>
  * Thread-safety: This converter is a stateless Spring @Component and is safe for concurrent use.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -92,16 +92,16 @@ public class FormYamlToEntityConverter extends ComponentProvider implements Yaml
      *   <li>Ensures the dynamic database table exists by calling services.dynamicEntity.createDynamicTableIfNotExists</li>
      *   <li>Persists the form entity via repositories.secure.form.saveOne</li>
      * </ol>
-     * </p>
+
      * <p>
      * <strong>CRITICAL:</strong> Dynamic table creation happens BEFORE form persistence to ensure
      * the database schema is ready to support the form's defined entity structure. This enables
      * runtime schema evolution without database migrations.
-     * </p>
+
      * <p>
      * The JavaScript code is loaded from the filesystem using the path specified in dto.getCode().
      * If the code file cannot be read, a RuntimeException will be thrown.
-     * </p>
+
      *
      * @param dto the FormConversionDto containing form metadata (must not be null, dto.getCode() must be a valid path)
      * @param filePath the YAML file path (unused but required by interface)
@@ -124,7 +124,7 @@ public class FormYamlToEntityConverter extends ComponentProvider implements Yaml
      * This method performs the same operations as convertAndSave(dto, filePath) but avoids filesystem I/O
      * by retrieving the JavaScript code from the provided resources Map. This is useful for batch imports
      * or testing scenarios where content is already loaded in memory.
-     * </p>
+
      * <p>
      * Operation sequence:
      * <ol>
@@ -132,11 +132,11 @@ public class FormYamlToEntityConverter extends ComponentProvider implements Yaml
      *   <li>Ensures the dynamic database table exists by calling services.dynamicEntity.createDynamicTableIfNotExists</li>
      *   <li>Persists the form entity via repositories.secure.form.saveOne</li>
      * </ol>
-     * </p>
+
      * <p>
      * <strong>CRITICAL:</strong> Dynamic table creation happens BEFORE form persistence to ensure
      * the database schema is ready to support the form's defined entity structure.
-     * </p>
+
      *
      * @param dto the FormConversionDto containing form metadata (must not be null)
      * @param filePath the YAML file path (unused but required by interface)
@@ -164,7 +164,7 @@ public class FormYamlToEntityConverter extends ComponentProvider implements Yaml
      *   <li>If a form is found, it is updated with values from the DTO</li>
      *   <li>If no form is found, a new Form instance is created and populated</li>
      * </ul>
-     * </p>
+
      * <p>
      * <strong>Field Mappings:</strong>
      * <ul>
@@ -182,15 +182,15 @@ public class FormYamlToEntityConverter extends ComponentProvider implements Yaml
      *   <li>tableView: Database view name if applicable</li>
      *   <li>code: JavaScript form definition from the code parameter</li>
      * </ul>
-     * </p>
+
      * <p>
      * <strong>Privilege Parsing:</strong> Privilege strings are parsed using the PrivilegeHelper singleton.
      * If the privilege string is blank (null, empty, or whitespace), the privilege field is set to null.
      * If the privilege string contains an invalid privilege name, an IllegalArgumentException is thrown.
-     * </p>
+
      * <p>
      * This method always returns a non-null entity, either an existing instance or a newly created one.
-     * </p>
+
      *
      * @param dto the FormConversionDto containing form metadata (must not be null)
      * @param code the JavaScript form definition code content (may be null)

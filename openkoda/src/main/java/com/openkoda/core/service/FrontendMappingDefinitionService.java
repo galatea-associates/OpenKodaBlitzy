@@ -45,7 +45,7 @@ import static com.openkoda.core.helper.PrivilegeHelper.valueOfString;
  * configuration scenarios. It converts privilege strings to {@link PrivilegeBase} using {@link PrivilegeHelper},
  * builds field mappings via reflection using {@link SearchableRepositories} metadata for dynamic entity forms,
  * and seeds tenant-scoped forms with organizationId from {@link TenantResolver}.
- * </p>
+
  * <p>
  * The service maps Java types to form controls following these rules:
  * <ul>
@@ -57,14 +57,14 @@ import static com.openkoda.core.helper.PrivilegeHelper.valueOfString;
  *   <li>Numeric types (primitives and Number subclasses) → number control</li>
  *   <li>Default → text input control</li>
  * </ul>
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * FrontendMappingDefinition def = service.createFrontendMappingDefinition("userForm", 
  *     a -&gt; a.text("name").email("email"));
  * </pre>
- * </p>
+
  *
  * @see FrontendMappingDefinition
  * @see ReflectionBasedEntityForm
@@ -83,7 +83,7 @@ public class FrontendMappingDefinitionService {
      * <p>
      * Convenience overload using {@link Privilege#readOrgData} for both read and write privileges.
      * Delegates to the three-parameter variant.
-     * </p>
+
      *
      * @param formName the name of the form definition
      * @param builder function that builds field definitions starting from {@link FormFieldDefinitionBuilderStart}
@@ -102,7 +102,7 @@ public class FrontendMappingDefinitionService {
      * Core factory method creating {@link FrontendMappingDefinition} with explicit read and write privileges
      * and a field definition builder function. This method provides fine-grained privilege control for
      * form field access.
-     * </p>
+
      *
      * @param formName the name of the form definition
      * @param defaultReadPrivilege the privilege required to read form fields
@@ -124,7 +124,7 @@ public class FrontendMappingDefinitionService {
      * String-based privilege variant converting privilege names to {@link PrivilegeBase} via
      * {@link PrivilegeHelper#valueOfString(String)}. This method is useful for dynamic configuration
      * scenarios where privilege names are loaded from external sources.
-     * </p>
+
      *
      * @param formName the name of the form definition
      * @param defaultReadPrivilege the privilege name string required to read form fields
@@ -147,7 +147,7 @@ public class FrontendMappingDefinitionService {
      * Extended variant accepting a {@code baseFormFields} array for form inheritance scenarios.
      * This method builds upon existing field definitions, allowing forms to extend base forms
      * with additional fields while preserving the base field configuration.
-     * </p>
+
      *
      * @param formName the name of the form definition
      * @param defaultReadPrivilege the privilege required to read form fields
@@ -170,7 +170,7 @@ public class FrontendMappingDefinitionService {
      * <p>
      * Convenience method that creates a {@link ReflectionBasedEntityForm} with default privileges
      * and null organizationId. Delegates to the ReflectionBasedEntityForm constructor.
-     * </p>
+
      *
      * @param formName the name of the form
      * @param builder function that builds field definitions starting from {@link FormFieldDefinitionBuilderStart}
@@ -187,7 +187,7 @@ public class FrontendMappingDefinitionService {
      * <p>
      * This method creates a form with specified organizationId for multi-tenancy support.
      * The organizationId is used to scope form data to a specific tenant/organization.
-     * </p>
+
      *
      * @param formName the name of the form
      * @param organizationId the organization ID for tenant scoping
@@ -207,7 +207,7 @@ public class FrontendMappingDefinitionService {
      * This method creates a form with a custom privilege name string converted to {@link PrivilegeBase}.
      * The same privilege is used for both read and write operations, providing simplified
      * privilege configuration when read and write privileges are identical.
-     * </p>
+
      *
      * @param formName the name of the form
      * @param privilegeName the privilege name string for both read and write access
@@ -227,7 +227,7 @@ public class FrontendMappingDefinitionService {
      * Combined tenant and privilege variant for fine-grained access control. This method
      * creates a form scoped to a specific organization with custom privilege requirements,
      * enabling both multi-tenancy and privilege-based field access control.
-     * </p>
+
      *
      * @param formName the name of the form
      * @param organizationId the organization ID for tenant scoping
@@ -251,10 +251,10 @@ public class FrontendMappingDefinitionService {
      * using the entity key, uses {@link TenantResolver} to obtain the current organization ID,
      * and applies default {@link Privilege#readOrgData} for both read and write operations.
      * Field mappings are generated by {@link #getBuilderForEntity(String)}.
-     * </p>
+
      * <p>
      * <strong>Note:</strong> This method assumes current tenant context is available from TenantResolver.
-     * </p>
+
      *
      * @param entityKey the entity key used to lookup metadata in SearchableRepositories
      * @return a configured {@link ReflectionBasedEntityForm} instance with reflection-based field mappings
@@ -274,7 +274,7 @@ public class FrontendMappingDefinitionService {
      * This private method retrieves the entity class from {@link SearchableRepositories} metadata
      * and generates a form builder function that maps entity fields to appropriate form controls
      * using reflection. The mapping logic follows these rules:
-     * </p>
+
      * <ul>
      *   <li>Enum constants → skipped (not regular fields)</li>
      *   <li>{@link SearchableEntity} fields → dropdownWithDisable control for entity relationships</li>
@@ -288,7 +288,7 @@ public class FrontendMappingDefinitionService {
      * <p>
      * The generated builder always starts with a hidden "id" field, then processes all declared
      * fields of the entity class in declaration order.
-     * </p>
+
      *
      * @param entityKey the entity key used to lookup metadata in SearchableRepositories
      * @return a Function that transforms {@link FormFieldDefinitionBuilderStart} to complete

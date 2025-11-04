@@ -26,9 +26,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Controllers implement the presentation layer using Flow pipelines for composition, PageModelMap for view data
  * assembly, and Result carriers for operation outcomes. This package provides both HTML-based user interfaces
  * and JSON REST APIs for programmatic access.
- * </p>
+ * 
  *
- * <h2>Key Classes and Interfaces</h2>
+ * <b>Key Classes and Interfaces</b>
  * <ul>
  *   <li>{@code CRUDControllerHtml} - Generic HTML CRUD controller for any entity type with list/create/edit/delete operations</li>
  *   <li>{@code CRUDApiController} - Generic REST API controller providing JSON CRUD endpoints</li>
@@ -39,7 +39,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code SitemapController} - XML sitemap generation for SEO</li>
  * </ul>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <ul>
  *   <li><b>Flow Pipeline Pattern</b> - Controllers use {@code Flow.init().thenSet(...).execute()} for composable request handling</li>
  *   <li><b>Generic CRUD Pattern</b> - Parameterized controllers reduce boilerplate for entity management</li>
@@ -47,7 +47,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>Security-by-Default</b> - @PreAuthorize annotations enforce privilege checks on endpoints</li>
  * </ul>
  *
- * <h2>Subpackages Overview</h2>
+ * <b>Subpackages Overview</b>
  * <ul>
  *   <li>{@code admin} - Admin interface controllers (logs, audit, integrations, system health)</li>
  *   <li>{@code api} - REST API controllers (v1, v2) with JSON responses</li>
@@ -61,26 +61,26 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code user} - User management and password recovery</li>
  * </ul>
  *
- * <h2>Request Flow</h2>
+ * <b>Request Flow</b>
  * <p>
  * Typical request flow: HTTP Request → Spring MVC Controller → Flow Pipeline → Service Layer → Repository Layer
  * → Database → Result → View/JSON Response. Controllers remain thin adapters delegating business logic to services.
- * </p>
+ * 
  *
- * <h2>Authentication and Authorization</h2>
+ * <b>Authentication and Authorization</b>
  * <p>
  * Controllers use Spring Security @PreAuthorize with HasSecurityRules constants. Public endpoints in PublicController
  * require no authentication. Admin endpoints require {@code canReadLogs}, {@code canAccessGlobalSettings} privileges.
- * </p>
+ * 
  *
- * <h2>Relationships</h2>
+ * <b>Relationships</b>
  * <p>
  * Controllers depend on: {@code core.flow} (Flow, PageModelMap), {@code service.*} (business logic),
  * {@code repository.*} (data access), {@code model.*} (domain entities), {@code form.*} (request binding).
  * Used by: Spring MVC dispatcher servlet.
- * </p>
+ * 
  *
- * <h2>Usage Example</h2>
+ * <b>Usage Example</b>
  * <pre>{@code
  * // Flow-based controller pattern
  * @GetMapping("/users")
@@ -91,7 +91,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * }
  * }</pre>
  *
- * <h2>Common Pitfalls</h2>
+ * <b>Common Pitfalls</b>
  * <ul>
  *   <li>Avoid business logic in controllers - delegate to services</li>
  *   <li>Always use Flow pipelines for request handling consistency</li>
@@ -99,7 +99,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Use PageModelMap for view data, not raw ModelMap</li>
  * </ul>
  *
- * <h2>Best Practices</h2>
+ * <b>Best Practices</b>
  * <ul>
  *   <li>Controllers should be stateless and thread-safe</li>
  *   <li>Use @PathVariable for resource IDs, @RequestParam for filters</li>
@@ -111,7 +111,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p>
  * If the class is a controller or closely related class providing specific functionality, then yes.
  * For foundation-level or abstract controller code, consider {@code com.openkoda.core.controller} package.
- * </p>
+ * 
  *
  * @since 1.7.1
  * @author OpenKoda Team

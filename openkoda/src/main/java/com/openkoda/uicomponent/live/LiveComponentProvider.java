@@ -33,20 +33,20 @@ import org.springframework.stereotype.Component;
  * dependency injection for downstream controllers and components. Rather than injecting multiple
  * individual service interfaces, consumers can inject this single provider to access all UI
  * service capabilities through a unified interface.
- * </p>
+ * 
  * <p>
  * All fields are final and set only in the constructor, making this class immutable after
  * construction. The immutable references yield thread-safe access to the underlying service
  * implementations, which themselves must ensure thread-safety.
- * </p>
+ * 
  * <p>
  * <b>Usage Note:</b> Tests should inject/mock this provider or construct it directly with test
  * doubles for the service dependencies.
- * </p>
+ * 
  * <p>
  * <b>Warning:</b> Removing or renaming this class or its fields will break consumers that
  * autowire this provider. Any changes should be coordinated across the codebase.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -92,7 +92,7 @@ public class LiveComponentProvider {
      * This service is optional and may be null if OpenAI is not configured.
      * The {@code @Autowired(required=false)} annotation allows the application to start
      * even when OpenAI dependencies are not available.
-     * </p>
+     * 
      */
     @Autowired(required = false)
     public final OpenAIServices openAI;
@@ -102,7 +102,7 @@ public class LiveComponentProvider {
      * <p>
      * The actual implementation is profile-dependent: {@code LiveSystemServices} in standard
      * mode or {@code SecureLiveSystemServices} in secure mode.
-     * </p>
+     * 
      */
     public final SystemServices system;
     
@@ -118,7 +118,7 @@ public class LiveComponentProvider {
      * This constructor is invoked by Spring's dependency injection framework to instantiate
      * the provider with all necessary service implementations. All fields are set once in the
      * constructor and never modified, ensuring immutability and thread-safety.
-     * </p>
+     * 
      *
      * @param data the DataServices implementation for repository access and form management
      * @param integrations the IntegrationServices implementation for Slack and REST operations

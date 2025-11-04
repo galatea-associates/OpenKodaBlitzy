@@ -41,12 +41,12 @@ import org.springframework.stereotype.Service;
  * It prepares {@link Email} entities from templates via {@link EmailConstructor}, persists them to the database
  * via {@code repositories.unsecure.email}, with actual sending delegated to the {@link com.openkoda.core.job.EmailSenderJob}
  * background job for asynchronous delivery.
- * </p>
+
  * <p>
  * Supports template-based email composition, scheduled delivery via {@code setStartAfter(sendOn)},
  * organization-scoped messages via {@code setOrganizationId()}, and bulk sending to organization users
  * with authentication context switching.
- * </p>
+
  * <p>
  * <strong>Email Workflow:</strong>
  * <ol>
@@ -56,14 +56,14 @@ import org.springframework.stereotype.Service;
  *   <li>{@link com.openkoda.core.job.EmailSenderJob} periodically fetches pending emails</li>
  *   <li>{@link EmailSender} delivers emails via SMTP</li>
  * </ol>
- * </p>
+
  * <p>
  * <strong>Usage Example:</strong>
  * <pre>
  * emailService.sendAndSaveEmail(user, "welcome-email", model);
  * emailService.sendAndSaveEmail(email, subject, "template", model, sendDate, attachments);
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @since 1.7.1
@@ -80,7 +80,7 @@ public class EmailService extends ComponentProvider {
      * <p>
      * Delegates to {@link EmailConstructor#prepareEmailWithTitleFromTemplate(User, String)} to prepare
      * the email entity, then persists it via {@code repositories.unsecure.email} for asynchronous delivery.
-     * </p>
+
      *
      * @param recipient the user to receive the email
      * @param emailTemplateName the name of the email template to use
@@ -95,7 +95,7 @@ public class EmailService extends ComponentProvider {
      * <p>
      * Delegates to {@link EmailConstructor#prepareEmailWithTitleFromTemplate(User, String, String, PageModelMap)}
      * to prepare the email entity with template variables from the model, then persists it for asynchronous delivery.
-     * </p>
+
      *
      * @param recipient the user to receive the email
      * @param emailTemplateName the name of the email template to use
@@ -112,7 +112,7 @@ public class EmailService extends ComponentProvider {
      * <p>
      * Delegates to {@link EmailConstructor#prepareEmailWithTitleFromTemplate(User, String, String, PageModelMap)}
      * to prepare the email entity with custom subject line and template variables, then persists it for asynchronous delivery.
-     * </p>
+
      *
      * @param recipient the user to receive the email
      * @param subject the custom subject line for the email
@@ -130,7 +130,7 @@ public class EmailService extends ComponentProvider {
      * <p>
      * Delegates to {@link EmailConstructor#prepareEmailWithTitleFromTemplate(String, String, String, String, PageModelMap, File...)}
      * to prepare the email entity with custom subject, template variables, and file attachments, then persists it for asynchronous delivery.
-     * </p>
+
      *
      * @param email the recipient email address as a string
      * @param subject the custom subject line for the email
@@ -150,7 +150,7 @@ public class EmailService extends ComponentProvider {
      * Delegates to {@link EmailConstructor#prepareEmailWithTitleFromTemplate(String, String, String, String, PageModelMap, File...)}
      * to prepare the email entity, then sets the scheduled delivery time via {@code setStartAfter(sendOn)} for delayed delivery.
      * The email is persisted and will be sent by {@link com.openkoda.core.job.EmailSenderJob} at or after the specified time.
-     * </p>
+
      *
      * @param email the recipient email address as a string
      * @param subject the custom subject line for the email
@@ -176,7 +176,7 @@ public class EmailService extends ComponentProvider {
      * Delegates to {@link EmailConstructor#prepareEmailWithTitleFromTemplate(User, String, PageModelMap)}
      * to prepare the email entity, then sets the organizationId via {@code setOrganizationId(orgId)} for
      * organization-scoped tracking and filtering. The email is persisted for asynchronous delivery.
-     * </p>
+
      *
      * @param recipient the user to receive the email
      * @param emailTemplateName the name of the email template to use
@@ -196,7 +196,7 @@ public class EmailService extends ComponentProvider {
      * <p>
      * Delegates to {@link EmailConstructor#prepareEmailWithTitleFromTemplate(String, String, CanonicalObject)}
      * to prepare the email entity using the CanonicalObject for template variable binding, then persists it for asynchronous delivery.
-     * </p>
+
      *
      * @param object the CanonicalObject providing context data for the email template
      * @param templateName the name of the email template to use
@@ -215,7 +215,7 @@ public class EmailService extends ComponentProvider {
      * fetches all users in the organization via {@code repositories.unsecure.userRole.getUsersInOrganization()},
      * sends email to each user via {@link #sendAndSaveEmail(User, String)}, then restores the original
      * security context via {@link UserProvider#clearAuthentication()}.
-     * </p>
+
      *
      * @param object the OrganizationRelatedObject providing the organization ID
      * @param templateName the name of the email template to use for all recipients
@@ -237,7 +237,7 @@ public class EmailService extends ComponentProvider {
      * fetches users with the specified role via {@code repositories.unsecure.userRole.getUsersInOrganizationWithRole()},
      * sends organization-scoped email to each user via {@link #sendAndSaveOrganizationEmail(User, String, PageModelMap, Long)},
      * then restores the original security context via {@link UserProvider#clearAuthentication()}.
-     * </p>
+
      *
      * @param organizationId the organization ID to filter users by
      * @param templateName the name of the email template to use for all recipients

@@ -17,7 +17,7 @@ import java.util.Map;
  * organization scoping and audit fields. Used by CSV import pipeline to persist row-by-row validation state, error
  * tracking, and staged data before committing to target dynamic entities. Enables incremental processing, error
  * recovery, and import preview.
- * </p>
+
  * <p>
  * Import workflow:
  * <ol>
@@ -27,15 +27,15 @@ import java.util.Map;
  *   <li>Commit valid rows to target entities</li>
  *   <li>Report errors on failed rows</li>
  * </ol>
- * </p>
+
  * <p>
  * JSONB storage: {@code content} column stores flexible JSON object with parsed CSV field values. PostgreSQL-specific
  * JSONB type for efficient querying and indexing of nested data structures.
- * </p>
+
  * <p>
  * Audit behavior: Inherits {@code toAuditString()} from {@link OpenkodaEntity}, which returns formatted string with
  * entityKey for audit identification.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -51,7 +51,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * <p>
      * Used to query/delete import batch. All rows from a single CSV file share the same uploadId,
      * enabling batch operations and tracking of import progress.
-     * </p>
+
      */
     @Column
     private Long uploadId;
@@ -61,7 +61,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * <p>
      * Enables error reporting with line references. Stored as primitive long to ensure non-null values.
      * Line 1 corresponds to the first data row (typically after header row).
-     * </p>
+
      */
     @Column
     private long lineNumber;
@@ -71,7 +71,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * <p>
      * Set to {@code true} if row content passes all validation rules, {@code false} otherwise.
      * Nullable to distinguish between unprocessed (null), valid (true), and invalid (false) rows.
-     * </p>
+
      */
     @Column
     private Boolean valid;
@@ -82,7 +82,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * Used for deduplication and row lookup during import processing. Typically corresponds to a
      * business key or primary key value from the CSV data. Enables idempotent imports and error
      * tracking per distinct entity.
-     * </p>
+
      */
     @Column
     private String entityKey;
@@ -93,11 +93,11 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * {@code @JdbcTypeCode(SqlTypes.JSON)} with {@code columnDefinition='jsonb'} for PostgreSQL native JSON type.
      * Enables flexible schema-less storage during validation phase before committing to strongly-typed dynamic
      * entity tables. The JSONB format provides efficient querying, indexing, and storage of nested data structures.
-     * </p>
+
      * <p>
      * Initialized to empty map ({@code Map.of()}) to prevent null pointer exceptions during validation.
      * Field names in the map correspond to CSV column headers or target entity field names.
-     * </p>
+
      */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
@@ -108,7 +108,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * <p>
      * Calls {@code super(null)} to initialize OpenkodaEntity with no organization scoping.
      * Typically used by JPA entity instantiation.
-     * </p>
+
      */
     public DynamicEntityCsvImportRow() {
         super(null);
@@ -119,7 +119,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * <p>
      * Enables multi-tenant data isolation by associating this import row with a specific organization.
      * Used when creating rows in tenant-aware import workflows.
-     * </p>
+
      *
      * @param organizationId the organization identifier for tenant scoping, or null for non-scoped rows
      */
@@ -140,7 +140,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * Sets the batch identifier for this import row.
      * <p>
      * All rows from the same CSV upload should share the same uploadId for batch tracking.
-     * </p>
+
      *
      * @param uploadId the upload batch ID to assign
      */
@@ -161,7 +161,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * Sets the 1-based line number from the CSV file.
      * <p>
      * Used for error reporting to identify which line in the CSV file contains issues.
-     * </p>
+
      *
      * @param lineNumber the line number in the CSV file (1-based)
      */
@@ -183,7 +183,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * <p>
      * Should be set after validation processing completes. Use {@code true} for valid rows,
      * {@code false} for invalid rows, and {@code null} for unprocessed rows.
-     * </p>
+
      *
      * @param valid the validation state to set
      */
@@ -205,7 +205,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * <p>
      * Used for deduplication and row lookup. Should correspond to a business key or primary key
      * from the CSV data to enable idempotent imports.
-     * </p>
+
      *
      * @param entityKey the entity key to set
      */
@@ -227,7 +227,7 @@ public class DynamicEntityCsvImportRow extends OpenkodaEntity {
      * <p>
      * Field names in the map should correspond to CSV column headers or target entity field names.
      * Values can be of any type supported by JSONB serialization.
-     * </p>
+
      *
      * @param content map of field names to values to store
      */

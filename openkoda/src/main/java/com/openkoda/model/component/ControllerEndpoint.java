@@ -37,12 +37,12 @@ import java.util.stream.Stream;
  * This entity enables no-code API development by storing endpoint configurations including URL paths,
  * HTTP methods, and executable code that runs at request time. Supports multiple response types
  * including HTML rendering, JSON responses, file downloads, and streaming.
- * </p>
+
  * <p>
  * The endpoint system allows creating custom REST APIs through database configuration rather than
  * code deployment. Each endpoint is organization-scoped for multi-tenancy support and can optionally
  * reference a FrontendResource for HTML template rendering.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -50,11 +50,11 @@ import java.util.stream.Stream;
  * endpoint.setSubPath("/api/data");
  * endpoint.setHttpMethod("GET");
  * }</pre>
- * </p>
+
  * <p>
  * Persisted to 'controller_endpoint' table with unique constraint ensuring no duplicate endpoints
  * with the same frontend_resource_id, sub_path, http_method, and organization_id combination.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -108,7 +108,7 @@ public class ControllerEndpoint extends ComponentEntity {
      * <p>
      * Example: "/api/users" or "/data/export". Combined with base URL to form complete endpoint path.
      * Stored in 'sub_path' database column.
-     * </p>
+
      */
     @Column(name = "sub_path")
     private String subPath;
@@ -118,7 +118,7 @@ public class ControllerEndpoint extends ComponentEntity {
      * <p>
      * Contains the business logic for the endpoint, supporting HTML rendering, JSON responses,
      * file downloads, and streaming. Maximum length is 262,144 characters (65536 * 4).
-     * </p>
+
      */
     @Column(length = 65536 * 4)
     private String code;
@@ -128,7 +128,7 @@ public class ControllerEndpoint extends ComponentEntity {
      * <p>
      * Format: one header per line as "Name: Value". Maximum length 1000 characters.
      * Parsed by {@link #getHttpHeadersMap()} into a Map for runtime use.
-     * </p>
+
      */
     @Column(length = 1000)
     private String httpHeaders;
@@ -145,7 +145,7 @@ public class ControllerEndpoint extends ComponentEntity {
      * <p>
      * Example: "user,roles,permissions". Maximum length 1000 characters.
      * Parsed by {@link #getPageAttributesNames()} into a String array.
-     * </p>
+
      */
     @Column(length = 1000)
     private String modelAttributes;
@@ -164,7 +164,7 @@ public class ControllerEndpoint extends ComponentEntity {
      * Used when responseType is HTML to determine which template renders the response.
      * Fetch type LAZY to avoid loading template unless needed. Read-only association
      * (insertable=false, updatable=false) managed via frontendResourceId.
-     * </p>
+
      */
     @JsonIgnore
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
@@ -375,11 +375,11 @@ public class ControllerEndpoint extends ComponentEntity {
      * <p>
      * Splits httpHeaders on newlines and parses each line as "Name: Value" format.
      * Trims whitespace from header names and values. Returns empty map if httpHeaders is blank.
-     * </p>
+
      * <p>
      * Note: No validation of header format. ArrayIndexOutOfBoundsException may occur if
      * a line does not contain ":" separator. Parsing is brittle and expects exact format.
-     * </p>
+
      *
      * @return map of header names to values, never null (empty map if no headers)
      */
@@ -399,7 +399,7 @@ public class ControllerEndpoint extends ComponentEntity {
      * <p>
      * Splits modelAttributes on commas and trims whitespace from each attribute name.
      * Returns null (not empty array) if modelAttributes is blank.
-     * </p>
+
      *
      * @return array of attribute names, or null if modelAttributes is blank
      */
@@ -429,7 +429,7 @@ public class ControllerEndpoint extends ComponentEntity {
      * <p>
      * Overrides ComponentEntity to return NULL, indicating no privilege enforcement
      * for read operations on controller endpoints.
-     * </p>
+
      *
      * @return null (no read privilege required)
      */
@@ -443,7 +443,7 @@ public class ControllerEndpoint extends ComponentEntity {
      * <p>
      * Overrides ComponentEntity to return NULL, indicating no privilege enforcement
      * for write operations on controller endpoints.
-     * </p>
+
      *
      * @return null (no write privilege required)
      */
@@ -457,7 +457,7 @@ public class ControllerEndpoint extends ComponentEntity {
      * <p>
      * Overrides ComponentEntity to expose the 'code' field as the primary content
      * that should be indexed or compared when analyzing endpoint changes.
-     * </p>
+
      *
      * @return collection containing "code" property name
      */

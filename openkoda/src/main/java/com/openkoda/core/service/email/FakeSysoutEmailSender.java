@@ -38,19 +38,19 @@ import java.util.List;
  * complete email message details (sender, recipient, subject, HTML content, attachments) to the console
  * without performing any actual email delivery. This prevents accidental email delivery to real
  * recipients during development, debugging, or automated testing.
- * </p>
+
  * <p>
  * The sender is activated only when the Spring "local" profile is active ({@code @Profile("local")}),
  * ensuring that real email delivery mechanisms are used in production environments. When active, the
  * {@code @Primary} annotation makes this implementation the default EmailSender bean, taking precedence
  * over production senders like SmtpEmailSender or MailgunEmailSender.
- * </p>
+
  * <p>
  * This implementation extends the {@link EmailSender} abstract base class and overrides the
  * {@link #sendEmail(String, String, String, String, String, List)} method to log email details
  * via {@code info()} logging instead of delivering messages. All calls return {@code true} to
  * simulate successful delivery, allowing the email sending workflow to complete normally.
- * </p>
+
  * <p>
  * Usage notes:
  * <ul>
@@ -60,7 +60,7 @@ import java.util.List;
  * <li>No actual network I/O or external service dependencies</li>
  * <li>Always returns {@code true} to simulate successful delivery</li>
  * </ul>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @since 1.7.1
@@ -79,7 +79,7 @@ public class FakeSysoutEmailSender extends EmailSender {
      * This dependency is currently unused in the fake sender implementation but is available
      * if template processing is needed for enhanced logging or debugging of email templates
      * during development.
-     * </p>
+
      */
     @Inject
     private TemplateEngine templateEngine;
@@ -91,12 +91,12 @@ public class FakeSysoutEmailSender extends EmailSender {
      * at INFO level. It writes two log entries: a compact summary showing sender, recipient, and
      * subject, followed by a detailed multi-line log containing the full HTML content and
      * attachment URL. No actual email delivery occurs, and no network connections are established.
-     * </p>
+
      * <p>
      * The method always returns {@code true} to indicate "successful" send, allowing the email
      * sending workflow (Email entity lifecycle transitions, job completion) to proceed normally
      * as if real delivery had occurred.
-     * </p>
+
      *
      * @param fullFrom the sender email address (e.g., "noreply@example.com" or "App Name &lt;noreply@example.com&gt;")
      * @param fullTo the recipient email address (e.g., "user@example.com" or "User Name &lt;user@example.com&gt;")

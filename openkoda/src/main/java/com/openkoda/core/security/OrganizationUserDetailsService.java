@@ -54,30 +54,25 @@ import java.util.stream.Collectors;
  * This service is marked with @Primary, making it the default UserDetailsService for authentication flows.
  * The LoginByPasswordOrTokenAuthenticationProvider uses this service during authentication to retrieve
  * user credentials and authorization data.
- * </p>
  * <p>
  * The service loads users via {@link UserRepository#findByEmailLowercase(String)}, queries UserRole
  * associations with {@link UserRepository#getUserRolesAndPrivileges(Long)}, and aggregates privileges
  * into global and per-organization sets. Privileges are stored in the Role table as joined strings
  * and parsed using {@link PrivilegeHelper}.
- * </p>
  * <p>
  * This service implements a privilege change subscription pattern. It maintains a ConcurrentHashMap
  * of subscribedUsers (email to List of Tuple pairs containing OrganizationUser and User) to enable
  * live privilege reloading. When a PrivilegeChangeEvent is published, subscribed users have their
  * privileges reloaded from the database without requiring reauthentication.
- * </p>
  * <p>
  * All database operations are executed within a transaction boundary via the @Transactional annotation,
  * ensuring consistent reads during authentication.
- * </p>
  * <p>
  * Example usage during Spring Security form login:
  * <pre>
  * OrganizationUser user = (OrganizationUser) userDetailsService.loadUserByUsername("user@example.com");
  * // Returns OrganizationUser with privileges from user_role and role tables
  * </pre>
- * </p>
  *
  * @see OrganizationUser
  * @see UserProvider
@@ -108,7 +103,7 @@ public class OrganizationUserDetailsService implements UserDetailsService, URLCo
      * contract and is called during authentication flows.
      * <p>
      * The method performs the following steps:
-     * </p>
+     * 
      * <ol>
      * <li>Queries the User entity via {@link UserRepository#findByEmailLowercase(String)} for case-insensitive lookup</li>
      * <li>Throws UsernameNotFoundException if no User is found (Spring Security standard exception)</li>
@@ -120,7 +115,7 @@ public class OrganizationUserDetailsService implements UserDetailsService, URLCo
      * <p>
      * This method is thread-safe. The ConcurrentHashMap allows concurrent loadUserByUsername calls
      * without synchronization overhead.
-     * </p>
+     * 
      *
      * @param email the user email address for case-insensitive lookup
      * @return an OrganizationUser fully populated with global and organization-specific privileges, roles, and authorities
@@ -151,10 +146,10 @@ public class OrganizationUserDetailsService implements UserDetailsService, URLCo
      * This method preserves the existing OrganizationUser instance and updates its
      * privilege sets with current database values.
      * <p>
-     * This method is used by {@link UserProvider#wasModifiedSince(java.util.Date)} when
+     * This method is used by {@link UserRepository#wasModifiedSince(Long, LocalDateTime)} when
      * detecting privilege changes via the User.updatedOn timestamp. It enables live
      * privilege updates without requiring user reauthentication.
-     * </p>
+     * 
      *
      * @param organizationUser the existing OrganizationUser principal to reload
      * @param user the persistent User entity to query for UserRole associations
@@ -174,11 +169,11 @@ public class OrganizationUserDetailsService implements UserDetailsService, URLCo
      * The method creates a new OrganizationUser with full database privileges, then narrows
      * them to only those privileges retained in the base OrganizationUser. It also preserves
      * authentication metadata such as singleRequestAuth flag and authMethod from the base.
-     * </p>
+     * 
      * <p>
      * This is used by LoginByPasswordOrTokenAuthenticationProvider for token-based authentication
      * with privilege restrictions.
-     * </p>
+     * 
      *
      * @param user the persistent User entity with email, password, and enabled status
      * @param info the List of Tuples from getUserRolesAndPrivileges query with structure:
@@ -205,10 +200,10 @@ public class OrganizationUserDetailsService implements UserDetailsService, URLCo
      * and organization-specific privilege sets.
      * <p>
      * The method implements the following aggregation algorithm:
-     * </p>
+     * 
      * <ol>
-     * <li>Iterates through the Tuple list extracting roleName, privilegesString (joined with
-     *     {@link PrivilegeHelper#PRIVILEGES_JOINER}), organizationId, and organizationName</li>
+     * <li>Iterates through the Tuple list extracting roleName, privilegesString (parsed with
+     *     {@link PrivilegeHelper#fromJoinedStringToStringSet(String)}), organizationId, and organizationName</li>
      * <li>For null organizationId: adds privileges to globalPrivileges Set and adds roleName to globalRoles Set</li>
      * <li>For non-null organizationId: adds privileges to organizationPrivileges Map under organizationId key,
      *     adds roleName to organizationRoles, and stores organizationName</li>
@@ -220,7 +215,7 @@ public class OrganizationUserDetailsService implements UserDetailsService, URLCo
      * <p>
      * The privilegesString format is parsed by {@link PrivilegeHelper#fromJoinedStringToStringSet(String)}
      * which handles the "privilege1;privilege2;privilege3" format from the Role.privileges column.
-     * </p>
+     * 
      *
      * @param organizationUser the existing OrganizationUser to update, or null to create a new instance
      * @param user the persistent User entity with email, password, and enabled status
@@ -304,7 +299,7 @@ public class OrganizationUserDetailsService implements UserDetailsService, URLCo
      * <p>
      * This method is typically called during logout or session expiration to clean up
      * subscription data.
-     * </p>
+     * 
      *
      * @param email the user email address to unsubscribe from privilege change notifications
      * @return true always, indicating successful removal (even if user was not subscribed)
@@ -320,7 +315,7 @@ public class OrganizationUserDetailsService implements UserDetailsService, URLCo
      * without requiring user reauthentication.
      * <p>
      * The method performs the following steps:
-     * </p>
+     * 
      * <ol>
      * <li>Iterates through the subscribedUsers map extracting Tuple pairs of (OrganizationUser, User)</li>
      * <li>Calls {@link #reloadUserByUsername(OrganizationUser, User)} for each subscribed user
@@ -332,7 +327,7 @@ public class OrganizationUserDetailsService implements UserDetailsService, URLCo
      * This method is triggered by {@link com.openkoda.service.user.BasicPrivilegeService#publishPrivilegeChangeEvent()}
      * after role or privilege modifications. It prevents users from needing to re-login after
      * privilege changes by automatically updating their active sessions.
-     * </p>
+     * 
      */
     @EventListener(classes = PrivilegeChangeEvent.class)
     protected void onPrivilegesChanged( ) {

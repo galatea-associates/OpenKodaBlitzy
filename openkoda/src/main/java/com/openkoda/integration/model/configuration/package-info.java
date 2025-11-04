@@ -25,9 +25,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This package provides configuration management at two levels: global settings from
  * application.properties and per-organization settings from database storage. These models
  * enable both system-wide and tenant-specific integration credentials and settings.
- * </p>
+ * 
  *
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  * <ul>
  *   <li><b>IntegrationModuleGlobalConfiguration</b> - Spring-managed configuration bean that
  *       loads global integration settings from application.properties. This provides default
@@ -39,11 +39,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       multi-tenancy support for third-party services.</li>
  * </ul>
  *
- * <h2>Usage Context</h2>
+ * <b>Usage Context</b>
  * <p>
  * These configuration models are used throughout the integration subsystem to manage
  * credentials and settings for:
- * </p>
+ * 
  * <ul>
  *   <li>OAuth authentication flows with providers like GitHub, Google, and Microsoft</li>
  *   <li>Third-party service integrations including Trello, Jira, and Basecamp</li>
@@ -54,7 +54,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Global configurations provide fallback defaults, while organization-specific configurations
  * override these values when tenant-scoped credentials are required. This two-tier approach
  * supports both single-tenant and multi-tenant deployment scenarios.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

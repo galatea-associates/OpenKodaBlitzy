@@ -53,10 +53,8 @@ import java.util.Map;
  * {@code createNewEntity}, then binds HTTP request parameters to the form using
  * {@link WebDataBinderFactory} and attaches {@link BindingResult} to the
  * {@link ModelAndViewContainer}.
- * </p>
  * <p>
  * The resolver implements a two-phase resolution strategy:
- * </p>
  * <ol>
  * <li>URL-based lookup: Extracts mapping key from request URL via {@code getMappingKeyOrNull},
  * retrieves {@link CRUDControllerConfiguration} from {@code htmlCRUDControllerConfigurationMap},
@@ -72,7 +70,6 @@ import java.util.Map;
  * {@code @RequestMapping("/settings/edit")}
  * public String edit(AbstractOrganizationRelatedEntityForm form) { ... }
  * </pre>
- * </p>
  *
  * @see AbstractOrganizationRelatedEntityForm
  * @see CRUDControllerConfiguration
@@ -120,7 +117,7 @@ public class MapFormArgumentResolver implements HandlerMethodArgumentResolver, H
      * Returns {@code true} only when the parameter type is exactly
      * {@link AbstractOrganizationRelatedEntityForm}, enabling automatic form
      * resolution for organization-related entity forms in controller methods.
-     * </p>
+     * 
      *
      * @param parameter the method parameter to check
      * @return {@code true} if parameter type equals AbstractOrganizationRelatedEntityForm, {@code false} otherwise
@@ -134,7 +131,7 @@ public class MapFormArgumentResolver implements HandlerMethodArgumentResolver, H
      * Resolves and binds an {@link AbstractOrganizationRelatedEntityForm} instance from the web request.
      * <p>
      * Implements a two-phase resolution strategy:
-     * </p>
+     * 
      * <ol>
      * <li><b>URL-based lookup</b>: Extracts mapping key via {@code urlHelper.getMappingKeyOrNull()},
      * retrieves {@link CRUDControllerConfiguration} from {@code htmlCRUDControllerConfigurationMap},
@@ -149,7 +146,7 @@ public class MapFormArgumentResolver implements HandlerMethodArgumentResolver, H
      * Binding uses {@link ServletRequestParameterPropertyValues} to extract request parameters,
      * {@link WebDataBinderFactory} to create a binder, applies binding with {@code binder.bind()},
      * and stores {@link BindingResult} in the {@link ModelAndViewContainer}.
-     * </p>
+     * 
      *
      * @param parameter the method parameter to resolve
      * @param mavContainer the model and view container for storing binding results
@@ -195,7 +192,7 @@ public class MapFormArgumentResolver implements HandlerMethodArgumentResolver, H
      * creates a {@link WebDataBinder} via {@code binderFactory.createBinder()}, applies
      * parameter binding with {@code binder.bind()}, retrieves the {@link BindingResult},
      * and adds it to the {@link ModelAndViewContainer} for validation error handling.
-     * </p>
+     * 
      *
      * @param mavContainer the model and view container for storing binding results
      * @param webRequest the current web request containing form parameters

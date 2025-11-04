@@ -42,7 +42,7 @@ import java.sql.SQLException;
  * This entity is persisted to the 'file' table and stores metadata about uploaded files
  * in a multi-tenant OpenKoda application. The architecture separates metadata storage
  * (always in database) from content storage (filesystem OR database Blob).
- * </p>
+
  * <p>
  * <b>Storage Architecture:</b><br>
  * Files support two storage backends controlled by {@link FileService.StorageType}:
@@ -50,12 +50,12 @@ import java.sql.SQLException;
  *   <li><b>filesystem</b>: Content stored on disk at {@code filesystemPath}, metadata in database</li>
  *   <li><b>database</b>: Both content (as Blob) and metadata stored in database</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Multi-Tenancy:</b><br>
  * This entity extends {@link OpenkodaEntity}, providing organization-scoped file isolation.
  * Each file belongs to exactly one organization, enforcing tenant boundaries for file access.
- * </p>
+
  * <p>
  * <b>Access Control:</b><br>
  * Read and write privileges are computed dynamically via {@code @Formula} annotations:
@@ -63,12 +63,12 @@ import java.sql.SQLException;
  *   <li>{@code requiredReadPrivilege}: {@link PrivilegeNames#_readOrgData}</li>
  *   <li>{@code requiredWritePrivilege}: {@link PrivilegeNames#_manageOrgData}</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Content Access:</b><br>
  * Use {@link #getContentStream()} to obtain an InputStream for reading file content.
  * <b>Callers MUST close returned InputStreams</b> to prevent resource leaks.
- * </p>
+
  * <p>
  * <b>Important Constraints:</b>
  * <ul>
@@ -76,7 +76,7 @@ import java.sql.SQLException;
  *   <li>Filesystem storage requires read permissions on {@code filesystemPath}</li>
  *   <li>The {@code uploadUuid} field has a unique constraint for upload tracking</li>
  * </ul>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -94,7 +94,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Stores the filename as provided during upload, preserving the original
      * name for display and download purposes.
-     * </p>
+
      */
     @Column
     private String filename;
@@ -104,14 +104,14 @@ public class File extends OpenkodaEntity {
      * <p>
      * This non-null field indicates whether content is stored in the filesystem
      * or as a database Blob. Persisted as a STRING enum value.
-     * </p>
+
      * <p>
      * Valid values:
      * <ul>
      *   <li>{@link FileService.StorageType#filesystem}: Content in file at {@code filesystemPath}</li>
      *   <li>{@link FileService.StorageType#database}: Content in {@code content} Blob field</li>
      * </ul>
-     * </p>
+
      *
      * @see FileService.StorageType
      */
@@ -124,11 +124,11 @@ public class File extends OpenkodaEntity {
      * <p>
      * This field is populated only when {@code storageType} is {@link FileService.StorageType#filesystem}.
      * For database storage, this field remains {@code null}.
-     * </p>
+
      * <p>
      * The path should be accessible with appropriate read permissions for the
      * application process to open InputStreams via {@link #getContentStream()}.
-     * </p>
+
      */
     @Column
     private String filesystemPath;
@@ -139,7 +139,7 @@ public class File extends OpenkodaEntity {
      * This UUID is generated during the upload process and enforced as unique
      * at the database level via a unique constraint. Used to correlate upload
      * sessions with persisted file entities.
-     * </p>
+
      */
     @Column(unique = true)
     private String uploadUuid;
@@ -155,11 +155,11 @@ public class File extends OpenkodaEntity {
      *   <li>{@code "text/plain"} for text files</li>
      *   <li>{@code "video/mp4"} for MP4 videos</li>
      * </ul>
-     * </p>
+
      * <p>
      * Used by {@link #isImage()} and {@link #isVideo()} helper methods to
      * determine file type categories.
-     * </p>
+
      */
     @Column
     private String contentType;
@@ -170,7 +170,7 @@ public class File extends OpenkodaEntity {
      * Stores the total byte count of the file content as a primitive {@code long}.
      * This value is set during upload and used for storage calculations and
      * user-facing display of file sizes.
-     * </p>
+
      */
     @Column
     private long size;
@@ -181,7 +181,7 @@ public class File extends OpenkodaEntity {
      * When {@code true}, the file can be accessed without authentication.
      * When {@code false} (default), standard privilege checks apply.
      * Database default value is {@code false}.
-     * </p>
+
      */
     @Column(columnDefinition = "boolean default false")
     private boolean publicFile;
@@ -191,17 +191,17 @@ public class File extends OpenkodaEntity {
      * <p>
      * This field is populated only when {@code storageType} is {@link FileService.StorageType#database}.
      * For filesystem storage, this field remains {@code null}.
-     * </p>
+
      * <p>
      * The {@code @Lob} annotation indicates this is a Large Object persisted
      * in the database. The {@code @JsonIgnore} annotation prevents accidental
      * serialization of potentially large binary data in JSON responses.
-     * </p>
+
      * <p>
      * <b>Important:</b> Accessing the Blob's binary stream requires an active
      * JDBC transaction. Use {@link #getContentStream()} which handles the
      * appropriate streaming call based on storage type.
-     * </p>
+
      *
      * @see java.sql.Blob
      * @see #getContentStream()
@@ -215,11 +215,11 @@ public class File extends OpenkodaEntity {
      * <p>
      * This field is computed at query time via Hibernate {@code @Formula} annotation
      * and always returns {@link PrivilegeNames#_readOrgData}.
-     * </p>
+
      * <p>
      * The value is not stored in the database but calculated by Hibernate when
      * loading the entity, enabling uniform privilege checking across file operations.
-     * </p>
+
      *
      * @see PrivilegeNames#_readOrgData
      */
@@ -231,12 +231,12 @@ public class File extends OpenkodaEntity {
      * <p>
      * This field is computed at query time via Hibernate {@code @Formula} annotation
      * and always returns {@link PrivilegeNames#_manageOrgData}.
-     * </p>
+
      * <p>
      * The value is not stored in the database but calculated by Hibernate when
      * loading the entity, enabling uniform privilege checking for file updates
      * and deletions.
-     * </p>
+
      *
      * @see PrivilegeNames#_manageOrgData
      */
@@ -252,7 +252,7 @@ public class File extends OpenkodaEntity {
      *   <li><b>filesystem</b>: Returns a {@link FileInputStream} opened on {@link #filesystemPath}</li>
      *   <li><b>database</b>: Returns the binary stream from the {@link #content} Blob</li>
      * </ul>
-     * </p>
+
      * <p>
      * <b>Caller Responsibilities:</b>
      * <ul>
@@ -260,7 +260,7 @@ public class File extends OpenkodaEntity {
      *   <li>For database storage, ensure method is called within an active JDBC transaction</li>
      *   <li>For filesystem storage, ensure read permissions on the file path</li>
      * </ul>
-     * </p>
+
      *
      * @return InputStream for reading file content; caller must close this stream
      * @throws IOException if filesystem read fails or path is inaccessible
@@ -284,7 +284,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Creates a File entity with no organization association (organizationId is null).
      * Typically used by JPA for entity instantiation during query result mapping.
-     * </p>
+
      */
     public File() {
         super(null);
@@ -295,7 +295,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Creates a File entity associated with the specified organization,
      * enforcing multi-tenant isolation.
-     * </p>
+
      *
      * @param organizationId the ID of the organization that owns this file; may be null
      */
@@ -308,7 +308,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Creates a File entity associated with the specified organization.
      * Note: The uuid parameter is currently not used in initialization.
-     * </p>
+
      *
      * @param organizationId the ID of the organization that owns this file
      * @param uuid upload UUID (parameter accepted but not used in this constructor)
@@ -323,7 +323,7 @@ public class File extends OpenkodaEntity {
      * Creates a File entity with all essential file properties for upload processing.
      * This constructor is commonly used during file upload workflows to capture
      * metadata before persisting.
-     * </p>
+
      *
      * @param organizationId the ID of the organization that owns this file
      * @param filename original name of the uploaded file
@@ -349,7 +349,7 @@ public class File extends OpenkodaEntity {
      * Creates a File entity with essential metadata but no organization scoping.
      * Typically used for temporary or system-level files not associated with
      * a specific tenant.
-     * </p>
+
      *
      * @param filename original name of the file
      * @param contentType MIME type of the file
@@ -368,7 +368,7 @@ public class File extends OpenkodaEntity {
      * Creates a File entity with all metadata properties and the filesystem path
      * for files stored on disk. This constructor extends the base metadata constructor
      * by adding filesystem storage location.
-     * </p>
+
      *
      * @param organizationId the ID of the organization that owns this file
      * @param filename original name of the uploaded file
@@ -408,7 +408,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * This field is populated only for database storage. Returns {@code null}
      * for filesystem storage.
-     * </p>
+
      *
      * @return Blob with binary content, or null for filesystem storage
      * @see #getContentStream()
@@ -440,7 +440,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Used when {@code storageType} is database. Should remain null for
      * filesystem storage.
-     * </p>
+
      *
      * @param content Blob containing binary file data
      */
@@ -452,7 +452,7 @@ public class File extends OpenkodaEntity {
      * Returns the audit string representation for this file.
      * <p>
      * Currently not implemented for File entities - returns {@code null}.
-     * </p>
+
      *
      * @return null (audit string not implemented for File)
      */
@@ -502,7 +502,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Creates a data transfer object containing the file's ID, organization ID,
      * filename, and content type. Returns an empty FileDto if the input is null.
-     * </p>
+
      *
      * @param a File entity to convert, or null
      * @return FileDto with id, organizationId, filename, and contentType populated;
@@ -520,7 +520,7 @@ public class File extends OpenkodaEntity {
      * Instance method converting this File entity to FileDto.
      * <p>
      * Delegates to the static {@link #toFileDto(File)} factory method.
-     * </p>
+
      *
      * @return FileDto representation of this file
      * @see #toFileDto(File)
@@ -534,7 +534,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Converts this entity to a FileDto and returns its download URL property.
      * The URL is constructed based on the file's ID and organization context.
-     * </p>
+
      *
      * @return download URL for accessing this file
      * @see FileDto#downloadUrl
@@ -548,7 +548,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Returns {@code true} if the content type starts with "image/",
      * indicating any image MIME type (e.g., "image/png", "image/jpeg").
-     * </p>
+
      *
      * @return true if content type indicates an image file
      */
@@ -561,7 +561,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Returns {@code true} if the content type starts with "video/",
      * indicating any video MIME type (e.g., "video/mp4", "video/mpeg").
-     * </p>
+
      *
      * @return true if content type indicates a video file
      */
@@ -593,7 +593,7 @@ public class File extends OpenkodaEntity {
      * Returns the filesystem path where file content is stored.
      * <p>
      * Returns {@code null} if storage type is database.
-     * </p>
+
      *
      * @return absolute filesystem path, or null for database storage
      */
@@ -605,7 +605,7 @@ public class File extends OpenkodaEntity {
      * Sets the filesystem path for file content storage.
      * <p>
      * Should only be set when storage type is filesystem.
-     * </p>
+
      *
      * @param filesystemPath absolute path to file on disk
      */
@@ -636,7 +636,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Overrides parent method to return the computed privilege from the
      * {@code @Formula} field.
-     * </p>
+
      *
      * @return privilege name required for read access ({@link PrivilegeNames#_readOrgData})
      */
@@ -650,7 +650,7 @@ public class File extends OpenkodaEntity {
      * <p>
      * Overrides parent method to return the computed privilege from the
      * {@code @Formula} field.
-     * </p>
+
      *
      * @return privilege name required for write access ({@link PrivilegeNames#_manageOrgData})
      */
@@ -663,7 +663,7 @@ public class File extends OpenkodaEntity {
      * Returns a tab-delimited string representation of this file.
      * <p>
      * Format: {@code id\tcontentType\tfilename}
-     * </p>
+
      *
      * @return string containing ID, content type, and filename separated by tabs
      */

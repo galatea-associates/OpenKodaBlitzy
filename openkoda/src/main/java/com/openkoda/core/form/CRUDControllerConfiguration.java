@@ -47,16 +47,13 @@ import java.lang.reflect.InvocationTargetException;
  * (tableView, settingsView, formNewFragment), generic table field names, filter field names, and JPA
  * Specification predicates. Supports both standard JavaBean entities and MapEntity dynamic entities
  * (detected via entityClass.equals(MapEntity.class)).
- * </p>
  * <p>
  * Created via static getBuilder() factory methods. Used by MapFormArgumentResolver to instantiate
  * forms for controller methods, and by generic CRUD controllers to create entities, apply specifications,
  * and render views.
- * </p>
  * <p>
  * Thread-safety: Mutable after construction via fluent setters; intended for single-threaded
  * configuration then read-only use in request handling.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -66,7 +63,6 @@ import java.lang.reflect.InvocationTargetException;
  *         .setTableView("custom-table")
  *         .setGenericTableFields("name", "email", "active");
  * }</pre>
- * </p>
  *
  * @param <D> DTO type extending OrganizationRelatedObject for form binding
  * @param <E> entity type extending SearchableOrganizationRelatedEntity for persistence
@@ -134,7 +130,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * Initializes the configuration by extracting the entity class from repository annotation,
          * detecting if it's a MapEntity, caching the entity constructor for reflective instantiation,
          * and detecting appropriate form constructors via {@link #detectFormConstructor()}.
-         * </p>
+         * 
          *
          * @param key unique identifier for this configuration (typically entity name)
          * @param frontendMappingDefinition form field definitions for rendering and validation
@@ -167,7 +163,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * detecting appropriate form constructors, and setting default privileges for all CRUD operations.
          * The readPrivilege is applied to getAllPrivilege and getSettingsPrivilege, while writePrivilege
          * is applied to getNewPrivilege, postNewPrivilege, postSavePrivilege, and postRemovePrivilege.
-         * </p>
+         * 
          *
          * @param key unique identifier for this configuration (typically entity name)
          * @param frontendMappingDefinition form field definitions for rendering and validation
@@ -206,7 +202,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * Creates a builder-style configuration object that can be further customized via fluent setter
          * methods. Privileges default to {@code Privilege.isUser} for all CRUD operations unless
          * explicitly overridden.
-         * </p>
+         * 
          *
          * @param key unique identifier for this configuration (typically entity name)
          * @param frontendMappingDefinition form field definitions for rendering and validation
@@ -230,7 +226,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * CRUD operations. The readPrivilege applies to list and settings views, while writePrivilege
          * applies to create, update, and delete operations. Can be further customized via fluent setter
          * methods to override specific operation privileges.
-         * </p>
+         * 
          *
          * @param key unique identifier for this configuration (typically entity name)
          * @param frontendMappingDefinition form field definitions for rendering and validation
@@ -257,7 +253,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * Updates the form class used for instantiation and re-scans for appropriate constructors
          * (with/without FrontendMappingDefinition parameter). Use this method when changing the
          * form implementation after initial configuration.
-         * </p>
+         * 
          *
          * @param formClass new form class to use for request handling
          * @return this configuration for fluent method chaining
@@ -278,7 +274,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * <p>
          * Overrides the default OrganizationRelatedMap DTO class. Use this method when your form
          * uses a custom DTO class instead of the default Map-based DTO.
-         * </p>
+         * 
          *
          * @param dtoClass DTO class for form data binding
          * @return this configuration for fluent method chaining
@@ -294,7 +290,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * This privilege serves as a fallback when specific operation privileges (getAllPrivilege,
          * postNewPrivilege, etc.) are not explicitly set. Individual operation privileges can
          * still override this default.
-         * </p>
+         * 
          *
          * @param defaultControllerPrivilege fallback privilege for all operations
          * @return this configuration for fluent method chaining
@@ -406,7 +402,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * <p>
          * Prepends the standard ID and ORGANIZATION_ID fields to the generic table fields
          * for comprehensive report output.
-         * </p>
+         * 
          *
          * @return array of field names with ID and ORGANIZATION_ID prepended
          */
@@ -753,7 +749,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * <p>
          * Instantiates the entity via the constructor accepting (Long organizationId).
          * For MapEntity instances, additionally sets the entity key to match this configuration's key.
-         * </p>
+         * 
          *
          * @param organizationId organization ID for tenant-scoped entity creation
          * @return new entity instance initialized with organization ID
@@ -778,7 +774,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * FrontendMappingDefinition as a parameter (detected in {@link #detectFormConstructor()}).
          * For forms with FrontendMappingDefinition constructor, passes the mapping definition.
          * For forms with no-arg constructor, invokes the default constructor.
-         * </p>
+         * 
          *
          * @return new form instance ready for request binding
          * @throws RuntimeException wrapping InstantiationException, IllegalAccessException, or InvocationTargetException
@@ -803,7 +799,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * FrontendMappingDefinition as a parameter. The form is initialized with the
          * provided organization ID and entity, enabling edit/update scenarios where
          * the form should be populated from existing entity data.
-         * </p>
+         * 
          *
          * @param organizationId organization ID for tenant context
          * @param entity existing entity to populate the form from
@@ -828,12 +824,12 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * Attempts to find a constructor accepting FrontendMappingDefinition as the first parameter.
          * For ReflectionBasedEntityForm, uses SearchableOrganizationRelatedEntity as the entity type
          * parameter. For other form classes, uses the specific entity class.
-         * </p>
+         * 
          * <p>
          * If no FrontendMappingDefinition constructor is found, falls back to no-arg constructor
          * for empty forms and (Long, entityClass) constructor for entity-populated forms.
          * Sets frontendMappingDefinitionInConstructor flag to guide form instantiation.
-         * </p>
+         * 
          *
          * @throws NoSuchMethodException if no suitable constructor is found
          */
@@ -859,11 +855,11 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * For MapEntity configurations, adds a predicate filtering by the entity key
          * (cb.equal(root.get("key"), key)). If additionalPredicate is set, combines
          * both predicates using cb.and().
-         * </p>
+         * 
          * <p>
          * For regular entities, returns the additionalPredicate if set, otherwise returns
          * cb.conjunction() (always-true predicate).
-         * </p>
+         * 
          *
          * @return JPA Specification for use in repository findAll operations
          */
@@ -947,7 +943,7 @@ public class CRUDControllerConfiguration<D extends OrganizationRelatedObject, E 
          * The predicate is combined with MapEntity key filtering (if applicable) in
          * {@link #getAdditionalSpecification()} to produce the final query specification.
          * Use this to add custom filtering logic beyond the standard MapEntity key filtering.
-         * </p>
+         * 
          *
          * @param additionalPredicate custom JPA Specification for additional query conditions
          * @return this configuration for fluent method chaining

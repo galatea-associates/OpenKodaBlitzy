@@ -33,13 +33,13 @@ import java.lang.annotation.Target;
  * their search index strings updated automatically by scheduled indexing jobs. The annotation
  * is applied to repository interface types and provides SQL configuration for computing
  * index string values.
- * </p>
+
  * <p>
  * Repositories annotated with {@code @SearchableRepository} are discovered at runtime via
  * reflection by indexing jobs, which scan the classpath to identify searchable entities.
  * The annotation works in conjunction with entities implementing the {@code SearchableEntity}
  * interface to enable full-text search capabilities.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -47,20 +47,20 @@ import java.lang.annotation.Target;
  * public interface UserRepository extends JpaRepository<User, Long> {
  * }
  * }</pre>
- * </p>
+
  * <p>
  * Processing workflow: Indexing jobs use reflection to find all {@code @SearchableRepository}
  * annotations, extract the {@code indexUpdateSql} value, and execute UPDATE statements to
  * populate the {@code index_string} column with computed search text.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see SearchableEntity
- * @see com.openkoda.repository.SearchableRepositoryMetadata
+ * @see com.openkoda.model.common.SearchableRepositoryMetadata
  * @see com.openkoda.model.common.IndexStringColumn
- * @see com.openkoda.core.helper.ModelConstants#INDEX_STRING_COLUMN
+ * @see com.openkoda.model.common.ModelConstants#INDEX_STRING_COLUMN
  */
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
@@ -73,7 +73,7 @@ public @interface SearchableRepository {
      * searchable text for each entity row. The expression must be valid PostgreSQL syntax
      * and typically concatenates relevant entity fields using the {@code ||} string
      * concatenation operator.
-     * </p>
+
      * <p>
      * Common patterns:
      * <ul>
@@ -81,7 +81,7 @@ public @interface SearchableRepository {
      * <li><b>Multiple fields:</b> {@code "(name||' '||description||' '||COALESCE(email,''))"} - Concatenates name, description, and email</li>
      * <li><b>Related entities:</b> {@code "(name||' '||(SELECT org.name FROM organization org WHERE org.id = organization_id))"} - Includes related organization name</li>
      * </ul>
-     * </p>
+
      * <p>
      * <b>Important considerations:</b>
      * <ul>
@@ -90,13 +90,13 @@ public @interface SearchableRepository {
      * <li>Prefix numeric values with empty string: {@code (''||id)} converts numbers to text</li>
      * <li>Complex expressions may include subqueries for related entity data</li>
      * </ul>
-     * </p>
+
      * <p>
      * The generated UPDATE query pattern:
      * <pre>
      * UPDATE entity_table SET index_string = [indexUpdateSql] WHERE ...
      * </pre>
-     * </p>
+
      *
      * @return SQL fragment for computing the index string value
      */

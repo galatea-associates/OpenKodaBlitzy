@@ -35,12 +35,10 @@ import java.util.function.Function;
  * all add and update operations. Any attempt to add or update entries via methods such as
  * {@code put()}, {@code putAll()}, {@code replace()}, or compute methods will result in an
  * {@link UnsupportedOperationException}.
- * </p>
  * <p>
  * This implementation is useful when you need to provide a map that can be pruned but not
  * expanded or modified, such as for managing cached data that can be invalidated but not
  * added to by downstream consumers.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -50,11 +48,9 @@ import java.util.function.Function;
  * restrictedMap.remove("key1"); // Allowed
  * restrictedMap.put("key2", 200); // Throws UnsupportedOperationException
  * }</pre>
- * </p>
  * <p>
  * Thread-safety: This class is not thread-safe. External synchronization is required if
  * instances are accessed by multiple threads concurrently.
- * </p>
  *
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
@@ -179,7 +175,7 @@ public class UnmodifiableMapWithRemove<K, V> extends HashMap<K, V> {
      * <p>
      * The returned set wraps the underlying entry set using {@link UnmodifiableSetWithRemove},
      * which blocks direct additions via {@code add()} but permits iterator-based removal.
-     * </p>
+     * 
      *
      * @return a set view of the mappings contained in this map, wrapped to prevent additions
      */
@@ -190,7 +186,7 @@ public class UnmodifiableMapWithRemove<K, V> extends HashMap<K, V> {
      * <p>
      * The returned set wraps the underlying key set using {@link UnmodifiableSetWithRemove},
      * which blocks direct additions via {@code add()} but permits iterator-based removal.
-     * </p>
+     * 
      *
      * @return a set view of the keys contained in this map, wrapped to prevent additions
      */
@@ -203,7 +199,7 @@ public class UnmodifiableMapWithRemove<K, V> extends HashMap<K, V> {
      * {@link UnmodifiableSetWithRemove}. Note that while values are typically returned as a
      * Collection, this implementation wraps them in a Set-backed wrapper for consistency with
      * other view methods, blocking direct additions but permitting iterator-based removal.
-     * </p>
+     * 
      *
      * @return a collection view of the values contained in this map, wrapped to prevent additions
      */
@@ -216,7 +212,7 @@ public class UnmodifiableMapWithRemove<K, V> extends HashMap<K, V> {
      * on the source map size. It uses {@code super.put()} to bypass the overridden {@code put()}
      * method during initialization, allowing the map to be populated before enforcing the
      * add/update restrictions.
-     * </p>
+     * 
      *
      * @param m the source map whose entries are to be copied (must not be null)
      */

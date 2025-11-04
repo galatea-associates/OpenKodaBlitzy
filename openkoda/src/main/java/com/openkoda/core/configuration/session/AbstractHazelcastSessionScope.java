@@ -37,30 +37,30 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Uses {@link ClusterHelper} to detect cluster mode and access {@code HazelcastInstance}. Composes 
  * per-session keys from {@code keyPrefix + name + session ID}. Supports configurable TTL for cached entries.
- * </p>
+ * 
  * <p>
  * The general contract is following:
  * If the application works in cluster (ie. {@code ClusterHelper.isCluster() == true}),
  * then add the bean to the replicated Hazelcast cache.
  * If the application is standalone (ie. {@code ClusterHelper.isCluster() == false}),
  * then use standard http session instead.
- * </p>
+ * 
  * <p>
  * Optionally a custom bean factory method (objectFactory) can be provided for creation of specialized beans.
  * Optionally a eviction time in seconds for hazelcast entries can be specified.
- * </p>
+ * 
  * <p>
  * Thread-safe when used with {@code RequestContextHolder} for session ID access. {@code ReplicatedMap} 
  * operations are thread-safe.
- * </p>
+ * 
  *
  * @param <T> the type of session-scoped bean
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see ClusterHelper
- * @see SessionScope
- * @see com.hazelcast.core.ReplicatedMap
+ * See {@code ClusterHelper}
+ * See {@code SessionScope}
+ * See {@code com.hazelcast.core.ReplicatedMap}
  */
 public abstract class AbstractHazelcastSessionScope<T> extends SessionScope {
 

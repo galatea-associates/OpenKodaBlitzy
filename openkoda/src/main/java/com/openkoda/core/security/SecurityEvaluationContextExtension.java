@@ -37,12 +37,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * authentication, causing ClassCastException in @PreAuthorize rules expecting OrganizationUser. This class
  * intercepts the SpEL evaluation context and provides OrganizationUser.empty singleton for anonymous principals
  * (null authentication or String principal), ensuring security expressions evaluate safely.
- * </p>
  * <p>
- * Integrates with HasSecurityRules @Query JPQL expressions (CHECK_CAN_READ_ORG_DATA_JPQL patterns) and
- * @PreAuthorize method security. Registered as Spring Data SpEL extension via EvaluationContextExtension
+ * Integrates with HasSecurityRules {@code @Query} JPQL expressions (CHECK_CAN_READ_ORG_DATA_JPQL patterns) and
+ * {@code @PreAuthorize} method security. Registered as Spring Data SpEL extension via EvaluationContextExtension
  * interface, automatically detected by Spring Data repositories.
- * </p>
  * <p>
  * Example usage:
  * <pre>
@@ -53,7 +51,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * // For anonymous users, principal.organizationIds safely resolves to empty set
  * // avoiding NullPointerException or ClassCastException
  * </pre>
- * </p>
  *
  * @see OrganizationUser#empty
  * @see HasSecurityRules
@@ -68,7 +65,7 @@ public class SecurityEvaluationContextExtension implements EvaluationContextExte
      * <p>
      * This overrides the default Spring Security extension, replacing String principal with OrganizationUser
      * for anonymous contexts in repository security expressions.
-     * </p>
+     * 
      *
      * @return "security" - Extension identifier used by Spring Data to register root object in SpEL expressions
      *         (accessible as ?#{principal})
@@ -90,11 +87,11 @@ public class SecurityEvaluationContextExtension implements EvaluationContextExte
      * with OrganizationUser.empty</li>
      * <li>Otherwise → uses existing Authentication with OrganizationUser principal</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * OrganizationUser.empty has nonExistingPrivilege sentinel allowing privilege checks to fail gracefully
      * without NullPointerException. Logging calls (trace/debug) track anonymous authentication detection.
-     * </p>
+     * 
      *
      * @return SecurityExpressionRoot wrapping Authentication with OrganizationUser principal (empty singleton
      *         for anonymous, actual user for authenticated)

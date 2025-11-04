@@ -54,7 +54,7 @@ import static com.openkoda.controller.common.URLConstants.CAPTCHA_VERIFIED;
  * with custom field and form validators. It enforces security policies by protecting write-restricted
  * fields during entity population, verifies reCAPTCHA tokens via request attributes, and triggers
  * component export cleanup for updated ComponentEntity records.
- * </p>
+
  * <p>
  * Key responsibilities:
  * <ul>
@@ -65,13 +65,13 @@ import static com.openkoda.controller.common.URLConstants.CAPTCHA_VERIFIED;
  * <li>Triggers ComponentExportService cleanup for updated ComponentEntity records</li>
  * <li>Provides assertNotNull helpers with HTTP status-based exception throwing</li>
  * </ul>
- * </p>
+
  * <p>
  * Usage example:
  * <pre>
  * validationService.validateAndPopulateToEntity(form, bindingResult, entity);
  * </pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -93,7 +93,7 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * <p>
      * Autowired service triggered during validateAndPopulateToEntity operations to remove
      * exported files when ComponentEntity records are updated.
-     * </p>
+
      */
     @Autowired
     ComponentExportService componentExportService;
@@ -105,7 +105,7 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * On validation failure, prepares field read/write privileges and checks that no write-restricted fields
      * were modified. For ComponentEntity instances with non-null ID, triggers component export file cleanup
      * before entity population.
-     * </p>
+
      * <p>
      * Workflow:
      * <ol>
@@ -116,11 +116,11 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * <li>Triggers ComponentExportService cleanup for ComponentEntity with non-null ID</li>
      * <li>Delegates to form.populateToEntity(entity) to copy form data to entity</li>
      * </ol>
-     * </p>
+
      * <p>
      * Warning: Write-restricted field protection only enforced during validation errors. Successful
      * validation with manipulated fields may bypass this check.
-     * </p>
+
      *
      * @param form the AbstractEntityForm containing form data and validation rules
      * @param br BindingResult accumulating field-specific validation errors
@@ -159,7 +159,7 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * Executes field validators, form validators, custom form validation, and reCAPTCHA verification.
      * Accumulates all validation errors into the provided BindingResult using field-specific rejection codes.
      * Throws ValidationException if any validation errors are detected or reCAPTCHA verification fails.
-     * </p>
+
      * <p>
      * Validation sequence:
      * <ol>
@@ -171,10 +171,10 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * <li>Checks requiresReCaptcha() and isCaptchaVerified() throwing ValidationException if CAPTCHA required but not verified</li>
      * <li>Throws ValidationException if BindingResult.hasErrors() returns true</li>
      * </ol>
-     * </p>
+
      * <p>
      * Note: CAPTCHA verification requires CAPTCHA_VERIFIED request attribute set by controller interceptor.
-     * </p>
+
      *
      * @param form the AbstractForm containing validation rules and data
      * @param br BindingResult to accumulate field-specific validation errors
@@ -216,11 +216,11 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * Returns false if no request context is available, which can occur in background threads
      * or asynchronous processing contexts. This method is used to enforce reCAPTCHA verification
      * on form submissions that require captcha protection.
-     * </p>
+
      * <p>
      * Note: The CAPTCHA_VERIFIED attribute must be set by a controller interceptor or filter
      * after successful reCAPTCHA validation with the external reCAPTCHA service.
-     * </p>
+
      *
      * @return true if CAPTCHA verification attribute is present and set to true, false otherwise
      */
@@ -240,7 +240,7 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * Validates that the provided object is not null, throwing an appropriate exception
      * based on the specified HTTP status code. This is useful for service layer validation
      * where specific HTTP status codes need to be returned to clients.
-     * </p>
+
      * <p>
      * Exception mapping:
      * <ul>
@@ -248,7 +248,7 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * <li>HttpStatus.UNAUTHORIZED → UnauthorizedException</li>
      * <li>Other statuses → ServerErrorException</li>
      * </ul>
-     * </p>
+
      *
      * @param obj the object to check for null
      * @param statusOnFail the HTTP status code to determine which exception to throw
@@ -274,7 +274,7 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * <p>
      * This is the most common use case where a missing resource should result in a 404 Not Found response.
      * Delegates to assertNotNull(obj, HttpStatus.NOT_FOUND).
-     * </p>
+
      *
      * @param obj the object to check for null
      * @param <T> the type of the object being validated
@@ -291,7 +291,7 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * Validates the form using the boolean-returning validate(form) method, then populates the entity
      * only if validation succeeds. On ValidationException, prepares field read/write privileges before
      * rethrowing the exception to allow proper error handling by the caller.
-     * </p>
+
      * <p>
      * Workflow:
      * <ol>
@@ -300,10 +300,10 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * <li>If validation passes (isValid = true), calls form.populateToEntity(entity)</li>
      * <li>Returns boolean indicating validation success</li>
      * </ol>
-     * </p>
+
      * <p>
      * This variant is useful when BindingResult is not needed and simple success/failure indication suffices.
-     * </p>
+
      *
      * @param form the AbstractEntityForm containing form data and validation rules
      * @param entity the target LongIdEntity to populate with validated form data
@@ -334,7 +334,7 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * (short-circuit behavior). Does not accumulate errors or throw exceptions - simply returns
      * success/failure indicator. This is useful for scenarios where detailed error information
      * is not required.
-     * </p>
+
      * <p>
      * Validation sequence:
      * <ol>
@@ -344,11 +344,11 @@ public class ValidationService implements LoggingComponentWithRequestId {
      * <li>Returns false if any validator returns rejections</li>
      * <li>Returns true if all validators pass</li>
      * </ol>
-     * </p>
+
      * <p>
      * Note: This method skips the form.validate() extension method to only consider
      * validators defined in FrontendMappingDefinition.
-     * </p>
+
      *
      * @param form the AbstractForm containing validation rules and data
      * @param <T> form type extending AbstractForm

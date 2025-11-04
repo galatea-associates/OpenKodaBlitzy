@@ -33,19 +33,16 @@ import java.util.function.Supplier;
  * PageAttr provides type-safe access to page model attributes, avoiding
  * string-based attribute lookup. Each instance registers itself in a global
  * registry upon construction, enabling retrieval by name.
- * </p>
  * <p>
  * Example usage:
  * <pre>
  * PageAttr&lt;Organization&gt; ORG = new PageAttr&lt;&gt;("organization");
  * PageAttr attr = PageAttr.getByName("organization");
  * </pre>
- * </p>
  * <p>
  * <b>Warning:</b> The internal registry is not thread-safe. Registry population
  * occurs during class initialization and should not be modified at runtime.
  * The registry uses type erasure, so runtime type information is not preserved.
- * </p>
  *
  * @param <T> the type of the page attribute value
  * @see com.openkoda.core.flow.BasePageAttributes for canonical page attribute instances
@@ -59,7 +56,7 @@ public class PageAttr<T> {
 	 * <p>
 	 * This registry is not synchronized and uses type erasure, so type safety
 	 * is only enforced at compile time through the generic parameter.
-	 * </p>
+	 * 
 	 */
 	private final static Map<String, PageAttr> allByName = new HashMap<>();
 
@@ -78,7 +75,7 @@ public class PageAttr<T> {
 	 * <p>
 	 * This constructor registers the attribute in the global registry and asserts
 	 * that the name is unique.
-	 * </p>
+	 * 
 	 *
 	 * @param name the unique name for this page attribute, must not already exist in the registry
 	 * @throws IllegalArgumentException if the name already exists in the registry
@@ -93,7 +90,7 @@ public class PageAttr<T> {
 	 * This constructor registers the attribute in the global registry and asserts
 	 * that the name is unique. The constructor supplier can be used to create
 	 * default instances when the attribute value is not present.
-	 * </p>
+	 * 
 	 *
 	 * @param name the unique name for this page attribute, must not already exist in the registry
 	 * @param constructor supplier for creating default instances, may return null

@@ -28,10 +28,10 @@ package com.openkoda.service.export.dto;
  * It extends {@link ComponentDto} to inherit module and organization scope fields, enabling tenant-aware
  * and module-specific endpoint definitions. This DTO maps to the {@code ControllerEndpoint} domain entity
  * and is processed by export/import pipelines and converters.
- * </p>
+ * 
  * <p>
  * Instances of this class are not thread-safe and should not be shared across threads without external synchronization.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

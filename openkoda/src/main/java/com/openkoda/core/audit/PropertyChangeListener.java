@@ -46,14 +46,14 @@ import java.util.Optional;
  * for spoofing context via SessionService.getSessionAttribute(SessionData.SPOOFING_USER), and populates Audit 
  * entity fields including operation type, entity identifiers, organization ID for multi-tenant entities, user ID, 
  * role IDs, and HTML change description. Instances are registered per entity class in AuditInterceptor.auditListeners map.
- * </p>
+ * 
  * <p>
  * Called by AuditInterceptor.beforeTransactionCompletion to convert collected AuditedObjectState entries into 
  * Audit[] for batch persistence.
- * </p>
+ * 
  * <p>
  * Thread-safety: Not thread-safe. Session-scoped lifecycle aligned with Hibernate session.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -97,7 +97,7 @@ public class PropertyChangeListener implements LoggingComponentWithRequestId {
      * <p>
      * Main entry point called by AuditInterceptor.beforeTransactionCompletion. Delegates to createAudit 
      * and wraps result in array for compatibility with bulk save operations.
-     * </p>
+     * 
      *
      * @param entity Audited entity instance (must implement AuditableEntity)
      * @param user Optional authenticated user performing the operation
@@ -134,10 +134,10 @@ public class PropertyChangeListener implements LoggingComponentWithRequestId {
      * (5) request ID from RequestIdHolder, (6) user/role IDs if authenticated, (7) HTML change description 
      * via AuditChangeFactory, (8) spoofing indicator if user.isSpoofed(). Returns fully populated Audit 
      * ready for AuditRepository.saveAll.
-     * </p>
+     * 
      * <p>
      * Note: date parameter accepted but not used - Audit entity uses @CreatedDate for automatic timestamping.
-     * </p>
+     * 
      *
      * @param p Auditable entity providing ID and optional organization ID
      * @param aos State snapshot with operation, properties, changes, optional content
@@ -177,7 +177,7 @@ public class PropertyChangeListener implements LoggingComponentWithRequestId {
      * Prepends spoofing indicator to change description when user is spoofed.
      * <p>
      * Retrieves spoofing user ID from session via SessionService.getInstance().getSessionAttribute(SessionData.SPOOFING_USER) at line 109.
-     * </p>
+     * 
      *
      * @param changeDescription Original HTML change description
      * @return Change description prefixed with bold italic spoofing notice like '<b><i>Spoofed by user with id: 123</b></i></br>...' or original if not spoofed
@@ -194,7 +194,7 @@ public class PropertyChangeListener implements LoggingComponentWithRequestId {
      * Extracts organization ID from multi-tenant entities for tenant-scoped audit filtering.
      * <p>
      * Enables filtering audit logs by organization in multi-tenant deployments.
-     * </p>
+     * 
      *
      * @param entity Auditable entity to check for organization relationship
      * @return Organization ID if entity implements AuditableEntityOrganizationRelated, null for global entities

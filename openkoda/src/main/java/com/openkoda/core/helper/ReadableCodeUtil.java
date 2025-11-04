@@ -27,7 +27,6 @@ package com.openkoda.core.helper;
  * This class offers a convenient way to use ReadableCode's {@code not()} method in static contexts
  * without implementing the ReadableCode interface. It maintains a singleton instance internally
  * and delegates method calls to it.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -35,11 +34,9 @@ package com.openkoda.core.helper;
  *     // Process non-empty data
  * }
  * }</pre>
- * </p>
  * <p>
  * Thread-safety: This class uses a stateless static method that delegates to an immutable
  * ReadableCode instance. It is safe for concurrent use across multiple threads.
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -56,7 +53,7 @@ public class ReadableCodeUtil {
      * This method delegates to {@link ReadableCode#not(boolean)} for readable boolean negation
      * in static contexts. It provides a more expressive alternative to the {@code !} operator,
      * improving code readability in conditional expressions.
-     * </p>
+     * 
      *
      * @param b the boolean value to negate
      * @return {@code true} if {@code b} is {@code false}, {@code false} if {@code b} is {@code true}

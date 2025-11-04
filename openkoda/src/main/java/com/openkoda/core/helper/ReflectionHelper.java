@@ -38,17 +38,14 @@ import static java.util.stream.Collectors.joining;
  * <p>
  * This component offers stateless formatting helpers used for logging, metadata display,
  * and dynamic form generation. All methods are safe for concurrent use.
- * </p>
  * <p>
  * Example usage:
  * <pre>
  * String signature = reflectionHelper.getNameWithParamNamesAndTypes(method);
  * </pre>
- * </p>
  * <p>
  * <b>Performance Warning:</b> Reflection operations are slower than direct access.
  * Cache results when possible to avoid repeated reflection calls.
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -64,7 +61,7 @@ public class ReflectionHelper {
      * <p>
      * Returns a formatted string in the form "methodName(param1,param2)" which is useful
      * for displaying method information in logs and debug output.
-     * </p>
+     * 
      *
      * @param method the method to inspect
      * @return formatted signature as "methodName(param1,param2)"
@@ -78,7 +75,7 @@ public class ReflectionHelper {
      * <p>
      * Returns a formatted string in the form "methodName(Type1 param1, Type2 param2)" which
      * provides complete parameter information useful for API documentation and metadata viewers.
-     * </p>
+     * 
      *
      * @param method the method to inspect
      * @return formatted signature as "methodName(Type1 param1, Type2 param2)"
@@ -92,7 +89,7 @@ public class ReflectionHelper {
      * <p>
      * Returns a formatted string in the form "ReturnType prefixMethodName(Type param)" which
      * is useful for generating code stubs and documentation with full type information.
-     * </p>
+     * 
      *
      * @param method the method to inspect
      * @param methodPrefix prefix to prepend to the method name (e.g., class or module name)
@@ -130,12 +127,12 @@ public class ReflectionHelper {
      * Transforms fully qualified names like "java.util.List&lt;java.lang.String&gt;" to
      * simplified forms like "List&lt;String&gt;". This method is useful for generating
      * readable type names in logs and documentation.
-     * </p>
+     * 
      * <p>
      * <b>Limitation:</b> Supports only single-level generic types. For example,
      * "List&lt;String&gt;" works correctly, but "List&lt;List&lt;String&gt;&gt;" will not be
      * fully simplified.
-     * </p>
+     * 
      *
      * @param type the type to process (Class or ParameterizedType)
      * @return simplified type name with packages removed
@@ -167,7 +164,7 @@ public class ReflectionHelper {
      * Returns true for primitive types (int, boolean), their wrappers (Integer, Boolean),
      * String, and Enum types. This method is used in dynamic form generation to determine
      * which fields can use standard input controls.
-     * </p>
+     * 
      *
      * @param field the field to check
      * @return true if the field type is primitive, wrapper, String, or Enum; false otherwise
@@ -180,7 +177,7 @@ public class ReflectionHelper {
      * <p>
      * This method is useful for form generation to determine if a checkbox
      * or toggle control should be used for the field.
-     * </p>
+     * 
      *
      * @param field the field to check
      * @return true if the field type is boolean or Boolean; false otherwise
@@ -195,11 +192,11 @@ public class ReflectionHelper {
      * Loads the class dynamically and returns all methods declared in that class,
      * including public, protected, package-private, and private methods. Does not
      * include inherited methods.
-     * </p>
+     * 
      * <p>
      * <b>Performance Warning:</b> Reflection operations have significant performance cost.
      * Avoid calling this method in hot paths or loops. Cache results when possible.
-     * </p>
+     * 
      *
      * @param className the fully qualified class name (e.g., "com.openkoda.model.User")
      * @return array of all declared methods in the class

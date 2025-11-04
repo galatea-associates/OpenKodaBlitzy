@@ -27,18 +27,18 @@ package com.openkoda.service.export.dto;
  * This is a mutable JavaBean POJO for YAML/JSON serialization that extends ComponentDto
  * for module and organization scope. It maps the ServerJs domain entity for server-side
  * JavaScript code export/import operations.
- * </p>
+ * 
  * <p>
  * The code field contains executable JavaScript payload and must be treated as opaque
  * by serialization frameworks. This DTO is used by JavaScript module pipelines and
  * GraalVM integration. This class is not thread-safe.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see ComponentDto for inherited module and organizationId fields
- * @see com.openkoda.model.ServerJs domain entity
+ * @see com.openkoda.model.component.ServerJs
  */
 public class ServerJsConversionDto extends ComponentDto {
 
@@ -102,7 +102,7 @@ public class ServerJsConversionDto extends ComponentDto {
      * Gets the executable JavaScript code payload.
      * <p>
      * The returned code should be treated as opaque executable content.
-     * </p>
+     * 
      *
      * @return the executable JavaScript code payload or null if not set
      */
@@ -114,7 +114,7 @@ public class ServerJsConversionDto extends ComponentDto {
      * Sets the executable JavaScript code payload.
      * <p>
      * The code is stored without validation or parsing.
-     * </p>
+     * 
      *
      * @param code the executable JavaScript code payload to set, may be null
      */

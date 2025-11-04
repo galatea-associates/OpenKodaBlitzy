@@ -31,13 +31,13 @@ import org.springframework.stereotype.Repository;
  * Enables unified search across organizations, users, forms, and other searchable entities.
  * Provides specifications-based dynamic queries via GlobalSearchSpecifications.
  * Used by global search features for cross-entity text matching and relevance ranking.
- * </p>
+ * 
  * <p>
- * Extends {@link SecureRepository} to inherit privilege-enforced operations with DEFAULT_SCOPE = USER.
+ * Extends {@link com.openkoda.repository.SecureRepository} to inherit privilege-enforced operations with DEFAULT_SCOPE = USER.
  * All search operations enforce read privilege checks based on entity access control rules.
  * The global search index consolidates searchable content from multiple source entities into
  * a unified index table for efficient cross-entity queries.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

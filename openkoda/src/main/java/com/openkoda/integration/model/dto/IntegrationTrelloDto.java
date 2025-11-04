@@ -28,7 +28,7 @@ package com.openkoda.integration.model.dto;
  * This DTO encapsulates Trello integration parameters including API authentication
  * credentials and target board information. Used for binding form input to Trello
  * integration configuration.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
@@ -36,7 +36,7 @@ package com.openkoda.integration.model.dto;
  * dto.setTrelloApiKey("your-api-key");
  * dto.setTrelloBoardName("Project Board");
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1

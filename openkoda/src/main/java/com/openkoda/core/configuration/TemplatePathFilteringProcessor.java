@@ -20,12 +20,12 @@ import com.openkoda.model.component.FrontendResource;
  * Processes Thymeleaf template paths to identify access level restrictions (organization/global),
  * email template flags, and normalized resource names. Used by template resolution infrastructure
  * to determine proper template location and security context.
- * </p>
+ * 
  * <p>
  * Analyzes template paths matching pattern 'frontendresource/{accessLevel}/{resourceName}' and
  * email template discriminator '~' suffix. Enables tenant-aware template resolution with access
  * level enforcement and email template detection.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -47,7 +47,7 @@ public class TemplatePathFilteringProcessor {
      * Contains extracted information from template path parsing: access level restriction,
      * email flag, filtered template path, resource name, and frontend resource entry name.
      * Mutable POJO populated by processTemplatePath() method.
-     * </p>
+     * 
      *
      * @author OpenKoda Team
      * @since 1.7.1
@@ -157,12 +157,12 @@ public class TemplatePathFilteringProcessor {
      * Analyzes the provided template path against access level pattern and email discriminator.
      * Extracts access level from path (e.g., 'frontendresource/organization/mytemplate'),
      * detects email templates via '~' suffix, and produces normalized template and resource names.
-     * </p>
+     * 
      * <p>
      * Algorithm: First checks template against accessLevelPath regex to extract access level from path.
      * Then checks for email discriminator '~' suffix and strips it. Falls back to provided
      * tenantedResourceAccessLevel if no access level in path.
-     * </p>
+     * 
      *
      * @param template the Thymeleaf template path to parse (e.g., 'frontendresource/organization/mytemplate.html~')
      * @param resourceName the original resource name before filtering

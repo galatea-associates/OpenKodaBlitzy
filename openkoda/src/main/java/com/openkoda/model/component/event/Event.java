@@ -29,18 +29,18 @@ import org.apache.commons.lang3.StringUtils;
  * This class encapsulates the event configuration as a triplet of (eventClassName, eventName, eventObjectType).
  * It parses comma-separated event descriptor strings and provides methods to serialize back to that format.
  * The event descriptor is used for registering and managing event listeners within the OpenKoda framework.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * Event event = new Event("com.openkoda.service.UserService,userCreated,User");
  * String className = event.getEventClassName(); // "com.openkoda.service.UserService"
  * }</pre>
- * </p>
+
  * <p>
  * <b>Thread-safety:</b> This is a mutable POJO and is not thread-safe. External synchronization is required
  * if instances are shared across threads.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -71,7 +71,7 @@ public class Event {
      * The input string is split by comma without trimming whitespace or CSV-escaping.
      * The three tokens are assigned by index to eventClassName, eventName, and eventObjectType respectively.
      * No validation is performed on the input format.
-     * </p>
+
      *
      * @param eventString comma-separated triple in format: {@code eventClassName,eventName,eventObjectType}
      * @throws NullPointerException if {@code eventString} is null
@@ -142,7 +142,7 @@ public class Event {
      * Returns a debug representation of this event descriptor in bracketed format.
      * <p>
      * The format is: {@code Event[eventClassName,eventName,eventObjectType]}
-     * </p>
+
      *
      * @return debug string representation of this event
      */
@@ -156,7 +156,7 @@ public class Event {
      * <p>
      * Uses {@link StringUtils#join(Object[], String)} to join the three components with commas.
      * The resulting format matches the input format expected by the constructor.
-     * </p>
+
      *
      * @return comma-separated event descriptor string in format: {@code eventClassName,eventName,eventObjectType}
      * @see #Event(String)

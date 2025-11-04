@@ -32,19 +32,19 @@ import org.hibernate.annotations.DynamicUpdate;
  * This entity stores Facebook user profile data retrieved during the OAuth 2.0 authentication flow,
  * enabling social login via Facebook and linking Facebook identities to OpenKoda User accounts.
  * Profile fields are synchronized from Facebook Graph API responses during authentication.
- * </p>
+
  * <p>
  * Persisted to the 'fb_users' table with a shared primary key relationship to the User entity
  * via {@code @MapsId}. The {@code @DynamicUpdate} annotation enables Hibernate optimization
  * to update only modified columns during persistence operations.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * FacebookUser fbUser = new FacebookUser(facebookId, firstName, lastName, ...);
  * fbUser.setUser(user);
  * </pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -52,7 +52,7 @@ import org.hibernate.annotations.DynamicUpdate;
  * @since 1.7.1
  * @see User
  * @see LoggedUser
- * @see com.openkoda.integration.controller.FacebookController
+ * // FacebookController
  */
 @Entity
 @DynamicUpdate
@@ -64,7 +64,7 @@ public class FacebookUser extends LoggedUser {
      * <p>
      * This field uses the same value as the associated User's id, enforcing a one-to-one
      * relationship between FacebookUser and User entities.
-     * </p>
+
      */
     @Id
     private Long id;
@@ -74,7 +74,7 @@ public class FacebookUser extends LoggedUser {
      * <p>
      * This value is obtained from the Facebook Graph API during OAuth authentication
      * and uniquely identifies the user within Facebook's system.
-     * </p>
+
      */
     private String facebookId;
 
@@ -97,7 +97,7 @@ public class FacebookUser extends LoggedUser {
      * User's email address from Facebook profile.
      * <p>
      * Requires the 'email' permission scope in the OAuth flow.
-     * </p>
+
      */
     private String email;
     
@@ -115,7 +115,7 @@ public class FacebookUser extends LoggedUser {
      * Minimum age range value from Facebook.
      * <p>
      * Example: "21" for users in the 21+ age range.
-     * </p>
+
      */
     private String ageRangeMin;
 
@@ -124,7 +124,7 @@ public class FacebookUser extends LoggedUser {
      * <p>
      * Uses {@code @MapsId} with {@code @JoinColumn(name="user_id")} to share the primary key.
      * Annotated with {@code @JsonIgnore} to prevent JSON serialization of the user reference.
-     * </p>
+
      */
     @MapsId
     @OneToOne
@@ -136,7 +136,7 @@ public class FacebookUser extends LoggedUser {
      * No-argument constructor for JPA entity instantiation.
      * <p>
      * Required by JPA specification for entity creation and reflection-based operations.
-     * </p>
+
      */
     public FacebookUser() {
     }
@@ -147,7 +147,7 @@ public class FacebookUser extends LoggedUser {
      * Initializes a FacebookUser entity with data retrieved from the Facebook Graph API
      * during OAuth authentication. The User relationship must be set separately via
      * {@link #setUser(User)}.
-     * </p>
+
      *
      * @param facebookId   Facebook unique identifier (Facebook User ID)
      * @param firstName    User's first name from Facebook profile
@@ -243,7 +243,7 @@ public class FacebookUser extends LoggedUser {
      * Returns the user's email address from Facebook profile.
      * <p>
      * This value is only available if the OAuth flow includes the 'email' permission scope.
-     * </p>
+
      *
      * @return email address, or null if not provided or email scope not granted
      */
@@ -300,7 +300,7 @@ public class FacebookUser extends LoggedUser {
      * Returns the minimum age range value from Facebook.
      * <p>
      * Example: "21" indicates the user is in the 21+ age range.
-     * </p>
+
      *
      * @return minimum age range value, or null if not provided
      */
@@ -322,7 +322,7 @@ public class FacebookUser extends LoggedUser {
      * <p>
      * Generates a human-readable identification string containing the user's name and email,
      * suitable for audit logging and tracking.
-     * </p>
+
      *
      * @return formatted string with name and email (e.g., "John Doe john@example.com")
      */
@@ -336,7 +336,7 @@ public class FacebookUser extends LoggedUser {
      * <p>
      * This represents the one-to-one relationship between FacebookUser and User,
      * with a shared primary key enforced via {@code @MapsId}.
-     * </p>
+
      *
      * @return associated User entity
      */
@@ -348,7 +348,7 @@ public class FacebookUser extends LoggedUser {
      * Sets the associated User entity.
      * <p>
      * This must be called to establish the relationship before persisting a new FacebookUser.
-     * </p>
+
      *
      * @param user the User entity to associate with this FacebookUser
      */
@@ -361,7 +361,7 @@ public class FacebookUser extends LoggedUser {
      * <p>
      * This value is identical to the associated User's id due to the {@code @MapsId}
      * shared primary key pattern.
-     * </p>
+
      *
      * @return shared primary key value
      */
@@ -374,7 +374,7 @@ public class FacebookUser extends LoggedUser {
      * Sets the primary key value.
      * <p>
      * Typically managed automatically by JPA when the User relationship is established.
-     * </p>
+
      *
      * @param id primary key value (must match associated User's id)
      */

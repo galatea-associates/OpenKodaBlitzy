@@ -42,7 +42,7 @@ import static com.openkoda.controller.common.URLConstants._HTML;
  * {@code @RequestParam("search_search")} query parameter. Delegates to 
  * {@link AbstractGlobalSearchController#findSearchResult(Pageable, String)}, returns ModelAndView 
  * with 'search' view name. Thin adapter with lightweight logging.
- * </p>
+ * 
  * <p>
  * The search is performed among entities implementing {@link SearchableEntity} interface which 
  * requires implementation of {@link SearchableEntity#getIndexString()}. The implementation is 
@@ -51,10 +51,10 @@ import static com.openkoda.controller.common.URLConstants._HTML;
  * continuously as configured in {@link JobsScheduler#searchIndexUpdaterJob()}. Initial setup of 
  * {@link SearchableRepositories#getSearchIndexUpdates()} required for this update occurs at 
  * application startup in {@link SearchableRepositories#discoverSearchableRepositories()}.
- * </p>
+ * 
  * <p>
  * Request mapping: Typically "/search" under HTML namespace. Returns HTML view for browser rendering.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -71,16 +71,16 @@ public class GlobalSearchController extends AbstractGlobalSearchController {
      * Executes platform-wide search and renders results page.
      * <p>
      * HTTP mapping: {@code GET /search}
-     * </p>
+     * 
      * <p>
      * Delegates to {@link AbstractGlobalSearchController#findSearchResult(Pageable, String)} which 
      * performs full-text search across {@link com.openkoda.model.GlobalEntitySearch} entities, 
      * filters by user privileges, and paginates results. The Flow-based implementation from parent 
      * class handles search execution and result assembly.
-     * </p>
+     * 
      * <p>
      * Response format: View 'search' with attributes:
-     * </p>
+     * 
      * <ul>
      *   <li>'searchResults' (List): Filtered and paginated search result entities</li>
      *   <li>'query' (String): Original search query for display</li>

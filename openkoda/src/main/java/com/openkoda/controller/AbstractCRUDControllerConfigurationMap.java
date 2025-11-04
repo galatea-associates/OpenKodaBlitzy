@@ -40,16 +40,16 @@ import java.util.function.Function;
  * configurations. Each configuration binds a controller key to entity repository, form class, frontend mapping
  * definition, and privilege requirements. Registration occurs at application startup via {@link CRUDControllers}.
  * Supports runtime registration and unregistration for dynamic controller addition.
- * </p>
+ * 
  * <p>
  * Used by {@link CRUDControllerHtml} and CRUDApiController to retrieve configurations by entity name. Controllers
  * query this map using the entity key (e.g., "users", "organizations") to obtain repository references, form
  * classes, and privilege settings for generic CRUD operations.
- * </p>
+ * 
  * <p>
  * Thread-safety note: Uses plain {@code HashMap} without synchronization. Assumes registration occurs during
  * single-threaded application startup. Runtime modifications should be externally synchronized.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -75,7 +75,7 @@ public abstract class AbstractCRUDControllerConfigurationMap extends HashMap<Str
      * {@link CRUDControllerConfiguration}, and registers in map under provided key.
      * Enables generic CRUD endpoints at paths like {@code /{key}/all}, {@code /{key}/{id}},
      * {@code /{key}/new}, etc.
-     * </p>
+     * 
      *
      * @param key Controller registry key, typically entity name in lowercase (e.g., "users", "organizations")
      * @param defaultReadPrivilege Minimum privilege required for read operations (list, detail views)
@@ -108,7 +108,7 @@ public abstract class AbstractCRUDControllerConfigurationMap extends HashMap<Str
      * Extracts mapping key from {@code FrontendMappingDefinition}, creates
      * {@link CRUDControllerConfiguration}, and stores in registry. Use when
      * {@code FrontendMappingDefinition} already exists.
-     * </p>
+     * 
      *
      * @param frontendMappingDefinition Complete form field mapping with privilege configuration
      * @param secureRepository Secure repository for entity persistence
@@ -132,7 +132,7 @@ public abstract class AbstractCRUDControllerConfigurationMap extends HashMap<Str
      * <p>
      * Removes configuration entry, disabling CRUD endpoints for this entity.
      * Useful for dynamic controller lifecycle management.
-     * </p>
+     * 
      *
      * @param key Controller key to unregister
      */
@@ -145,7 +145,7 @@ public abstract class AbstractCRUDControllerConfigurationMap extends HashMap<Str
      * <p>
      * Convenience method defaulting to {@link ReflectionBasedEntityForm} for automatic
      * entity-to-form binding using reflection.
-     * </p>
+     * 
      *
      * @param frontendMappingDefinition Complete form field mapping with privilege configuration
      * @param secureRepository Secure repository for entity persistence
@@ -162,7 +162,7 @@ public abstract class AbstractCRUDControllerConfigurationMap extends HashMap<Str
      * <p>
      * Convenience method for most common registration pattern. Defaults to
      * {@link ReflectionBasedEntityForm} for automatic entity-to-form binding.
-     * </p>
+     * 
      *
      * @param key Controller registry key, typically entity name in lowercase (e.g., "users", "organizations")
      * @param defaultReadPrivilege Minimum privilege required for read operations (list, detail views)
@@ -190,7 +190,7 @@ public abstract class AbstractCRUDControllerConfigurationMap extends HashMap<Str
      * Registers CRUD controller with privilege override.
      * <p>
      * Overrides default privileges from {@code FrontendMappingDefinition} with provided values.
-     * </p>
+     * 
      *
      * @param frontendMappingDefinition Complete form field mapping with privilege configuration
      * @param secureRepository Secure repository for entity persistence
@@ -218,7 +218,7 @@ public abstract class AbstractCRUDControllerConfigurationMap extends HashMap<Str
      * <p>
      * Use when registry key should differ from mapping key. Overrides privileges from
      * {@code FrontendMappingDefinition} with provided values.
-     * </p>
+     * 
      *
      * @param key Explicit registry key (overrides {@code FrontendMappingDefinition.getMappingKey()})
      * @param frontendMappingDefinition Complete form field mapping with privilege configuration
@@ -247,7 +247,7 @@ public abstract class AbstractCRUDControllerConfigurationMap extends HashMap<Str
      * <p>
      * Legacy method hardcoded to {@code SecureMapEntityRepository}, {@code canAccessGlobalSettings}
      * privilege, and {@code MapEntityForm}. Retained for backward compatibility only.
-     * </p>
+     * 
      *
      * @param key Controller registry key
      * @param builder Form field definition builder function
@@ -273,7 +273,7 @@ public abstract class AbstractCRUDControllerConfigurationMap extends HashMap<Str
      * Registers pre-constructed CRUDControllerConfiguration.
      * <p>
      * Direct registration method when configuration is constructed externally.
-     * </p>
+     * 
      *
      * @param key Registry key
      * @param controllerConfiguration Complete configuration instance
@@ -292,7 +292,7 @@ public abstract class AbstractCRUDControllerConfigurationMap extends HashMap<Str
      * <p>
      * Tries lowercase key first, falls back to exact match. Enables flexible controller
      * key resolution.
-     * </p>
+     * 
      *
      * @param key Controller key in any case
      * @return Configuration for key (lowercase or exact match), or null if not found

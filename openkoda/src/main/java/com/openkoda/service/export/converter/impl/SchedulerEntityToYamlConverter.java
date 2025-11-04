@@ -36,17 +36,17 @@ import static com.openkoda.service.export.FolderPathConstants.SCHEDULER_;
  * {@link Scheduler} entities. Unlike converters that export both YAML configuration and
  * separate content files, this converter produces YAML-only output since schedulers contain
  * all necessary configuration within their entity properties.
- * </p>
+
  * <p>
  * <b>YAML-Only Output:</b> Both {@link #getPathToContentFile(Scheduler)} and 
  * {@link #getContent(Scheduler)} return null, indicating no separate content files are generated.
- * </p>
+
  * <p>
  * <b>YAML Path Construction:</b> The YAML file path follows the pattern 
  * {@code EXPORT_CONFIG_PATH_ + SCHEDULER_ + "{eventData}-{orgId}.yaml"}, constructed via
  * {@link #getYamlDefaultFilePath(String, String, Long)} using the entity's eventData as the
  * base filename.
- * </p>
+
  * <p>
  * <b>DTO Mapping:</b> The converter maps the following Scheduler fields to SchedulerConversionDto:
  * <ul>
@@ -56,11 +56,11 @@ import static com.openkoda.service.export.FolderPathConstants.SCHEDULER_;
  *   <li>module - module name (from entity.getModuleName())</li>
  *   <li>organizationId - tenant scope identifier</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Thread Safety:</b> This is a stateless Spring {@link Component} that is safe for
  * concurrent use across multiple threads.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -80,7 +80,7 @@ public class SchedulerEntityToYamlConverter extends AbstractEntityToYamlConverte
      * This method intentionally returns null because Scheduler entities export only YAML
      * configuration without separate content files. All scheduler configuration is contained
      * within the YAML metadata, making additional content files unnecessary.
-     * </p>
+
      *
      * @param entity the Scheduler entity (unused)
      * @return always null - no content file for scheduler entities
@@ -97,7 +97,7 @@ public class SchedulerEntityToYamlConverter extends AbstractEntityToYamlConverte
      * export beyond YAML metadata. The scheduler configuration is fully represented in the
      * YAML file produced by {@link #getConversionDto(Scheduler)}, eliminating the need for
      * separate content data.
-     * </p>
+
      *
      * @param entity the Scheduler entity (unused)
      * @return always null - no content for scheduler entities
@@ -113,12 +113,12 @@ public class SchedulerEntityToYamlConverter extends AbstractEntityToYamlConverte
      * The path follows the pattern: {@code EXPORT_CONFIG_PATH_ + SCHEDULER_ + "{eventData}-{orgId}.yaml"},
      * constructed via {@link #getYamlDefaultFilePath(String, String, Long)}. The entity's
      * eventData serves as the base filename, which describes the scheduled event.
-     * </p>
+
      * <p>
      * <b>Organization-Specific Behavior:</b> The organizationId is included in the filename
      * for tenant-scoped schedulers, ensuring that schedulers for different tenants are
      * exported to separate files and can be properly restored.
-     * </p>
+
      *
      * @param entity the Scheduler entity to export (must not be null)
      * @return absolute path to YAML configuration file
@@ -143,11 +143,11 @@ public class SchedulerEntityToYamlConverter extends AbstractEntityToYamlConverte
      *   <li><b>module</b> - module name (obtained via entity.getModuleName())</li>
      *   <li><b>organizationId</b> - tenant scope identifier for organization-specific schedulers</li>
      * </ul>
-     * </p>
+
      * <p>
      * All fields are copied directly from the entity to the DTO, preserving null values where
      * present in the source entity.
-     * </p>
+
      *
      * @param entity the Scheduler entity to convert (must not be null)
      * @return populated SchedulerConversionDto ready for YAML serialization

@@ -28,17 +28,17 @@ import java.io.Serializable;
  * <p>
  * This class enables cross-node synchronization of stateful configuration (Schedulers, EventListeners, Forms) in multi-instance deployments.
  * Events are published by ClusterEventSenderService to a Hazelcast topic and consumed by ClusterEventListenerService on all cluster nodes.
- * </p>
+
  * <p>
  * Active only in 'hazelcast' profile for clustered deployments; no-op in single-instance mode. Implements {@link Serializable} for Hazelcast network transport.
- * </p>
+
  * <p>
  * <strong>WARNING:</strong> Lacks explicit serialVersionUID which may cause deserialization issues across versions. Final fields ensure thread-safe message passing;
  * instances are created once and published to the topic.
- * </p>
+
  * <p>
  * Currently supports three stateful configuration areas:
- * </p>
+
  * <ul>
  * <li><strong>Schedulers</strong> - Synchronizes scheduled task configuration across nodes</li>
  * <li><strong>EventListeners</strong> - Synchronizes event consumer registration across nodes</li>
@@ -46,16 +46,16 @@ import java.io.Serializable;
  * </ul>
  * <p>
  * The third potential area (Logs) is not critical for cluster propagation.
- * </p>
+
  * <p>
  * <strong>Usage Example:</strong>
  * <pre>{@code
  * clusterEventSenderService.sendSchedulerCreated(schedulerId);
  * }</pre>
- * </p>
+
  * <p>
  * <strong>Design Notes:</strong>
- * </p>
+
  * <ul>
  * <li>Use ClusterEvent for cross-node configuration sync; ApplicationEvent for in-process business events</li>
  * <li>Events are published to Hazelcast ITopic&lt;ClusterEvent&gt; named cluster topic</li>
@@ -111,7 +111,7 @@ public class ClusterEvent implements Serializable {
      * Creates immutable cluster event for Hazelcast topic publishing.
      * <p>
      * Typical usage: {@code new ClusterEvent(EventType.SCHEDULER_ADD, scheduler.getId())}
-     * </p>
+
      *
      * @param eventType Event category determining handler routing
      * @param id Database entity ID for node-local reload from persistent storage

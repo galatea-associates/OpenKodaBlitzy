@@ -70,15 +70,15 @@ import static org.springframework.web.util.ServletRequestPathUtils.PATH_ATTRIBUT
  * using request wrapper pattern. Wraps requests with EmbeddedHttpServletRequest/FakeHttpServletRequest, 
  * deserializes dashboard JSON via JsonHelper, uses Thymeleaf TemplateEngine.process to render 
  * delegated ModelAndView fragments. Assembles complete dashboard from individual widget responses.
- * </p>
+ * 
  * <p>
  * Request mappings support both global and organization-scoped page builders with base paths 
  * "/page-builder" or "/dashboard". Dashboard configuration is stored as JSON in FrontendResource 
  * content field, defining widget layout and settings.
- * </p>
+ * 
  * <p>
  * Thread-safety: Stateless controller, thread-safe. Request wrapping is per-request.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -99,7 +99,7 @@ public class PageBuilderController extends AbstractController implements HasSecu
      * <p>
      * Aggregates all component types that can be embedded in dashboard: FrontendResource 
      * widgets, UI components, CRUD table configurations, and image files for visual content.
-     * </p>
+     * 
      *
      * @param frontendResources List of embeddable FrontendResource definitions
      * @param uiComponents List of embeddable UI component definitions
@@ -114,10 +114,10 @@ public class PageBuilderController extends AbstractController implements HasSecu
      * Loads available embeddable components (frontend resources, UI components, CRUD tables, 
      * images) and initializes empty PageBuilderForm. Renders page builder editor interface 
      * where users can drag-drop widgets and configure dashboard layout.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: GET /page-builder/new
-     * </p>
+     * 
      *
      * @param organizationId Optional organization ID for organization-scoped dashboards, null for global
      * @return ModelAndView with empty dashboard form and available widget types
@@ -143,10 +143,10 @@ public class PageBuilderController extends AbstractController implements HasSecu
      * Loads FrontendResource entity by ID and populates PageBuilderForm with saved dashboard 
      * JSON configuration. Provides same embeddable component catalog as new dashboard flow. 
      * Users can modify widget layout, add/remove widgets, update configurations.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: GET /page-builder/{id}
-     * </p>
+     * 
      *
      * @param organizationId Optional organization ID for organization-scoped dashboards, null for global
      * @param id FrontendResource ID of dashboard to edit
@@ -175,10 +175,10 @@ public class PageBuilderController extends AbstractController implements HasSecu
      * Validates PageBuilderForm, creates new FrontendResource entity with dashboard JSON 
      * content, persists to database via secure repository. Redirects to edit page for 
      * newly created dashboard.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: POST /page-builder/new
-     * </p>
+     * 
      *
      * @param organizationId Optional organization ID for organization-scoped dashboard, null for global
      * @param form PageBuilderForm with dashboard JSON configuration, name, and metadata
@@ -206,10 +206,10 @@ public class PageBuilderController extends AbstractController implements HasSecu
      * Loads existing FrontendResource by ID, validates PageBuilderForm, populates updated 
      * dashboard JSON content to entity, persists changes via secure repository. Redirects 
      * back to edit page to show saved changes.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: POST /page-builder/{id}
-     * </p>
+     * 
      *
      * @param organizationId Optional organization ID for organization-scoped dashboard, null for global
      * @param form PageBuilderForm with updated dashboard JSON configuration
@@ -240,10 +240,10 @@ public class PageBuilderController extends AbstractController implements HasSecu
      * Wraps original dashboard request to inject "__view=embedded" parameter when delegating 
      * to widget controllers. This signals widget controllers to render in embedded mode 
      * without full page chrome. Preserves all other request parameters and attributes.
-     * </p>
+     * 
      * <p>
      * Usage: EmbeddedHttpServletRequest wrapped = new EmbeddedHttpServletRequest(originalRequest);
-     * </p>
+     * 
      */
     public static class EmbeddedHttpServletRequest extends HttpServletRequestWrapper {
 
@@ -262,7 +262,7 @@ public class PageBuilderController extends AbstractController implements HasSecu
          * <p>
          * Returns "embedded" for "__view" parameter name to signal embedded rendering mode.
          * All other parameters delegate to wrapped request.
-         * </p>
+         * 
          *
          * @param name Parameter name to retrieve
          * @return "embedded" if name is "__view", otherwise delegates to wrapped request
@@ -283,14 +283,14 @@ public class PageBuilderController extends AbstractController implements HasSecu
      * to widget controllers. Allows dashboard controller to dispatch to specific widget endpoints 
      * (e.g., table CRUD, frontend resource page) while preserving authentication and session context.
      * Essential for request handler mapping to route to correct widget controller.
-     * </p>
+     * 
      * <p>
      * All other request attributes (cookies, headers, authentication, session) delegate to wrapped 
      * request for security and context preservation.
-     * </p>
+     * 
      * <p>
      * Usage: FakeHttpServletRequest fake = new FakeHttpServletRequest(original, "/widget-path", "param=value", null);
-     * </p>
+     * 
      *
      * @see RequestPath
      */
@@ -461,7 +461,7 @@ public class PageBuilderController extends AbstractController implements HasSecu
          * Parses custom requestURI into RequestPath for PATH_ATTRIBUTE to enable Spring 
          * request handler mapping with overridden URI. Essential for routing widget dispatch 
          * to correct controller endpoints.
-         * </p>
+         * 
          *
          * @param name Attribute name to retrieve
          * @return RequestPath parsed from custom URI if PATH_ATTRIBUTE, otherwise delegates to wrapped request
@@ -506,15 +506,15 @@ public class PageBuilderController extends AbstractController implements HasSecu
      * frontendResource, table). Captures ModelAndView response from widget controller, processes 
      * through Thymeleaf TemplateEngine to render HTML fragment, assembles all widget HTML 
      * fragments into complete dashboard grid layout.
-     * </p>
+     * 
      * <p>
      * Widget dispatch mechanism uses FakeHttpServletRequest/Response to capture sub-controller 
      * responses without HTTP round-trip. Preserves authentication and session context from 
      * original request while routing to widget-specific endpoints.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: GET /page-builder/{id}/view
-     * </p>
+     * 
      * <p>
      * Supported widget types:
      * <ul>
@@ -522,7 +522,7 @@ public class PageBuilderController extends AbstractController implements HasSecu
      *   <li>frontendResource: Dispatches to RestrictedFrontendResourceController.openFrontendResourcePage by ID</li>
      *   <li>table: Dispatches to CRUDControllerHtml.getAll for CRUD table widget</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param organizationId Optional organization ID for organization-scoped dashboard, null for global
      * @param id Dashboard FrontendResource ID
@@ -531,7 +531,6 @@ public class PageBuilderController extends AbstractController implements HasSecu
      * @param request Original HttpServletRequest for wrapping and context preservation
      * @param response HttpServletResponse for widget controller invocation
      * @return ModelAndView with assembled HTML containing all widget fragments rendered in dashboard layout
-     * @throws Exception If widget controller throws exception during dispatch or rendering fails
      */
     @GetMapping(_ID + "/view")
     @ResponseBody

@@ -34,7 +34,7 @@ import org.springframework.validation.BindingResult;
  * It performs File entity to FileDto conversion using the frontend mapping definition provided by
  * {@link FileFrontendMappingDefinitions#fileForm}. The form maps core file attributes including filename, content type,
  * and public visibility flag.
- * </p>
+
  * <p>
  * Key responsibilities:
  * <ul>
@@ -43,7 +43,7 @@ import org.springframework.validation.BindingResult;
  *   <li>Uses {@link FileFrontendMappingDefinitions} constants for field name safety</li>
  *   <li>Maintains organization context for multi-tenant file operations</li>
  * </ul>
- * </p>
+
  * <p>
  * Typical usage:
  * <pre>{@code
@@ -54,7 +54,7 @@ import org.springframework.validation.BindingResult;
  *     form.populateTo(fileEntity);
  * }
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -72,7 +72,7 @@ public class FileForm extends AbstractOrganizationRelatedEntityForm<FileDto, Fil
      * Initializes the form using the file-specific frontend mapping definition from
      * {@link FileFrontendMappingDefinitions#fileForm}. This constructor is typically used
      * when creating a form without an existing entity context, such as for new file uploads.
-     * </p>
+
      */
     public FileForm() {
         super(FileFrontendMappingDefinitions.fileForm);
@@ -84,7 +84,7 @@ public class FileForm extends AbstractOrganizationRelatedEntityForm<FileDto, Fil
      * Initializes the form with organization context, a new FileDto, the existing File entity,
      * and the file-specific frontend mapping definition. This constructor is used when editing
      * an existing file entity within a multi-tenant organization context.
-     * </p>
+
      *
      * @param organizationId the ID of the organization owning this file, used for tenant-scoped operations
      * @param entity the existing File entity to bind to this form, may contain pre-populated data
@@ -100,7 +100,7 @@ public class FileForm extends AbstractOrganizationRelatedEntityForm<FileDto, Fil
      * and public visibility flag from the provided File entity to the form's internal DTO.
      * The organizationId is maintained through the parent class context. This operation
      * prepares the form for rendering with current entity values.
-     * </p>
+
      * <p>
      * Fields transferred:
      * <ul>
@@ -108,7 +108,7 @@ public class FileForm extends AbstractOrganizationRelatedEntityForm<FileDto, Fil
      *   <li>contentType - the MIME type of the file content</li>
      *   <li>publicFile - whether the file is publicly accessible without authentication</li>
      * </ul>
-     * </p>
+
      *
      * @param entity the File entity containing source data to populate the form
      * @return this form instance for method chaining
@@ -132,7 +132,7 @@ public class FileForm extends AbstractOrganizationRelatedEntityForm<FileDto, Fil
      * {@code getSafeValue} to safely apply only those field values that were actually modified
      * in the form submission, as determined by the {@link FileFrontendMappingDefinitions} field
      * name constants. This approach prevents unintended overwrites of entity data.
-     * </p>
+
      * <p>
      * Fields applied using constants:
      * <ul>
@@ -140,7 +140,7 @@ public class FileForm extends AbstractOrganizationRelatedEntityForm<FileDto, Fil
      *   <li>{@link FileFrontendMappingDefinitions#CONTENT_TYPE_} - updates content type if modified</li>
      *   <li>{@link FileFrontendMappingDefinitions#PUBLIC_FILE_} - updates public visibility flag if modified</li>
      * </ul>
-     * </p>
+
      *
      * @param entity the File entity to receive the validated form data
      * @return the updated File entity with applied changes
@@ -163,7 +163,7 @@ public class FileForm extends AbstractOrganizationRelatedEntityForm<FileDto, Fil
      * indicating no validation is performed. In standard validation flows, this method should return
      * {@code this} on successful validation or add errors to the {@link BindingResult} and return {@code null}
      * on validation failure.
-     * </p>
+
      * <p>
      * Typical validation logic might include:
      * <ul>
@@ -172,7 +172,7 @@ public class FileForm extends AbstractOrganizationRelatedEntityForm<FileDto, Fil
      *   <li>Ensuring file size constraints are met</li>
      *   <li>Validating file permissions and organization access</li>
      * </ul>
-     * </p>
+
      *
      * @param br the BindingResult to accumulate validation errors
      * @param <F> the form type extending Form

@@ -45,7 +45,7 @@ import static com.openkoda.repository.specifications.NotificationSepcifications.
  * Central notification lifecycle management service for creating, persisting, and delivering application notifications.
  * <p>
  * This service orchestrates the complete notification workflow:
- * </p>
+
  * <ol>
  *   <li>Create notification entity with message, type, and recipient scope</li>
  *   <li>Persist to database via NotificationRepository</li>
@@ -56,24 +56,24 @@ import static com.openkoda.repository.specifications.NotificationSepcifications.
  * <p>
  * Notifications are organization-scoped via recipient User entity, supporting multi-tenancy isolation.
  * The service emits ApplicationEvent.NOTIFICATION_CREATED synchronously for WebSocket broadcasting to connected clients.
- * </p>
+
  * <p>
  * All persistence operations are transactional (inherited from ComponentProvider) for atomic database updates.
  * Security is enforced through secure repositories with privilege checks for querying notifications.
- * </p>
+
  * <p>
  * Key dependencies: NotificationRepository, ReadNotificationRepository, UserRepository, ApplicationEventService
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * Notification notification = notificationService.createOrganizationNotification(
  *     NotificationType.INFO, "Welcome message", organizationId, null, null);
  * }</pre>
- * </p>
+
  * <p>
  * Design patterns: Service layer pattern, event-driven architecture, pagination for large result sets
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -98,7 +98,7 @@ public class NotificationService extends ComponentProvider {
      * This method uses secure repository access with the allUnreadForUser specification to filter
      * notifications by user ID and organization scope. The count is converted from long to int
      * using Math.toIntExact for safe downcasting.
-     * </p>
+
      *
      * @param userId the unique identifier of the user to count unread notifications for
      * @param organizationIds set of organization IDs the user belongs to for multi-tenant filtering
@@ -118,7 +118,7 @@ public class NotificationService extends ComponentProvider {
      * This method queries NotificationKeeper projections with pagination support, then filters
      * results to include only unread notifications (where readNotificationId is null). The method
      * uses Spring Data pagination to limit result set size for performance.
-     * </p>
+
      *
      * @param userId the unique identifier of the user to retrieve notifications for
      * @param organizationIds set of organization IDs the user belongs to for filtering
@@ -148,10 +148,10 @@ public class NotificationService extends ComponentProvider {
      * This utility method serializes notification IDs into CSV format for bulk operations
      * and easier transmission to controllers. Brackets and whitespace are removed from
      * the string representation.
-     * </p>
+
      * <p>
      * Example output: "123,456,789" for notifications with IDs 123, 456, and 789
-     * </p>
+
      *
      * @param notifications list of Notification entities to serialize
      * @return comma-separated string of notification IDs with brackets and spaces removed
@@ -174,7 +174,7 @@ public class NotificationService extends ComponentProvider {
      * This method creates a system-wide notification that is not scoped to any specific organization
      * or user. The notification is persisted to the database and an ApplicationEvent.NOTIFICATION_CREATED
      * event is emitted for WebSocket broadcasting.
-     * </p>
+
      *
      * @param type the notification type (INFO, WARNING, ERROR, SUCCESS)
      * @param message the notification text content
@@ -200,7 +200,7 @@ public class NotificationService extends ComponentProvider {
      * This method creates a tenant-isolated notification that is only visible to users belonging
      * to the specified organization. The notification is persisted to the database and an
      * ApplicationEvent.NOTIFICATION_CREATED event is emitted for WebSocket delivery.
-     * </p>
+
      *
      * @param type the notification type (INFO, WARNING, ERROR, SUCCESS)
      * @param message the notification text content
@@ -227,7 +227,7 @@ public class NotificationService extends ComponentProvider {
      * This convenience method delegates to the full implementation with propagate=false and
      * hiddenFromAuthor=false. Use this when you need a subject line but don't require
      * propagation control or author visibility filtering.
-     * </p>
+
      *
      * @param type the notification type (INFO, WARNING, ERROR, SUCCESS)
      * @param subject the notification subject line
@@ -250,7 +250,7 @@ public class NotificationService extends ComponentProvider {
      * propagation to child organizations, and visibility filtering for the notification author.
      * The notification is persisted to the database and an ApplicationEvent.NOTIFICATION_CREATED
      * event is emitted for WebSocket delivery.
-     * </p>
+
      *
      * @param type the notification type (INFO, WARNING, ERROR, SUCCESS)
      * @param subject the notification subject line
@@ -280,7 +280,7 @@ public class NotificationService extends ComponentProvider {
      * This method creates the most specific notification type targeted at a single user.
      * The notification is persisted to the database and an ApplicationEvent.NOTIFICATION_CREATED
      * event is emitted for WebSocket delivery to the target user.
-     * </p>
+
      *
      * @param type the notification type (INFO, WARNING, ERROR, SUCCESS)
      * @param message the notification text content
@@ -308,7 +308,7 @@ public class NotificationService extends ComponentProvider {
      * This method parses a comma-separated string of notification IDs and creates ReadNotification
      * entries to track read state. The operation is idempotent - marking already-read notifications
      * again is safe. Uses unsecure repository for bulk persistence without privilege checks.
-     * </p>
+
      *
      * @param unreadNotifications comma-separated string of notification IDs to mark as read (e.g., "123,456,789")
      * @param userId the user ID marking notifications as read
@@ -334,7 +334,7 @@ public class NotificationService extends ComponentProvider {
      * specification, and creates ReadNotification markers in bulk. If organizationId is provided and
      * the user belongs to that organization, scope is limited to that organization only. Otherwise,
      * all notifications across all user's organizations are marked as read.
-     * </p>
+
      *
      * @param userId the user ID marking all notifications as read
      * @param organizationId optional organization ID to limit scope, or null for all organizations
@@ -364,7 +364,7 @@ public class NotificationService extends ComponentProvider {
      * Checks if a notification is global-scoped (visible to all users across all organizations).
      * <p>
      * A notification is global when both organizationId and userId are null.
-     * </p>
+
      *
      * @param notification the NotificationDto to check scope for
      * @return true if notification is global-scoped, false otherwise
@@ -379,7 +379,7 @@ public class NotificationService extends ComponentProvider {
      * Checks if a notification is organization-scoped (visible to organization members only).
      * <p>
      * A notification is organization-scoped when organizationId is set but userId is null.
-     * </p>
+
      *
      * @param notification the NotificationDto to check scope for
      * @return true if notification is organization-scoped, false otherwise
@@ -394,7 +394,7 @@ public class NotificationService extends ComponentProvider {
      * Checks if a notification is user-scoped (visible to a specific user only).
      * <p>
      * A notification is user-scoped when userId is set but organizationId is null.
-     * </p>
+
      *
      * @param notification the NotificationDto to check scope for
      * @return true if notification is user-scoped, false otherwise

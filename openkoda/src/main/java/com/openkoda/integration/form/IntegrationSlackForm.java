@@ -33,10 +33,10 @@ import org.springframework.validation.BindingResult;
  * <p>
  * Extends {@link AbstractEntityForm} and implements the FrontendMappingDefinition lifecycle:
  * populateFrom(entity) → validate(BindingResult) → populateTo(entity).
- * </p>
+ * 
  * <p>
  * Form lifecycle:
- * </p>
+ * 
  * <ol>
  *   <li>populateFrom(entity): loads slackWebhookUrl from IntegrationModuleOrganizationConfiguration into DTO</li>
  *   <li>validate(BindingResult): checks webhookUrl is present (rejectValue 'dto.webhookUrl', 'not.empty'),
@@ -45,7 +45,7 @@ import org.springframework.validation.BindingResult;
  * </ol>
  * <p>
  * Validation rules:
- * </p>
+ * 
  * <ul>
  *   <li>webhookUrl: required (not blank)</li>
  *   <li>URL must be HTTPS</li>
@@ -53,22 +53,22 @@ import org.springframework.validation.BindingResult;
  * </ul>
  * <p>
  * Error codes:
- * </p>
+ * 
  * <ul>
  *   <li>not.empty - Webhook URL is required and cannot be blank</li>
  * </ul>
  * <p>
  * Note: validate() returns null instead of this, which breaks fluent chaining expected by some callers.
  * Additional URL format validation (HTTPS, Slack pattern) can be added to validate() method.
- * </p>
+ * 
  * <p>
  * Webhook configuration: Slack incoming webhook URLs are created in Slack workspace settings:
  * Apps → Incoming Webhooks → Add New Webhook to Workspace. Copy the generated webhook URL
  * (format: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXX) to this form.
- * </p>
+ * 
  * <p>
  * Integration: Used by Spring MVC controllers with @Valid annotation, BindingResult captures errors.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -85,7 +85,7 @@ public class IntegrationSlackForm extends AbstractEntityForm<IntegrationSlackDto
      * <p>
      * This default constructor initializes the form with an empty DTO and the standard
      * Slack configuration form definition from {@link IntegrationFrontendMappingDefinitions}.
-     * </p>
+     * 
      */
     public IntegrationSlackForm() {
         super(new IntegrationSlackDto(), null, IntegrationFrontendMappingDefinitions.slackConfigurationForm);
@@ -96,7 +96,7 @@ public class IntegrationSlackForm extends AbstractEntityForm<IntegrationSlackDto
      * <p>
      * This constructor is used when populating the form with existing configuration
      * data for editing.
-     * </p>
+     * 
      *
      * @param dto the Slack integration DTO containing webhook URL
      * @param entity the integration configuration entity
@@ -111,7 +111,7 @@ public class IntegrationSlackForm extends AbstractEntityForm<IntegrationSlackDto
      * This method is called when displaying the form with existing configuration data.
      * It retrieves the Slack webhook URL from the entity and sets it in the DTO for
      * rendering in the user interface.
-     * </p>
+     * 
      *
      * @param entity the IntegrationModuleOrganizationConfiguration to load from
      * @return this form instance for fluent chaining
@@ -128,7 +128,7 @@ public class IntegrationSlackForm extends AbstractEntityForm<IntegrationSlackDto
      * This method is called after successful validation to persist the form data back
      * to the entity. It uses getSafeValue with WEBHOOK_URL_ frontend mapping key to
      * safely retrieve the webhook URL value from the DTO and store it in the entity.
-     * </p>
+     * 
      *
      * @param entity the IntegrationModuleOrganizationConfiguration to populate
      * @return the populated entity
@@ -143,20 +143,20 @@ public class IntegrationSlackForm extends AbstractEntityForm<IntegrationSlackDto
      * Validates webhook URL is not blank and registers errors in BindingResult.
      * <p>
      * Current validation checks:
-     * </p>
+     * 
      * <ul>
      *   <li>Webhook URL is not blank (rejectValue 'dto.webhookUrl', 'not.empty')</li>
      * </ul>
      * <p>
      * Additional validation can be added:
-     * </p>
+     * 
      * <ul>
      *   <li>URL must be HTTPS</li>
      *   <li>URL must match Slack webhook pattern (https://hooks.slack.com/services/*)</li>
      * </ul>
      * <p>
      * Webhook setup guide: To obtain Slack webhook URL:
-     * </p>
+     * 
      * <ol>
      *   <li>Go to Slack workspace settings</li>
      *   <li>Navigate to Apps → Incoming Webhooks</li>

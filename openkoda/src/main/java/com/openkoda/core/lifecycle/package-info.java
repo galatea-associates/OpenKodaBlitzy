@@ -28,9 +28,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * and administrative users before the application services requests. The package separates
  * production initialization ({@code BaseDatabaseInitializer}) from test initialization
  * to support different runtime environments.
- * </p>
+ * 
  *
- * <h2>Key Classes and Interfaces</h2>
+ * <b>Key Classes and Interfaces</b>
  * <ul>
  *   <li><b>BaseDatabaseInitializer</b>: Orchestrates production database initialization
  *       including role/privilege setup, admin user creation, and SQL script execution.
@@ -40,7 +40,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       unified search functionality across entities.</li>
  * </ul>
  *
- * <h2>Application Startup Sequence</h2>
+ * <b>Application Startup Sequence</b>
  * <pre>
  * Spring Application Startup
  *      ↓
@@ -75,7 +75,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * [Application Running]
  * </pre>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <ul>
  *   <li><b>Extension Pattern</b>: {@code BaseDatabaseInitializer} can be extended and
  *       replaced via Spring's {@code @Primary} annotation or profile-based activation,
@@ -88,7 +88,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       for privileged operations during initialization, cleared in finally blocks.</li>
  * </ul>
  *
- * <h2>Usage Examples</h2>
+ * <b>Usage Examples</b>
  * <p>Custom initialization by extending the base initializer:</p>
  * <pre>{@code
  * @Primary
@@ -97,7 +97,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     // Override initialization logic
  * }}</pre>
  *
- * <h2>Relationships with Other Packages</h2>
+ * <b>Relationships with Other Packages</b>
  * <ul>
  *   <li><b>core.security</b>: Depends on {@code UserProvider} for authentication context management</li>
  *   <li><b>core.multitenancy</b>: Uses {@code QueryExecutor} for database operations</li>
@@ -107,7 +107,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>core.configuration</b>: Related for Spring bean wiring and profile activation</li>
  * </ul>
  *
- * <h2>Common Pitfalls and Best Practices</h2>
+ * <b>Common Pitfalls and Best Practices</b>
  * <ul>
  *   <li><b>Respect the proceed parameter</b>: Custom initializers should honor the configuration
  *       flag to skip initialization when appropriate.</li>
@@ -121,10 +121,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       before use to fail fast with clear error messages.</li>
  * </ul>
  *
- * <h2>Application Lifecycle Events</h2>
+ * <b>Application Lifecycle Events</b>
  * <p>
  * This package responds to Spring application lifecycle events:
- * </p>
+ * 
  * <ul>
  *   <li><b>ContextRefreshedEvent</b>: Triggered when {@code ApplicationContext} is initialized
  *       or refreshed, signaling that all beans are loaded.</li>
@@ -133,13 +133,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>ContextClosedEvent</b>: Triggered during graceful shutdown of the application context.</li>
  * </ul>
  *
- * <h2>Shutdown Procedures</h2>
+ * <b>Shutdown Procedures</b>
  * <p>
  * This package focuses primarily on application startup. Shutdown operations are minimal,
  * as database connections and transactions are managed by Spring's lifecycle. Components may
  * implement {@code @PreDestroy} methods for cleanup operations if needed. Graceful shutdown
  * ensures that in-progress transactions complete before context closure.
- * </p>
+ * 
  *
  * @version 1.7.1
  * @since 1.7.1

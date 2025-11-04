@@ -46,12 +46,10 @@ import java.util.function.Function;
  * It caches field accessor functions in a static map keyed by (mapping.name + '#' + dtoClass) to optimize
  * reflection-based property access. The cache can be invalidated via {@link #markDirty(String)} when
  * form definitions change dynamically.
- * </p>
  * <p>
  * The class provides privilege-aware form processing through {@link #getSafeValue} methods that enforce
  * write permissions before populating entity fields from DTO values. Field-level validation is supported
  * via {@link #validateField} overloads that inject error codes into Spring's BindingResult.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -60,7 +58,6 @@ import java.util.function.Function;
  *     form.populateTo(entity);
  * }
  * }</pre>
- * </p>
  *
  * @param <D> the DTO type for form binding (JavaBean or Map-based)
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
@@ -77,7 +74,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Initialized once via {@link #setSecureEntityDictionaryRepositoryOnce(SecureEntityDictionaryRepository)}
      * during application startup. Provides access to entity dictionaries for generating HTML select elements
      * with privilege-aware filtering.
-     * </p>
+     * 
      *
      * @see SecureEntityDictionaryRepository
      */
@@ -89,7 +86,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * This field stores the data transfer object that backs the form. It can be a JavaBean with
      * properties accessible via getter methods, or a Map-based DTO (such as OrganizationRelatedMap)
      * for dynamic field structures.
-     * </p>
+     * 
      */
     public D dto;
 
@@ -99,7 +96,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * When set, only the specified field will be updated during {@link #getSafeValue} operations.
      * All other fields are ignored. This enables AJAX-style single-field updates without
      * resubmitting the entire form.
-     * </p>
+     * 
      */
     protected String singleFieldToUpdate;
 
@@ -110,7 +107,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * with Functions that extract values from DTO instances. This cache is built once per
      * form-DTO pair via {@link #detectFieldMapping(Object)} and reused across all form instances
      * of that type, optimizing reflection overhead.
-     * </p>
+     * 
      */
     private static Map<String, Map<String, Function>> fieldMapping = new HashMap<>();
 
@@ -120,7 +117,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Forms added to this set via {@link #markDirty(String)} will have their cached field mappings
      * regenerated on next access. This supports dynamic form definition changes at runtime.
      * Entries are removed from this set after successful cache rebuild.
-     * </p>
+     * 
      */
     private static Set<String> dirtyFrontendMapping = new HashSet<>();
 
@@ -131,7 +128,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Initializes the form by detecting field mappings via reflection and caching accessor functions
      * for efficient property retrieval. If the DTO is non-null, builds or reuses cached field mappings
      * for the form-DTO pair.
-     * </p>
+     * 
      *
      * @param dto the data transfer object backing this form (may be null)
      * @param frontendMappingDefinition the form field definitions for HTML generation and validation
@@ -147,7 +144,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * <p>
      * Convenience constructor for cases where the DTO will be set later via {@link #setDto(Object)}.
      * Field mappings will be detected when the DTO is assigned.
-     * </p>
+     * 
      *
      * @param frontendMappingDefinition the form field definitions for HTML generation and validation
      */
@@ -162,7 +159,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * type conversion through {@link #convertDtoValue(FrontendMappingFieldDefinition, Object)},
      * then invokes the validator function. If validation fails (non-blank error code returned),
      * rejects the field value in the provided BindingResult.
-     * </p>
+     * 
      *
      * @param ffd the field definition identifying which field to validate
      * @param fieldValidator function accepting field value and returning error code (blank if valid)
@@ -183,7 +180,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Subclasses can override this method to transform DTO values before they are validated.
      * Common use cases include string trimming, numeric formatting, or enum conversion.
      * The default implementation returns the value unchanged.
-     * </p>
+     * 
      *
      * @param ffd the field definition providing metadata for conversion
      * @param dtoValue the raw value extracted from the DTO
@@ -199,7 +196,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Spring MVC binds form fields using paths like "dto.fieldName" for JavaBean properties
      * or "dto[fieldName]" for Map entries. This method strips the "dto" prefix to obtain
      * the bare field name for lookup in the field mapping cache.
-     * </p>
+     * 
      *
      * @param nameWithDto the binding path including dto prefix (e.g., "dto.name" or "dto[name]")
      * @return the plain field name without prefix (e.g., "name")
@@ -218,7 +215,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Similar to {@link #validateField(FrontendMappingFieldDefinition, Function, BindingResult)}
      * but returns a boolean instead of populating BindingResult. Useful for programmatic
      * validation checks where Spring binding context is not available.
-     * </p>
+     * 
      *
      * @param ffd the field definition identifying which field to validate
      * @param fieldValidator function accepting field value and returning error code (blank if valid)
@@ -238,7 +235,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * This method should be called once during application startup to provide access to
      * entity dictionaries for form dropdowns and multiselects. Subsequent calls overwrite
      * the existing repository reference.
-     * </p>
+     * 
      *
      * @param dictionaryRepository the repository providing privilege-aware entity lookups
      */
@@ -252,7 +249,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * When a form's field definitions change dynamically (e.g., adding or removing fields at runtime),
      * call this method with the form name to invalidate its cached accessor functions. The cache
      * will be regenerated during the next {@link #detectFieldMapping(Object)} invocation.
-     * </p>
+     * 
      *
      * @param frontendMappingDefinitionName the name of the form definition requiring cache rebuild
      */
@@ -266,7 +263,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Provides access to the static repository instance for retrieving entity lists
      * used in form select elements. Returns null if the repository has not been initialized
      * via {@link #setSecureEntityDictionaryRepositoryOnce(SecureEntityDictionaryRepository)}.
-     * </p>
+     * 
      *
      * @return the dictionary repository, or null if not yet initialized
      */
@@ -281,13 +278,13 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * and Spring ReflectionUtils to create accessor Functions for each field defined in the
      * frontend mapping. The cache is stored in {@link #fieldMapping} and keyed by
      * formName + '#' + dtoClassName to enable reuse across form instances.
-     * </p>
+     * 
      * <p>
      * For Map-based DTOs (OrganizationRelatedMap), accessors use Map.get(). For JavaBean DTOs,
      * accessors first try property read methods, then fall back to direct field access for
      * fields without getters. The cache is rebuilt only if the form is marked dirty via
      * {@link #markDirty(String)} or if no cache exists yet.
-     * </p>
+     * 
      *
      * @param dto the DTO instance whose class structure determines field accessors (null skips detection)
      */
@@ -345,7 +342,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * <p>
      * Part of the DtoAndEntity interface contract. Provides access to the underlying
      * data transfer object for inspection or manual manipulation.
-     * </p>
+     * 
      *
      * @return the form's DTO instance, or null if not yet assigned
      */
@@ -360,7 +357,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Replaces the current DTO and triggers field mapping detection via
      * {@link #detectFieldMapping(Object)}. If the DTO class differs from the previous one,
      * a new accessor cache entry is created.
-     * </p>
+     * 
      *
      * @param dto the new DTO instance to back this form
      */
@@ -376,7 +373,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * the current user can read or modify. Subclasses typically override this method
      * to implement more sophisticated privilege checks via prepareFieldsReadWritePrivileges().
      * The default implementation checks global field privileges via PrivilegeHelper.
-     * </p>
+     * 
      */
     @Override
     public void process() {
@@ -403,7 +400,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * When set, only the specified field passes through {@link #getSafeValue} checks.
      * All other fields retain their entity values unchanged. Useful for AJAX updates
      * where only one field is modified by the user.
-     * </p>
+     * 
      *
      * @param singleFieldToUpdate the field name to update, or null to update all fields
      */
@@ -417,7 +414,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Returns false by default, indicating JavaBean-style property access (dto.fieldName).
      * Subclasses with Map-based DTOs (OrganizationRelatedMap) should override this to return true,
      * enabling array-style binding (dto[fieldName]).
-     * </p>
+     * 
      *
      * @return true if DTO is a Map, false if DTO is a JavaBean
      */
@@ -430,7 +427,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * <p>
      * Convenience method delegating to {@link #getSafeValue(Object, String, Function)}
      * with identity function. Use when no type conversion is needed.
-     * </p>
+     * 
      *
      * @param <T> the field value type
      * @param entityValue the current entity property value (returned if update not permitted)
@@ -448,11 +445,11 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * The method retrieves the DTO field value, checks if the current user has write permission,
      * and applies the transformation function only if permitted. If write is denied but the DTO
      * value is non-null, throws RuntimeException to prevent privilege escalation attacks.
-     * </p>
+     * 
      * <p>
      * Respects {@link #singleFieldToUpdate} - only the specified field is updated when set,
      * all others return the original entity value unchanged.
-     * </p>
+     * 
      *
      * @param <F> the DTO field value type (input to transformation function)
      * @param <T> the entity field value type (output from transformation function)
@@ -481,11 +478,11 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Variant of {@link #getSafeValue(Object, String, Function)} that accepts the DTO value
      * explicitly rather than retrieving it via field mapping. Useful when the value has already
      * been extracted or requires preprocessing before privilege checking.
-     * </p>
+     * 
      * <p>
      * Supports partial field name matching when {@link #singleFieldToUpdate} is set, allowing
      * updates to nested fields (e.g., singleFieldToUpdate="address" permits "address.city").
-     * </p>
+     * 
      *
      * @param <F> the DTO field value type (input to transformation function)
      * @param <T> the entity field value type (output from transformation function)
@@ -513,7 +510,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * <p>
      * Use with {@link #getSafeValue} to normalize empty string submissions to null:
      * {@code entity.setName(getSafeValue(entity.getName(), "name", nullOnEmpty));}
-     * </p>
+     * 
      */
     protected Function <String, String> nullOnEmpty = ((String s) -> !s.isEmpty() ? s : null);
 
@@ -521,7 +518,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Converter function returning null for blank strings (whitespace-only or empty).
      * <p>
      * Uses Apache Commons StringUtils.defaultIfBlank() to treat blank strings as null.
-     * </p>
+     * 
      */
     protected Function <String, String> nullIfBlank = ((String s) -> StringUtils.defaultIfBlank(s, null));
 
@@ -529,7 +526,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Converter function returning empty string for null values, preserving non-null strings.
      * <p>
      * Ensures non-null string values for entity properties that cannot be null.
-     * </p>
+     * 
      */
     protected Function <String, String> emptyOnNull = ((String s) -> StringUtils.defaultString(s));
 
@@ -537,7 +534,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Converter function returning empty string for blank values (null, empty, or whitespace-only).
      * <p>
      * Normalizes all blank inputs to empty string for consistent storage.
-     * </p>
+     * 
      */
     protected Function <String, String> emptyIfBlank = ((String s) -> StringUtils.defaultIfBlank(s, ""));
 
@@ -547,7 +544,7 @@ public abstract class AbstractForm<D> extends Form implements DtoAndEntity<D, Lo
      * Looks up the accessor function from {@link #fieldMapping} using the form name and DTO class
      * as the cache key, then invokes the function on the current DTO instance. This method is
      * called internally by validation and privilege-checking methods.
-     * </p>
+     * 
      *
      * @param fieldName the plain field name (without dto prefix) to retrieve
      * @return the field value extracted from the DTO

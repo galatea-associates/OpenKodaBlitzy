@@ -46,22 +46,21 @@ import static java.util.stream.Collectors.toCollection;
  * generic CRUD controllers ({@link CRUDControllerHtml}). Provides {@link #getExposed()} and {@link #getExposedSorted()} 
  * methods that filter configurations by {@link PrivilegeHelper} privilege checks and {@link Form#isShowOnOrganizationDashboard()} 
  * visibility. Injects {@link FormRepository} for organization scoping.
- * </p>
+ * 
  * <p>
  * Singleton instance exposed in static field {@link #instance} for {@code CustomisationService} access. Uses plain 
  * {@link HashMap} with potential concurrency considerations for the exposed map.
- * </p>
+ * 
  * <p>
  * Example usage:
  * <pre>{@code
  * HtmlCRUDControllerConfigurationMap map = HtmlCRUDControllerConfigurationMap.getControllers();
  * Set<Entry<String, CRUDControllerConfiguration>> exposed = map.getExposedSorted(organizationId);
  * }</pre>
- * </p>
  * <p>
  * Thread-safety note: Uses plain HashMap without synchronization for the exposed map. {@link #getExposed(Long)} 
  * computes filter on each call - thread-safe but not optimized for high concurrency.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -80,7 +79,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * Static singleton reference to this configuration map for {@code CustomisationService} access.
      * <p>
      * Thread-safety note: Set once during {@link #init()} lifecycle callback, read-only afterward.
-     * </p>
+     * 
      *
      * @see #getControllers()
      * @see #init()
@@ -93,7 +92,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * Sets {@link #instance} static field to this instance during Spring bean initialization. This enables 
      * static access via {@link #getControllers()} for {@code CustomisationService} and other components 
      * requiring global access to the configuration registry.
-     * </p>
+     * 
      *
      * @see #getControllers()
      */
@@ -108,7 +107,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * Enables form entity lookup by name to determine organization ID and visibility settings for controller exposure.
      * Used in {@link #setOrgIdAndExpose(String, CRUDControllerConfiguration)} and 
      * {@link #getExposed(Long, Set)} to filter configurations based on {@link Form#isShowOnOrganizationDashboard()}.
-     * </p>
+     * 
      *
      * @see Form
      * @see #setOrgIdAndExpose(String, CRUDControllerConfiguration)
@@ -122,7 +121,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * <p>
      * Populated by {@link #registerAndExposeCRUDController} methods and queried by {@link #getExposed()} 
      * methods with privilege and visibility filtering. Uses plain HashMap without explicit synchronization.
-     * </p>
+     * 
      *
      * @see #getExposed()
      * @see #registerAndExposeCRUDController(FrontendMappingDefinition, ScopedSecureRepository, Class)
@@ -136,10 +135,10 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * {@link AbstractCRUDControllerConfigurationMap#registerCRUDController(FrontendMappingDefinition, ScopedSecureRepository, Class)}, 
      * then calls {@link #setOrgIdAndExpose(String, CRUDControllerConfiguration)} to associate organization ID 
      * from the corresponding {@link Form} and add to {@link #exposed} map.
-     * </p>
+     * 
      * <p>
      * Note: Marked with TODO comment indicating this approach may be refactored in future versions.
-     * </p>
+     * 
      *
      * @param frontendMappingDefinition the form definition containing name and field mappings
      * @param secureRepository the repository for data access with privilege enforcement
@@ -164,7 +163,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * <p>
      * Provides direct access to {@link #exposed} map entries. For privilege-filtered results, 
      * use {@link #getExposed(Long)} or {@link #getExposedSorted(Long)} instead.
-     * </p>
+     * 
      *
      * @return unfiltered set of all controller configuration map entries
      * @see #getExposed(Long)
@@ -181,10 +180,10 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * Applies organization-scoped filtering based on configuration's organization ID, user privileges 
      * via {@link PrivilegeHelper#hasGlobalOrOrgPrivilege(PrivilegeBase, Long)}, and form visibility 
      * via {@link Form#isShowOnOrganizationDashboard()}.
-     * </p>
+     * 
      * <p>
      * Note: Computes filter on each call - consider caching for frequent access patterns.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID for scoping, or null for no organization filtering
      * @return filtered set of controller configuration entries visible to the specified organization
@@ -201,7 +200,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * <p>
      * Delegates to {@link #getExposedSorted(Long)} with null organization ID, returning all configurations 
      * that pass privilege checks, sorted alphabetically by configuration key.
-     * </p>
+     * 
      *
      * @return sorted {@link LinkedHashSet} of visible controller configuration entries
      * @see #getExposedSorted(Long)
@@ -216,7 +215,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * Calls {@link #getExposed(Long, Set)} to apply organization-scoped filtering and privilege checks, 
      * then converts to stream, sorts entries alphabetically by key using {@link Map.Entry#comparingByKey()}, 
      * and collects to {@link LinkedHashSet} preserving sort order.
-     * </p>
+     * 
      * <p>
      * Filtering criteria:
      * <ul>
@@ -224,7 +223,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      *   <li>User has required privilege via {@link PrivilegeHelper#hasGlobalOrOrgPrivilege(PrivilegeBase, Long)}</li>
      *   <li>Associated {@link Form} has {@link Form#isShowOnOrganizationDashboard()} enabled</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param organizationId the organization ID for scoping, or null for no organization filtering
      * @return sorted {@link LinkedHashSet} of controller configuration entries
@@ -241,7 +240,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * <p>
      * If organization ID is null, returns copy of initial set without filtering. Otherwise, applies three-stage 
      * filtering pipeline:
-     * </p>
+     * 
      * <ol>
      *   <li>Organization scope: Includes configurations with null organization ID or matching the specified organization</li>
      *   <li>Privilege check: Validates user has required privilege via {@link PrivilegeHelper#hasGlobalOrOrgPrivilege(PrivilegeBase, Long)}</li>
@@ -249,7 +248,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * </ol>
      * <p>
      * Uses {@link FormRepository#findByName(String)} to retrieve form entity for visibility determination.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID for scoping, or null to skip filtering
      * @param initialExposedSet the initial set of controller configuration entries to filter
@@ -280,7 +279,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * {@link AbstractCRUDControllerConfigurationMap#registerCRUDController(FrontendMappingDefinition, ScopedSecureRepository, Class, PrivilegeBase, PrivilegeBase)} 
      * with specified privileges, then calls {@link #setOrgIdAndExpose(String, CRUDControllerConfiguration)} to 
      * associate organization ID from the corresponding {@link Form} and add to {@link #exposed} map.
-     * </p>
+     * 
      *
      * @param frontendMappingDefinition the form definition containing name and field mappings
      * @param secureRepository the repository for data access with privilege enforcement
@@ -306,7 +305,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * <p>
      * Removes the configuration from {@link #exposed} map first, then delegates to 
      * {@link AbstractCRUDControllerConfigurationMap#unregisterCRUDController(String)} to remove from base registry.
-     * </p>
+     * 
      *
      * @param key the unique configuration key to unregister
      * @see AbstractCRUDControllerConfigurationMap#unregisterCRUDController(String)
@@ -322,7 +321,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * <p>
      * Provides static access to the Spring-managed singleton instance initialized in {@link #init()}. 
      * Used by {@code CustomisationService} and other components requiring configuration registry access.
-     * </p>
+     * 
      *
      * @return the singleton {@link HtmlCRUDControllerConfigurationMap} instance
      * @see #instance
@@ -339,7 +338,7 @@ public class HtmlCRUDControllerConfigurationMap extends AbstractCRUDControllerCo
      * organization ID (null if form not found), sets it on the configuration via 
      * {@link CRUDControllerConfiguration#setOrganizationId(Long)}, and adds configuration to {@link #exposed} 
      * map using the configuration's key.
-     * </p>
+     * 
      *
      * @param formName the form name used to look up the form entity
      * @param conf the controller configuration to associate with organization and expose

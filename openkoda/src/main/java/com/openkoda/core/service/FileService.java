@@ -64,7 +64,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
  * database Blob storage via Hibernate, filesystem storage with failover support, and Amazon S3
  * (placeholder implementation). It handles file uploads, storage, retrieval, and streaming to
  * HTTP responses with appropriate headers and caching controls.
- * </p>
+
  * <p>
  * Key capabilities include:
  * <ul>
@@ -75,24 +75,24 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
  * <li>Resilient I/O operations with 10-second timeout protection via {@link CompletableFuture}</li>
  * <li>HTTP streaming with Content-Disposition, Content-Type, and caching headers</li>
  * </ul>
- * </p>
+
  * <p>
  * The service extends {@link ComponentProvider} for access to repositories and other services.
  * Storage configuration is controlled via Spring properties, with automatic failover for
  * filesystem operations when the failover path is writable.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * File f = fileService.saveAndPrepareFileEntity(orgId, UUID.randomUUID().toString(), "doc.pdf", bytes);
  * repositories.unsecure.file.save(f);
  * }</pre>
- * </p>
+
  * <p>
  * <strong>Note:</strong> The Amazon S3 storage type is not fully implemented and should be
  * considered a placeholder. The {@code tryIOOperation} timeout is hardcoded to 10 seconds,
  * which may be insufficient for large files over slow I/O systems.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -115,11 +115,11 @@ public class FileService extends ComponentProvider {
      * <li>{@code filesystem} - Files stored as disk files with optional failover path</li>
      * <li>{@code amazon} - Amazon S3 storage (placeholder, not fully implemented)</li>
      * </ul>
-     * </p>
+
      * <p>
      * The storage type is configured via the {@code file.storage.type} property with
      * {@code database} as the default.
-     * </p>
+
      *
      * @since 1.7.1
      */
@@ -138,7 +138,7 @@ public class FileService extends ComponentProvider {
      * This expression string is parsed during initialization to support human-readable
      * size units (GB, MB, kB). The expression is transformed by replacing unit suffixes
      * with multiplication factors before evaluation via SpEL.
-     * </p>
+
      *
      * @see #init()
      * @see #maxUploadSizeInBytes
@@ -152,7 +152,7 @@ public class FileService extends ComponentProvider {
      * This value is computed from {@link #maxUploadSizeInBytesExpression} during the
      * {@link #init()} lifecycle callback by evaluating the SpEL expression after replacing
      * GB/MB/kB tokens with their numeric equivalents.
-     * </p>
+
      *
      * @see #getMaxUploadSizeInBytes()
      */
@@ -164,7 +164,7 @@ public class FileService extends ComponentProvider {
      * Determines which storage mechanism is used for file persistence. Defaults to
      * {@link StorageType#database} if not explicitly configured. Valid values are
      * {@code database}, {@code filesystem}, or {@code amazon}.
-     * </p>
+
      *
      * @see StorageType
      * @see #getStorageType()
@@ -179,7 +179,7 @@ public class FileService extends ComponentProvider {
      * persisted to this directory. The path is concatenated with organization ID,
      * UUID, and filename to construct unique file paths. Defaults to {@code /tmp}
      * if not configured.
-     * </p>
+
      *
      * @see #prepareStoredFileName(Long, String, String)
      * @see #failoverStorageFilesystemPath
@@ -194,7 +194,7 @@ public class FileService extends ComponentProvider {
      * {@link #storageFilesystemPath} fail or timeout. Failover is only attempted
      * when {@link #writableFailoverStoreageFilesystem} is enabled. Defaults to
      * {@code /tmp2} if not configured.
-     * </p>
+
      *
      * @see #writableFailoverStoreageFilesystem
      * @see #handleFilesystemWrite
@@ -210,7 +210,7 @@ public class FileService extends ComponentProvider {
      * automatically retry using {@link #failoverStorageFilesystemPath}. Defaults to
      * {@code false}, meaning failover is disabled and write failures are logged
      * without retry.
-     * </p>
+
      *
      * @see #handleFilesystemWrite
      */
@@ -223,7 +223,7 @@ public class FileService extends ComponentProvider {
      * Specifies the target S3 bucket when {@link #storageType} is set to
      * {@link StorageType#amazon}. Defaults to {@code bucket-name}. Note that S3
      * storage is not fully implemented and should be considered a placeholder.
-     * </p>
+
      *
      * @see #prepareFileNameForS3Storage(Long, String, String)
      */
@@ -236,7 +236,7 @@ public class FileService extends ComponentProvider {
      * Determines the validity period for generated S3 presigned URLs. Defaults to
      * 10 seconds if not configured. This setting is only relevant when using
      * {@link StorageType#amazon}, which is currently not fully implemented.
-     * </p>
+
      */
     @Value("${file.storage.amazon.presigned-url.expiry.time.seconds:10}")
     private long amazonPresignedUrlExpiryTimeInSeconds;
@@ -248,14 +248,14 @@ public class FileService extends ComponentProvider {
      * {@link #maxUploadSizeInBytesExpression} by replacing human-readable size units
      * (GB, MB, kB) with their multiplication factors, then evaluates the resulting
      * SpEL expression to compute {@link #maxUploadSizeInBytes}.
-     * </p>
+
      * <p>
      * Transformation examples:
      * <ul>
      * <li>{@code "5MB"} becomes {@code "5 * 1024 * 1024"}</li>
      * <li>{@code "2GB"} becomes {@code "2 * 1024 * 1024 * 1024"}</li>
      * </ul>
-     * </p>
+
      *
      * @since 1.7.1
      * @see #maxUploadSizeInBytesExpression
@@ -277,7 +277,7 @@ public class FileService extends ComponentProvider {
      * <p>
      * This value is computed during initialization from the Spring property
      * {@code spring.servlet.multipart.max-file-size} after parsing size units.
-     * </p>
+
      *
      * @return maximum upload size in bytes
      * @since 1.7.1
@@ -293,7 +293,7 @@ public class FileService extends ComponentProvider {
      * The storage type determines whether files are persisted to database Blob,
      * filesystem, or Amazon S3 (placeholder). This value is set via the Spring
      * property {@code file.storage.type} with {@code database} as the default.
-     * </p>
+
      *
      * @return the configured {@link StorageType}
      * @since 1.7.1
@@ -309,14 +309,14 @@ public class FileService extends ComponentProvider {
      * Generates a unique filesystem path by concatenating {@link #storageFilesystemPath}
      * with a pattern combining organization ID, UUID, and filename. This ensures file
      * uniqueness across organizations and prevents naming collisions.
-     * </p>
+
      * <p>
      * Path pattern: {@code <storageFilesystemPath>/<orgId>-<uuid>-<fileName>}
-     * </p>
+
      * <p>
      * If {@code orgId} is {@code null}, it defaults to {@code 0} to maintain consistent
      * path structure.
-     * </p>
+
      *
      * @param orgId organization identifier, or {@code null} for default (0)
      * @param uuid unique identifier for the file (typically from UUID.randomUUID())
@@ -337,14 +337,14 @@ public class FileService extends ComponentProvider {
      * <p>
      * Generates an S3 object key with organization-based folder structure. This method
      * supports the Amazon S3 storage backend (currently not fully implemented).
-     * </p>
+
      * <p>
      * Key pattern: {@code <orgId>/<uuid>-<fileName>}
-     * </p>
+
      * <p>
      * The organization-based prefix allows bucket-level access control and logical
      * grouping of files. If {@code orgId} is {@code null}, it defaults to {@code 0}.
-     * </p>
+
      *
      * @param orgId organization identifier, or {@code null} for default (0)
      * @param uuid unique identifier for the file
@@ -366,7 +366,7 @@ public class FileService extends ComponentProvider {
      * The method reads the image from the provided {@link File} entity, validates dimensions,
      * scales proportionally, and returns a new {@link File} entity with scaled content wrapped
      * in a {@link MockMultipartFile}.
-     * </p>
+
      * <p>
      * Key operations:
      * <ul>
@@ -378,17 +378,17 @@ public class FileService extends ComponentProvider {
      * <li>Infers output format from file extension</li>
      * <li>Appends {@code -<width>} suffix to filename</li>
      * </ul>
-     * </p>
+
      * <p>
      * If the initial read fails, the method automatically retries using the failover path by
      * replacing {@link #storageFilesystemPath} with {@link #failoverStorageFilesystemPath}.
-     * </p>
+
      * <p>
      * Example:
      * <pre>{@code
      * File scaled = fileService.scaleImage(originalImage, 800);
      * }</pre>
-     * </p>
+
      *
      * @param in the source {@link File} entity containing the original image
      * @param width target width in pixels for the scaled image
@@ -450,7 +450,7 @@ public class FileService extends ComponentProvider {
      * Converts the byte array to a {@link ByteArrayInputStream} and delegates to the
      * main {@link #saveAndPrepareFileEntity(Long, String, String, long, String, InputStream)}
      * method. The file size is automatically determined from the array length.
-     * </p>
+
      *
      * @param orgId organization identifier for multi-tenant file isolation
      * @param uuid unique identifier for the file
@@ -473,7 +473,7 @@ public class FileService extends ComponentProvider {
      * Saves file content to the configured {@link #storageType} backend and prepares a
      * {@link File} entity with metadata. The method probes MIME type from the original
      * filename and delegates to backend-specific handlers.
-     * </p>
+
      * <p>
      * Backend behaviors:
      * <ul>
@@ -483,18 +483,18 @@ public class FileService extends ComponentProvider {
      *     length and stores in File entity content field</li>
      * <li>{@link StorageType#amazon} - Not implemented (no handler)</li>
      * </ul>
-     * </p>
+
      * <p>
      * <strong>Important:</strong> This method returns an unpersisted {@link File} entity.
      * The caller must save it to the repository to persist metadata.
-     * </p>
+
      * <p>
      * Example:
      * <pre>{@code
      * File f = fileService.saveAndPrepareFileEntity(orgId, UUID.randomUUID().toString(), "doc.pdf", bytes);
      * repositories.unsecure.file.save(f);
      * }</pre>
-     * </p>
+
      *
      * @param orgId organization identifier for multi-tenant file isolation
      * @param uuid unique identifier for the file
@@ -534,7 +534,7 @@ public class FileService extends ComponentProvider {
      * Constructs the target filesystem path using {@link #prepareStoredFileName}, then
      * attempts to copy the input stream to a {@link FileOutputStream} using the resilient
      * {@link #tryIOOperation} method with 10-second timeout protection.
-     * </p>
+
      * <p>
      * Failover behavior:
      * <ul>
@@ -544,11 +544,11 @@ public class FileService extends ComponentProvider {
      *     {@link #failoverStorageFilesystemPath}</li>
      * <li>Returns {@code null} if both primary and failover writes fail</li>
      * </ul>
-     * </p>
+
      * <p>
      * On successful write, creates a {@link File} entity with the filesystem path reference
      * stored in the {@code filesystemPath} field.
-     * </p>
+
      *
      * @param orgId organization identifier for path construction
      * @param uuid unique identifier for path construction
@@ -605,7 +605,7 @@ public class FileService extends ComponentProvider {
      * Content-Disposition (attachment vs inline), Content-Type, Content-Length, Last-Modified,
      * and Cache-Control. The method handles both database Blob and filesystem storage backends
      * with automatic failover support for filesystem reads.
-     * </p>
+
      * <p>
      * Response headers set:
      * <ul>
@@ -616,15 +616,15 @@ public class FileService extends ComponentProvider {
      * <li>{@code Accept-Ranges} - "bytes" for filesystem/database backends</li>
      * <li>{@code Cache-Control} - "max-age=604800, public" if allowed, otherwise "no-store, no-cache"</li>
      * </ul>
-     * </p>
+
      * <p>
      * For filesystem storage, delegates to {@link #handleFilesystemRead} which provides
      * automatic failover to {@link #failoverStorageFilesystemPath} on read failures.
-     * </p>
+
      * <p>
      * <strong>Note:</strong> This method is public for test access. Test classes use this
      * directly to avoid issues with setting {@link #storageType} in test contexts.
-     * </p>
+
      *
      * @param f the {@link File} entity containing content and metadata
      * @param download if {@code true}, sets Content-Disposition to "attachment" forcing download
@@ -669,7 +669,7 @@ public class FileService extends ComponentProvider {
      * Attempts to read file content from the filesystem path stored in the {@link File}
      * entity and copy it to the provided {@link OutputStream} using the resilient
      * {@link #tryIOOperation} method with 10-second timeout protection.
-     * </p>
+
      * <p>
      * Failover behavior:
      * <ul>
@@ -679,11 +679,11 @@ public class FileService extends ComponentProvider {
      *     in the file's filesystem path</li>
      * <li>Logs error if both primary and failover reads fail</li>
      * </ul>
-     * </p>
+
      * <p>
      * This method is used by {@link #getFileContentAndPrepareResponse} to stream file
      * content to HTTP responses.
-     * </p>
+
      *
      * @param f the {@link File} entity containing the filesystem path reference
      * @param os the {@link OutputStream} to which file content is copied
@@ -721,7 +721,7 @@ public class FileService extends ComponentProvider {
      * timeout protection via {@link CompletableFuture}. This interface allows lambdas
      * that throw {@link IOException}, {@link SQLException}, or {@link RuntimeException}
      * without explicit exception handling.
-     * </p>
+
      * <p>
      * Example:
      * <pre>{@code
@@ -731,7 +731,7 @@ public class FileService extends ComponentProvider {
      *     }
      * });
      * }</pre>
-     * </p>
+
      *
      * @since 1.7.1
      * @see #tryIOOperation(ThrowableRunnable)
@@ -754,13 +754,13 @@ public class FileService extends ComponentProvider {
      * results with timeout protection via {@link CompletableFuture}. This interface allows lambdas
      * that throw {@link IOException}, {@link SQLException}, or {@link RuntimeException} without
      * explicit exception handling.
-     * </p>
+
      * <p>
      * Example:
      * <pre>{@code
      * BufferedImage image = tryInputOutput(() -> ImageIO.read(file.getContentStream()));
      * }</pre>
-     * </p>
+
      *
      * @param <E> the type of result produced by this supplier
      * @since 1.7.1
@@ -784,7 +784,7 @@ public class FileService extends ComponentProvider {
      * Executes the provided I/O action asynchronously via {@link CompletableFuture} with a
      * hardcoded 10-second timeout. This prevents indefinite blocking when system I/O operations
      * hang due to network issues, disk failures, or resource exhaustion.
-     * </p>
+
      * <p>
      * Operation behavior:
      * <ul>
@@ -793,11 +793,11 @@ public class FileService extends ComponentProvider {
      * <li>Throws {@link RuntimeException} wrapping {@link InterruptedException},
      *     {@link ExecutionException}, or {@link TimeoutException} on timeout or async failure</li>
      * </ul>
-     * </p>
+
      * <p>
      * <strong>Note:</strong> The 10-second timeout is hardcoded and may be insufficient
      * for large files over slow I/O systems.
-     * </p>
+
      *
      * @param action the I/O operation to execute
      * @return {@code true} if operation succeeded, {@code false} if IOException occurred
@@ -839,7 +839,7 @@ public class FileService extends ComponentProvider {
      * Executes the provided I/O supplier asynchronously via {@link CompletableFuture} with a
      * hardcoded 10-second timeout, returning the typed result. This prevents indefinite blocking
      * when system I/O operations hang due to network issues, disk failures, or resource exhaustion.
-     * </p>
+
      * <p>
      * Operation behavior:
      * <ul>
@@ -848,12 +848,12 @@ public class FileService extends ComponentProvider {
      * <li>Throws {@link RuntimeException} wrapping {@link InterruptedException},
      *     {@link ExecutionException}, or {@link TimeoutException} on timeout or async failure</li>
      * </ul>
-     * </p>
+
      * <p>
      * <strong>Note:</strong> The 10-second timeout is hardcoded and may be insufficient
      * for large files over slow I/O systems. Null return indicates I/O failure, not a
      * valid null result from the supplier.
-     * </p>
+
      *
      * @param <E> the type of result produced by the supplier
      * @param supplier the I/O operation that produces a typed result
@@ -894,16 +894,16 @@ public class FileService extends ComponentProvider {
      * This inner class provides a lightweight in-memory implementation of Spring's
      * {@link MultipartFile} interface for internal use. It wraps byte array content
      * without requiring actual HTTP multipart form data.
-     * </p>
+
      * <p>
      * Primary use case is in {@link #scaleImage(File, int)} where scaled image content
      * needs to be wrapped as a MultipartFile for passing to
      * {@link #saveAndPrepareFileEntity(Long, String, String, long, String, InputStream)}.
-     * </p>
+
      * <p>
      * All required interface methods are implemented. The {@link #transferTo(java.io.File)}
      * method copies content to the destination file using {@link FileCopyUtils}.
-     * </p>
+
      *
      * @since 1.7.1
      * @see MultipartFile
@@ -928,7 +928,7 @@ public class FileService extends ComponentProvider {
          * Constructs a MockMultipartFile with name and content.
          * <p>
          * Original filename defaults to empty string, content type to null.
-         * </p>
+
          *
          * @param name form field name (must not be empty)
          * @param content file content, or {@code null} for empty array
@@ -942,7 +942,7 @@ public class FileService extends ComponentProvider {
          * <p>
          * Reads the entire stream into memory using {@link FileCopyUtils#copyToByteArray}.
          * Original filename defaults to empty string, content type to null.
-         * </p>
+
          *
          * @param name form field name (must not be empty)
          * @param contentStream input stream to read (fully consumed)
@@ -957,7 +957,7 @@ public class FileService extends ComponentProvider {
          * <p>
          * This is the primary constructor delegated to by other overloads. Validates
          * that name is not empty, defaulting null parameters to empty string or array.
-         * </p>
+
          *
          * @param name form field name (must not be empty)
          * @param originalFilename original filename, or {@code null} for empty string
@@ -979,7 +979,7 @@ public class FileService extends ComponentProvider {
          * Constructs a MockMultipartFile from an input stream with metadata.
          * <p>
          * Reads the entire stream into memory using {@link FileCopyUtils#copyToByteArray}.
-         * </p>
+
          *
          * @param name form field name (must not be empty)
          * @param originalFilename original filename, or {@code null} for empty string
@@ -1063,7 +1063,7 @@ public class FileService extends ComponentProvider {
          * <p>
          * Creates a new {@link ByteArrayInputStream} wrapping the content array.
          * Multiple calls create independent streams.
-         * </p>
+
          *
          * @return new {@link InputStream} for reading content
          * @throws IOException declared by interface, but never thrown in this implementation
@@ -1078,7 +1078,7 @@ public class FileService extends ComponentProvider {
          * <p>
          * Copies the content byte array to the destination file using
          * {@link FileCopyUtils#copy(byte[], java.io.File)}.
-         * </p>
+
          *
          * @param dest the destination file
          * @throws IOException if file writing fails

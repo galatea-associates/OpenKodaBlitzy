@@ -25,9 +25,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This package provides the core domain model for external service integrations including Slack, Microsoft Teams,
  * GitHub, Jira, Basecamp, and Trello. It defines role-based access control privileges, per-organization
  * integration settings storage, and OAuth token management.
- * </p>
+ * 
  *
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  * <ul>
  *   <li>{@link com.openkoda.integration.model.IntegrationPrivilege} - Enumeration defining six integration
  *       privileges with numeric IDs (offset 1000) for role-based access control. Each privilege controls
@@ -37,7 +37,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       compile-time inlined for optimal performance.</li>
  * </ul>
  *
- * <h2>Subpackages</h2>
+ * <b>Subpackages</b>
  * <ul>
  *   <li>{@code configuration} - Contains global and organization-scoped configuration entities.
  *       Stores OAuth client credentials, webhook URLs, and API tokens for each integration service.
@@ -47,35 +47,35 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       with Jackson-friendly serialization.</li>
  * </ul>
  *
- * <h2>Usage Patterns</h2>
+ * <b>Usage Patterns</b>
  * <p>
  * Privilege tokens are used in security checks throughout the integration module:
- * </p>
+ * 
  * <pre>{@code
  * @PreAuthorize("hasAuthority(T(IntegrationPrivilegeName)._canIntegrateWithSlack)")
  * public void configureSlack(SlackConfig config) { ... }
  * }</pre>
  * <p>
  * Configuration entities are persisted per organization for tenant isolation:
- * </p>
+ * 
  * <pre>{@code
  * IntegrationModuleOrganizationConfiguration config = repository.findByOrganizationId(orgId);
  * config.setGithubClientId("oauth-client-id");
  * }</pre>
  * <p>
  * DTOs facilitate data transfer between controller and service layers:
- * </p>
+ * 
  * <pre>{@code
  * IntegrationSlackDto dto = new IntegrationSlackDto();
  * dto.setWebhookUrl("https://hooks.slack.com/...");
  * }</pre>
  *
- * <h2>Security Considerations</h2>
+ * <b>Security Considerations</b>
  * <p>
  * Integration credentials and OAuth tokens are stored as plain strings in configuration entities.
  * Ensure proper encryption at rest and secure transmission using HTTPS for production deployments.
  * Privilege checks prevent unauthorized access to integration configuration endpoints.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

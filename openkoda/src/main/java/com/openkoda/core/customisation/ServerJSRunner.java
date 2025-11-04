@@ -48,29 +48,24 @@ import java.util.concurrent.Executors;
  * access to Java classes and OpenKoda services. It creates a GraalVM polyglot execution
  * context with unlimited host access privileges, enabling JavaScript code to invoke Java
  * methods, instantiate classes, and interact with Spring beans.
- * </p>
  * <p>
  * The runner integrates with {@link ServerJs} entities stored in the database, supporting
  * model deserialization, argument passing, and result type conversion. Scripts execute with
  * access to OpenKoda services via the {@code process} binding and can manipulate model data
  * through the {@code model} binding.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
  * ServerJs serverJs = repositories.unsecure.serverJs.findByName("myScript");
  * Map<String, Object> result = runner.evaluateServerJs(serverJs, null, null, Map.class);
  * }</pre>
- * </p>
  * <p>
  * <strong>Thread Safety:</strong> Each script evaluation creates a new GraalVM Context instance,
  * ensuring thread-safe execution. However, the contextBuilder is shared across invocations.
- * </p>
  * <p>
  * <strong>Security Note:</strong> This runner uses {@code allowAllAccess(true)} and
  * {@code allowHostClassLookup} with no restrictions, granting scripts unrestricted access
  * to Java classes and system resources. Only execute trusted scripts.
- * </p>
  *
  * @see ServerJs
  * @see ServerJSProcessRunner
@@ -91,12 +86,12 @@ public class ServerJSRunner extends ComponentProvider {
      * <li>{@code allowHostClassLoading(true)} - Enables JavaScript to load Java classes dynamically</li>
      * <li>{@code allowHostClassLookup} - Allows lookup of any Java class by name without restrictions</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * This permissive configuration enables scripts to instantiate Java objects, call static methods,
      * and interact with Spring-managed beans. Each invocation of {@link #evaluateScript} creates a
      * new Context from this builder to ensure thread isolation.
-     * </p>
+     * 
      *
      * @see Context.Builder
      */
@@ -114,13 +109,13 @@ public class ServerJSRunner extends ComponentProvider {
      * into a Map, then evaluates the script within a GraalVM context. The model and arguments
      * are bound to the JavaScript execution environment, accessible via {@code model} and
      * {@code arguments} variables.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * String result = (String) runner.startServerJs("return model.name;", "{\"name\":\"test\"}", null, writer);
      * }</pre>
-     * </p>
+     * 
      *
      * @param script the JavaScript code to execute, must not be null
      * @param model JSON string representing a map to be provided as the {@code model} variable
@@ -156,11 +151,11 @@ public class ServerJSRunner extends ComponentProvider {
      * events. It validates that the event's data matches the expected {@code schedulerData} parameter
      * before retrieving and executing the named ServerJs script. The scheduler event data and additional
      * arguments are passed to the script execution context.
-     * </p>
+     * 
      * <p>
      * Event consumers in {@link com.openkoda.core.customisation.BasicCustomisationService} register
      * this method to handle scheduled JavaScript execution.
-     * </p>
+     * 
      *
      * @param dto the {@link ScheduledSchedulerDto} containing event metadata including {@code eventData}
      * @param schedulerData the expected event data value to match against {@code dto.eventData}, exits
@@ -187,11 +182,11 @@ public class ServerJSRunner extends ComponentProvider {
      * exposing the full OpenKoda service layer to the script through bindings. The
      * {@code startDateTime} parameter can be used by calling code to track execution timing,
      * though it is not directly passed to the script.
-     * </p>
+     * 
      * <p>
      * Event consumers registered in {@link com.openkoda.core.customisation.BasicCustomisationService}
      * use this method to execute customisation scripts with access to services.
-     * </p>
+     * 
      *
      * @param startDateTime the timestamp when execution was initiated, typically used for logging or tracking
      * @param serverJsName the name of the ServerJs entity to retrieve and execute, must exist in database
@@ -212,7 +207,7 @@ public class ServerJSRunner extends ComponentProvider {
      * <p>
      * This convenience method retrieves the ServerJs entity by name and delegates to
      * {@link #evaluateServerJsScript(ServerJs, Map, List, Class)} for execution.
-     * </p>
+     * 
      *
      * @param <T> the expected return type of the script execution
      * @param serverJsName the name of the ServerJs entity to retrieve and execute, must exist in database
@@ -233,7 +228,7 @@ public class ServerJSRunner extends ComponentProvider {
      * <p>
      * This method is an alias for {@link #evaluateServerJsScript(ServerJs, Map, List, Class)},
      * providing a shorter method name for convenience.
-     * </p>
+     * 
      *
      * @param <T> the expected return type of the script execution
      * @param serverJs the ServerJs entity containing script code and default model/arguments, must not be null
@@ -252,7 +247,7 @@ public class ServerJSRunner extends ComponentProvider {
      * Executes a server-side JavaScript script with merged model and arguments.
      * <p>
      * This method performs the complete ServerJs execution workflow:
-     * </p>
+     * 
      * <ol>
      * <li>Extracts script code from the ServerJs entity</li>
      * <li>Deserializes the ServerJs model into a {@link PageModelMap}</li>
@@ -266,7 +261,7 @@ public class ServerJSRunner extends ComponentProvider {
      * Map<String, Object> customData = Map.of("userId", 123);
      * Integer result = runner.evaluateServerJsScript(serverJs, customData, null, Integer.class);
      * }</pre>
-     * </p>
+     * 
      *
      * @param <T> the expected return type of the script execution
      * @param serverJs the ServerJs entity containing script code, model JSON, and arguments, must not be null
@@ -311,7 +306,7 @@ public class ServerJSRunner extends ComponentProvider {
      * <p>
      * This method creates a new GraalVM Context for each invocation, ensuring thread-safe
      * script execution. It injects three categories of bindings into the JavaScript environment:
-     * </p>
+     * 
      * <ul>
      * <li><strong>Script bindings</strong> - Custom model data passed as {@code bindings} parameter,
      *     accessible by key name in JavaScript (e.g., {@code bindings.put("userId", 123)} becomes {@code userId} variable)</li>
@@ -324,11 +319,11 @@ public class ServerJSRunner extends ComponentProvider {
      * <p>
      * The Context is created from {@link #contextBuilder} with unrestricted host access, allowing
      * JavaScript code to invoke Java methods and instantiate classes.
-     * </p>
+     * 
      * <p>
      * <strong>Thread Safety:</strong> A new Context is created for each invocation, providing
      * thread isolation for concurrent script executions.
-     * </p>
+     * 
      *
      * @param <T> the expected return type of the script execution
      * @param script the JavaScript source code to execute, must not be null

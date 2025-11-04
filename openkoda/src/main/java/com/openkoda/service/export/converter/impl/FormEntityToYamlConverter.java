@@ -35,26 +35,26 @@ import static com.openkoda.service.export.FolderPathConstants.*;
  * into two separate files: a YAML configuration file containing form metadata and a JavaScript file
  * containing the form's code implementation. The converter manages organization-specific paths
  * for tenant-scoped forms, ensuring proper isolation of exported form definitions.
- * </p>
+ * 
  * <p>
  * The JavaScript content file path follows the pattern: {@code EXPORT_CODE_PATH_ + FORM_ + orgPath + "{name}.js"},
  * where orgPath includes the organization ID for tenant-scoped forms or remains empty for global forms.
  * The YAML configuration path is constructed via {@code getYamlDefaultFilePath} using the pattern:
  * {@code EXPORT_CONFIG_PATH_ + FORM_ + filename}.
- * </p>
+ * 
  * <p>
  * Organization-specific behavior: When organizationId is present in the Form entity, it is included
  * in both the JavaScript file path (as a directory prefix) and the YAML filename (as a suffix),
  * enabling proper tenant isolation during export and import operations.
- * </p>
+ * 
  * <p>
  * This component implements {@link LoggingComponent} for debug logging capabilities during the
  * conversion process.
- * </p>
+ * 
  * <p>
  * Thread-safety: This is a stateless Spring {@code @Component} that is safe for concurrent use
  * by multiple threads.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -73,19 +73,19 @@ public class FormEntityToYamlConverter extends AbstractEntityToYamlConverter<For
      * <p>
      * The path follows the pattern: {@code EXPORT_CODE_PATH_ + FORM_ + orgPath + "{name}.js"},
      * where the filename is formatted as {@code "{formName}.js"}.
-     * </p>
+     * 
      * <p>
      * Organization path logic: If the organizationId is null, the form is treated as global
      * (no organization prefix). Otherwise, the path includes {@code SUBDIR_ORGANIZATION_PREFIX + organizationId + "/"}
      * to ensure tenant-scoped isolation of exported form code.
-     * </p>
+     * 
      *
      * @param entity the Form entity to export (must not be null)
      * @return absolute path to .js content file containing form definition code
      * @throws NullPointerException if entity is null or entity.getName() is null
-     * @see FolderPathConstants#EXPORT_CODE_PATH_
-     * @see FolderPathConstants#FORM_
-     * @see FolderPathConstants#SUBDIR_ORGANIZATION_PREFIX
+     * @see com.openkoda.service.export.FolderPathConstants#EXPORT_CODE_PATH_
+     * @see com.openkoda.service.export.FolderPathConstants#FORM_
+     * @see com.openkoda.service.export.FolderPathConstants#SUBDIR_ORGANIZATION_PREFIX
      */
     public String getPathToContentFile(Form entity){
         String orgPath = entity.getOrganizationId() == null ? "" : SUBDIR_ORGANIZATION_PREFIX + entity.getOrganizationId() + "/";
@@ -99,7 +99,7 @@ public class FormEntityToYamlConverter extends AbstractEntityToYamlConverter<For
      * <p>
      * This method returns {@code entity.getCode()}, which contains the form's JavaScript
      * implementation that will be written to the .js content file during export.
-     * </p>
+     * 
      *
      * @param entity the Form entity (must not be null)
      * @return JavaScript form definition code string, may be null if no code defined
@@ -115,7 +115,7 @@ public class FormEntityToYamlConverter extends AbstractEntityToYamlConverter<For
      * <p>
      * This method maps Form entity fields to the DTO used for YAML export. The DTO includes
      * form metadata such as name, privileges, table configuration, and controller registration flags.
-     * </p>
+     * 
      * <p>
      * DTO field mappings:
      * <ul>
@@ -133,12 +133,12 @@ public class FormEntityToYamlConverter extends AbstractEntityToYamlConverter<For
      *   <li>module - module name for form organization</li>
      *   <li>organizationId - tenant scope identifier</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Note: The {@code code} field contains the relative resource path to the .js file
      * (via {@code getResourcePathToContentFile}), not the actual JavaScript content.
      * Privilege fields are converted to string representation for YAML serialization.
-     * </p>
+     * 
      *
      * @param entity the Form entity to convert (must not be null)
      * @return populated FormConversionDto ready for YAML serialization
@@ -169,13 +169,13 @@ public class FormEntityToYamlConverter extends AbstractEntityToYamlConverter<For
      * The path follows the pattern: {@code EXPORT_CONFIG_PATH_ + FORM_ + "{name}-{orgId}.yaml"}
      * via {@code getYamlDefaultFilePath}. The organizationId is included in the filename
      * for tenant-scoped forms, ensuring proper isolation of form configurations.
-     * </p>
+     * 
      *
      * @param entity the Form entity to export (must not be null)
      * @return absolute path to YAML configuration file
      * @throws NullPointerException if entity is null or entity.getName() is null
-     * @see FolderPathConstants#EXPORT_CONFIG_PATH_
-     * @see FolderPathConstants#FORM_
+     * @see com.openkoda.service.export.FolderPathConstants#EXPORT_CONFIG_PATH_
+     * @see com.openkoda.service.export.FolderPathConstants#FORM_
      */
     public String getPathToYamlComponentFile(Form entity){
         return getYamlDefaultFilePath(EXPORT_CONFIG_PATH_ + FORM_, entity.getName(), entity.getOrganizationId());

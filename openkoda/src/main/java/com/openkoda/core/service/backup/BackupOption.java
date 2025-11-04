@@ -28,7 +28,6 @@ package com.openkoda.core.service.backup;
  * when creating system backups. The backup orchestration layer (typically {@link BackupWriter})
  * consumes a {@code Collection<BackupOption>} or {@code EnumSet<BackupOption>} to determine
  * which backup tasks to execute during a backup operation.
- * </p>
  * <p>
  * Common usage patterns include:
  * <ul>
@@ -36,7 +35,6 @@ package com.openkoda.core.service.backup;
  *     <li>Full local backup: {@code EnumSet.of(BACKUP_DATABASE, BACKUP_PROPERTIES)}</li>
  *     <li>Full backup with remote copy: {@code EnumSet.allOf(BackupOption.class)}</li>
  * </ul>
- * </p>
  * <p>
  * The enum serves as a contract boundary between backup callers and the backup implementation.
  * Renaming or removing constants is a breaking API change that affects:
@@ -46,7 +44,6 @@ package com.openkoda.core.service.backup;
  *     <li>Log files and monitoring systems parsing option values</li>
  *     <li>Integration tests validating backup behavior</li>
  * </ul>
- * </p>
  * <p>
  * Integration with {@link BackupWriter}:
  * <ul>
@@ -55,7 +52,6 @@ package com.openkoda.core.service.backup;
  *     <li>{@link BackupWriter#copyBackupFile(java.util.Collection, java.io.File)} checks for
  *         {@link #SCP_ENABLED} to determine whether to transfer the backup to a remote host</li>
  * </ul>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -70,12 +66,12 @@ public enum BackupOption {
      * When this option is present, the backup orchestration executes {@code pg_dump} to create
      * a complete SQL dump of the configured PostgreSQL database. The dump is written to a
      * timestamped .sql file in the backup directory.
-     * </p>
+     * 
      * <p>
      * The database connection parameters (host, database name, username, password) are derived
      * from the Spring datasource configuration. The PGPASSWORD environment variable is injected
      * into the pg_dump subprocess for authentication.
-     * </p>
+     * 
      * <p>
      * This operation requires:
      * <ul>
@@ -84,7 +80,7 @@ public enum BackupOption {
      *     <li>Network connectivity to the database server</li>
      *     <li>Sufficient disk space in the backup directory</li>
      * </ul>
-     * </p>
+     * 
      */
     BACKUP_DATABASE,
     
@@ -95,12 +91,12 @@ public enum BackupOption {
      * configuration properties file (typically application.properties or application.yml)
      * in the backup archive. This ensures that configuration settings can be restored
      * along with database data.
-     * </p>
+     * 
      * <p>
      * The properties file path is determined by the {@code backup.application.properties.file.path}
      * configuration property. If the file is not found or not readable, the backup operation
      * logs a warning but continues with other enabled tasks.
-     * </p>
+     * 
      */
     BACKUP_PROPERTIES,
     
@@ -110,7 +106,7 @@ public enum BackupOption {
      * When this option is present, the backup orchestration uses the {@code scp} command-line
      * utility to transfer the generated backup archive (.tar.gz or .tar.gz.gpg) to a configured
      * remote server. This provides off-site backup storage for disaster recovery scenarios.
-     * </p>
+     * 
      * <p>
      * Remote transfer configuration is provided via application properties:
      * <ul>
@@ -118,7 +114,7 @@ public enum BackupOption {
      *     <li>{@code backup.scp.target.directory}: Destination directory path on remote host</li>
      *     <li>SSH key authentication must be configured externally (via ~/.ssh/config or ssh-agent)</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * This operation requires:
      * <ul>
@@ -127,11 +123,11 @@ public enum BackupOption {
      *     <li>Network connectivity to the remote host</li>
      *     <li>Write permissions to the target directory on remote host</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * If SCP transfer fails, the backup operation returns false and logs diagnostic information
      * to backup_error.log, but the local backup archive remains intact.
-     * </p>
+     * 
      */
     SCP_ENABLED
 }

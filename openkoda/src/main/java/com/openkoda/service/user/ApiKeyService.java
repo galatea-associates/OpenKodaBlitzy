@@ -42,16 +42,16 @@ import java.util.Base64;
  * Manages the complete API key lifecycle for machine-to-machine authentication. Generates long-lived API keys,
  * associates them with users and organizations, validates keys on incoming requests, and supports revocation.
  * API keys enable secure programmatic access to the OpenKoda platform without requiring interactive login.
- * </p>
+ * 
  * <p>
  * <strong>API Key Structure:</strong> Keys follow the format {@code openkoda_[prefix]_[random32chars]}
- * </p>
+ * 
  * <p>
  * Example: {@code openkoda_prod_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6}
- * </p>
+ * 
  * <p>
  * <strong>API Key Scopes:</strong>
- * </p>
+ * 
  * <ul>
  * <li><strong>Organization-scoped:</strong> Access limited to single organization context</li>
  * <li><strong>User-scoped:</strong> Inherits user's roles and privileges for authorization</li>
@@ -60,7 +60,7 @@ import java.util.Base64;
  * <p>
  * <strong>Security:</strong> API keys are hashed using SHA-256 before storage. Plaintext keys are only
  * shown once at creation time and cannot be retrieved later.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -77,7 +77,7 @@ public class ApiKeyService extends ComponentProvider {
      * <p>
      * This {@link SecureRandom} instance is used across all API key generation operations to create
      * unpredictable random bytes that form the basis of API key strings. Thread-safe for concurrent use.
-     * </p>
+     * 
      */
     private static SecureRandom random = new SecureRandom();
 
@@ -86,7 +86,7 @@ public class ApiKeyService extends ComponentProvider {
      * <p>
      * Injected via Jakarta Inject. Used to hash plaintext API keys before storage and to validate
      * incoming API keys against stored hashes during authentication.
-     * </p>
+     * 
      */
     @Inject
     private PasswordEncoder passwordEncoder;
@@ -97,18 +97,18 @@ public class ApiKeyService extends ComponentProvider {
      * Creates a 30-byte cryptographically secure random payload using the shared {@link SecureRandom} instance,
      * encodes it with URL-safe Base64, and associates it with the user. If the user already has an API key,
      * updates it with the new value. If no API key exists, creates a new {@link ApiKey} entity.
-     * </p>
+     * 
      * <p>
      * <strong>Key Format:</strong> {@code openkoda_[env]_[32-char random]}
-     * </p>
+     * 
      * <p>
      * <strong>Important:</strong> This service intentionally does not perform persistence. Callers must
      * save the returned entities to the database.
-     * </p>
+     * 
      * <p>
      * <strong>Security:</strong> Keys have no expiry by default and must be explicitly revoked. The plaintext
      * key is only available in the returned tuple and should be shown to the user once.
-     * </p>
+     * 
      *
      * @param user User whose API key should be reset or created (must not be null)
      * @return Tuple containing: mutated User entity, mutated ApiKey entity, and plaintext API key string
@@ -139,11 +139,11 @@ public class ApiKeyService extends ComponentProvider {
      * Enforces non-null user and API key, then compares the raw API key from the request with the stored
      * hashed representation using {@link PasswordEncoder#matches(CharSequence, String)}. This method validates
      * that the provided API key is authentic for the given user.
-     * </p>
+     * 
      * <p>
      * <strong>Validation Ordering:</strong> Current implementation logs {@code user.getId()} before null check,
      * which can cause {@link NullPointerException} if user is null. This represents fragile validation ordering.
-     * </p>
+     * 
      *
      * @param getTokenRequest Token request containing the API key to validate (must not be null)
      * @param user User to validate against (must not be null)
@@ -179,7 +179,7 @@ public class ApiKeyService extends ComponentProvider {
      * <p>
      * Maps the {@link Token} entity to a {@link TokenResponse} data transfer object containing the
      * API token string, user ID, and expiration timestamp. Logs invocation for audit purposes.
-     * </p>
+     * 
      *
      * @param token Token entity to convert to response DTO (must not be null)
      * @return TokenResponse containing Base64-encoded token string, user ID, and expiration date

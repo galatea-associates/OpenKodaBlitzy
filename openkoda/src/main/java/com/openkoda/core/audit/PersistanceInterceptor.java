@@ -23,17 +23,17 @@ import java.util.Map.Entry;
  * nulls), respects entity-provided ignore rules (AuditableEntity.ignorePropertiesInAudit), and identifies 
  * large content properties (AuditableEntity.contentProperties) for separate storage. Stores results in 
  * session-scoped auditMap as AuditedObjectState entries.
- * </p>
+ * 
  * <p>
  * Implementation notes: Uses FastDateFormat 'dd/MM/yyyy HH:mm:ss' for java.util.Date formatting (line 18), 
  * DatesHelper.formatDateTimeEN for LocalDateTime (lines 108-109). HTML output format: 
  * 'from &lt;b&gt;oldValue&lt;/b&gt; to &lt;b&gt;newValue&lt;/b&gt;' (line 111). Treats null as '[no value]' 
  * (line 164). Collections are not audited (line 84-85).
- * </p>
+ * 
  * <p>
  * Thread-safety: Abstract class with static FastDateFormat field (thread-safe). Implementations must 
  * maintain session-scoped auditMap.
- * </p>
+ * 
  *
  * @see AuditInterceptor
  * @see AuditedObjectState
@@ -56,7 +56,7 @@ public abstract class PersistanceInterceptor implements LoggingComponentWithRequ
      * <p>
      * Subclass must implement to capture new entity state and populate auditMap with AuditedObjectState 
      * entry. Called during Hibernate flush when new entity is persisted.
-     * </p>
+     * 
      *
      * @param auditMap session-scoped map to store AuditedObjectState entries, keyed by entity instance
      * @param entity entity being inserted (must implement AuditableEntity)
@@ -74,7 +74,7 @@ public abstract class PersistanceInterceptor implements LoggingComponentWithRequ
      * <p>
      * Subclass must implement to capture deleted entity identifier and populate auditMap. entityState, 
      * propertyNames, types typically unused for DELETE auditing.
-     * </p>
+     * 
      *
      * @param auditMap session-scoped map to store AuditedObjectState entries
      * @param entity entity being deleted (must implement AuditableEntity)
@@ -91,7 +91,7 @@ public abstract class PersistanceInterceptor implements LoggingComponentWithRequ
      * <p>
      * Subclass must implement to compare currentState vs previousState arrays and delegate to computeChanges 
      * for diff generation. Called during flush when Hibernate detects entity modifications.
-     * </p>
+     * 
      *
      * @param auditMap session-scoped map to store AuditedObjectState entries
      * @param entity entity being updated
@@ -116,11 +116,11 @@ public abstract class PersistanceInterceptor implements LoggingComponentWithRequ
      * separately via entity.contentProperties() check (lines 93-97). Formats HTML as 'from &lt;b&gt;old&lt;/b&gt; 
      * to &lt;b&gt;new&lt;/b&gt;' (line 111). Creates or merges AuditedObjectState in auditMap with EDIT 
      * operation (lines 120-126).
-     * </p>
+     * 
      * <p>
      * Usage note: Called by onFlushDirty implementations. Merges properties if entity already in auditMap 
      * (line 123-124).
-     * </p>
+     * 
      *
      * @param auditMap session-scoped map accumulating AuditedObjectState entries for transaction
      * @param entity entity being audited (must implement AuditableEntity)
@@ -194,7 +194,7 @@ public abstract class PersistanceInterceptor implements LoggingComponentWithRequ
      * <p>
      * Delegates to AuditableEntity.ignorePropertiesInAudit() to allow entities to exclude sensitive fields 
      * (e.g., passwords, secrets) from audit logs.
-     * </p>
+     * 
      *
      * @param entity entity being audited (cast to AuditableEntity at line 136)
      * @param propertyName property name to check
@@ -213,7 +213,7 @@ public abstract class PersistanceInterceptor implements LoggingComponentWithRequ
      * <p>
      * Delegates to AuditableEntity.contentProperties() to identify large text fields (e.g., email bodies, 
      * document content) for storage in dedicated content column instead of inline change description.
-     * </p>
+     * 
      *
      * @param entity entity being audited (cast to AuditableEntity at line 147)
      * @param propertyName property name to check
@@ -251,7 +251,7 @@ public abstract class PersistanceInterceptor implements LoggingComponentWithRequ
      * <p>
      * Converts object to string representation: null becomes '[no value]' (line 164), java.util.Date 
      * formatted via FastDateFormat 'dd/MM/yyyy HH:mm:ss' (line 167), all others via Object.toString().
-     * </p>
+     * 
      *
      * @param object object to convert, may be null
      * @return string representation or '[no value]' for null

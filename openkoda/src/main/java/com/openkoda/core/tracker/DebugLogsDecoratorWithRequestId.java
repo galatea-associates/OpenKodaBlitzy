@@ -34,18 +34,18 @@ import java.util.Map;
  * debug logging behavior. It provides operations to enumerate available logger classes, clear debug sets,
  * and configure debugStack retention. The decorator integrates with {@link LoggingComponentWithRequestId}
  * shared state including the debugLoggers set, availableLoggers list, and debugStack.
- * </p>
+
  * <p>
  * Thread-safety depends on the underlying shared collections from {@link LoggingComponentWithRequestId}.
  * This class enables dynamic control of debug-level logging for specific classes at runtime without
  * requiring application restart or configuration file changes.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * decorator.turnOnDebugModeForLoggerClassname("com.openkoda.service.UserService");
  * </pre>
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @version 1.7.1
@@ -60,7 +60,7 @@ public class DebugLogsDecoratorWithRequestId implements StatisticsMBean, Logging
      * <p>
      * This constructor initializes the decorator which provides management operations for debug logging.
      * The decorator relies on shared state from {@link LoggingComponentWithRequestId} for its operations.
-     * </p>
+
      */
     public DebugLogsDecoratorWithRequestId() {
     }
@@ -71,7 +71,7 @@ public class DebugLogsDecoratorWithRequestId implements StatisticsMBean, Logging
      * This method validates the classname using {@code StringUtils.isBlank}, then performs a linear scan
      * over registered loggers by comparing {@code Class.getName()}. If the logger is found, it delegates
      * to {@link #turnOnDebugModeForLoggerClass(Class)} to enable debug mode.
-     * </p>
+
      *
      * @param classname the fully qualified class name to enable debug logging for (e.g., "com.openkoda.service.UserService").
      *                  Cannot be blank or null.
@@ -103,7 +103,7 @@ public class DebugLogsDecoratorWithRequestId implements StatisticsMBean, Logging
      * <p>
      * This method adds the class to the shared debugLoggers set, enabling debug-level output for that
      * logger class. Once added, all debug log statements from that logger will be captured and stored.
-     * </p>
+
      *
      * @param c the Class object to enable debug logging for. Cannot be null.
      * @return true if the class was successfully added to debugLoggers set, false if the class is null
@@ -119,7 +119,7 @@ public class DebugLogsDecoratorWithRequestId implements StatisticsMBean, Logging
      * <p>
      * This method searches registered loggers by name and delegates to {@link #turnOffDebugModeForLoggerClass(Class)}
      * if the logger is found. It performs a linear scan over registered loggers comparing each class name.
-     * </p>
+
      *
      * @param classname the fully qualified class name to disable debug logging for. Cannot be blank or null.
      * @return true if debug mode was successfully disabled for the logger, false if the classname is not found
@@ -146,7 +146,7 @@ public class DebugLogsDecoratorWithRequestId implements StatisticsMBean, Logging
      * <p>
      * This method removes the class from the shared debugLoggers set, disabling debug-level output for that
      * logger class. After removal, debug log statements from that logger will no longer be captured.
-     * </p>
+
      *
      * @param c the Class object to disable debug logging for. Cannot be null.
      * @return true if the class was successfully removed from debugLoggers set, false if the class is null
@@ -162,7 +162,7 @@ public class DebugLogsDecoratorWithRequestId implements StatisticsMBean, Logging
      * This method disables debug mode for all loggers by removing all classes from the shared debugLoggers set.
      * After calling this method, no debug log statements will be captured from any logger until they are
      * explicitly enabled again.
-     * </p>
+
      *
      * @see #turnOffDebugModeForLoggerClass(Class)
      */
@@ -176,7 +176,7 @@ public class DebugLogsDecoratorWithRequestId implements StatisticsMBean, Logging
      * This method streams the availableLoggers set, maps each class to its name via {@code Class.getName()},
      * and returns the result as a String array. The returned array contains all logger classes that can be
      * enabled for debug mode.
-     * </p>
+
      *
      * @return array of fully qualified class names for all available loggers. Never null, but may be empty if no loggers are registered.
      */
@@ -194,7 +194,7 @@ public class DebugLogsDecoratorWithRequestId implements StatisticsMBean, Logging
      * This method configures debugStack retention by delegating to {@code debugStack.setMaxEntries}.
      * It controls the in-memory debug log buffer size. When the buffer is full, older entries are discarded
      * to make room for new entries.
-     * </p>
+
      *
      * @param maxEntries the maximum number of entries to retain in debug stack. Must be a positive integer.
      * @return true on successful configuration

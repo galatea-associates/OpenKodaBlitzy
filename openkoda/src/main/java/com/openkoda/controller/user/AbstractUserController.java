@@ -60,12 +60,12 @@ import static com.openkoda.controller.common.SessionData.SPOOFING_USER;
  * user-scoped and organization-scoped privileges through Flow pipeline integration. Subclasses provide concrete 
  * HTTP endpoint mappings (HTML, API). Uses services.user for authentication integration, services.email for 
  * verification, services.runAs for impersonation, and services.validation for form validation.
- * </p>
+ * 
  * <p>
  * Controller that provides actual User related functionality for different type of access (eg. API, HTML).
  * Implementing classes should take over http binding and forming a result whereas this controller should take 
  * care of actual implementation.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -88,7 +88,7 @@ public class AbstractUserController extends AbstractController {
      * <p>
      * Executes secure search via repositories.secure.user.search enforcing privilege checks. Search term applies 
      * to user name and email fields.
-     * </p>
+     * 
      *
      * @param aSearchTerm Search term for filtering users by name or email (can be null for no text search)
      * @param aSpecification JPA Specification for additional filtering criteria (organization scope, status filters)
@@ -108,7 +108,7 @@ public class AbstractUserController extends AbstractController {
      * <p>
      * Composes findUser flow with prepareAdditionalForms to populate customizable profile sections registered 
      * via BasicCustomisationService.additionalSettingsForms.
-     * </p>
+     * 
      *
      * @param userId ID of user whose profile to retrieve
      * @return PageModelMap containing user entity, editUserForm, and additionalSettingsForms list
@@ -125,7 +125,7 @@ public class AbstractUserController extends AbstractController {
      * <p>
      * Uses repositories.secure.user.findOne with privilege enforcement, validates entity existence via 
      * services.validation.assertNotNull.
-     * </p>
+     * 
      *
      * @param id User ID to load
      * @return Flow pipeline containing userEntity and editUserForm
@@ -145,7 +145,7 @@ public class AbstractUserController extends AbstractController {
      * <p>
      * Iterates customisationService.additionalSettingsForms, loads entities via ProfileSettingsRepository.findOneForUserId, 
      * applies form mapper, and adds to model. Enables pluggable profile sections for extensions.
-     * </p>
+     * 
      *
      * @param a ResultAndModel from Flow pipeline
      * @param userId User ID for loading profile-specific settings
@@ -168,7 +168,7 @@ public class AbstractUserController extends AbstractController {
      * Captures current user ID as spoofingUserId, loads target user via repositories.unsecure.user, calls 
      * services.runAs.startRunAsUser to switch security context, stores original ID in session under SPOOFING_USER 
      * key, sets organizationEntityId to first organization of target user for dashboard redirect.
-     * </p>
+     * 
      *
      * @param userId ID of user to impersonate
      * @param session HTTP session for storing original user ID
@@ -198,7 +198,7 @@ public class AbstractUserController extends AbstractController {
      * Exits user impersonation and restores original admin session.
      * <p>
      * Retrieves spoofingUserId from session, calls services.runAs.exitRunAsUser to restore original security context.
-     * </p>
+     * 
      *
      * @param session HTTP session containing SPOOFING_USER attribute with original user ID
      * @param request HTTP request for authentication context restoration
@@ -218,7 +218,7 @@ public class AbstractUserController extends AbstractController {
      * services.validation.validateAndPopulateToEntity, persists via repositories.unsecure.user.save, optionally 
      * changes global role via services.user.changeUserGlobalRole, emits ApplicationEvent.USER_MODIFIED, rebuilds 
      * EditUserForm with updated data.
-     * </p>
+     * 
      *
      * @param id User ID to update
      * @param userFormData Form containing updated user details (name, email, roles)
@@ -254,7 +254,7 @@ public class AbstractUserController extends AbstractController {
      * <p>
      * Delegates to repositories.unsecure.user.deleteOne which marks user as deleted, anonymizes email, removes 
      * organization memberships while preserving audit trail and historical data.
-     * </p>
+     * 
      *
      * @param id User ID to delete
      * @return PageModelMap after deletion
@@ -271,7 +271,7 @@ public class AbstractUserController extends AbstractController {
      * Loads current user via UserProvider.getUserIdOrNotExistingId, calls services.apiKey.resetApiKey to generate 
      * new key, persists updated user and apiKey entities via unsecure repositories, returns plain API key string 
      * for one-time display to user.
-     * </p>
+     * 
      *
      * @return PageModelMap containing userEntity, apiKeyEntity, and plainApiKeyString
      */

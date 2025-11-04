@@ -27,7 +27,6 @@ package com.openkoda.core.flow;
  * This exception wraps GraalVM's PolyglotException to provide enhanced debugging context
  * when JavaScript code fails during Flow execution. It captures the script source code,
  * error position, and original error message to help developers diagnose issues.
- * </p>
  * <p>
  * The Flow.execute() method catches PolyglotException from GraalVM's JavaScript engine
  * and re-wraps it as JsFlowExecutionException with enriched error context including:
@@ -36,7 +35,6 @@ package com.openkoda.core.flow;
  *   <li>Position information (line and column) where the error occurred</li>
  *   <li>Complete JavaScript source code for reference</li>
  * </ul>
- * </p>
  * <p>
  * Example usage in Flow pipeline:
  * <pre>{@code
@@ -46,7 +44,6 @@ package com.openkoda.core.flow;
  *     throw new JsFlowExecutionException(e.getMessage(), jsCode, e.getSourceLocation());
  * }
  * }</pre>
- * </p>
  * <p>
  * The formatted exception message includes the position and code snippet to aid debugging:
  * <pre>
@@ -55,7 +52,6 @@ package com.openkoda.core.flow;
  * code:
  * [JavaScript source code]
  * </pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -85,11 +81,11 @@ public class JsFlowExecutionException extends RuntimeException {
      * This constructor is used when Flow.execute() catches a PolyglotException during
      * JavaScript evaluation. It captures the error message, script source code, and
      * position information to provide comprehensive debugging context.
-     * </p>
+     * 
      * <p>
      * The exception message is formatted to include all diagnostic information:
      * error message, position, and code snippet for easy troubleshooting.
-     * </p>
+     * 
      *
      * @param message the error message from the JavaScript engine describing the failure
      * @param code the complete JavaScript source code that was being executed
@@ -107,11 +103,11 @@ public class JsFlowExecutionException extends RuntimeException {
      * This constructor is used when the error is not directly related to JavaScript
      * evaluation but occurs during flow execution. Since no script code or position
      * information is available, both fields are set to "N/A".
-     * </p>
+     * 
      * <p>
      * The original exception is preserved as the cause for complete stack trace analysis.
      * This helps developers trace errors back to their root cause in the Flow pipeline.
-     * </p>
+     * 
      *
      * @param message descriptive error message explaining the flow execution failure
      * @param cause the original exception that caused the flow execution to fail

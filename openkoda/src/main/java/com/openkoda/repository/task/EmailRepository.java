@@ -37,12 +37,12 @@ import static jakarta.persistence.LockModeType.PESSIMISTIC_WRITE;
  * Provides queries for pending emails by status, priority, and scheduled send time.
  * Integrates with EmailConfig for SMTP delivery. Used by notification services
  * for async email dispatch.
- * </p>
+ * 
  * <p>
  * This repository extends TaskRepository to inherit task lifecycle operations including
  * status management, pessimistic locking for concurrent task execution prevention, and
  * organization-scoped queries for multi-tenant email operations.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @since 1.7.1
@@ -59,11 +59,11 @@ public interface EmailRepository extends TaskRepository<Email> {
      * This method requires pessimistic lock to avoid concurrent task execution on two or more nodes.
      * The PESSIMISTIC_WRITE lock ensures database-level locking preventing multiple application instances
      * from processing the same email simultaneously.
-     * </p>
+     * 
      * <p>
      * In order to query and upgrade Task status in one shot use:
      * {@code emailRepository.findTasksAndSetStateDoing(() -> emailRepository.findByCanBeStartedTrue(pageable))}
-     * </p>
+     * 
      *
      * @param pageable pagination parameters specifying page size and sort order for task selection
      * @return page of Email tasks ready for execution with PESSIMISTIC_WRITE lock applied
@@ -78,7 +78,7 @@ public interface EmailRepository extends TaskRepository<Email> {
      * Performs organization-scoped search with partial subject matching using SQL LIKE semantics.
      * Case sensitivity depends on database collation settings. Used for administrative lookups
      * and UI-facing email search functionality.
-     * </p>
+     * 
      *
      * @param orgId organization ID to filter emails by tenant
      * @param title subject text fragment for LIKE search (case-sensitive based on DB collation)

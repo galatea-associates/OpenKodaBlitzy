@@ -32,10 +32,8 @@ import org.springframework.stereotype.Component;
  * This component enables bean lookup in non-managed classes or static contexts where constructor or field injection
  * is not available. The ApplicationContext is stored during Spring initialization via the {@link #context(ApplicationContext)}
  * setter method.
- * </p>
  * <p>
  * <b>Important Warnings:</b>
- * </p>
  * <ul>
  *   <li>{@link #getContext()} can return null before Spring initialization completes</li>
  *   <li>Using this pattern introduces lifecycle coupling and potential memory leak risks if misused</li>
@@ -44,13 +42,11 @@ import org.springframework.stereotype.Component;
  * <p>
  * <b>Thread Safety:</b> The static field is set once during Spring startup. Read access is safe after initialization.
  * Write operations are not synchronized as they occur only during Spring context setup.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
  * MyBean bean = ApplicationContextProvider.getContext().getBean(MyBean.class);
  * }</pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -68,7 +64,7 @@ public class ApplicationContextProvider {
     * <p>
     * This method stores the provided ApplicationContext in a static field for global access. Spring calls this method
     * via the {@code @Autowired} annotation when the bean is created.
-    * </p>
+    * 
     *
     * @param context the ApplicationContext to store for later retrieval
     */
@@ -81,11 +77,11 @@ public class ApplicationContextProvider {
     * This static method provides access to the Spring ApplicationContext from any code location, including classes
     * not managed by Spring. This is useful for accessing beans in static utility methods, legacy code, or third-party
     * library integrations where dependency injection is not available.
-    * </p>
+    * 
     * <p>
     * <b>Warning:</b> Returns {@code null} if called before Spring context initialization completes. Ensure the
     * application has fully started before invoking this method.
-    * </p>
+    * 
     *
     * @return the stored ApplicationContext, or {@code null} if not yet initialized by Spring
     */

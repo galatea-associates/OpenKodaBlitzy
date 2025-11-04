@@ -46,13 +46,11 @@ import java.util.function.Function;
  * This interface provides the primary extension points for module developers to register custom functionality,
  * integrate with the audit system, register event listeners and consumers, configure frontend mappings,
  * and expose CRUD controllers. It enables dynamic platform customization without modifying core code.
- * </p>
  * <p>
  * The CustomisationService acts as the central registry for runtime extensions and is primarily implemented
  * by {@link BasicCustomisationService}, which orchestrates application startup, dependency injection, and
  * lifecycle event coordination. Modules typically interact with this service during the bootstrap phase
  * via {@link #registerOnApplicationStartListener(Consumer)} callbacks.
- * </p>
  * <p>
  * Key capabilities provided by this interface:
  * <ul>
@@ -67,7 +65,6 @@ import java.util.function.Function;
  *   <li><b>CRUD Automation:</b> Register HTML and API CRUD controllers with privilege-based access control via
  *       {@link #registerHtmlCrudController(FrontendMappingDefinition, ScopedSecureRepository, PrivilegeBase, PrivilegeBase)}</li>
  * </ul>
- * </p>
  * <p>
  * Example usage - typical module registration workflow:
  * <pre>{@code
@@ -90,7 +87,6 @@ import java.util.function.Function;
  *     service.registerFrontendMapping(mapping, customRepository);
  * });
  * }</pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -109,11 +105,11 @@ public interface CustomisationService {
      * When registered, all property modifications on instances of this class will be tracked via the
      * {@link com.openkoda.core.audit.AuditInterceptor} and stored in the audit trail. This enables
      * comprehensive change tracking for regulatory compliance and debugging purposes.
-     * </p>
+     * 
      * <p>
      * The classLabel provides a human-readable name displayed in audit logs and reports. It should be
      * descriptive and localized where appropriate (e.g., "User Account", "Organization Settings").
-     * </p>
+     * 
      *
      * @param <T> the entity type, must extend {@link AuditableEntity}
      * @param c the entity class to register for auditing; must not be null
@@ -131,7 +127,7 @@ public interface CustomisationService {
      * After unregistration, property modifications on instances of this class will no longer be
      * captured in the audit trail. Use this method to remove audit tracking for classes that no
      * longer require change monitoring or when disabling a module.
-     * </p>
+     * 
      *
      * @param c the entity class to unregister from auditing; must not be null
      * @see #registerAuditableClass(Class, String)
@@ -144,7 +140,7 @@ public interface CustomisationService {
      * This method queries the audit registry to determine if the specified class is currently
      * configured for change tracking. Use this to verify registration status before attempting
      * to audit entity modifications.
-     * </p>
+     * 
      *
      * @param c the entity class to check; must not be null
      * @return true if the class is registered for auditing, false otherwise
@@ -158,14 +154,14 @@ public interface CustomisationService {
      * The listener is invoked whenever the specified event is broadcast throughout the application.
      * This provides a lightweight mechanism for modules to react to system events without complex
      * infrastructure. The listener receives the event payload as its sole parameter.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
      * service.registerEventListener(ApplicationEvent.USER_CREATED, 
      *     user -> emailService.sendWelcomeEmail(user));
      * }</pre>
-     * </p>
+     * 
      *
      * @param <T> the type of event data expected by the listener
      * @param event the application event type to listen for; must not be null
@@ -182,11 +178,11 @@ public interface CustomisationService {
      * This overload allows listeners to receive both the event payload and up to four static string
      * parameters that are bound at registration time. This is useful for parameterized event handling
      * where the listener behavior depends on configuration values known at startup.
-     * </p>
+     * 
      * <p>
      * The listener is invoked with the event data and a concatenated string of static parameters.
      * Use this when event handlers need context beyond the event payload itself.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
@@ -194,7 +190,7 @@ public interface CustomisationService {
      *     (order, config) -> notificationService.send(order, config),
      *     "email", "sms", "webhook", "push");
      * }</pre>
-     * </p>
+     * 
      *
      * @param <T> the type of event data expected by the listener
      * @param event the application event type to listen for; must not be null
@@ -214,12 +210,12 @@ public interface CustomisationService {
      * Unlike simple listeners, event consumers provide richer integration with the event system,
      * including transaction boundaries, error handling, and retry logic. Consumers are typically
      * used for critical business logic that must execute reliably when events occur.
-     * </p>
+     * 
      * <p>
      * The event consumer is registered for all events matching the specified class type. Built-in
      * consumers registered during application startup include EmailService, BackupService,
      * ServerJSRunner, and various integration handlers (PushNotification, Slack, Webhook).
-     * </p>
+     * 
      *
      * @param <T> the event class type
      * @param eventClass the class of events this consumer handles; must not be null
@@ -237,12 +233,12 @@ public interface CustomisationService {
      * Registration enables the module to participate in the application lifecycle, receive
      * configuration updates, and integrate with platform services. Once registered, the module
      * is persisted and automatically loaded on subsequent application starts.
-     * </p>
+     * 
      * <p>
      * Typical registration occurs during application startup via
      * {@link #registerOnApplicationStartListener(Consumer)} callbacks, allowing modules to
      * initialize resources and register their extension points.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
@@ -251,7 +247,7 @@ public interface CustomisationService {
      * customModule.setVersion("1.0.0");
      * Module registered = service.registerModule(customModule);
      * }</pre>
-     * </p>
+     * 
      *
      * @param module the module to register; must not be null and must have a unique name
      * @return the registered module instance, potentially with updated metadata
@@ -266,13 +262,13 @@ public interface CustomisationService {
      * This method is invoked by {@link BasicCustomisationService} after all Spring beans are
      * initialized and registered listeners have executed. It represents the final stage of
      * application initialization before the platform is ready to serve requests.
-     * </p>
+     * 
      * <p>
      * Implementations typically emit {@link CoreSettledEvent} to notify interested parties that
      * core services are fully available. Module developers should not invoke this method directly;
      * instead, use {@link #registerOnApplicationStartListener(Consumer)} to execute code during
      * startup.
-     * </p>
+     * 
      *
      * @see BasicCustomisationService#onApplicationEvent(org.springframework.context.event.ContextRefreshedEvent)
      * @see CoreSettledEvent
@@ -286,17 +282,17 @@ public interface CustomisationService {
      * consumer binding. Event classes are typically registered from the
      * {@code application.classes.event} configuration property during application startup,
      * but modules can register additional event types programmatically.
-     * </p>
+     * 
      * <p>
      * Registered event classes must follow platform conventions for event serialization
      * and deserialization. They become available for scheduling, persistence, and
      * cross-service event broadcasting.
-     * </p>
+     * 
      *
      * @param <T> the event class type
      * @param eventClass the event class to register; must not be null
      * @see AbstractApplicationEvent
-     * @see BasicCustomisationService#registerEventClasses()
+     * @see com.openkoda.core.service.event.EventListenerService#registerEventClasses(Class[])
      */
     <T> void registerApplicationEventClass(Class<T> eventClass);
 
@@ -307,12 +303,12 @@ public interface CustomisationService {
      * allowing administrators to manage module-specific settings through the standard
      * administrative interface. The form is bound to a repository for persistence and
      * uses Thymeleaf fragments for rendering.
-     * </p>
+     * 
      * <p>
      * The registration process creates a mapping between the entity type, its form representation,
      * the repository for data access, and the UI fragment for display. Forms registered via this
      * method appear in the settings menu and follow the platform's security and validation rules.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
@@ -324,7 +320,7 @@ public interface CustomisationService {
      *     "customSettingsForm"
      * );
      * }</pre>
-     * </p>
+     * 
      *
      * @param <SE> the searchable entity type representing the settings data model
      * @param <SF> the form type used for UI binding and validation
@@ -351,12 +347,12 @@ public interface CustomisationService {
      * method are invoked during the {@link BasicCustomisationService#onApplicationStart()} phase,
      * after all Spring beans are wired but before the application serves requests. This timing
      * is ideal for registering modules, auditable classes, event listeners, and frontend mappings.
-     * </p>
+     * 
      * <p>
      * Multiple listeners can be registered and will execute in registration order. Each listener
      * receives a reference to the CustomisationService, enabling further registrations and
      * platform queries during startup.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
@@ -367,7 +363,7 @@ public interface CustomisationService {
      *         event -> initializeResources());
      * });
      * }</pre>
-     * </p>
+     * 
      *
      * @param c the callback consumer receiving the CustomisationService; must not be null
      * @see BasicCustomisationService#onApplicationStart()
@@ -381,13 +377,13 @@ public interface CustomisationService {
      * including forms, tables, and detail views. When registered, the mapping becomes available
      * for use by controllers and templates to render entity-specific interfaces without hardcoded
      * HTML or JSP files.
-     * </p>
+     * 
      * <p>
      * The mapping is stored in the {@link FrontendMappingMap} singleton registry and paired with
      * the provided repository for data access. This registration is synchronized via
      * {@link BasicCustomisationService#registerFrontendMapping(FrontendMappingDefinition, ScopedSecureRepository)}
      * to ensure thread-safe access during concurrent module initialization.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
@@ -398,7 +394,7 @@ public interface CustomisationService {
      *     .build();
      * service.registerFrontendMapping(mapping, customEntityRepository);
      * }</pre>
-     * </p>
+     * 
      *
      * @param definition the frontend mapping definition describing UI structure; must not be null
      * @param repository the scoped secure repository for entity data access; must not be null
@@ -415,7 +411,7 @@ public interface CustomisationService {
      * Removes the mapping from the {@link FrontendMappingMap} registry, making it unavailable
      * for UI generation. Use this method when disabling modules or removing entity types from
      * the platform. After unregistration, any references to the mapping key will fail.
-     * </p>
+     * 
      *
      * @param key the unique mapping name/key to unregister; must not be null
      * @see #registerFrontendMapping(FrontendMappingDefinition, ScopedSecureRepository)
@@ -429,12 +425,12 @@ public interface CustomisationService {
      * Creates a generic CRUD controller for HTML endpoints, providing standard create, read, update,
      * and delete operations for the entity type described by the frontend mapping. The controller
      * uses default privilege checks based on the entity configuration.
-     * </p>
+     * 
      * <p>
      * The generated controller handles standard HTTP GET and POST requests for entity management,
      * integrates with the privilege system for access control, and renders responses using the
      * provided frontend mapping definition.
-     * </p>
+     * 
      *
      * @param definition the frontend mapping definition describing entity structure; must not be null
      * @param repository the scoped secure repository for data access; must not be null
@@ -451,13 +447,13 @@ public interface CustomisationService {
      * The readPrivilege controls access to list and detail views, while writePrivilege controls
      * access to create, update, and delete operations. This enables role-based access control
      * for entity management interfaces.
-     * </p>
+     * 
      * <p>
      * Privileges are evaluated against the current user's role and organization context via
      * the {@link com.openkoda.core.security.UserProvider} and
-     * {@link com.openkoda.service.user.PrivilegeService}. Unauthorized access attempts result
+     * {@link com.openkoda.service.user.BasicPrivilegeService}. Unauthorized access attempts result
      * in HTTP 403 Forbidden responses.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
@@ -468,7 +464,7 @@ public interface CustomisationService {
      *     PrivilegeBase.manageOrgData
      * );
      * }</pre>
-     * </p>
+     * 
      *
      * @param definition the frontend mapping definition describing entity structure; must not be null
      * @param repository the scoped secure repository for data access; must not be null
@@ -487,7 +483,7 @@ public interface CustomisationService {
      * automatically converting them to {@link PrivilegeBase} instances via
      * {@link PrivilegeHelper#valueOfString(String)}. Use this when privilege names are determined
      * dynamically or loaded from configuration.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
@@ -498,7 +494,7 @@ public interface CustomisationService {
      *     "manageOrgData"
      * );
      * }</pre>
-     * </p>
+     * 
      *
      * @param definition the frontend mapping definition describing entity structure; must not be null
      * @param repository the scoped secure repository for data access; must not be null
@@ -518,7 +514,7 @@ public interface CustomisationService {
      * Removes the controller from the {@link com.openkoda.controller.HtmlCRUDControllerConfigurationMap}
      * registry, making its endpoints unavailable. Use this when disabling modules or removing
      * entity types. After unregistration, requests to the controller's URLs will return HTTP 404.
-     * </p>
+     * 
      *
      * @param key the unique controller key/name to unregister; must not be null
      * @see #registerHtmlCrudController(FrontendMappingDefinition, ScopedSecureRepository)
@@ -532,12 +528,12 @@ public interface CustomisationService {
      * operations for the entity type described by the frontend mapping. The controller exposes
      * JSON endpoints following RESTful conventions and uses default privilege checks based on
      * the entity configuration.
-     * </p>
+     * 
      * <p>
      * The generated API endpoints support standard HTTP methods (GET, POST, PUT, DELETE) and
      * return JSON responses with appropriate HTTP status codes. Content negotiation and error
      * handling follow platform conventions.
-     * </p>
+     * 
      *
      * @param definition the frontend mapping definition describing entity structure; must not be null
      * @param repository the scoped secure repository for data access; must not be null
@@ -554,12 +550,12 @@ public interface CustomisationService {
      * endpoints. The readPrivilege controls access to GET operations (list and detail), while
      * writePrivilege controls access to POST, PUT, and DELETE operations. This enables role-based
      * access control for programmatic entity management.
-     * </p>
+     * 
      * <p>
      * Privileges are evaluated against the current user's API credentials or session context.
      * Unauthorized access attempts result in HTTP 403 Forbidden responses with JSON error details.
      * The controller supports both session-based and token-based authentication.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
@@ -570,7 +566,7 @@ public interface CustomisationService {
      *     PrivilegeBase.manageOrgData
      * );
      * }</pre>
-     * </p>
+     * 
      *
      * @param definition the frontend mapping definition describing entity structure; must not be null
      * @param repository the scoped secure repository for data access; must not be null
@@ -589,7 +585,7 @@ public interface CustomisationService {
      * automatically converting them to {@link PrivilegeBase} instances via
      * {@link PrivilegeHelper#valueOfString(String)}. Use this when privilege names are determined
      * dynamically or loaded from configuration.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
@@ -600,7 +596,7 @@ public interface CustomisationService {
      *     "manageOrgData"
      * );
      * }</pre>
-     * </p>
+     * 
      *
      * @param definition the frontend mapping definition describing entity structure; must not be null
      * @param repository the scoped secure repository for data access; must not be null
@@ -620,7 +616,7 @@ public interface CustomisationService {
      * Removes the controller from the {@link com.openkoda.controller.ApiCRUDControllerConfigurationMap}
      * registry, making its REST endpoints unavailable. Use this when disabling modules or removing
      * entity types. After unregistration, requests to the controller's API URLs will return HTTP 404.
-     * </p>
+     * 
      *
      * @param key the unique controller key/name to unregister; must not be null
      * @see #registerApiCrudController(FrontendMappingDefinition, ScopedSecureRepository)

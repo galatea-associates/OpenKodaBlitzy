@@ -27,11 +27,9 @@ package com.openkoda.core.helper;
  * This interface extends Java's functional programming support beyond the standard
  * {@link java.util.function.BiFunction} by accepting three input parameters instead of two.
  * It represents a function that takes three arguments and produces a result.
- * </p>
  * <p>
  * This is a functional interface whose functional method is {@link #apply(Object, Object, Object)}.
  * As such, it can be used as the assignment target for lambda expressions or method references.
- * </p>
  * <p>
  * Example usage with lambda:
  * <pre>{@code
@@ -39,11 +37,9 @@ package com.openkoda.core.helper;
  *     (s, i, b) -> s + i + (b ? " active" : " inactive");
  * String result = formatter.apply("User", 42, true);
  * }</pre>
- * </p>
  * <p>
  * <strong>Thread Safety:</strong> This interface is stateless and inherently thread-safe.
  * However, thread-safety of specific implementations depends on the lambda or method reference used.
- * </p>
  *
  * @param <T1> the type of the first argument to the function
  * @param <T2> the type of the second argument to the function
@@ -64,7 +60,7 @@ public interface Function3<T1, T2, T3, R> {
      * This is the functional method that processes three input arguments and produces a single result.
      * The behavior of this method is defined by the lambda expression or method reference
      * that implements this interface.
-     * </p>
+     * 
      *
      * @param t1 the first function argument
      * @param t2 the second function argument

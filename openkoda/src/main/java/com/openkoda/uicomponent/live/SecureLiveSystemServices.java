@@ -40,21 +40,21 @@ import jakarta.inject.Inject;
  * implementations of system service methods. Unlike {@link LiveSystemServices}, this class restricts or
  * disables all command execution and server-side code execution capabilities to prevent arbitrary code
  * execution in production environments.
- * </p>
+ * 
  * <p>
  * All command execution methods ({@link #runCommandToStream(String)}, {@link #runCommandToString(String)},
  * {@link #runCommandToByteArray(String)}) return safe default values (null, empty string, or nullInputStream)
  * rather than executing system commands. The {@link #runServerSideCode(String, Map, List)} method also
  * returns null to prevent dynamic code execution.
- * </p>
+ * 
  * <p>
  * <strong>SECURITY NOTE:</strong> This implementation is designed for cloud and production deployments where
  * arbitrary command and code execution poses significant security risks. For development and local environments
  * with full command execution capabilities, use {@link LiveSystemServices} with appropriate profiles.
- * </p>
+ * 
  * <p>
  * This class is stateless and thread-safe. All operations are no-ops for production safety.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -71,7 +71,7 @@ public class SecureLiveSystemServices implements SystemServices {
      * <p>
      * Currently unused in this secure implementation. Reserved for future enhancements where specific
      * whitelisted server-side scripts may be permitted in production environments with strict privilege checks.
-     * </p>
+     * 
      */
     @Inject ServerJSRunner serverJSRunner;
 
@@ -80,13 +80,13 @@ public class SecureLiveSystemServices implements SystemServices {
      * <p>
      * As the method is used in JavaScript flows and these are dynamic by nature,
      * there's no need to care about specific types and the method returns Object type.
-     * </p>
+     * 
      * <p>
      * <strong>SECURITY NOTE:</strong> In this secure cloud profile implementation, this method always returns
      * {@code null} and does not execute any server-side code. This prevents arbitrary code execution in
      * production environments. For actual server-side code execution, use the development profile with
      * {@link LiveSystemServices}.
-     * </p>
+     * 
      *
      * @param serverJsName the name of the server side code entity to execute
      * @param model the model map containing context and variables for code execution
@@ -105,7 +105,7 @@ public class SecureLiveSystemServices implements SystemServices {
      * execute any system commands. It always returns {@link InputStream#nullInputStream()} to prevent
      * arbitrary command execution in production environments. For actual command execution, use the
      * development profile with {@link LiveSystemServices}.
-     * </p>
+     * 
      *
      * @param command the Linux/system command that would be executed (ignored in secure implementation)
      * @return always returns {@link InputStream#nullInputStream()} for security; no command is executed
@@ -122,7 +122,7 @@ public class SecureLiveSystemServices implements SystemServices {
      * execute any system commands. It always returns an empty string to prevent arbitrary command execution
      * in production environments. For actual command execution, use the development profile with
      * {@link LiveSystemServices}.
-     * </p>
+     * 
      *
      * @param command the Linux/system command that would be executed (ignored in secure implementation)
      * @return always returns an empty string for security; no command is executed
@@ -138,7 +138,7 @@ public class SecureLiveSystemServices implements SystemServices {
      * execute any system commands. It always returns {@code null} to prevent arbitrary command execution
      * in production environments. For actual command execution, use the development profile with
      * {@link LiveSystemServices}.
-     * </p>
+     * 
      *
      * @param command the Linux/system command that would be executed (ignored in secure implementation)
      * @return always returns {@code null} for security; no command is executed

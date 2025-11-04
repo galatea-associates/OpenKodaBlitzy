@@ -26,13 +26,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * that reduces boilerplate in concrete controller implementations. The primary component is
  * {@link com.openkoda.core.controller.generic.AbstractController}, which centralizes dependency
  * access via the component provider pattern and standardizes pagination across the application.
- * </p>
+ * 
  *
- * <h2>Package Purpose</h2>
+ * <b>Package Purpose</b>
  * <p>
  * The {@code com.openkoda.core.controller.generic} package serves as the base layer for all
  * OpenKoda web controllers. It provides:
- * </p>
+ * 
  * <ul>
  *   <li><b>Dependency Injection Foundation:</b> Controllers extend {@code AbstractController} to
  *       gain access to the injected {@code DefaultComponentProvider}, which exposes service beans,
@@ -46,7 +46,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       repetitive dependency injection code and pagination conversion logic.</li>
  * </ul>
  *
- * <h2>Key Classes and Interfaces</h2>
+ * <b>Key Classes and Interfaces</b>
  * <dl>
  *   <dt>{@link com.openkoda.core.controller.generic.AbstractController}</dt>
  *   <dd>
@@ -62,10 +62,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   </dd>
  * </dl>
  *
- * <h2>Inheritance and Composition Pattern</h2>
+ * <b>Inheritance and Composition Pattern</b>
  * <p>
  * Concrete controllers follow this inheritance chain:
- * </p>
+ * 
  * <pre>{@code
  * UserController extends AbstractController
  *                       → extends ComponentProvider
@@ -75,13 +75,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This design allows controllers to access the component provider's exposed services while
  * maintaining URL constant visibility. The pattern promotes consistent architecture across
  * all OpenKoda web endpoints.
- * </p>
+ * 
  *
- * <h2>Pagination Factory Pattern</h2>
+ * <b>Pagination Factory Pattern</b>
  * <p>
  * The {@code createPageable(int page, int size, Sort.Direction direction, String property)}
  * static helper method provides standardized pagination with the following semantics:
- * </p>
+ * 
  * <ul>
  *   <li><b>Zero-based indexing:</b> Page 0 represents the first page of results.</li>
  *   <li><b>Configurable page size:</b> Controls the number of records returned per page.</li>
@@ -91,16 +91,16 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ul>
  * <p>
  * Example usage in a controller:
- * </p>
+ * 
  * <pre>{@code
  * Pageable pageable = createPageable(0, 20, Sort.Direction.ASC, "username");
  * Page<User> users = userRepository.findAll(pageable);
  * }</pre>
  *
- * <h2>Dependencies and Relationships</h2>
+ * <b>Dependencies and Relationships</b>
  * <p>
  * This package depends on:
- * </p>
+ * 
  * <ul>
  *   <li><b>Spring Data Domain APIs:</b> {@code org.springframework.data.domain.Pageable},
  *       {@code PageRequest}, {@code Sort.Direction} for pagination abstraction.</li>
@@ -114,12 +114,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ul>
  * <p>
  * Controllers throughout the application depend on this package for base functionality.
- * </p>
+ * 
  *
- * <h2>Usage Guidance</h2>
+ * <b>Usage Guidance</b>
  * <p>
  * When creating new controllers:
- * </p>
+ * 
  * <ol>
  *   <li><b>Extend AbstractController:</b> All concrete controllers should extend
  *       {@code AbstractController} to inherit dependency injection and pagination support.</li>
@@ -133,12 +133,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       exactly match entity field names to avoid runtime sorting exceptions.</li>
  * </ol>
  *
- * <h2>Thread-Safety Considerations</h2>
+ * <b>Thread-Safety Considerations</b>
  * <p>
  * {@code AbstractController} maintains no per-request mutable state, making it inherently
  * thread-safe at the class level. However, thread-safety of concrete controller instances
  * depends on:
- * </p>
+ * 
  * <ul>
  *   <li><b>Injected provider scope:</b> The {@code DefaultComponentProvider} is typically
  *       configured as a singleton or appropriately scoped Spring bean.</li>
@@ -148,7 +148,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       instance fields; use method parameters and local variables instead.</li>
  * </ul>
  *
- * <h2>Design Rationale</h2>
+ * <b>Design Rationale</b>
  * <p>
  * This minimal plumbing layer keeps controller base classes lightweight while providing
  * essential shared functionality. The component provider pattern centralizes bean wiring,
@@ -156,7 +156,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * eliminates repetitive {@code PageRequest.of()} calls and enforces consistent pagination
  * semantics application-wide. Together, these patterns accelerate controller development
  * and promote architectural consistency across the OpenKoda platform.
- * </p>
+ * 
  *
  * @since 1.7.1
  * @see com.openkoda.core.controller.generic.AbstractController

@@ -38,7 +38,6 @@ import java.util.Set;
  * This interface centralizes multi-tenant data access patterns by providing search methods that automatically
  * scope results to specific organizations. Supports both single organization ID (Long) and multiple organization
  * IDs (Set&lt;Long&gt;) for flexible tenant isolation across the OpenKoda platform.
- * </p>
  * <p>
  * The repository provides multiple search capabilities:
  * <ul>
@@ -48,15 +47,12 @@ import java.util.Set;
  *   <li>Paginated results via Spring Data {@code Page<T>}</li>
  *   <li>Unpaginated results as {@code List<T>}</li>
  * </ul>
- * </p>
  * <p>
  * Key methods include {@link #getSearchableRepositoryMetadata()} for entity metadata access
  * and {@link #getNew()} for factory-based entity instantiation.
- * </p>
  * <p>
  * Implementation note: Parameter types use flexible Object identifiers to support various lookup strategies.
  * Implementers must document expected parameter types (Long IDs, entity instances, or Specification objects).
- * </p>
  *
  * @param <T> the entity type managed by this repository
  * @since 1.7.1
@@ -72,7 +68,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * This method performs a field-level equality search without explicit organization scoping.
      * Implementations may apply default organization context based on current security principal.
-     * </p>
+     * 
      *
      * @param fieldName the entity field name to search against
      * @param value the value to match (type should align with field type)
@@ -85,7 +81,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Allows custom query logic via the Criteria API without explicit organization scoping.
      * Implementations may inject organization context into the specification evaluation.
-     * </p>
+     * 
      *
      * @param specification the JPA Specification defining query predicates
      * @return list of matching entities, or empty list if no matches found
@@ -96,7 +92,7 @@ public interface ScopedSecureRepository<T> {
      * Searches all entities within a specific organization scope.
      * <p>
      * Returns all entities associated with the given organization ID for multi-tenant data isolation.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID to scope the search (must not be null)
      * @return list of entities within organization scope, or empty list if none found
@@ -107,7 +103,7 @@ public interface ScopedSecureRepository<T> {
      * Searches entities within organization scope using a JPA Specification predicate.
      * <p>
      * Combines organization-based multi-tenant filtering with custom query predicates.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID to scope the search (must not be null)
      * @param specification the JPA Specification defining additional query predicates
@@ -120,7 +116,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Returns a page of results without explicit organization scoping.
      * Implementations may apply default organization context.
-     * </p>
+     * 
      *
      * @param page the zero-based page number
      * @param size the number of entities per page
@@ -134,7 +130,7 @@ public interface ScopedSecureRepository<T> {
      * Searches entities using JPA Specification with pagination and sorting.
      * <p>
      * Combines custom query predicates with paginated result delivery.
-     * </p>
+     * 
      *
      * @param specification the JPA Specification defining query predicates
      * @param page the zero-based page number
@@ -149,7 +145,7 @@ public interface ScopedSecureRepository<T> {
      * Searches entities within organization scope using Specification with pagination and sorting.
      * <p>
      * Combines multi-tenant filtering, custom predicates, and paginated results.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID to scope the search (must not be null)
      * @param specification the JPA Specification defining additional query predicates
@@ -166,7 +162,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Performs text-based search across searchable entity fields (typically indexed strings).
      * Search behavior depends on implementation-specific field configuration.
-     * </p>
+     * 
      *
      * @param searchTerm the free-text search term to match against entity fields (may be null or empty)
      * @param page the zero-based page number
@@ -182,7 +178,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Combines text-based search across searchable fields with custom query predicates.
      * Both text search and specification predicates must match for results to be included.
-     * </p>
+     * 
      *
      * @param searchTerm the free-text search term (may be null or empty to skip text filtering)
      * @param specification the JPA Specification defining additional query predicates
@@ -198,7 +194,7 @@ public interface ScopedSecureRepository<T> {
      * Searches entities within organization scope using free-text search with pagination and sorting.
      * <p>
      * Performs text-based search within a specific organization for multi-tenant data isolation.
-     * </p>
+     * 
      *
      * @param searchTerm the free-text search term (may be null or empty)
      * @param organizationId the organization ID to scope the search (must not be null)
@@ -214,7 +210,7 @@ public interface ScopedSecureRepository<T> {
      * Searches entities within organization scope using text search, Specification, and Spring Data Pageable.
      * <p>
      * Provides flexible pagination using Spring Data Pageable abstraction with multi-tenant filtering.
-     * </p>
+     * 
      *
      * @param searchTerm the free-text search term (may be null or empty)
      * @param organizationId the organization ID to scope the search (must not be null)
@@ -229,7 +225,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Applies dynamic UI-driven filters from frontend mapping field definitions in addition to text search
      * and custom predicates. Filter tuples contain field name, field definition, and filter value.
-     * </p>
+     * 
      *
      * @param searchTerm the free-text search term (may be null or empty)
      * @param organizationId the organization ID to scope the search (must not be null)
@@ -245,7 +241,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Supports multi-organization queries for scenarios requiring cross-tenant data access
      * (e.g., admin views, reporting). Entities matching any organization ID in the set are included.
-     * </p>
+     * 
      *
      * @param searchTerm the free-text search term (may be null or empty)
      * @param organizationId set of organization IDs to scope the search (must not be null or empty)
@@ -261,7 +257,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Returns all matching entities as a list without pagination constraints.
      * Use with caution for potentially large result sets.
-     * </p>
+     * 
      *
      * @param searchTerm the free-text search term (may be null or empty)
      * @param organizationId the organization ID to scope the search (must not be null)
@@ -281,7 +277,7 @@ public interface ScopedSecureRepository<T> {
      *   <li>Specification - finds first entity matching predicate</li>
      * </ul>
      * Organization scoping is applied implicitly based on security context or entity association.
-     * </p>
+     * 
      *
      * @param idOrEntityOrSpecification the entity ID (Long), entity instance, or Specification to find by
      * @return the found entity, or null if not found or access denied
@@ -293,7 +289,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Returns all entities the current user has access to based on implicit organization scoping.
      * Use with caution for large datasets - consider using paginated search methods instead.
-     * </p>
+     * 
      *
      * @return list of all accessible entities, or empty list if none found
      */
@@ -304,7 +300,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Persists a new entity or updates an existing entity. Organization association is validated
      * based on current security context to enforce multi-tenant data isolation.
-     * </p>
+     * 
      *
      * @param <S> the entity type (subtype of T)
      * @param entity the entity to save (must not be null)
@@ -317,7 +313,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Applies form data to entity via {@code form.populateTo(entity)} after validation.
      * Organization context is enforced during persistence.
-     * </p>
+     * 
      *
      * @param <S> the entity type (subtype of T)
      * @param entity the entity to populate and save (must not be null)
@@ -331,7 +327,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Accepts a collection of entities (List, Set, or array) and persists them with
      * organization association enforcement.
-     * </p>
+     * 
      *
      * @param <S> the entity type (subtype of T)
      * @param entitiesCollection collection of entities to save (List, Set, or array; must not be null)
@@ -344,7 +340,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Accepts either entity ID (Long) or entity instance. Organization association is validated
      * before deletion to prevent unauthorized cross-tenant deletions.
-     * </p>
+     * 
      *
      * @param idOrEntity the entity ID (Long) or entity instance to delete (must not be null)
      * @return true if entity was deleted, false if not found or access denied
@@ -361,7 +357,7 @@ public interface ScopedSecureRepository<T> {
      *   <li>Specification defining entities to delete</li>
      * </ul>
      * Organization context is validated for all deletions.
-     * </p>
+     * 
      *
      * @param idsOrEntitiesCollectionOrSpecification IDs, entities, or Specification (must not be null)
      * @return number of entities deleted
@@ -373,7 +369,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Accepts entity ID (Long) or entity instance. Organization scoping is applied
      * to verify existence within accessible scope only.
-     * </p>
+     * 
      *
      * @param idOrEntity the entity ID (Long) or entity instance to check (must not be null)
      * @return true if entity exists and is accessible, false otherwise
@@ -384,7 +380,7 @@ public interface ScopedSecureRepository<T> {
      * Checks if any entities exist matching IDs, entity instances, or Specification.
      * <p>
      * Returns true if at least one entity exists within organization context matching the criteria.
-     * </p>
+     * 
      *
      * @param idsOrEntitiesCollectionOrSpecification IDs, entities, or Specification (must not be null)
      * @return true if any matching entities exist within accessible scope, false otherwise
@@ -395,7 +391,7 @@ public interface ScopedSecureRepository<T> {
      * Counts all entities accessible within the current security context.
      * <p>
      * Returns total number of entities within implicit organization scope based on current user.
-     * </p>
+     * 
      *
      * @return total count of accessible entities
      */
@@ -405,7 +401,7 @@ public interface ScopedSecureRepository<T> {
      * Counts entities matching a specific field name and value.
      * <p>
      * Performs field-level equality match within organization context.
-     * </p>
+     * 
      *
      * @param fieldName the entity field name to match against
      * @param value the value to match (type should align with field type)
@@ -417,7 +413,7 @@ public interface ScopedSecureRepository<T> {
      * Counts entities within organization scope matching a JPA Specification.
      * <p>
      * Combines organization-based filtering with custom query predicates for counting.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID to scope the count (must not be null)
      * @param specification the JPA Specification defining query predicates
@@ -430,7 +426,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Returns a new entity instance ready for population. Implementations may apply
      * default organization context or other initialization logic.
-     * </p>
+     * 
      *
      * @return a new entity instance of type T
      */
@@ -441,7 +437,7 @@ public interface ScopedSecureRepository<T> {
      * <p>
      * Returns metadata including entity class, primary key type, searchable fields,
      * and other configuration used for dynamic query construction and UI generation.
-     * </p>
+     * 
      *
      * @return metadata object describing the repository and entity structure
      * @see SearchableRepositoryMetadata

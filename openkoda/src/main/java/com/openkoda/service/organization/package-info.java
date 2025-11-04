@@ -25,9 +25,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This package contains services responsible for creating, managing, and deleting tenant organizations
  * within OpenKoda's multi-tenancy architecture. Organizations serve as the root entity in the tenant
  * hierarchy, with all tenant-scoped data linked via organization_id foreign keys.
- * </p>
+ * 
  *
- * <h2>Key Services</h2>
+ * <b>Key Services</b>
  * <ul>
  *   <li>{@code OrganizationService} - Core service for organization CRUD operations, tenant provisioning,
  *       and cascade deletion of organization-scoped resources</li>
@@ -35,10 +35,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       (with or without initial data setup)</li>
  * </ul>
  *
- * <h2>Multi-Tenancy Architecture</h2>
+ * <b>Multi-Tenancy Architecture</b>
  * <p>
  * Organizations form the foundation of OpenKoda's multi-tenancy isolation:
- * </p>
+ * 
  * <ul>
  *   <li><b>Tenant Hierarchy Root</b>: Organization entity serves as the top-level tenant container,
  *       with all tenant-specific entities linked via organization_id foreign key relationships</li>
@@ -52,14 +52,14 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       from request attributes or authentication tokens</li>
  * </ul>
  *
- * <h2>Organization Lifecycle</h2>
+ * <b>Organization Lifecycle</b>
  * <p>
  * Organization provisioning involves schema setup, initial role creation, privilege assignment,
  * and optional seed data population. Organization deletion cascades to all dependent tenant resources
  * including users, roles, dynamic entities, and file storage.
- * </p>
+ * 
  *
- * <h2>Usage Example</h2>
+ * <b>Usage Example</b>
  * <pre>{@code
  * OrganizationService orgService = ...;
  * Organization tenant = orgService.createOrganization("TenantCo");

@@ -30,18 +30,15 @@ import com.openkoda.model.common.LongIdEntity;
  * for form binding and display logic, while the entity provides access to the persistent domain model.
  * This separation allows forms to present simplified views while maintaining references to full entities
  * for database operations.
- * </p>
  * <p>
  * The interface is commonly used in datalist suppliers and field converters where both the display
  * representation (DTO) and the underlying persistent state (entity) are needed. For example, a
  * dropdown field may display DTO values while storing entity identifiers.
- * </p>
  * <p>
  * Example usage in a datalist function:
  * <pre>{@code
  * (dtoAndEntity, repo) -> repo.findById(dtoAndEntity.getEntity().getId())
  * }</pre>
- * </p>
  *
  * @param <D> the DTO type used for form binding and display
  * @param <E> the entity type extending LongIdEntity for database persistence
@@ -57,7 +54,7 @@ public interface DtoAndEntity<D, E extends LongIdEntity> {
      * <p>
      * The DTO provides a simplified view of the data suitable for presentation in forms and UI
      * components. It contains only the fields needed for display and user interaction.
-     * </p>
+     * 
      *
      * @return the DTO instance, or null if not available
      */
@@ -71,7 +68,7 @@ public interface DtoAndEntity<D, E extends LongIdEntity> {
      * The entity provides access to the full domain model including relationships, computed fields,
      * and database-specific attributes. Use this method when you need to perform queries, updates,
      * or access entity identifiers.
-     * </p>
+     * 
      *
      * @return the entity instance extending LongIdEntity, or null if not available
      */

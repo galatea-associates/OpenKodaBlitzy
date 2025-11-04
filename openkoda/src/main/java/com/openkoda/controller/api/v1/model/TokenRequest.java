@@ -28,18 +28,17 @@ package com.openkoda.controller.api.v1.model;
  * in token generation requests. It contains a single field for the API key and
  * standard getter/setter methods. The class is used by TokenControllerApiV1 to
  * process token requests submitted via the REST API endpoint.
- * </p>
+ * 
  * <p>
  * The class does not include validation annotations. Validation logic for the
  * API key is handled by the service layer during token generation.
- * </p>
+ * 
  * <p>
  * Example usage:
  * <pre>
  * POST /api/v1/auth/token/user/{userId}
  * {"apiKey": "api_key_value"}
  * </pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -52,7 +51,7 @@ public class TokenRequest {
      * This field contains the secret credential used to authenticate the token
      * generation request. The API key should be treated as sensitive data and
      * protected like a password in transit and storage.
-     * </p>
+     * 
      */
     private String apiKey;
 

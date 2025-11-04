@@ -45,12 +45,12 @@ import static com.openkoda.controller.common.URLConstants._HTML;
  * WebSocket capabilities in the application. Configures a simple in-memory message broker 
  * with /queue/ prefix for pub/sub messaging. Registers WebSocket endpoint at /html/websocket 
  * with SockJS fallback for browsers without native WebSocket support.
- * </p>
+ * 
  * <p>
  * This configuration is used by LiveService for real-time updates and notifications, 
  * enabling bidirectional communication between server and clients. The STOMP protocol 
  * provides a simple text-oriented messaging protocol on top of WebSocket.
- * </p>
+ * 
  * <p>
  * Example client connection:
  * <pre>{@code
@@ -62,15 +62,14 @@ import static com.openkoda.controller.common.URLConstants._HTML;
  *     });
  * });
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see EnableWebSocketMessageBroker
- * @see StompEndpointRegistry
- * @see MessageBrokerRegistry
- * @see com.openkoda.uicomponent.live.LiveService
+ * See {@code EnableWebSocketMessageBroker}
+ * See {@code StompEndpointRegistry}
+ * See {@code MessageBrokerRegistry}
+ * See {@code LiveService}
  */
 @Configuration
 @EnableWebSocketMessageBroker
@@ -89,7 +88,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      * The simple broker is suitable for development and low-traffic applications; for 
      * production systems with higher load, consider using a full-featured message broker 
      * like RabbitMQ or ActiveMQ.
-     * </p>
+     * 
      *
      * @param config MessageBrokerRegistry for configuring message broker options
      */
@@ -105,12 +104,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      * do not support native WebSocket. The endpoint is configured with a custom handshake 
      * handler that extracts the HTTP session ID and makes it available as a WebSocket 
      * session attribute, enabling session continuity between HTTP and WebSocket connections.
-     * </p>
+     * 
      * <p>
      * Allowed origins are configured via the {@code application.websocket.allowed-origins} 
      * property. For production deployments, this should be restricted to specific trusted 
      * domains rather than allowing all origins (*).
-     * </p>
+     * 
      *
      * @param registry StompEndpointRegistry for WebSocket endpoint registration
      */

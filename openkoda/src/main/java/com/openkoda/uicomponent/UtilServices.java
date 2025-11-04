@@ -51,16 +51,16 @@ import java.util.List;
  * Methods are bound as JavaScript functions in JsFlowRunner for GraalVM access.
  * All methods are annotated with {@code @Autocomplete} for UI tooling hints.
  * Implements LoggingComponent for error logging capabilities.
- * </p>
+ * 
  * <p>
  * Thread-safety: All methods are stateless or delegate to thread-safe libraries.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see JsFlowRunner
- * @see LiveComponentProvider
+ * // LiveComponentProvider
  * @see CsvService
  */
 @Component
@@ -70,7 +70,7 @@ public class UtilServices implements LoggingComponent {
      * CsvService for CSV file generation and export.
      * <p>
      * Injected via {@code @Inject}, used by toCSV method.
-     * </p>
+     * 
      */
     @Inject
     CsvService csvService;
@@ -79,10 +79,10 @@ public class UtilServices implements LoggingComponent {
      * Returns current date in system default timezone.
      * <p>
      * Example: {@code dateNow()} returns {@code LocalDate.of(2025, 10, 25)} on October 25, 2025.
-     * </p>
+     * 
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Get the current date' hint for UI tooling.
-     * </p>
+     * 
      *
      * @return LocalDate representing today's date
      */
@@ -95,10 +95,10 @@ public class UtilServices implements LoggingComponent {
      * Returns current date and time in system default timezone.
      * <p>
      * Example: {@code dateTimeNow()} returns {@code LocalDateTime.of(2025, 10, 25, 14, 30, 0)} at 2:30 PM.
-     * </p>
+     * 
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Get the current date and time' hint for UI tooling.
-     * </p>
+     * 
      *
      * @return LocalDateTime representing current moment
      */
@@ -111,7 +111,7 @@ public class UtilServices implements LoggingComponent {
      * Parses string to integer.
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Parse string to integer' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param s String representation of integer (e.g., '123', '-456')
      * @return Parsed integer value
@@ -126,7 +126,7 @@ public class UtilServices implements LoggingComponent {
      * Parses string to long integer.
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Parse string to long' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param s String representation of long (e.g., '9223372036854775807')
      * @return Parsed long value
@@ -141,7 +141,7 @@ public class UtilServices implements LoggingComponent {
      * Parses ISO date string to LocalDate.
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Parse date string to date object' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param s ISO date string (e.g., '2025-10-25', yyyy-MM-dd format)
      * @return Parsed LocalDate
@@ -156,7 +156,7 @@ public class UtilServices implements LoggingComponent {
      * Parses ISO time string to LocalTime.
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Parse time string (eg. 23:12) to time object' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param s ISO time string (e.g., '14:30', '14:30:45', HH:mm or HH:mm:ss format)
      * @return Parsed LocalTime
@@ -171,7 +171,7 @@ public class UtilServices implements LoggingComponent {
      * Converts object to string representation via toString() method.
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Get string value of the object' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param o Object to convert (may be null)
      * @return String representation, or 'null' if o is null
@@ -186,10 +186,10 @@ public class UtilServices implements LoggingComponent {
      * Checks if double value is NaN (Not-a-Number).
      * <p>
      * Use case: Validate arithmetic results: {@code isNaN(0.0/0.0)} returns true.
-     * </p>
+     * 
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Check for NaN (Not a Number)' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param d Double value to check
      * @return true if d is NaN, false otherwise
@@ -203,7 +203,7 @@ public class UtilServices implements LoggingComponent {
      * Parses string to floating-point number.
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Parse string to floating-point number' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param s String representation of float (e.g., '3.14', '1.5e10')
      * @return Parsed float value
@@ -219,13 +219,13 @@ public class UtilServices implements LoggingComponent {
      * <p>
      * Attempts to parse JSON string using org.json.JSONObject. On JSONException, logs error
      * via LoggingComponent.error() and returns null instead of throwing exception.
-     * </p>
+     * 
      * <p>
      * Example: {@code parseJSON("{\"name\":\"test\"}")} returns JSONObject with name='test'.
-     * </p>
+     * 
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Parse JSON string to object' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param s JSON string (e.g., '{"key":"value"}')
      * @return JSONObject instance, or null if parsing fails
@@ -245,14 +245,13 @@ public class UtilServices implements LoggingComponent {
      * <p>
      * Uses Jackson ObjectMapper with default pretty printer. On IOException, logs error and returns null.
      * Suitable for POJOs, Maps, Lists. Ignores transient fields unless configured otherwise.
-     * </p>
+     * 
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Convert objects to JSON string' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param o Object to serialize (must be Jackson-serializable)
-     * @return JSON string with pretty printing, or null if serialization fails
-     * @throws IOException Caught internally, logged via error(), returns null
+     * @return JSON string with pretty printing, or null if serialization fails (IOException caught internally)
      */
     @Autocomplete(doc="Convert objects to JSON string")
     public String toJSON(Object o) {
@@ -269,10 +268,10 @@ public class UtilServices implements LoggingComponent {
      * <p>
      * Uses URLDecoder.decode with UTF-8 charset. On UnsupportedEncodingException (unlikely with UTF-8),
      * returns error message string instead of throwing exception.
-     * </p>
+     * 
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Decode Uniform Resource Identifier (URI) string' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param uri URI string with percent-encoding (e.g., 'Hello%20World')
      * @return Decoded string (e.g., 'Hello World'), or error message if decoding fails
@@ -291,10 +290,10 @@ public class UtilServices implements LoggingComponent {
      * <p>
      * Uses URLEncoder.encode with UTF-8 charset. On UnsupportedEncodingException (unlikely),
      * returns error message string. Suitable for encoding query parameters, path segments.
-     * </p>
+     * 
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Encode Uniform Resource Identifier (URI) string' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param s Plain text string to encode
      * @return Percent-encoded URI string, or error message if encoding fails
@@ -314,13 +313,13 @@ public class UtilServices implements LoggingComponent {
      * Delegates to csvService.createCSV. Converts List&lt;Object[]&gt; to List&lt;List&lt;Object&gt;&gt;,
      * includes headers as first row if provided, generates CSV content, creates File entity with
      * contentType='text/csv', persists to storage.
-     * </p>
+     * 
      * <p>
      * Example: {@code toCSV("users.csv", userData, "ID", "Name", "Email")} creates CSV with headers.
-     * </p>
+     * 
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Export data to CSV file' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param filename Target filename with .csv extension
      * @param data List of Object arrays, each array is one CSV row
@@ -341,13 +340,13 @@ public class UtilServices implements LoggingComponent {
      * Uses Apache Commons DigestUtils.md5Hex. String converted to bytes using default charset,
      * MD5 digest computed, result encoded as hex string. MD5 is cryptographically broken - use
      * only for checksums, not security.
-     * </p>
+     * 
      * <p>
      * Security warning: MD5 vulnerable to collisions - do not use for passwords or security tokens.
-     * </p>
+     * 
      * <p>
      * Note: {@code @Autocomplete} annotation provides 'Compute MD5 hash of string' hint for UI tooling.
-     * </p>
+     * 
      *
      * @param value String to hash
      * @return 32-character hexadecimal MD5 hash (lowercase)

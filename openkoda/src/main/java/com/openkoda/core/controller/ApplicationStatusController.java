@@ -40,20 +40,17 @@ import java.util.function.Supplier;
  * This controller provides a {@code GET /ping} endpoint designed for load balancers, orchestration platforms
  * (such as Kubernetes), and monitoring systems to verify application health. The endpoint performs diagnostic
  * checks on critical system components and returns their status with execution timing metrics.
- * </p>
  * <p>
  * <b>Response Behavior:</b>
  * <ul>
  * <li>HTTP 200 (OK) - All monitored components are healthy and operational</li>
  * <li>HTTP 503 (SERVICE_UNAVAILABLE) - One or more components have failed health checks</li>
  * </ul>
- * </p>
  * <p>
  * <b>Security Considerations:</b><br>
  * This endpoint is intentionally public and does NOT require authentication. It returns only non-sensitive
  * diagnostic information suitable for exposure to monitoring infrastructure. Do not add checks that reveal
  * sensitive system details or credentials.
- * </p>
  * <p>
  * <b>Response Format:</b><br>
  * The endpoint returns a {@link LinkedHashMap} preserving insertion order with per-component status:
@@ -63,14 +60,12 @@ import java.util.function.Supplier;
  *   "dbTime": "45"        // Database check execution time in milliseconds
  * }
  * }</pre>
- * </p>
  * <p>
  * <b>Example Load Balancer Configuration (HAProxy):</b>
  * <pre>{@code
  * option httpchk GET /ping
  * http-check expect status 200
  * }</pre>
- * </p>
  * <p>
  * <b>Example Kubernetes Liveness Probe:</b>
  * <pre>{@code
@@ -81,7 +76,6 @@ import java.util.function.Supplier;
  *   initialDelaySeconds: 30
  *   periodSeconds: 10
  * }</pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -103,7 +97,7 @@ public class ApplicationStatusController implements LoggingComponentWithRequestI
      * using {@link System#currentTimeMillis()}, and records both the status and timing in the
      * diagnostic log map. Any exceptions thrown during execution are caught and converted to an
      * "ERROR" status, ensuring the health check endpoint remains stable even when components fail.
-     * </p>
+     * 
      * <p>
      * <b>Behavior:</b>
      * <ul>
@@ -112,7 +106,7 @@ public class ApplicationStatusController implements LoggingComponentWithRequestI
      * <li>On exception: Records status as "ERROR" in the log map</li>
      * <li>Always records execution time as "{@code <entryName>Time}" in milliseconds</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
@@ -120,11 +114,11 @@ public class ApplicationStatusController implements LoggingComponentWithRequestI
      * boolean dbHealthy = measureTime("db", diagnostics, userRepository::count);
      * // diagnostics now contains: {"db": "OK", "dbTime": "42"}
      * }</pre>
-     * </p>
+     * 
      * <p>
      * This method is designed for use within the {@link #ping(HttpServletResponse)} endpoint to
      * uniformly measure and report health check execution across all monitored components.
-     * </p>
+     * 
      *
      * @param entryName the component name used as the key in the diagnostic map; status is stored
      *                  under this key and timing under "{@code <entryName>Time}"
@@ -164,13 +158,13 @@ public class ApplicationStatusController implements LoggingComponentWithRequestI
      * <li>HTTP 200 - All components passed health checks</li>
      * <li>HTTP 503 (SERVICE_UNAVAILABLE) - One or more components failed</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * <b>Current Health Checks:</b>
      * <ul>
      * <li><b>db</b> - Database connectivity verified via {@link UserRepository#count()}</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * <b>Response Map Structure:</b><br>
      * The returned {@link LinkedHashMap} preserves insertion order and contains:
@@ -178,17 +172,17 @@ public class ApplicationStatusController implements LoggingComponentWithRequestI
      * <li>{@code <component>} - Status string: "OK" (success) or "ERROR" (failure)</li>
      * <li>{@code <component>Time} - Execution time in milliseconds as string</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Example response body:
      * <pre>{@code
      * {"db": "OK", "dbTime": "23"}
      * }</pre>
-     * </p>
+     * 
      * <p>
      * This endpoint is exposed at {@code GET /ping} via {@link GetMapping} and requires no authentication.
      * It is suitable for use with monitoring systems, load balancers, and orchestration health probes.
-     * </p>
+     * 
      *
      * @param response the HTTP servlet response used to set status code (200 for healthy, 503 for unhealthy);
      *                 status is modified as a side-effect when health checks fail

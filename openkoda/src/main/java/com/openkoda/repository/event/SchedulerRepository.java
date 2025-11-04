@@ -33,15 +33,15 @@ import org.springframework.stereotype.Repository;
  * This repository provides data access operations for scheduler records that configure background task execution
  * and scheduled event emissions. The {@link Scheduler} entity stores cron expressions, execution timing, and
  * activation status for jobs managed by the {@code JobsScheduler} framework.
- * </p>
+ * 
  * <p>
  * This interface inherits comprehensive data access capabilities from {@link UnsecuredFunctionalRepositoryWithLongId},
  * including standard CRUD operations, pagination, sorting, and advanced search functionality. The repository operates
  * without automatic privilege enforcement, allowing direct access to scheduler configurations for administrative purposes.
  * For privilege-checked operations, use {@code SecureSchedulerRepository} instead.
- * </p>
+ * 
  *
- * <h3>Key Responsibilities</h3>
+ * <b>Key Responsibilities</b>
  * <ul>
  *   <li>Manage scheduler lifecycle (create, update, delete scheduler configurations)</li>
  *   <li>Query schedulers by cron expression, next execution time, and active status</li>
@@ -50,7 +50,7 @@ import org.springframework.stereotype.Repository;
  *   <li>Provide component entity operations for scheduler import/export</li>
  * </ul>
  *
- * <h3>Inherited Capabilities</h3>
+ * <b>Inherited Capabilities</b>
  * From {@link UnsecuredFunctionalRepositoryWithLongId}:
  * <ul>
  *   <li>Standard CRUD operations: {@code save()}, {@code findById()}, {@code findAll()}, {@code delete()}</li>
@@ -60,7 +60,7 @@ import org.springframework.stereotype.Repository;
  *   <li>Batch operations: {@code saveAll()}, {@code deleteAll()}</li>
  * </ul>
  *
- * <h3>Typical Usage Patterns</h3>
+ * <b>Typical Usage Patterns</b>
  * <pre>
  * // Create new scheduler
  * Scheduler scheduler = new Scheduler();
@@ -74,12 +74,12 @@ import org.springframework.stereotype.Repository;
  * <p>
  * <strong>Integration:</strong> This repository is used by {@code JobsScheduler} to load scheduler configurations
  * for background task execution. Schedulers define when and how often jobs should run based on cron expressions.
- * </p>
+ * 
  *
  * <p>
  * <strong>Thread Safety:</strong> As a Spring Data JPA repository, this interface is thread-safe and can be
  * safely injected and used across multiple threads within the Spring application context.
- * </p>
+ * 
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-03-20

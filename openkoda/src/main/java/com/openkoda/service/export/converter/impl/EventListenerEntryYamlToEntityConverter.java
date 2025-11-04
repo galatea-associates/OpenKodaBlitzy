@@ -37,29 +37,29 @@ import java.util.Map;
  * {@link EventListenerEntry} entities from YAML files during the export/import process.
  * It converts {@link EventListenerEntryConversionDto} data transfer objects to
  * {@link EventListenerEntry} entities and persists them to the database.
- * </p>
+ * 
  * <p>
  * The {@code @YamlToEntityParentConverter} annotation with {@code dtoClass = EventListenerEntryConversionDto.class}
  * enables auto-discovery by the export/import subsystem, allowing this converter to be automatically
  * invoked when processing EventListenerEntry definitions in YAML files.
- * </p>
+ * 
  * <p>
  * This converter creates NEW entities only (no lookup-or-update logic). Each conversion always
  * instantiates a fresh {@link EventListenerEntry} and persists it via the secure repository.
- * </p>
+ * 
  * <p>
  * Optional cluster-aware listener registration is supported: when the {@code resources} Map is
  * provided to the three-parameter {@code convertAndSave} method, the converter registers the
  * listener via {@code services.eventListener.registerListenerClusterAware}, enabling hot-reload
  * of event listeners without application restart.
- * </p>
+ * 
  * <p>
  * This converter depends on {@link ComponentProvider} for access to
  * {@code repositories.secure.eventListener} and {@code services.eventListener}.
- * </p>
+ * 
  * <p>
  * Thread-safety: This stateless Spring {@code @Component} is safe for concurrent use by multiple threads.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -80,7 +80,7 @@ public class EventListenerEntryYamlToEntityConverter extends ComponentProvider i
      * This method instantiates a new {@link EventListenerEntry}, maps all fields from the provided
      * {@link EventListenerEntryConversionDto}, and saves the entity via
      * {@code repositories.secure.eventListener.saveOne}.
-     * </p>
+     * 
      * <p>
      * DTO to entity field mappings:
      * <ul>
@@ -95,11 +95,11 @@ public class EventListenerEntryYamlToEntityConverter extends ComponentProvider i
      *   <li>moduleName - owning module name (from dto.getModule())</li>
      *   <li>organizationId - organization scope identifier</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Note: This method does NOT register the listener with the event system. For runtime registration,
      * use {@link #convertAndSave(EventListenerEntryConversionDto, String, Map)} with a resources Map.
-     * </p>
+     * 
      *
      * @param dto the EventListenerEntryConversionDto containing listener metadata (must not be null)
      * @param filePath the YAML file path (unused but required by interface contract)
@@ -133,23 +133,23 @@ public class EventListenerEntryYamlToEntityConverter extends ComponentProvider i
      * This method delegates to {@link #convertAndSave(EventListenerEntryConversionDto, String)}
      * for entity persistence, then calls {@code services.eventListener.registerListenerClusterAware}
      * for runtime listener registration.
-     * </p>
+     * 
      * <p>
      * The presence of the {@code resources} Map triggers cluster-aware listener registration,
      * which distributes the event listener across cluster nodes. This enables hot-reload of
      * event listeners without requiring application restart.
-     * </p>
+     * 
      * <p>
      * Use this overload when importing event listeners that should be immediately active in
      * the running application's event system.
-     * </p>
+     * 
      *
      * @param dto the EventListenerEntryConversionDto containing listener metadata (must not be null)
      * @param filePath the YAML file path (unused but required by interface contract)
      * @param resources Map of resource paths to content strings (unused, but presence triggers registration)
      * @return the saved EventListenerEntry entity with database-generated ID, now registered in event system
      * @throws NullPointerException if dto is null
-     * @see com.openkoda.service.eventlistener.EventListenerService#registerListenerClusterAware
+     * @see com.openkoda.core.service.event.EventListenerService#registerListenerClusterAware
      */
     @Override
     public EventListenerEntry convertAndSave(EventListenerEntryConversionDto dto, String filePath, Map<String, String> resources) {

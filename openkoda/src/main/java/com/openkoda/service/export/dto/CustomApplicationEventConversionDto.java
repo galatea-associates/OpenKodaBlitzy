@@ -28,7 +28,7 @@ package com.openkoda.service.export.dto;
  * Extends ComponentDto for module and organization scope. All fields are String type for flexible
  * event metadata representation. Used by export/import pipelines for transferring custom application
  * event configurations between environments. Not thread-safe.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

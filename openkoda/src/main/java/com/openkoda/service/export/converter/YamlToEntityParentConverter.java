@@ -32,19 +32,19 @@ import java.lang.annotation.Target;
  * This annotation identifies converter classes that transform YAML data transfer objects (DTOs) into
  * JPA entity instances during the import/export process. Annotated converters are automatically
  * discovered via classpath scanning and registered in the converter factory at application startup.
- * </p>
+
  * <p>
  * The annotation is retained at runtime ({@link RetentionPolicy#RUNTIME}) to enable reflection-based
  * discovery during factory initialization. It targets type-level declarations ({@link ElementType#TYPE})
  * and should be applied to classes implementing the YamlToEntityConverter interface.
- * </p>
+
  * <p>
  * Usage example:
  * <pre>{@code
  * @YamlToEntityParentConverter(dtoClass = FormConversionDto.class)
  * public class FormYamlConverter implements YamlToEntityConverter<FormConversionDto, Form> { }
  * }</pre>
- * </p>
+
  *
  * @see YamlToEntityConverterFactory
  * @see YamlToEntityConverter
@@ -61,7 +61,7 @@ public @interface YamlToEntityParentConverter {
      * The converter factory uses this class reference as a lookup key to map incoming DTO types
      * to their corresponding converter implementations. When importing YAML data, the factory
      * selects the converter whose dtoClass matches the deserialized DTO type.
-     * </p>
+
      *
      * @return the DTO class this converter processes (e.g., FormConversionDto.class)
      */

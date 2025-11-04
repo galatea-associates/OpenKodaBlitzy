@@ -34,12 +34,12 @@ import org.springframework.stereotype.Component;
  * before execution, and cleans up MDC after completion (including exception cases). Enables distributed tracing
  * for scheduled and cron jobs by ensuring each job execution has a unique identifier in log messages.
  * Uses Spring AOP with AspectJ annotations for declarative pointcut definitions.
- * </p>
+
  * <p>
  * The pointcut expression {@code @annotation(org.springframework.scheduling.annotation.Scheduled)} matches all
  * methods with Spring's {@code @Scheduled} annotation. This aspect is discovered via {@code @Component} and
  * {@code @Aspect} scanning, woven at runtime by Spring AOP proxy mechanism.
- * </p>
+
  * <p>
  * Example usage - automatic instrumentation:
  * <pre>{@code
@@ -48,7 +48,7 @@ import org.springframework.stereotype.Component;
  *     // Job ID automatically in MDC, appears in all log messages
  * }
  * }</pre>
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-07-26
@@ -68,10 +68,10 @@ public class TrackJobAspect {
      * {@link RequestIdHolder#generate()} and stores it in SLF4J MDC under key {@code PARAM_CRON_JOB_ID}.
      * The ID propagates through all logging statements during job execution, enabling trace correlation.
      * Thread-safe as MDC is ThreadLocal-based.
-     * </p>
+
      * <p>
      * Side effects: Modifies thread's MDC context by adding job ID entry.
-     * </p>
+
      *
      * @see RequestIdHolder#generate()
      * @see org.slf4j.MDC#put(String, String)
@@ -88,13 +88,13 @@ public class TrackJobAspect {
      * Calls {@link org.slf4j.MDC#clear()} to remove all MDC entries, preventing job ID leakage when thread
      * is returned to executor pool and reused for subsequent jobs. Critical for thread pool hygiene in
      * scheduled task executors.
-     * </p>
+
      * <p>
      * Side effects: Clears all entries from thread's MDC context.
-     * </p>
+
      * <p>
      * Note: Executes even if scheduled method throws exception, ensuring cleanup in all cases.
-     * </p>
+
      *
      * @see org.slf4j.MDC#clear()
      */

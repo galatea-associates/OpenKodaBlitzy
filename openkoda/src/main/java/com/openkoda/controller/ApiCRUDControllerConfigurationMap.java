@@ -31,17 +31,17 @@ import org.springframework.stereotype.Component;
  * Configurations are registered at application startup via CRUDControllers.
  * Used by API controllers to retrieve entity-specific settings including repository,
  * form class, and required privileges for JSON REST endpoints.
- * </p>
+ * 
  * <p>
  * Thread-safety: Extends HashMap with no additional synchronization. Assumes
  * single-threaded startup registration during {@code @PostConstruct} phase.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see AbstractCRUDControllerConfigurationMap
- * @see CRUDApiController
+ * See {@code AbstractCRUDControllerConfigurationMap}
+ * See {@code CRUDApiController}
  */
 @Component
 public class ApiCRUDControllerConfigurationMap extends AbstractCRUDControllerConfigurationMap{

@@ -27,12 +27,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * (Facebook, Google, LinkedIn, Salesforce), and enterprise LDAP authentication. All authentication entities
  * maintain a one-to-one relationship with the core {@link com.openkoda.model.User} entity using JPA's
  * {@code @MapsId} annotation to share the same primary key.
- * </p>
+ * 
  *
- * <h2>Authentication Architecture</h2>
+ * <b>Authentication Architecture</b>
  * <p>
  * OpenKoda supports multiple authentication methods that can be used independently or in combination:
- * </p>
+ * 
  * <ul>
  *   <li><b>Local Password Authentication</b>: Traditional username/password stored in {@code LoginAndPassword} entity</li>
  *   <li><b>API Key Authentication</b>: Programmatic access via tokens stored in {@code ApiKey} entity</li>
@@ -40,10 +40,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>LDAP Authentication</b>: Enterprise directory integration via {@code LDAPUser} entity</li>
  * </ul>
  *
- * <h2>Provider Integration Patterns</h2>
+ * <b>Provider Integration Patterns</b>
  * <p>
  * All authentication entities follow a consistent integration pattern with the User entity:
- * </p>
+ * 
  * <pre>
  * // One-to-one shared primary key relationship
  * {@code @Entity}
@@ -62,7 +62,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * }
  * </pre>
  *
- * <h2>Key Entities</h2>
+ * <b>Key Entities</b>
  * <ul>
  *   <li><b>LoginAndPassword</b>: Local username/password authentication with BCrypt encoding</li>
  *   <li><b>ApiKey</b>: Programmatic API access tokens with optional expiration</li>
@@ -71,10 +71,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>LoggedUser</b>: Abstract base class for authentication entities requiring common audit behavior</li>
  * </ul>
  *
- * <h2>JPA Mapping Patterns</h2>
+ * <b>JPA Mapping Patterns</b>
  * <p>
  * All authentication entities use consistent JPA mapping annotations:
- * </p>
+ * 
  * <ul>
  *   <li>{@code @OneToOne @MapsId}: Shares primary key with User entity for efficient joins</li>
  *   <li>{@code @JsonIgnore}: Excludes sensitive fields (passwords, tokens) from JSON serialization</li>
@@ -82,10 +82,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code @Table(name = "kk_*")}: Consistent table naming convention with "kk_" prefix</li>
  * </ul>
  *
- * <h2>Security Patterns</h2>
+ * <b>Security Patterns</b>
  * <p>
  * The package implements security best practices for credential management:
- * </p>
+ * 
  * <ul>
  *   <li><b>BCrypt Password Encoding</b>: LoginAndPassword uses static {@code PasswordEncoder} for one-way hashing</li>
  *   <li><b>Audit Exclusion</b>: Sensitive fields listed in {@code ignoredProperties} to prevent audit logging</li>
@@ -93,10 +93,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>Token Security</b>: API keys and OAuth tokens stored securely with optional expiration</li>
  * </ul>
  *
- * <h2>Usage Examples</h2>
+ * <b>Usage Examples</b>
  * <p>
  * Creating a local password authentication for a user:
- * </p>
+ * 
  * <pre>
  * User user = new User();
  * user.setEmail("user@example.com");
@@ -107,7 +107,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </pre>
  * <p>
  * Linking an OAuth provider to an existing user:
- * </p>
+ * 
  * <pre>
  * GoogleUser googleUser = new GoogleUser();
  * googleUser.setUser(existingUser);
@@ -115,14 +115,14 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * googleUser.setEmail("user@gmail.com");
  * </pre>
  *
- * <h2>Relationships</h2>
+ * <b>Relationships</b>
  * <p>
  * All authentication entities maintain a one-to-one relationship with {@link com.openkoda.model.User}.
  * A single user can have multiple authentication methods enabled simultaneously (e.g., both local password
  * and Google OAuth), allowing flexible authentication options.
- * </p>
+ * 
  *
- * <h2>Common Patterns</h2>
+ * <b>Common Patterns</b>
  * <ul>
  *   <li><b>Static PasswordEncoder</b>: {@code LoginAndPassword.passwordEncoder} initialized once for BCrypt encoding</li>
  *   <li><b>toAuditString()</b>: All entities implement custom audit string generation excluding sensitive data</li>

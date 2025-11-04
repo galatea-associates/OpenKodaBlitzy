@@ -33,23 +33,19 @@ import java.util.Set;
  * This token extends {@link UsernamePasswordAuthenticationToken} to support API tokens,
  * single-use tokens, and path-prefix tokens. It holds the raw token string, user ID,
  * privilege restrictions, and single-request flag.
- * </p>
  * <p>
  * Created unauthenticated ({@code setAuthenticated(false)}) by authentication filters
  * and consumed by {@code LoginByPasswordOrTokenAuthenticationProvider}. The Token entity
  * can limit but not extend user privileges, enabling privilege narrowing for token-based access.
- * </p>
  * <p>
  * Thread-safe through immutability: the privileges Set is wrapped with
  * {@link Collections#unmodifiableSet(Set)} to prevent modification.
- * </p>
  * <p>
  * Example usage:
  * <pre>
  * RequestTokenAuthenticationToken token = new RequestTokenAuthenticationToken(
  *     userId, email, rawToken, privilegeSet, false);
  * </pre>
- * </p>
  *
  * @see AbstractTokenAuthenticationFilter
  * @see com.openkoda.model.Token
@@ -73,7 +69,7 @@ public class RequestTokenAuthenticationToken extends UsernamePasswordAuthenticat
      * Constructs a token with user ID, email principal, raw token string, privilege set,
      * and single-request flag. The privileges Set is defensively copied to an unmodifiable
      * Set for immutability and thread-safety.
-     * </p>
+     * 
      *
      * @param userId Database ID of user associated with this token (nullable for invalid tokens)
      * @param email User email used as principal name in Spring Security context
@@ -113,7 +109,7 @@ public class RequestTokenAuthenticationToken extends UsernamePasswordAuthenticat
      * <p>
      * This Set represents narrowed privileges granted by the token, which may be
      * a subset of the user's full privileges for restricted token-based access.
-     * </p>
+     * 
      *
      * @return Unmodifiable Set of PrivilegeBase restrictions
      */
@@ -126,7 +122,7 @@ public class RequestTokenAuthenticationToken extends UsernamePasswordAuthenticat
      * <p>
      * Single-use tokens are invalidated after successful authentication,
      * implementing the single-request token pattern for enhanced security.
-     * </p>
+     * 
      *
      * @return True for single-use tokens, false for reusable tokens
      */
@@ -139,7 +135,7 @@ public class RequestTokenAuthenticationToken extends UsernamePasswordAuthenticat
      * <p>
      * Convenience method to check if the privilege set is empty,
      * useful for validating token authorization scope.
-     * </p>
+     * 
      *
      * @return True if privileges are granted, false if privilege set is empty
      */

@@ -31,7 +31,7 @@ import com.openkoda.model.PrivilegeGroup;
  * It serves as a lightweight, serializable representation of privilege data used by controllers,
  * services, mappers, and serializers. The class is designed for compatibility with Jackson
  * serialization and reflection-based mapping frameworks.
- * </p>
+
  * <p>
  * <b>Important Design Notes:</b>
  * <ul>
@@ -39,7 +39,7 @@ import com.openkoda.model.PrivilegeGroup;
  *   <li>No validation or concurrency controls are enforced - callers are responsible for data integrity</li>
  *   <li>Mutable design optimized for mapping and serialization compatibility</li>
  * </ul>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -53,7 +53,7 @@ public class PrivilegeDto implements CanonicalObject {
      * Privilege identifier.
      * <p>
      * Primitive {@code long} field defaults to 0 when uninitialized.
-     * </p>
+
      */
     private long id;
     
@@ -61,7 +61,7 @@ public class PrivilegeDto implements CanonicalObject {
      * Privilege name identifier.
      * <p>
      * Used as the primary identifier for privilege lookup and reference.
-     * </p>
+
      */
     private String name;
     
@@ -69,7 +69,7 @@ public class PrivilegeDto implements CanonicalObject {
      * Human-readable privilege label.
      * <p>
      * Descriptive text displayed in user interfaces and reports.
-     * </p>
+
      */
     private String label;
     
@@ -77,7 +77,7 @@ public class PrivilegeDto implements CanonicalObject {
      * Privilege category for logical grouping.
      * <p>
      * Used to organize privileges into functional or domain-specific categories.
-     * </p>
+
      */
     private String category;
     
@@ -86,7 +86,7 @@ public class PrivilegeDto implements CanonicalObject {
      * <p>
      * Associates this privilege with a {@link PrivilegeGroup} enum for hierarchical
      * organization and access control classification.
-     * </p>
+
      */
     private PrivilegeGroup privilegeGroup;
 
@@ -185,10 +185,10 @@ public class PrivilegeDto implements CanonicalObject {
      * <p>
      * Implements {@link CanonicalObject#notificationMessage()} to provide a formatted
      * string representation suitable for notification systems.
-     * </p>
+
      * <p>
      * Format: "Role: {name}.Scope: {category}."
-     * </p>
+
      *
      * @return formatted notification message containing privilege name and category
      */

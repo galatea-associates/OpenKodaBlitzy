@@ -28,12 +28,12 @@ package com.openkoda.controller.api.v1.model;
  * used by the TokenControllerApiV1 getRefresher endpoint for authentication.
  * It follows standard JavaBean conventions with private fields and public getters/setters.
  * The class preserves the MIT license header and contains no validation annotations.
- * </p>
+ * 
  * <p>
  * <b>Security Warning:</b> This DTO contains highly sensitive data including plaintext passwords.
  * Always enforce HTTPS for transmission, clear password from memory after use, and never log raw passwords.
  * Handle this object with extreme caution in production environments.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -51,7 +51,7 @@ public class RefresherTokenRequest
      * <p>
      * <b>Security Note:</b> This field contains highly sensitive data.
      * Transmit over TLS only and clear from memory after validation.
-     * </p>
+     * 
      */
     private String password;
 

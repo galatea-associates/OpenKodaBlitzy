@@ -39,15 +39,15 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  * This form adapter transfers data between {@link BasicUser} DTOs and {@link User} entities,
  * enforcing email validation using a compiled Pattern on each emailIsValid call. Extends
  * {@link AbstractEntityForm} and exposes the frontend mapping {@link FrontendMappingDefinitions#userForm}.
- * </p>
+ * 
  * <p>
  * <b>Known Issues:</b>
  * The {@link #populateTo(User)} method contains a bug where {@code entity.setFirstName()} is incorrectly
  * called three times instead of calling setFirstName, setLastName, and setEmail respectively.
- * </p>
+ * 
  * <p>
  * <b>Note:</b> The {@code dtoField} exists but is currently unused in the implementation.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -67,7 +67,7 @@ public class BasicUserForm extends AbstractEntityForm<BasicUser, User> {
      * <p>
      * Initializes the form with the provided {@link BasicUser} DTO and {@link User} entity,
      * using the predefined {@link FrontendMappingDefinitions#userForm} mapping definition.
-     * </p>
+     * 
      *
      * @param dto the BasicUser DTO containing form data
      * @param entity the User entity to be populated or populated from
@@ -81,7 +81,7 @@ public class BasicUserForm extends AbstractEntityForm<BasicUser, User> {
      * <p>
      * Initializes the form with the provided {@link BasicUser} DTO, {@link User} entity,
      * and a custom {@link FrontendMappingDefinition} allowing override of the default mapping.
-     * </p>
+     * 
      *
      * @param dto the BasicUser DTO containing form data
      * @param entity the User entity to be populated or populated from
@@ -97,7 +97,7 @@ public class BasicUserForm extends AbstractEntityForm<BasicUser, User> {
      * Creates a form instance with null DTO and entity, using the predefined
      * {@link FrontendMappingDefinitions#userForm} mapping definition. Typically used for
      * creating new user forms where both DTO and entity will be set later.
-     * </p>
+     * 
      */
     public BasicUserForm() {
         super(null, null, userForm);
@@ -109,7 +109,7 @@ public class BasicUserForm extends AbstractEntityForm<BasicUser, User> {
      * Performs validation of the email field using the {@link #emailIsValid(String)} helper
      * method with a compiled regex Pattern. Rejects with 'not.valid' error code if the email
      * format is invalid, and 'not.empty' if the email is blank but not null.
-     * </p>
+     * 
      *
      * @param dto the BasicUser DTO to validate
      * @param br the BindingResult to record validation errors
@@ -132,11 +132,11 @@ public class BasicUserForm extends AbstractEntityForm<BasicUser, User> {
      * Helper method that compiles a regex pattern on each invocation to validate email format.
      * The pattern follows RFC-style email validation:
      * {@code ^([a-zA-Z0-9_\-\.+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$}
-     * </p>
+     * 
      * <p>
      * <b>Performance Note:</b> The pattern is compiled on each call rather than being cached as a
      * static field, which may impact performance in high-frequency validation scenarios.
-     * </p>
+     * 
      *
      * @param email the email address to validate
      * @return true if the email matches the validation pattern, false otherwise
@@ -154,7 +154,7 @@ public class BasicUserForm extends AbstractEntityForm<BasicUser, User> {
      * <p>
      * Static helper method that populates the BasicUser DTO with firstName, lastName, and email
      * values from the User entity. This method directly assigns to DTO fields rather than using setters.
-     * </p>
+     * 
      *
      * @param dto the BasicUser DTO to populate
      * @param entity the User entity containing source data
@@ -173,7 +173,7 @@ public class BasicUserForm extends AbstractEntityForm<BasicUser, User> {
      * Transfers User entity data (email, firstName, lastName) to the internal BasicUser DTO
      * by delegating to {@link #populateFromEntity(BasicUser, User)}. This method implements
      * the form lifecycle pattern for entity-to-DTO mapping.
-     * </p>
+     * 
      *
      * @param entity the User entity to populate from
      * @return this BasicUserForm instance for method chaining
@@ -189,7 +189,7 @@ public class BasicUserForm extends AbstractEntityForm<BasicUser, User> {
      * <p>
      * Transfers data from the internal BasicUser DTO to the User entity using safe value getters.
      * This method implements the form lifecycle pattern for DTO-to-entity mapping.
-     * </p>
+     * 
      * <p>
      * <b>IMPLEMENTATION BUG:</b> This method incorrectly calls {@code entity.setFirstName()} three times
      * on lines 107-109. The correct implementation should call:
@@ -199,7 +199,7 @@ public class BasicUserForm extends AbstractEntityForm<BasicUser, User> {
      *   <li>Line 109: {@code entity.setEmail(getSafeValue(entity.getEmail(), EMAIL_))} (not setFirstName)</li>
      * </ul>
      * As a result, lastName and email values are not properly saved to the entity.
-     * </p>
+     * 
      *
      * @param entity the User entity to populate with DTO data
      * @return the populated User entity
@@ -218,7 +218,7 @@ public class BasicUserForm extends AbstractEntityForm<BasicUser, User> {
      * Instance method that delegates to the static {@link #validate(BasicUser, BindingResult)}
      * method to perform email validation on the internal DTO. This method implements the
      * form lifecycle pattern for validation.
-     * </p>
+     * 
      *
      * @param br the BindingResult to record validation errors
      * @return this BasicUserForm instance for method chaining

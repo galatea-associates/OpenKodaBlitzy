@@ -54,7 +54,7 @@ import jakarta.inject.Inject;
  * recipients from template variables, and handles {@link com.openkoda.model.file.File} attachments
  * by mapping File entity IDs to the Email's filesId list. It creates Email records suitable for
  * persistence by EmailService and asynchronous sending by EmailSenderJob.
- * </p>
+
  * <p>
  * The email preparation workflow involves:
  * <ul>
@@ -64,14 +64,14 @@ import jakarta.inject.Inject;
  *   <li>Optionally extracting subject from HTML {@code <title>} tag</li>
  *   <li>Scheduling email delivery with configurable delay via startAfter timestamp</li>
  * </ul>
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * Email email = emailConstructor.prepareEmail("user@example.com", "John Doe", 
  *     "Welcome", "welcome-template", 0, modelMap, attachmentFile);
  * </pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @see com.openkoda.model.task.Email
@@ -135,7 +135,7 @@ public class EmailConstructor implements LoggingComponentWithRequestId {
      * This method retrieves the locale from {@link LocaleContextHolder} which is set by
      * Spring's LocaleChangeInterceptor based on the current HTTP request or default locale.
      * The Context is used as a variable container for template processing.
-     * </p>
+
      *
      * @return Thymeleaf Context with current locale from LocaleContextHolder
      */
@@ -152,11 +152,11 @@ public class EmailConstructor implements LoggingComponentWithRequestId {
      * populating Email fields with recipient details and content, computing the startAfter timestamp
      * as {@code LocalDateTime.now().plusSeconds(delayInSeconds)}, and mapping File attachment entities
      * to the Email's filesId list via {@link File#getId()}.
-     * </p>
+
      * <p>
      * The generated Email entity is ready for persistence by EmailService and subsequent asynchronous
      * sending by EmailSenderJob. The nameFrom field is automatically set to the application name.
-     * </p>
+
      *
      * @param emailTo recipient email address (e.g., "user@example.com")
      * @param nameTo recipient display name (e.g., "John Doe"), may be null
@@ -197,7 +197,7 @@ public class EmailConstructor implements LoggingComponentWithRequestId {
      * This variant creates a {@link PageModelMap} containing the provided {@link CanonicalObject}
      * under the {@link PageAttributes#canonicalObject} key, then delegates to the master variant
      * to render content and extract the subject from the HTML title element.
-     * </p>
+
      *
      * @param emailTo recipient email address
      * @param templateName Thymeleaf template name
@@ -218,7 +218,7 @@ public class EmailConstructor implements LoggingComponentWithRequestId {
      * This variant creates a {@link PageModelMap} containing the User entity under the
      * {@link PageAttributes#userEntity} key, automatically using the user's email and name
      * from {@link User#getEmail()} and {@link User#getName()}.
-     * </p>
+
      *
      * @param recipient User entity providing email address and display name
      * @param templateName Thymeleaf template name
@@ -238,7 +238,7 @@ public class EmailConstructor implements LoggingComponentWithRequestId {
      * This variant adds the User entity to the provided {@link PageModelMap} under the
      * {@link PageAttributes#userEntity} key, allowing templates to access both custom variables
      * from the model and user-specific data. The subject is extracted from the template's {@code <title>} tag.
-     * </p>
+
      *
      * @param recipient User entity providing email address and display name
      * @param templateName Thymeleaf template name
@@ -259,7 +259,7 @@ public class EmailConstructor implements LoggingComponentWithRequestId {
      * {@link PageAttributes#userEntity} key and allows specifying a custom subject line.
      * If the subject is blank, it falls back to extracting from the template's {@code <title>} tag
      * or defaults to "System message".
-     * </p>
+
      *
      * @param recipient User entity providing email address and display name
      * @param subject custom email subject, or null to extract from template
@@ -282,11 +282,11 @@ public class EmailConstructor implements LoggingComponentWithRequestId {
      * {@link #getTitleFromHTML(String)} to extract content from the rendered HTML's {@code <title>} tag.
      * Falls back to the provided subject parameter if extraction yields blank, or defaults to
      * "System message" if both are blank.
-     * </p>
+
      * <p>
      * This is the master implementation that all other {@code prepareEmailWithTitleFromTemplate} variants
      * delegate to after preparing their respective models.
-     * </p>
+
      *
      * @param emailTo recipient email address
      * @param subject custom email subject, or null to extract from template's {@code <title>} tag
@@ -311,7 +311,7 @@ public class EmailConstructor implements LoggingComponentWithRequestId {
      * <p>
      * Uses {@link StringUtils#substringBetween(String, String, String)} to parse the title element.
      * Returns null if the HTML does not contain a title tag or if the content is malformed.
-     * </p>
+
      *
      * @param content HTML string potentially containing a {@code <title>} element
      * @return extracted title text, or null if title tag not found
@@ -331,11 +331,11 @@ public class EmailConstructor implements LoggingComponentWithRequestId {
      * registers {@link ThymeleafEvaluationContext} to expose Spring beans to templates, adds all
      * model entries to the context, and processes the template with
      * {@link URLConstants#EMAILRESOURCE_DISCRIMINATOR} suffix appended to the template name.
-     * </p>
+
      * <p>
      * The rendered HTML is suitable for email body content and may contain HTML title, styling, and
      * dynamic content generated from the model variables.
-     * </p>
+
      *
      * @param templateName Thymeleaf template name without {@link URLConstants#EMAILRESOURCE_DISCRIMINATOR} suffix
      * @param model map of variables available to the template during rendering

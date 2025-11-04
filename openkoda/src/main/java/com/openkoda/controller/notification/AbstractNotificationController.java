@@ -38,19 +38,19 @@ import java.util.Set;
  * Implements common notification management patterns including user-scoped notification listing with pagination,
  * bulk mark-as-read, single notification read status toggle, and notification deletion. Subclasses provide
  * concrete endpoint mappings. Uses {@code services.notification} for persistence and delivery orchestration.
- * </p>
+ * 
  * <p>
  * All methods are {@code protected} and intended for reuse by concrete controllers rather than direct exposure.
  * The class declares no instance fields (stateless) and relies on thread-safe injected services/repositories
  * provided by the inherited {@link AbstractController}.
- * </p>
+ * 
  * <p>
  * Implementation uses the Flow pipeline DSL to compose operations: {@code Flow.init()} followed by fluent
  * {@code thenSet}/{@code then} and {@code execute()} to produce a {@link PageModelMap} containing model
  * attributes (notably the model key 'notificationPage').
- * </p>
+ * 
  *
- * <h3>Important Notes:</h3>
+ * <b>Important Notes:</b>
  * <ul>
  *   <li>Contains unguarded {@code Optional.get()} after {@code UserProvider.getFromContext()}; callers must
  *       ensure a valid security context to avoid {@code NoSuchElementException}</li>
@@ -77,11 +77,11 @@ public class AbstractNotificationController extends AbstractController {
      * Results are ordered by creation date descending. Delegates to
      * {@code repositories.unsecure.notification.findAll(userId, organizationIds, notificationPageable)}
      * to fetch a paginated notification page.
-     * </p>
+     * 
      * <p>
      * The method logs invocation, calls {@link UserProvider#getFromContext()}, and invokes
      * {@code Optional.get()} to obtain the {@link OrganizationUser} and its organization IDs.
-     * </p>
+     * 
      *
      * @param userId the user ID for filtering notifications, must match authenticated user
      * @param notificationPageable pagination parameters (page, size, sort) for notification results
@@ -106,7 +106,7 @@ public class AbstractNotificationController extends AbstractController {
      * Retrieves notifications for the authenticated user within a specific organization context.
      * Wraps the provided organizationId into {@code Collections.singleton(organizationId)} before
      * calling the repository API. Results are ordered by creation date descending.
-     * </p>
+     * 
      *
      * @param userId the user ID for filtering notifications, must match authenticated user
      * @param organizationId the organization ID to scope notification results, wrapped into singleton set
@@ -127,7 +127,7 @@ public class AbstractNotificationController extends AbstractController {
      * Accepts a comma-separated string of notification IDs and delegates to
      * {@code services.notification.markAsRead(unreadNotifications, userId)} inside a Flow.then step
      * to persist read-state changes. Updates readAt timestamp to current time for each notification.
-     * </p>
+     * 
      *
      * @param unreadNotifications comma-separated string of notification IDs to mark as read (e.g., "123,456,789")
      * @param userId the user ID owning the notifications, used for authorization
@@ -148,7 +148,7 @@ public class AbstractNotificationController extends AbstractController {
      * only marks notifications within that organization context. Delegates to
      * {@code services.notification.markAllAsRead(userId, organizationId)} for batch update execution.
      * Sets readAt timestamp to current time for all matching unread notifications.
-     * </p>
+     * 
      *
      * @param userId the user ID owning the notifications, used for filtering
      * @param organizationId the organization ID to scope the bulk operation, may be null for all organizations

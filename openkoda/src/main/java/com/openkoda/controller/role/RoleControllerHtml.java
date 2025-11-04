@@ -40,19 +40,19 @@ import static com.openkoda.controller.common.URLConstants._HTML_ROLE;
  * privilege checkboxes grouped by category (Organization, User, Admin, Integration, Reports, Files),
  * edit form with current privilege assignments, role-user assignment capabilities, and delete confirmation
  * with dependency warnings. All routes mapped under _HTML_ROLE base path.
- * </p>
+ * 
  * <p>
  * Extends AbstractRoleController to inherit business logic while providing HTTP endpoint bindings and
  * ModelAndView response generation. Uses Flow pipeline pattern for request orchestration and privilege-based
  * authorization via @PreAuthorize annotations.
- * </p>
+ * 
  * <p>
  * <b>Request Mapping:</b> Base path: _HTML_ROLE constant (typically /html/role)
- * </p>
+ * 
  * <p>
  * <b>Authorization:</b> Read endpoints require CHECK_CAN_READ_BACKEND privilege. Mutating endpoints require
  * CHECK_CAN_MANAGE_BACKEND privilege.
- * </p>
+ * 
  * <p>
  * <b>Role Types:</b>
  * <ul>
@@ -60,7 +60,6 @@ import static com.openkoda.controller.common.URLConstants._HTML_ROLE;
  *   <li>OrganizationRole: Organization-scoped permissions limited to specific tenant (e.g., Org Admin, Org User)</li>
  *   <li>GlobalOrganizationRole: Global permissions within organization context - hybrid scope</li>
  * </ul>
- * </p>
  * <p>
  * <b>Privilege Categories (UI Groupings):</b>
  * <ul>
@@ -71,7 +70,6 @@ import static com.openkoda.controller.common.URLConstants._HTML_ROLE;
  *   <li>Reports: canCreateReports, canScheduleReports</li>
  *   <li>Files: canUploadFiles, canManageFiles</li>
  * </ul>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -89,11 +87,11 @@ public class RoleControllerHtml extends AbstractRoleController implements HasSec
      * Displays paginated list of all roles with optional text search filtering.
      * <p>
      * <b>Endpoint:</b> GET {_HTML_ROLE}/_ALL - Lists all roles accessible to current user
-     * </p>
+     * 
      * <p>
      * Delegates to AbstractRoleController.findRolesFlow(). Applies privilege-based filtering via secure
      * repository to ensure only roles visible to current user are returned.
-     * </p>
+     * 
      *
      * @param rolePageable Pagination configuration (page, size, sort) qualified as 'role' bean
      * @param search Optional search term for filtering roles by name (defaults to empty string)
@@ -113,13 +111,13 @@ public class RoleControllerHtml extends AbstractRoleController implements HasSec
      * Displays role details and edit form with current privilege assignments.
      * <p>
      * <b>Endpoint:</b> GET {_HTML_ROLE}/{id}/settings - Role detail view
-     * </p>
+     * 
      * <p>
      * <b>UI Components:</b> Privilege checkboxes organized by category:
      * Organization (canReadOrgData, canManageOrgData), User (canReadUsers, canManageUsers),
      * Admin (canAccessGlobalSettings), Integration (canUseIntegrations),
      * Reports (canCreateReports), Files (canUploadFiles)
-     * </p>
+     * 
      *
      * @param roleId Role identifier to display (path variable 'id')
      * @return ModelAndView rendering 'role-settings' template with 'roleEntity', 'roleForm' pre-populated
@@ -137,15 +135,15 @@ public class RoleControllerHtml extends AbstractRoleController implements HasSec
      * Updates existing role with modified name and privilege selections.
      * <p>
      * <b>Endpoint:</b> POST {_HTML_ROLE}/{id}/settings - Submits role updates
-     * </p>
+     * 
      * <p>
      * <b>Flow:</b> Delegates to AbstractRoleController.updateRole() → Triggers
      * services.privilege.notifyOnPrivilagesChange() → Recalculates effective privileges for affected users
-     * </p>
+     * 
      * <p>
      * Returns Thymeleaf fragments for AJAX form submission. Success fragment shows confirmation,
      * error fragment displays validation messages.
-     * </p>
+     * 
      *
      * @param roleId Role identifier to update (path variable 'id')
      * @param roleForm Validated form with updated role name and selected privilege identifiers
@@ -166,11 +164,11 @@ public class RoleControllerHtml extends AbstractRoleController implements HasSec
      * Displays new role creation form with empty fields and privilege selector.
      * <p>
      * <b>Endpoint:</b> GET {_HTML_ROLE}/new/settings - New role form
-     * </p>
+     * 
      * <p>
      * <b>Implementation Detail:</b> Calls findRole(-1L) to initialize empty form. Magic value -1 signals
      * new role creation rather than edit.
-     * </p>
+     * 
      *
      * @return ModelAndView rendering 'role-settings' template with empty 'roleForm', 'rolesEnum' for
      *         privilege selection
@@ -187,15 +185,15 @@ public class RoleControllerHtml extends AbstractRoleController implements HasSec
      * Creates new role with specified name, type, and privilege set.
      * <p>
      * <b>Endpoint:</b> POST {_HTML_ROLE}/new/settings - Submits new role creation
-     * </p>
+     * 
      * <p>
      * <b>Validation:</b> Checks role name uniqueness via services.role.checkIfRoleNameAlreadyExists().
      * Validates form via services.validation.validate()
-     * </p>
+     * 
      * <p>
      * <b>Flow:</b> Form validation → Privilege string-to-enum conversion via PrivilegeHelper.valueOfString()
      * → services.role.createRole() persistence → Form reset for next creation
-     * </p>
+     * 
      *
      * @param roleForm Validated form containing role name, type (GlobalRole/OrganizationRole/GlobalOrganizationRole),
      *                 selected privilege identifiers
@@ -216,19 +214,19 @@ public class RoleControllerHtml extends AbstractRoleController implements HasSec
      * Deletes role with atomic cleanup of user-role associations.
      * <p>
      * <b>Endpoint:</b> POST {_HTML_ROLE}/{id}/remove - Deletes role
-     * </p>
+     * 
      * <p>
      * <b>Transaction:</b> Inherited from AbstractRoleController.deleteRole(). Atomic operation: deletes
      * UserRole associations first, then Role entity
-     * </p>
+     * 
      * <p>
      * <b>Cascade:</b> Removes all UserRole associations via repositories.unsecure.userRole.deleteUserRoleByRoleId()
      * before role deletion
-     * </p>
+     * 
      * <p>
      * <b>Warning:</b> No validation for roles in use. Business logic should prevent deleting roles assigned to
      * users or system-critical roles. UI should confirm deletion with dependency warnings.
-     * </p>
+     * 
      *
      * @param roleId Role identifier to delete (path variable 'id')
      * @return Boolean response: true on success, false on failure

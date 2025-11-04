@@ -28,13 +28,13 @@ package com.openkoda.dto;
  * suitable for presentation to end-users, logging subsystems, and notification frameworks.
  * Implementing classes ensure polymorphic handling of diverse object types throughout the
  * application's notification and audit trails.
- * </p>
+
  * <p>
  * The notification/logging subsystems utilize this interface to obtain consistent, user-friendly
  * descriptions of domain objects without coupling to specific entity or DTO implementations.
  * This enables flexible message generation for audit logs, user notifications, system events,
  * and administrative interfaces.
- * </p>
+
  * <p>
  * Typical implementing classes include:
  * <ul>
@@ -44,14 +44,14 @@ package com.openkoda.dto;
  *   <li>User DTOs in {@code com.openkoda.dto.user} package</li>
  *   <li>Domain entities requiring notification support</li>
  * </ul>
- * </p>
+
  * <p>
  * Usage example in controllers and services:
  * <pre>{@code
  * CanonicalObject dto = fileService.processUpload(file);
  * notificationService.sendMessage(dto.notificationMessage());
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -67,7 +67,7 @@ public interface CanonicalObject {
      * in user interfaces, notification messages, audit logs, or system alerts. The message
      * should be concise yet informative, providing essential context about the object without
      * exposing internal implementation details or sensitive data.
-     * </p>
+
      * <p>
      * Expected format characteristics:
      * <ul>
@@ -77,12 +77,12 @@ public interface CanonicalObject {
      *   <li>Concise length suitable for notification displays (typically under 200 characters)</li>
      *   <li>Localization-ready (implementations may use message bundles)</li>
      * </ul>
-     * </p>
+
      * <p>
      * Usage context: This method is invoked by notification services, audit interceptors,
      * logging components, and UI controllers when generating user-facing messages about
      * domain operations, file uploads, user actions, or system events.
-     * </p>
+
      *
      * @return descriptive message appropriate for end-user presentation, never {@code null}
      */

@@ -39,20 +39,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * entries during transaction. Delegates actual change detection to singleton AuditInterceptor resolved at runtime 
  * via ApplicationContextProvider to avoid circular dependency. Hibernate creates one instance per session, ensuring 
  * auditMap is session-scoped and thread-isolated.
- * </p>
+ * 
  * <p>
  * <b>CRITICAL Configuration:</b> Must be configured in application.properties:
  * {@code spring.jpa.properties.hibernate.ejb.interceptor.session_scoped=com.openkoda.core.audit.PropertyChangeInterceptor}
  * Without this property, audit trail will not function.
- * </p>
+ * 
  * <p>
  * <b>Instance Lifecycle:</b> Created per Hibernate session, destroyed when session closes. auditMap accumulates 
  * changes during flush operations, cleared implicitly on transaction commit via beforeTransactionCompletion delegation.
- * </p>
+ * 
  * <p>
  * <b>Thread Safety:</b> Each Hibernate session has its own instance, so auditMap is naturally thread-isolated. 
  * ConcurrentHashMap used for extra safety but not strictly necessary given session isolation.
- * </p>
+ * 
  *
  * @see AuditInterceptor
  * @see <a href="https://docs.jboss.org/hibernate/orm/3.3/reference/en/html/events.html">Hibernate Interceptors
@@ -74,7 +74,7 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
     * Populated during onSave/onFlushDirty/onDelete, consumed in beforeTransactionCompletion for Audit entity 
     * persistence. ConcurrentHashMap provides thread-safety although session-scoped instances are naturally 
     * thread-isolated.
-    * </p>
+    * 
     */
    private Map<Object, AuditedObjectState> auditMap = new ConcurrentHashMap<>();
 
@@ -85,7 +85,7 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
     * Called by Hibernate during session flush when entity modifications are detected. Passes auditMap and all entity 
     * state arrays to AuditInterceptor.onFlushDirty for diff computation via PersistanceInterceptor.computeChanges. 
     * Changes are accumulated in auditMap for later persistence in beforeTransactionCompletion.
-    * </p>
+    * 
     *
     * @param entity Entity being flushed (must implement AuditableEntity if auditable)
     * @param id Entity primary key
@@ -107,7 +107,7 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
     * <p>
     * Called by Hibernate during session flush when new entity is persisted. Passes auditMap and entity state 
     * to AuditInterceptor.onSave for ADD operation recording.
-    * </p>
+    * 
     *
     * @param entity Entity being inserted
     * @param id Generated or assigned entity ID
@@ -127,7 +127,7 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
     * <p>
     * Called by Hibernate during session flush when entity is deleted. Passes auditMap and entity details to 
     * AuditInterceptor.onDelete for DELETE operation recording.
-    * </p>
+    * 
     *
     * @param entity Entity being deleted
     * @param id Entity ID being deleted
@@ -148,11 +148,11 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
     * non-empty (line 96), delegates to AuditInterceptor.beforeTransactionCompletion which converts each 
     * AuditedObjectState to Audit[] via PropertyChangeListener, batches with AuditRepository.saveAll, and flushes 
     * within the active transaction. Errors during audit persistence can affect the surrounding transaction.
-    * </p>
+    * 
     * <p>
     * <b>Implementation Note:</b> Empty auditMap check (line 96) avoids unnecessary delegation. Audit persistence 
     * occurs in same transaction as audited changes - failure rolls back both.
-    * </p>
+    * 
     *
     * @param tx Hibernate Transaction about to commit
     */
@@ -170,7 +170,7 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
     * Uses ApplicationContextProvider static lookup to obtain AuditInterceptor from Spring context. Runtime 
     * resolution necessary because PropertyChangeInterceptor is instantiated by Hibernate outside Spring's bean 
     * lifecycle, preventing constructor injection.
-    * </p>
+    * 
     *
     * @return Singleton AuditInterceptor Spring bean with registered PropertyChangeListener instances
     */

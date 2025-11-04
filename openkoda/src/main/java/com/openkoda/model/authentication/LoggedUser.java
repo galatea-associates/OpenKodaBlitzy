@@ -32,25 +32,25 @@ import com.openkoda.model.common.TimestampedEntity;
  * ({@link ApiKey}), and all OAuth provider integrations ({@link FacebookUser}, {@link GoogleUser},
  * {@link LinkedinUser}, {@link SalesforceUser}), as well as enterprise directory authentication
  * ({@link LDAPUser}).
- * </p>
+
  * <p>
  * <b>Design Pattern:</b> Implements the Template Method pattern, providing shared audit trail
  * functionality through inheritance while requiring concrete subclasses to implement
  * authentication-specific persistence and identification logic.
- * </p>
+
  * <p>
  * <b>Inheritance Structure:</b>
  * <ul>
  * <li>Extends {@link TimestampedEntity} for automatic timestamp management (createdOn, updatedOn)</li>
  * <li>Implements {@link AuditableEntity} for audit logging integration</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>JPA Mapping:</b> This is an abstract entity not mapped to any database table. Concrete
  * subclasses provide their own {@code @Entity} and {@code @Table} annotations for persistence.
  * All subclasses use the @MapsId pattern for one-to-one shared primary key relationships with
  * the User entity.
- * </p>
+
  * <p>
  * <b>AuthenticationMethods Enum:</b> Contains enumeration of all supported authentication
  * mechanisms in the system:
@@ -64,19 +64,19 @@ import com.openkoda.model.common.TimestampedEntity;
  * <li>{@code LDAP} - Enterprise LDAP/Active Directory authentication via LDAPUser entity</li>
  * <li>{@code TOKEN} - Token-based authentication for temporary access grants</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Usage Requirements:</b> Concrete subclasses must implement:
  * <ul>
  * <li>{@code toAuditString()} - Returns concise string representation for audit trail</li>
  * <li>{@code getId()} - Returns entity primary key (typically shared with User.id via @MapsId)</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Thread Safety:</b> This base class does not introduce thread-safety concerns. Individual
  * subclass implementations should document their own thread-safety guarantees, particularly
  * regarding static PasswordEncoder initialization in LoginAndPassword and ApiKey entities.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team

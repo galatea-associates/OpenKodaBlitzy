@@ -43,7 +43,7 @@ import java.util.Map;
  * This service acts as a facade for email composition and WebSocket communication, delegating to {@link EmailService}
  * and {@link WebsocketService} respectively. It provides template resolution, rendering capabilities, and attachment
  * handling with automatic conversion from List&lt;File&gt; to File[] array format.
- * </p>
+
  * <p>
  * Key features:
  * <ul>
@@ -53,10 +53,10 @@ import java.util.Map;
  *   <li>File attachment handling with automatic type conversion</li>
  *   <li>WebSocket message delivery to users and channels</li>
  * </ul>
- * </p>
+
  * <p>
  * Thread-safety: This class is stateless and thread-safe. All operations delegate to injected Spring-managed services.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -105,7 +105,7 @@ public class LiveMessagesServices implements MessagesServices {
      * <p>
      * This method delegates to EmailService for organization-specific email delivery, ensuring proper
      * tenant isolation and organization branding.
-     * </p>
+
      *
      * @param recipient the User entity representing the email recipient
      * @param emailTemplateName the name of the email template to use for rendering
@@ -123,7 +123,7 @@ public class LiveMessagesServices implements MessagesServices {
      * This convenience method looks up the user by ID, extracts their email address, and sends a message
      * using the DEFAULT_EMAIL_TEMPLATE. The message content is placed in the PageModelMap under the
      * "message" attribute for template rendering.
-     * </p>
+
      *
      * @param userId the unique identifier of the user to send email to
      * @param subject the email subject line
@@ -141,7 +141,7 @@ public class LiveMessagesServices implements MessagesServices {
      * <p>
      * This method supports attaching multiple files to the email. The message content is rendered
      * using the DEFAULT_EMAIL_TEMPLATE with the message placed in the model.
-     * </p>
+
      *
      * @param email the recipient email address
      * @param subject the email subject line
@@ -160,7 +160,7 @@ public class LiveMessagesServices implements MessagesServices {
      * <p>
      * This method allows for deferred email delivery by specifying a sendOn timestamp. The email will be
      * queued and delivered at the scheduled time. Uses DEFAULT_EMAIL_TEMPLATE for message rendering.
-     * </p>
+
      *
      * @param email the recipient email address
      * @param subject the email subject line
@@ -182,7 +182,7 @@ public class LiveMessagesServices implements MessagesServices {
      * This method provides full control over template selection and model variables. The resourceName
      * is resolved relative to EMAIL_TEMPLATE_PATH. The messageModel Map is converted to PageModelMap
      * for template rendering.
-     * </p>
+
      *
      * @param email the recipient email address
      * @param subject the email subject line
@@ -204,14 +204,14 @@ public class LiveMessagesServices implements MessagesServices {
      * composition and delivery. The template path is constructed by prepending EMAIL_TEMPLATE_PATH to
      * the resourceName. The messageModel Map is converted to PageModelMap, and the List&lt;File&gt; attachments
      * are converted to File[] array format required by EmailService.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>
      * Map&lt;String, Object&gt; model = Map.of("userName", "John", "orderNumber", "12345");
      * sendEmail("user@example.com", "Order Confirmation", "order-confirmation", model, files, LocalDateTime.now());
      * </pre>
-     * </p>
+
      *
      * @param email the recipient email address
      * @param subject the email subject line
@@ -235,7 +235,7 @@ public class LiveMessagesServices implements MessagesServices {
      * This method delivers a message to a user-specific WebSocket channel, enabling targeted real-time
      * communication with individual connected users. The message is only delivered to the specified user's
      * active WebSocket sessions.
-     * </p>
+
      *
      * @param user the target User entity to receive the WebSocket message
      * @param channelName the name of the user's WebSocket channel to send to
@@ -250,7 +250,7 @@ public class LiveMessagesServices implements MessagesServices {
      * <p>
      * This method sends a message to a broadcast WebSocket channel, delivering the payload to all connected
      * clients subscribed to the specified channel. Useful for system-wide notifications and multi-user updates.
-     * </p>
+
      *
      * @param channelName the name of the broadcast WebSocket channel to send to
      * @param payload the message payload object to be serialized and broadcast to all subscribers

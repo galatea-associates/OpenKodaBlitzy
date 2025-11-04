@@ -28,11 +28,11 @@ package com.openkoda.service.export.dto;
  * It extends {@link ComponentDto} to inherit module identifier and organization scope fields.
  * All fields are String type to provide flexible privilege metadata representation.
  * This DTO maps the {@code DynamicPrivilege} domain entity for component export and import operations.
- * </p>
+ * 
  * <p>
  * Used by privilege export/import pipelines and RBAC configuration systems to transfer
  * privilege definitions between components. Not thread-safe.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

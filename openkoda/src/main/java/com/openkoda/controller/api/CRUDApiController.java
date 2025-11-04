@@ -49,34 +49,34 @@ import java.util.HashMap;
  * It extends {@link ComponentProvider} for service and repository access, implements {@link URLConstants} for
  * routing constants, and implements {@link HasSecurityRules} for privilege enforcement. The controller is
  * parameterized with entity type {@code E} extending {@link SearchableOrganizationRelatedEntity}.
- * </p>
+ * 
  * <p>
  * At construction, a final {@code String key} parameter selects the appropriate {@link CRUDControllerConfiguration}
  * from {@code controllers.apiCrudControllerConfigurationMap}. The injected {@link DefaultComponentProvider} is
  * forwarded to {@link Flow#init} for pipeline initialization. The controller is stateless except for the immutable
  * key field, making it thread-safe.
- * </p>
+ * 
  * <p>
  * All endpoints return JSON via {@code produces=MediaType.APPLICATION_JSON_VALUE}. Security is enforced through
  * privilege checks using {@code hasGlobalOrOrgPrivilege} before each operation. Unauthorized requests return
- * HTTP 401 UNAUTHORIZED status. The {@link com.openkoda.core.repository.common.SecureRepository} enforces
+ * HTTP 401 UNAUTHORIZED status. The {@link com.openkoda.repository.SecureRepository} enforces
  * row-level security during all data access operations.
- * </p>
+ * 
  * <p>
  * Flow Pipeline Pattern: All operations use {@code Flow.init(componentProvider)} for composable request handling.
  * The {@link ReflectionBasedEntityForm} handles entity-to-JSON mapping with privilege-based field filtering.
- * </p>
+ * 
  * <p>
  * Thread-safety: Stateless controller except for immutable key field - thread-safe. Each request creates a new
  * Flow pipeline instance.
- * </p>
+ * 
  *
  * @param <E> Entity type extending {@link SearchableOrganizationRelatedEntity} for CRUD operations
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see CRUDControllerConfiguration
- * @see com.openkoda.controller.common.ApiCRUDControllerConfigurationMap
+ * @see com.openkoda.controller.ApiCRUDControllerConfigurationMap
  * @see ComponentProvider
  * @see HasSecurityRules
  */
@@ -88,7 +88,7 @@ abstract public class CRUDApiController<E extends SearchableOrganizationRelatedE
      * This component provider is passed to {@code Flow.init(componentProvider)} to enable
      * access to services and repositories within Flow pipelines. It provides the foundation
      * for all CRUD operations in this controller.
-     * </p>
+     * 
      *
      * @see Flow#init(ComponentProvider)
      */
@@ -102,7 +102,7 @@ abstract public class CRUDApiController<E extends SearchableOrganizationRelatedE
      * privileges, and other settings for all CRUD operations performed by this controller instance.
      * The key corresponds to an entry in {@code controllers.apiCrudControllerConfigurationMap}, such as
      * "FRONTENDRESOURCE" or "SERVERJS".
-     * </p>
+     * 
      */
     private final String key;
 
@@ -110,10 +110,10 @@ abstract public class CRUDApiController<E extends SearchableOrganizationRelatedE
      * Constructs controller with configuration key for entity-specific CRUD settings.
      * <p>
      * The key parameter stores an immutable reference that resolves to a {@link CRUDControllerConfiguration}
-     * at runtime. This configuration contains the {@link com.openkoda.core.repository.common.SecureRepository},
+     * at runtime. This configuration contains the {@link com.openkoda.repository.SecureRepository},
      * form class, {@link com.openkoda.core.form.FrontendMappingDefinition}, and privilege requirements for
      * all CRUD operations.
-     * </p>
+     * 
      *
      * @param key Configuration key in ApiCRUDControllerConfigurationMap (e.g., "FRONTENDRESOURCE", "SERVERJS")
      */
@@ -124,19 +124,19 @@ abstract public class CRUDApiController<E extends SearchableOrganizationRelatedE
     /**
      * Lists all entities with pagination, sorting, and search filtering.
      * <p>
-     * This endpoint retrieves entities using the configured {@link com.openkoda.core.repository.common.SecureRepository}.
+     * This endpoint retrieves entities using the configured {@link com.openkoda.repository.SecureRepository}.
      * It first checks the GetAllPrivilege from the controller configuration via {@code hasGlobalOrOrgPrivilege}.
      * If the privilege check passes, it executes a Flow pipeline that calls
      * {@code conf.getSecureRepository().search(search, organizationId, additionalSpecification, pageable)},
      * maps results using {@link ReflectionBasedEntityForm#calculateFieldsValuesWithReadPrivilegesAsMap}, and
      * returns a JSON map from {@code genericTableViewMap}.
-     * </p>
+     * 
      * <p>
      * HTTP Mapping: {@code GET /{base-path}/all}
-     * </p>
+     * 
      * <p>
      * Response format: {@code {"data": [{...entity fields...}], "totalElements": 100, "totalPages": 10}}
-     * </p>
+     * 
      *
      * @param organizationId Optional organization ID for tenant-scoped filtering (may be null for global scope)
      * @param aPageable Pagination parameters (page, size, sort) with qualifier "obj"
@@ -169,19 +169,18 @@ abstract public class CRUDApiController<E extends SearchableOrganizationRelatedE
      * and maps the entity to JSON using {@link ReflectionBasedEntityForm#calculateFieldValuesWithReadPrivilegesAsMap}.
      * Field visibility is filtered based on read privileges defined in the {@link com.openkoda.core.form.FrontendMappingDefinition}
      * field definitions.
-     * </p>
+     * 
      * <p>
      * HTTP Mapping: {@code GET /{base-path}/{id}}
-     * </p>
+     * 
      * <p>
      * Response format: {@code {"id": 123, "name": "...", "updatedOn": "2023-12-15T10:30:00"}}
-     * </p>
+     * 
      *
      * @param objectId Entity ID to retrieve
      * @param organizationId Optional organization ID for tenant context (may be null for global scope)
      * @return JSON map with entity fields filtered by read privileges, or {@link ResponseEntity} with HTTP 401 UNAUTHORIZED
      * @throws org.springframework.security.access.AccessDeniedException if user lacks GetSettingsPrivilege
-     * @throws com.openkoda.core.exception.ResourceNotFoundException if entity with given ID is not found
      */
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object settings(
@@ -207,25 +206,25 @@ abstract public class CRUDApiController<E extends SearchableOrganizationRelatedE
      * {@link ReflectionBasedEntityForm}, calls {@code prepareDto(params, entity)} to bind request data,
      * validates via {@code services.validation.validateAndPopulateToEntity}, and saves the entity if valid
      * via {@code saveOne(entity)}. Returns validation status and entity ID on success.
-     * </p>
+     * 
      * <p>
      * HTTP Mapping: {@code POST /{base-path}/{id}/update}
-     * </p>
+     * 
      * <p>
      * Request body example: {@code {"name": "Updated Name", "description": "..."}}
-     * </p>
+     * 
      * <p>
      * Response on success: {@code {"isValid": true, "longEntityId": 123}}
      * <br>
      * Response on validation error: {@code {"isValid": false, "longEntityId": null}}
-     * </p>
+     * 
      *
      * @param objectId Entity ID to update
      * @param organizationId Optional organization ID for tenant context (may be null for global scope)
      * @param params JSON request body as HashMap containing field names and values to update
      * @return JSON map with validation result and entity ID: {@code {"isValid": true/false, "longEntityId": <id>/null}}
      * @throws org.springframework.security.access.AccessDeniedException if user lacks PostSavePrivilege
-     * @throws javax.validation.ValidationException if entity validation fails
+     * @throws jakarta.validation.ValidationException if entity validation fails
      */
     @PostMapping(value="{id}/update", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object save(
@@ -261,24 +260,24 @@ abstract public class CRUDApiController<E extends SearchableOrganizationRelatedE
      * creates a form, binds the request parameters via {@code prepareDto}, validates the entity, and saves it
      * if validation succeeds. Returns validation status and the new entity ID on success, or {@code isValid: false}
      * on validation failure.
-     * </p>
+     * 
      * <p>
      * HTTP Mapping: {@code POST /{base-path}/create}
-     * </p>
+     * 
      * <p>
      * Request body example: {@code {"name": "New Entity", "type": "dashboard"}}
-     * </p>
+     * 
      * <p>
      * Response on success: {@code {"isValid": true, "longEntityId": 456}}
      * <br>
      * Response on validation error: {@code {"isValid": false, "longEntityId": null}}
-     * </p>
+     * 
      *
      * @param organizationId Optional organization ID for new entity tenant assignment (may be null for global scope)
      * @param params JSON request body as HashMap containing field names and values for the new entity
      * @return JSON map with validation result and new entity ID: {@code {"isValid": true/false, "longEntityId": <id>/null}}
      * @throws org.springframework.security.access.AccessDeniedException if user lacks PostNewPrivilege
-     * @throws javax.validation.ValidationException if entity validation fails
+     * @throws jakarta.validation.ValidationException if entity validation fails
      */
     @PostMapping(value="create", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object saveNew(
@@ -311,16 +310,15 @@ abstract public class CRUDApiController<E extends SearchableOrganizationRelatedE
      * This endpoint checks PostRemovePrivilege and calls {@code conf.getSecureRepository().deleteOne(objectId)}
      * via a Flow pipeline. Returns an empty Flow result on success, or HTTP 401 UNAUTHORIZED if the user lacks
      * the required privilege.
-     * </p>
+     * 
      * <p>
      * HTTP Mapping: {@code POST /{base-path}/{id}/remove}
-     * </p>
+     * 
      *
      * @param objectId Entity ID to delete
      * @param organizationId Optional organization ID for tenant context (may be null for global scope)
      * @return Empty Flow result on success, or {@link ResponseEntity} with HTTP 401 UNAUTHORIZED
      * @throws org.springframework.security.access.AccessDeniedException if user lacks PostRemovePrivilege
-     * @throws com.openkoda.core.exception.ResourceNotFoundException if entity with given ID is not found
      */
     @PostMapping(value="{id}/remove", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object remove(

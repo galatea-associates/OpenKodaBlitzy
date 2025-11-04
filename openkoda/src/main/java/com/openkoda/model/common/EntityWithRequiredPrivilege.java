@@ -29,20 +29,20 @@ package com.openkoda.model.common;
  * specify the privileges required to read or write each specific instance. The privilege requirements
  * are typically implemented using JPA {@code @Formula} annotations that compute the required privilege
  * name dynamically based on the entity's properties and the current user context.
- * </p>
+
  * <p>
  * <b>Integration with SecureRepository:</b><br/>
  * The {@link com.openkoda.repository.SecureRepository} evaluates these privileges at query time,
  * adding WHERE clause filters to ensure users can only access entities for which they hold the
  * required privileges. This provides transparent, declarative access control at the repository layer.
- * </p>
+
  * <p>
  * <b>ModelConstants.USER_ID_PLACEHOLDER Token:</b><br/>
  * A special placeholder token {@code ModelConstants.USER_ID_PLACEHOLDER} can be used in native SQL
  * expressions within {@code @Formula} annotations. This token is automatically replaced with the
  * current user's ID at query execution time, enabling per-user privilege logic such as "user can
  * read their own data without additional privileges."
- * </p>
+
  * <p>
  * <b>@Formula Usage Pattern:</b><br/>
  * Computed fields annotated with {@code @Formula} return privilege names or SQL expressions that
@@ -53,14 +53,14 @@ package com.openkoda.model.common;
  * <li>Null for public access: Return NULL when no privilege is required (grants public or self-access)</li>
  * <li>Conditional privilege: Use CASE expressions to require privileges based on entity state or user identity</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Privilege Inheritance and Null Values:</b><br/>
  * When {@code getRequiredReadPrivilege()} or {@code getRequiredWritePrivilege()} returns {@code null},
  * no privilege is required for that operation, effectively granting public access. This is commonly used
  * for user-owned data where users can access their own records without explicit privileges, or for
  * truly public data accessible to all authenticated users.
- * </p>
+
  * <p>
  * <b>Use Cases:</b>
  * <ul>
@@ -73,7 +73,7 @@ package com.openkoda.model.common;
  * <li><b>Hierarchical permissions:</b> Read access may be public/null while write access requires
  * specific management privileges</li>
  * </ul>
- * </p>
+
  * <p>
  * Typical implementation:
  * <pre>{@code
@@ -97,10 +97,10 @@ package com.openkoda.model.common;
  *
  * }
  * }</pre>
- * </p>
+
  *
  * @see com.openkoda.model.common.ModelConstants#USER_ID_PLACEHOLDER
- * @see com.openkoda.core.security.PrivilegeNames
+ * @see com.openkoda.model.PrivilegeNames
  * @see com.openkoda.repository.SecureRepository
  * @see com.openkoda.model.common.OpenkodaEntity
  * @see com.openkoda.model.Privilege
@@ -120,10 +120,10 @@ public interface EntityWithRequiredPrivilege {
      * {@link com.openkoda.repository.SecureRepository} uses this value to filter query
      * results, ensuring users can only retrieve entities for which they hold the required
      * read privilege.
-     * </p>
+
      * <p>
      * <b>Common Implementation Patterns:</b>
-     * </p>
+
      * <ol>
      * <li><b>Constant privilege requirement:</b> Always require a specific privilege
      * <pre>{@code
@@ -152,19 +152,19 @@ public interface EntityWithRequiredPrivilege {
      * the current user's privileges. If this method returns a privilege name, only entities for
      * which the user holds that privilege will be included in query results. If this method returns
      * {@code null}, the entity is accessible to all users (subject to other query constraints).
-     * </p>
+
      * <p>
      * <b>Runtime Evaluation:</b><br/>
      * The {@code @Formula} expression is evaluated in the database at query time, not in Java code.
      * This allows efficient filtering at the database level and supports dynamic privilege logic
      * using SQL expressions such as CASE statements, user ID comparisons, and organization checks.
-     * </p>
+
      *
      * @return privilege name string required for read access (e.g., {@code "canReadUserData"}),
      *         or {@code null} if no privilege is required for read access
      * @see com.openkoda.repository.SecureRepository
      * @see com.openkoda.model.common.ModelConstants#USER_ID_PLACEHOLDER
-     * @see com.openkoda.core.security.PrivilegeNames
+     * @see com.openkoda.model.PrivilegeNames
      */
     String getRequiredReadPrivilege();
 
@@ -177,10 +177,10 @@ public interface EntityWithRequiredPrivilege {
      * {@link com.openkoda.repository.SecureRepository} enforces this privilege before allowing
      * update or delete operations, throwing a security exception if the current user does not
      * hold the required privilege.
-     * </p>
+
      * <p>
      * <b>Common Implementation Patterns:</b>
-     * </p>
+
      * <ol>
      * <li><b>Constant privilege requirement:</b> Always require a specific management privilege
      * for write operations (most common pattern)
@@ -210,25 +210,25 @@ public interface EntityWithRequiredPrivilege {
      * allowing updates or deletes. The {@code SecureRepository} verifies the current user holds
      * the required privilege before executing the write operation. If the privilege check fails,
      * the operation is blocked and a security exception is thrown.
-     * </p>
+
      * <p>
      * <b>Privilege Hierarchy:</b><br/>
      * Write privileges are typically more restrictive than read privileges. A common pattern is to
      * allow public or self-read access (null read privilege) while requiring explicit management
      * privileges for write operations. This implements the principle of least privilege where
      * viewing data is less restricted than modifying it.
-     * </p>
+
      * <p>
      * <b>Runtime Evaluation:</b><br/>
      * The {@code @Formula} expression is evaluated in the database at query time, allowing
      * privilege requirements to be computed dynamically based on entity state, user identity,
      * organization membership, or other database-accessible factors.
-     * </p>
+
      *
      * @return privilege name string required for write access (e.g., {@code "canManageUserData"}),
      *         or {@code null} if no privilege is required for write access
      * @see com.openkoda.repository.SecureRepository
-     * @see com.openkoda.core.security.PrivilegeNames
+     * @see com.openkoda.model.PrivilegeNames
      * @see com.openkoda.model.common.ModelConstants#USER_ID_PLACEHOLDER
      */
     String getRequiredWritePrivilege();

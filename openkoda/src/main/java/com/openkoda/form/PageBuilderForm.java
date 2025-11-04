@@ -43,19 +43,19 @@ import static com.openkoda.model.Privilege.readFrontendResource;
  * It maps page structure and configuration fields including name and content, and extends
  * {@link AbstractOrganizationRelatedEntityForm} to provide organization-aware form lifecycle operations
  * (populateFrom, validate, populateTo).
- * </p>
+
  * <p>
  * The form validates page builder requirements such as name format (matching {@code FRONTENDRESOURCEREGEX}),
  * structure integrity, and required fields. It handles draft vs. published content retrieval and enforces
  * read and manage privilege checks via the {@code pageBuilderForm} mapping definition.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * PageBuilderForm form = new PageBuilderForm(orgId, entity);
  * form.populateFrom(entity).validate(bindingResult);
  * }</pre>
- * </p>
+
  *
  * @param <CD> the data transfer object type extending {@link FrontendResourceDto}
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
@@ -73,7 +73,7 @@ public class PageBuilderForm<CD extends FrontendResourceDto> extends AbstractOrg
      * <p>
      * Defines text fields for name and content with validation requiring name to match
      * {@code FRONTENDRESOURCEREGEX} pattern. Enforces read and manage frontend resource privileges.
-     * </p>
+
      */
     public final static FrontendMappingDefinition pageBuilderForm = createFrontendMappingDefinition(PAGE_BUILDER_FORM, readFrontendResource, manageFrontendResource,
             a -> a  .text(NAME_)                    .validate(v -> v.matches(FRONTENDRESOURCEREGEX) ? null : "not.matching.name")
@@ -87,7 +87,7 @@ public class PageBuilderForm<CD extends FrontendResourceDto> extends AbstractOrg
      * <p>
      * Creates a form with no organization context or entity, using a new {@link FrontendResourceDto}
      * instance and the default {@link #pageBuilderForm} mapping.
-     * </p>
+
      */
     public PageBuilderForm() {
         super(null, (CD)new FrontendResourceDto(), null, pageBuilderForm);
@@ -98,7 +98,7 @@ public class PageBuilderForm<CD extends FrontendResourceDto> extends AbstractOrg
      * <p>
      * Creates a form using the provided mapping definition instead of the default {@link #pageBuilderForm}.
      * Useful for specialized page builder forms with custom field configurations or validation rules.
-     * </p>
+
      *
      * @param frontendMappingDefinition the custom mapping definition for form fields and validation
      */
@@ -111,7 +111,7 @@ public class PageBuilderForm<CD extends FrontendResourceDto> extends AbstractOrg
      * <p>
      * Creates a form with the provided DTO containing form data, but no organization context or entity.
      * Uses the default {@link #pageBuilderForm} mapping definition.
-     * </p>
+
      *
      * @param dto the data transfer object containing form field values
      */
@@ -124,7 +124,7 @@ public class PageBuilderForm<CD extends FrontendResourceDto> extends AbstractOrg
      * <p>
      * Creates a form bound to a specific organization and frontend resource entity, using the default
      * {@link #pageBuilderForm} mapping. The form's DTO will be populated via {@link #populateFrom(FrontendResource)}.
-     * </p>
+
      *
      * @param organizationId the organization ID for tenant-aware operations (nullable)
      * @param entity the frontend resource entity to populate the form from
@@ -138,7 +138,7 @@ public class PageBuilderForm<CD extends FrontendResourceDto> extends AbstractOrg
      * <p>
      * Creates a form bound to a specific organization and frontend resource entity, using the provided
      * custom mapping definition. Useful for specialized page builder forms with modified field configurations.
-     * </p>
+
      *
      * @param organizationId the organization ID for tenant-aware operations (nullable)
      * @param entity the frontend resource entity to populate the form from
@@ -154,7 +154,7 @@ public class PageBuilderForm<CD extends FrontendResourceDto> extends AbstractOrg
      * Creates a form with explicit organization context, pre-populated DTO, entity reference,
      * and custom mapping definition. This constructor provides maximum flexibility for
      * specialized form configurations and is the most explicit form initialization option.
-     * </p>
+
      *
      * @param organizationId the organization ID for tenant-aware operations (nullable)
      * @param dto the data transfer object containing form field values
@@ -172,7 +172,7 @@ public class PageBuilderForm<CD extends FrontendResourceDto> extends AbstractOrg
      * {@link FrontendResource} entity. Retrieves the entity's name and selects either draft content
      * (if entity is in draft state) or published content for display/editing. This method is invoked
      * during form initialization to load existing entity data into the editable form representation.
-     * </p>
+
      *
      * @param entity the frontend resource entity containing page configuration and content
      * @return this form instance for method chaining
@@ -194,7 +194,7 @@ public class PageBuilderForm<CD extends FrontendResourceDto> extends AbstractOrg
      * including name and content (null if blank), and enforces dashboard-specific properties:
      * type (JSON), not included in sitemap, not embeddable, no required privilege, and resource type DASHBOARD.
      * This method is invoked after successful validation to persist form changes to the entity.
-     * </p>
+
      *
      * @param entity the frontend resource entity to update with validated form data
      * @return the updated entity instance
@@ -221,7 +221,7 @@ public class PageBuilderForm<CD extends FrontendResourceDto> extends AbstractOrg
      * is enforced by the mapping definition. Additional custom validation logic can be added here to
      * validate content structure integrity or business rules. Validation errors are recorded in the
      * provided {@link BindingResult} for display to the user.
-     * </p>
+
      *
      * @param br the binding result object to record validation errors
      * @return this form instance for method chaining

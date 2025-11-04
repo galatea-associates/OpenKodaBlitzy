@@ -30,12 +30,12 @@ import java.lang.annotation.RetentionPolicy;
  * This annotation provides human-readable documentation that can be used by IDEs for autocomplete tooltips,
  * inline help, and generated documentation. It is available at runtime via reflection, allowing tools and
  * frameworks to extract documentation metadata programmatically.
- * </p>
+
  * <p>
  * The annotation can be applied to any program element (classes, fields, methods, parameters) as it does not
  * specify an {@code @Target} restriction. It contains a single optional {@link #doc()} element that defaults
  * to an empty string when not specified. Consumers should treat an empty string as "no documentation provided".
- * </p>
+
  * <p>
  * <b>Usage Example:</b>
  * <pre>
@@ -44,7 +44,7 @@ import java.lang.annotation.RetentionPolicy;
  * private String emailAddress;
  * }
  * </pre>
- * </p>
+
  * <p>
  * <b>Reflection Access Pattern:</b>
  * <pre>
@@ -56,12 +56,12 @@ import java.lang.annotation.RetentionPolicy;
  * }
  * }
  * </pre>
- * </p>
+
  * <p>
  * This annotation can be applied to multiple program elements within the same class or method to provide
  * documentation at different levels of granularity. Annotation instances are immutable JVM proxies and are
  * thread-safe by design.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -79,12 +79,12 @@ public @interface Autocomplete {
      * This element provides concise, descriptive text suitable for IDE tooltips, autocomplete suggestions,
      * and generated documentation. When not specified, it defaults to an empty string; consumers should
      * treat an empty string as indicating that no documentation has been provided for the annotated element.
-     * </p>
+
      * <p>
      * The documentation text should be brief and focused, describing the purpose, expected values, or
      * usage guidelines for the annotated element in a way that assists developers during code completion
      * and navigation.
-     * </p>
+
      *
      * @return documentation text, or empty string if not provided
      */

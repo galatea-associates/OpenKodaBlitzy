@@ -40,7 +40,7 @@ import java.util.Collection;
  * Returns ModelAndView for XML views or serializes SitemapIndex as application/xml via @ResponseBody.
  * Uses repositories.unsecure.frontendResource.getEntriesToSitemap() for public page discovery and
  * services.url.getBaseUrl() for absolute URL construction. Conforms to sitemaps.org protocol.
- * </p>
+ * 
  * <p>
  * Request mappings:
  * <ul>
@@ -48,11 +48,10 @@ import java.util.Collection;
  *   <li>GET /sitemap-general.xml - Static pages sitemap</li>
  *   <li>GET /sitemap-pages.xml - Dynamic FrontendResource pages sitemap</li>
  * </ul>
- * </p>
  * <p>
  * SEO notes: Sitemap helps search engines discover pages efficiently. Update frequencies guide
  * crawler priorities. Static pages have higher priority than dynamic content.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -67,11 +66,11 @@ public class SitemapController extends AbstractController {
      * Generates sitemap with static and general pages.
      * <p>
      * HTTP mapping: GET /sitemap-general.xml
-     * </p>
+     * 
      * <p>
      * Creates XML urlset with static pages including home, about, contact, etc. Includes fixed
      * priorities and weekly change frequencies for general site pages.
-     * </p>
+     * 
      * <p>
      * Response format:
      * <pre>{@code
@@ -84,7 +83,7 @@ public class SitemapController extends AbstractController {
      *   </url>
      * </urlset>
      * }</pre>
-     * </p>
+     * 
      *
      * @return ModelAndView rendering XML view with static pages, includes base URL for absolute links
      */
@@ -98,11 +97,11 @@ public class SitemapController extends AbstractController {
      * Generates sitemap index listing all sub-sitemaps.
      * <p>
      * HTTP mapping: GET /sitemap.xml
-     * </p>
+     * 
      * <p>
      * Creates sitemap index referencing /sitemap-general.xml, /sitemap-pages.xml, etc.
      * Conforms to sitemaps.org index format. Content-type: application/xml.
-     * </p>
+     * 
      * <p>
      * Response format:
      * <pre>{@code
@@ -116,7 +115,7 @@ public class SitemapController extends AbstractController {
      *   </sitemap>
      * </sitemapindex>
      * }</pre>
-     * </p>
+     * 
      *
      * @return ModelAndView rendering XML view with sitemapindex root element listing sub-sitemap locations
      */
@@ -130,11 +129,11 @@ public class SitemapController extends AbstractController {
      * Redirects sitemap requests to the sitemap index.
      * <p>
      * HTTP mapping: GET /sitemap.xml (alternative entry point)
-     * </p>
+     * 
      * <p>
      * Provides a redirect from /sitemap.xml to /sitemap.xml for consistent access.
      * Returns a RedirectView that exposes no model attributes for clean redirection.
-     * </p>
+     * 
      *
      * @return RedirectView redirecting to sitemap index endpoint
      */
@@ -152,12 +151,12 @@ public class SitemapController extends AbstractController {
      * Generates sitemap with dynamic FrontendResource pages.
      * <p>
      * HTTP mapping: GET /sitemap-pages.xml
-     * </p>
+     * 
      * <p>
      * Queries repositories.unsecure.frontendResource.getEntriesToSitemap() for public pages,
      * builds absolute URLs via services.url.getBaseUrl() + resource.urlPath, includes lastmod
      * dates, sets priority based on page importance, returns urlset XML.
-     * </p>
+     * 
      * <p>
      * Response format:
      * <pre>{@code
@@ -171,7 +170,7 @@ public class SitemapController extends AbstractController {
      *   </url>
      * </urlset>
      * }</pre>
-     * </p>
+     * 
      *
      * @return SitemapIndex serialized as XML with public FrontendResource URLs, includes modification dates
      */

@@ -36,12 +36,10 @@ import java.util.concurrent.TimeoutException;
  * This wrapper delegates all Future operations to the wrapped instance while maintaining a reference
  * to a Writer that captures log output during task execution. Typically used with {@link LoggingCallable}
  * to enable log retrieval from asynchronous operations executed via {@code ExecutorService}.
- * </p>
  * <p>
  * The log Writer is shared between the task execution context and this wrapper, allowing callers to
  * retrieve accumulated log output via {@link #getLog()} after task completion. When used with
  * {@link CharArrayWriter}, the complete execution log can be extracted as a String.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -51,11 +49,9 @@ import java.util.concurrent.TimeoutException;
  * Result result = wrapper.get();
  * String executionLog = wrapper.getLog();
  * }</pre>
- * </p>
  * <p>
  * Thread-safety: This wrapper is thread-safe for Future operations. However, concurrent access to the
  * underlying Writer should be synchronized by the task execution framework to avoid log corruption.
- * </p>
  *
  * @param <V> the type of the result returned by the wrapped Future's computation
  * @author OpenKoda Team
@@ -150,15 +146,15 @@ public class LoggingFutureWrapper<V> implements Future<V> {
      * When the log Writer is a {@link CharArrayWriter}, this method returns the complete log contents
      * as a String. This is the typical usage pattern with {@link LoggingCallable}, which creates a
      * CharArrayWriter for capturing task output.
-     * </p>
+     * 
      * <p>
      * If the log Writer is not a CharArrayWriter instance, an empty string is returned. This occurs
      * when a different Writer implementation is provided or when no logging was configured.
-     * </p>
+     * 
      * <p>
      * This method should be called after the task completes to retrieve the full execution log.
      * Calling before completion may return a partial log depending on the Writer's buffering behavior.
-     * </p>
+     * 
      *
      * @return the log contents as a String if the Writer is a CharArrayWriter; empty string otherwise
      */

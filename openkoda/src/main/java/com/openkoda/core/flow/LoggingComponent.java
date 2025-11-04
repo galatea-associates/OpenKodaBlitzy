@@ -38,12 +38,10 @@ import java.util.*;
  * This interface simplifies logging in classes by providing out-of-box logging capabilities without requiring
  * manual logger instantiation. Classes implementing this interface automatically gain access to debug, trace,
  * info, warn, and error logging methods with SLF4J placeholder support.
- * </p>
  * <p>
  * The interface maintains an in-memory debug stack that captures timestamped log entries for JMX exposure,
  * enabling real-time diagnostics and troubleshooting via JMX monitoring tools. Debug stack entries are captured
  * for classes registered in the debugLoggers set and for all warn/error level messages.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -54,11 +52,9 @@ import java.util.*;
  *     }
  * }
  * }</pre>
- * </p>
  * <p>
  * <b>Thread Safety Warning:</b> Static collections (loggers, availableLoggers, debugLoggers) are not synchronized.
  * Concurrent modification during logger registration may cause race conditions in multi-threaded environments.
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @see LoggingEntriesStack
@@ -72,7 +68,7 @@ public interface LoggingComponent {
     * <p>
     * <b>Thread Safety:</b> This map is not synchronized. Concurrent access during logger creation
     * may result in race conditions. Consider using concurrent collections if thread-safety is required.
-    * </p>
+    * 
     */
    static final Map<Class, Logger> loggers = new HashMap<Class, Logger>();
    
@@ -81,7 +77,7 @@ public interface LoggingComponent {
     * <p>
     * Used for runtime introspection of active loggers in the application.
     * <b>Thread Safety:</b> This list is not synchronized.
-    * </p>
+    * 
     */
    static final List<Class> availableLoggers = new ArrayList<>();
    
@@ -91,7 +87,7 @@ public interface LoggingComponent {
     * Classes in this set have their debug() and trace() calls captured to the in-memory debug stack
     * for JMX exposure. Use this for targeted diagnostic logging without full application debug mode.
     * <b>Thread Safety:</b> This set is not synchronized.
-    * </p>
+    * 
     */
    static final Set<Class> debugLoggers = new HashSet<>();
    
@@ -100,7 +96,7 @@ public interface LoggingComponent {
     * <p>
     * All messages logged to the debug stack are also sent to this logger for persistence and
     * external log aggregation systems.
-    * </p>
+    * 
     */
    static final Logger debugLogger = LoggerFactory.getLogger( "jmxDebug" );
 
@@ -109,7 +105,7 @@ public interface LoggingComponent {
     * <p>
     * Maintains up to 500 most recent log entries with timestamps for real-time diagnostics.
     * Entries are captured from warn/error level logs and from classes registered in debugLoggers.
-    * </p>
+    * 
     *
     * @see LoggingEntriesStack
     */
@@ -120,10 +116,10 @@ public interface LoggingComponent {
     * <p>
     * This method provides lazy logger instantiation and caching. Loggers are keyed by the implementing
     * class type to ensure each class gets its own logger instance with appropriate naming.
-    * </p>
+    * 
     * <p>
     * Can be overridden to provide a pre-created logger or custom logger configuration.
-    * </p>
+    * 
     *
     * @param createIfNotExists if {@code true}, creates and caches a new logger if one doesn't exist;
     *                          if {@code false}, returns {@code null} when logger not found in cache
@@ -145,7 +141,7 @@ public interface LoggingComponent {
     * <p>
     * Convenience method that calls {@link #getLogger(boolean)} with {@code true}.
     * The logger is automatically created on first access and cached for subsequent calls.
-    * </p>
+    * 
     *
     * @return SLF4J logger instance for the implementing class, never {@code null}
     */
@@ -158,7 +154,7 @@ public interface LoggingComponent {
     * <p>
     * If the implementing class is registered in debugLoggers, the message is also captured
     * to the in-memory debug stack for JMX exposure and diagnostics.
-    * </p>
+    * 
     *
     * @param format format string with SLF4J placeholders ({}), example: "User id: {}"
     * @param arguments values to substitute into placeholders in the format string
@@ -178,7 +174,7 @@ public interface LoggingComponent {
     * <p>
     * Uses SLF4J's MessageFormatter to safely substitute {} placeholders with argument values.
     * This method handles null arguments and prevents placeholder mismatch exceptions.
-    * </p>
+    * 
     *
     * @param format format string with SLF4J placeholders ({})
     * @param arguments values to substitute into placeholders
@@ -195,11 +191,11 @@ public interface LoggingComponent {
     * This method captures log entries for JMX exposure, enabling real-time diagnostics without
     * accessing log files. The message is formatted with SLF4J placeholders, and if a throwable
     * is provided, its stack trace is appended to the debug entry.
-    * </p>
+    * 
     * <p>
     * Entries are stored in a circular buffer (debugStack) limited to 500 most recent entries.
     * All entries are also logged to the "jmxDebug" logger for persistence.
-    * </p>
+    * 
     *
     * @param t optional throwable whose stack trace will be appended to the message, or {@code null}
     * @param message format string with SLF4J placeholders ({})
@@ -233,7 +229,7 @@ public interface LoggingComponent {
     * <p>
     * If the implementing class is registered in debugLoggers, the message is also captured
     * to the in-memory debug stack for JMX exposure and diagnostics.
-    * </p>
+    * 
     *
     * @param format format string with SLF4J placeholders ({}), example: "Entering method with param: {}"
     * @param arguments values to substitute into placeholders in the format string
@@ -253,7 +249,7 @@ public interface LoggingComponent {
     * <p>
     * Classes in the debugLoggers set have their debug() and trace() calls captured
     * to the in-memory debug stack for JMX diagnostics.
-    * </p>
+    * 
     *
     * @return {@code true} if this class is registered in debugLoggers, {@code false} otherwise
     * @see #debugLoggers
@@ -266,7 +262,7 @@ public interface LoggingComponent {
     * Logs an info-level message with SLF4J placeholder support.
     * <p>
     * Info-level messages are not captured to the debug stack.
-    * </p>
+    * 
     *
     * @param format format string with SLF4J placeholders ({}), example: "User id: {}"
     * @param arguments values to substitute into placeholders in the format string
@@ -280,7 +276,7 @@ public interface LoggingComponent {
     * <p>
     * Warning messages are automatically captured to the in-memory debug stack for JMX exposure,
     * regardless of whether the implementing class is in debugLoggers.
-    * </p>
+    * 
     *
     * @param format format string with SLF4J placeholders ({}), example: "Invalid configuration: {}"
     * @param arguments values to substitute into placeholders in the format string
@@ -295,7 +291,7 @@ public interface LoggingComponent {
     * Logs a warning-level message with exception stack trace.
     * <p>
     * The message and exception stack trace are captured to the in-memory debug stack for JMX exposure.
-    * </p>
+    * 
     *
     * @param message warning message to log
     * @param throwable exception providing stack trace context for the warning
@@ -311,7 +307,7 @@ public interface LoggingComponent {
     * <p>
     * Error messages are automatically captured to the in-memory debug stack for JMX exposure,
     * regardless of whether the implementing class is in debugLoggers.
-    * </p>
+    * 
     *
     * @param format format string with SLF4J placeholders ({}), example: "Failed to process: {}"
     * @param arguments values to substitute into placeholders in the format string
@@ -328,7 +324,7 @@ public interface LoggingComponent {
     * <p>
     * Logs both the formatted message and the exception cause separately, then captures
     * the message and full exception stack trace to the in-memory debug stack for JMX exposure.
-    * </p>
+    * 
     *
     * @param throwable exception providing stack trace and error context
     * @param format format string with SLF4J placeholders ({}), example: "Database error for user: {}"
@@ -345,7 +341,7 @@ public interface LoggingComponent {
     * Logs an error-level message with exception stack trace.
     * <p>
     * The message and exception stack trace are captured to the in-memory debug stack for JMX exposure.
-    * </p>
+    * 
     *
     * @param message error message to log
     * @param throwable exception providing stack trace and error context
@@ -362,7 +358,7 @@ public interface LoggingComponent {
     * The debug stack captures up to 500 most recent entries from warn/error level logs and
     * from classes registered in debugLoggers. Entries are keyed by timestamp with formatted
     * messages including class names.
-    * </p>
+    * 
     *
     * @return map of timestamps to log message strings from the debug stack
     * @see LoggingEntriesStack
@@ -376,7 +372,7 @@ public interface LoggingComponent {
     * Asserts that the provided object is not null using Spring's Assert utility.
     * <p>
     * Convenience method for inline null-checking in method implementations.
-    * </p>
+    * 
     *
     * @param o object to check for null
     * @throws IllegalArgumentException if the object is null
@@ -389,7 +385,7 @@ public interface LoggingComponent {
     * Asserts that the provided boolean condition is true using Spring's Assert utility.
     * <p>
     * Convenience method for inline condition validation in method implementations.
-    * </p>
+    * 
     *
     * @param b boolean condition to validate
     * @throws IllegalArgumentException if the condition is false
@@ -403,10 +399,10 @@ public interface LoggingComponent {
     * <p>
     * Used for runtime introspection of active loggers in the application. Classes are added
     * to this list when their logger is first created via {@link #getLogger(boolean)}.
-    * </p>
+    * 
     * <p>
     * <b>Thread Safety:</b> This list is not synchronized.
-    * </p>
+    * 
     *
     * @return list of classes with instantiated loggers
     * @see #availableLoggers
@@ -421,10 +417,10 @@ public interface LoggingComponent {
     * Classes in this set have their debug() and trace() calls captured to the in-memory
     * debug stack for JMX exposure. Add classes to this set to enable targeted diagnostic
     * logging without full application debug mode.
-    * </p>
+    * 
     * <p>
     * <b>Thread Safety:</b> This set is not synchronized.
-    * </p>
+    * 
     *
     * @return set of classes with debug stack capture enabled
     * @see #debugLoggers

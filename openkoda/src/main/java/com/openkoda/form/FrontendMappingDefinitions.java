@@ -46,7 +46,7 @@ import static com.openkoda.model.Privilege.*;
  * class-load time and reused across requests, providing pre-built definitions for user, role, 
  * privilege, organization, file, scheduler, email config, event listener, frontend resource, 
  * page builder, and other forms.
- * </p>
+
  * <p>
  * <strong>DSL-Style Construction Pattern:</strong><br>
  * FrontendMappingDefinition instances are constructed using {@code createFrontendMappingDefinition}
@@ -59,35 +59,35 @@ import static com.openkoda.model.Privilege.*;
  *       {@code multiselect()}, {@code textarea()}, {@code date()}, {@code dropdown()}, {@code organizationSelect()}, 
  *       {@code colorPicker()}, {@code image()}, {@code number()}, etc.</li>
  * </ul>
- * </p>
+
  * <p>
  * <strong>Privilege-Based Access Control:</strong><br>
  * Each mapping declares read/write privilege predicates using {@link PrivilegeBase} instances from 
  * {@link com.openkoda.model.Privilege}. Additional field-level privileges can be specified via 
  * {@code additionalPrivileges()} for fine-grained control.
- * </p>
+
  * <p>
  * <strong>Value Suppliers:</strong><br>
  * Fields can specify {@code valueSupplier} functions for dynamic field population from entity state. 
  * Example: {@code .valueSupplier(f -> ((Entity)f.entity).getComputedValue())}
- * </p>
+
  * <p>
  * <strong>Custom Validators:</strong><br>
  * Per-field validators using {@code validate()} lambda provide business rule enforcement.
  * Example: {@code .text(NAME_).validate(v -> v.matches(REGEX) ? null : "error.code")}
- * </p>
+
  * <p>
  * <strong>Thread-Safety and Initialization:</strong><br>
  * All {@link FrontendMappingDefinition} constants are initialized at class-load time and are 
  * effectively immutable after initialization. They are safe to reference from multiple threads 
  * and form instances.
- * </p>
+
  * <p>
  * <strong>Usage by Form Classes:</strong><br>
  * Form classes extending {@link com.openkoda.core.form.AbstractForm} or 
  * {@link com.openkoda.core.form.AbstractEntityForm} reference these pre-built definitions in their 
  * constructors. Example: {@code new UserForm(entity, FrontendMappingDefinitions.userForm)}
- * </p>
+
  *
  * @see FrontendMappingDefinition
  * @see com.openkoda.core.form.AbstractForm
@@ -185,7 +185,7 @@ public interface FrontendMappingDefinitions extends HasSecurityRules, TemplateFo
      *   <li>{@code PRIVILEGES_} - Grouped checkbox list for privilege set assignment with compact CSS</li>
      * </ul>
      * Access controlled by {@code canReadBackend} and {@code canManageBackend} privileges.
-     * </p>
+
      * 
      * @see RoleForm
      * @see com.openkoda.model.Role
@@ -210,7 +210,7 @@ public interface FrontendMappingDefinitions extends HasSecurityRules, TemplateFo
      * </ul>
      * ID field visibility controlled by conditional logic: visible only when entity ID exists.
      * Access controlled by {@code canReadBackend} and {@code canManageBackend} privileges.
-     * </p>
+
      * 
      * @see PrivilegeForm
      * @see com.openkoda.model.Privilege
@@ -240,7 +240,7 @@ public interface FrontendMappingDefinitions extends HasSecurityRules, TemplateFo
      * </ul>
      * No default read/write privileges specified (null), relying on field-level additional privileges 
      * for access control.
-     * </p>
+
      * 
      * @see BasicUserForm
      * @see EditUserForm
@@ -273,15 +273,15 @@ public interface FrontendMappingDefinitions extends HasSecurityRules, TemplateFo
      * and event data specification. Fields include:
      * <ul>
      *   <li>{@code ORGANIZATION_ID_} - Organization selection dropdown for tenant-scoped scheduling</li>
-     *   <li>{@code CRON_EXPRESSION_} - Text field for cron expression (validated via {@link org.springframework.scheduling.support.CronSequenceGenerator})</li>
+     *   <li>{@code CRON_EXPRESSION_} - Text field for cron expression (validated via {@link org.springframework.scheduling.support.CronExpression})</li>
      *   <li>{@code EVENT_DATA_} - Text field for event data payload (JSON or string)</li>
      *   <li>{@code ON_MASTER_ONLY_} - Checkbox to restrict execution to master node in clustered deployments</li>
      * </ul>
      * Access controlled by {@code canReadBackend} and {@code canManageBackend} privileges.
-     * </p>
+
      * 
      * @see SchedulerForm
-     * @see com.openkoda.model.Scheduler
+     * @see com.openkoda.model.component.Scheduler
      */
     FrontendMappingDefinition schedulerForm = createFrontendMappingDefinition(SCHEDULER_FORM, canReadBackend, canManageBackend,
             a -> a  .organizationSelect(ORGANIZATION_ID_)
@@ -306,7 +306,7 @@ public interface FrontendMappingDefinitions extends HasSecurityRules, TemplateFo
      * </ul>
      * Datasource selection field dynamically enabled based on {@link MultitenancyService#isMultitenancy()} 
      * and global settings privilege. Access controlled by {@code readOrgData} and {@code manageOrgData} privileges.
-     * </p>
+
      * 
      * @see OrganizationForm
      * @see com.openkoda.model.Organization
@@ -347,7 +347,7 @@ public interface FrontendMappingDefinitions extends HasSecurityRules, TemplateFo
      * Form validation enforces either SMTP configuration (host + username + password + from) or 
      * Mailgun configuration (mailgunApiKey). Access controlled by {@code canReadBackend} and 
      * {@code canManageBackend} privileges.
-     * </p>
+
      * 
      * @see EmailConfigForm
      * @see com.openkoda.model.EmailConfig
@@ -387,10 +387,10 @@ public interface FrontendMappingDefinitions extends HasSecurityRules, TemplateFo
      * Form performs reflection-based type checking using {@link Class#forName(String)} to validate 
      * consumer/event compatibility and parameter count matching. Access controlled by {@code canReadBackend} 
      * and {@code canManageBackend} privileges.
-     * </p>
+
      * 
      * @see EventListenerForm
-     * @see com.openkoda.model.EventListener
+     * @see com.openkoda.model.component.event.EventListenerEntry
      * @see EventConsumerCategory
      */
     FrontendMappingDefinition eventListenerForm = createFrontendMappingDefinition(EVENT_LISTENER_FORM, canReadBackend, canManageBackend,
@@ -424,7 +424,7 @@ public interface FrontendMappingDefinitions extends HasSecurityRules, TemplateFo
      * Draft content field uses value supplier to extract content or draft content from entity based on draft status.
      * Form-level validation enforces type/name extension compatibility (CSS files must end with .css, JS files with .js).
      * Access controlled by {@code readFrontendResource} and {@code manageFrontendResource} privileges.
-     * </p>
+
      * 
      * @see FrontendResourceForm
      * @see FrontendResource

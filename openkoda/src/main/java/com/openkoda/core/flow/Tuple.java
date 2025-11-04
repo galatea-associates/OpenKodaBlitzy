@@ -34,18 +34,15 @@ import java.util.HashSet;
  * This class provides a simple way to store and access multiple values without creating custom data structures.
  * Values are stored in an Object array and accessed through positional accessor methods (v0-v7 or getV0-getV7).
  * The class also provides interoperability with Reactor's strongly-typed Tuple classes (Tuple2 through Tuple8).
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
  * Tuple tuple = new Tuple("user", 123, true);
  * String name = tuple.v(String.class, 0);  // "user"
  * }</pre>
- * </p>
  * <p>
  * This class is not generic and does not use type parameters. Accessor methods return Object or use unchecked casts.
  * This class is not synchronized. If multiple threads access a Tuple instance concurrently, external synchronization is required.
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @since 2016-09-25
@@ -57,7 +54,7 @@ public class Tuple {
      * <p>
      * This array is publicly accessible but declared final to prevent reassignment.
      * Elements can be accessed directly or through accessor methods.
-     * </p>
+     * 
      */
     public final Object[] list;
 
@@ -66,7 +63,7 @@ public class Tuple {
      * <p>
      * This constructor accepts a pre-existing array and uses it directly as internal storage.
      * The array is not copied, so modifications to the original array affect the tuple.
-     * </p>
+     * 
      *
      * @param args the array of objects to store in this tuple
      */
@@ -164,7 +161,7 @@ public class Tuple {
      * This method performs an unchecked cast to the requested type. No runtime type checking is performed.
      * If the element at the specified index is not compatible with the requested type, a ClassCastException
      * will be thrown when the returned value is used.
-     * </p>
+     * 
      *
      * @param <T> the type to cast the element to
      * @param c the class object representing the desired type (used for type inference)
@@ -468,11 +465,11 @@ public class Tuple {
      * collected into a separate collection (List or Set) based on the corresponding Collector specification.
      * The result is a new Tuple where each element is a collection containing all values from that position
      * across all input tuples.
-     * </p>
+     * 
      * <p>
      * Example: Given tuples [(a,1), (b,2), (c,3)] with collectors [SET, LIST], the result is
      * a Tuple containing [{a,b,c}, [1,2,3]].
-     * </p>
+     * 
      *
      * @param tuples the collection of tuples to aggregate
      * @param collectors varargs array of Collector enums specifying the collection type for each position
@@ -503,7 +500,7 @@ public class Tuple {
      * <p>
      * Specifies whether elements at a given position should be collected into a List (preserving order
      * and allowing duplicates) or a Set (removing duplicates).
-     * </p>
+     * 
      */
     public static enum Collector {
         /**

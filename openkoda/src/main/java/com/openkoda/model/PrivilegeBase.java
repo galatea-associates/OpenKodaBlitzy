@@ -34,19 +34,19 @@ import static com.openkoda.core.security.HasSecurityRules.BB_OPEN;
  * entities (runtime-defined custom privileges). Enables polymorphic privilege handling in authorization checks, 
  * role assignments, and permission evaluations. Provides default implementations for database value calculation 
  * (name wrapped in brackets), privilege naming conventions, and name validation via {@code checkName()} method.
- * </p>
+
  * <p>
  * This interface uses the Strategy pattern for privilege abstraction. Both static {@link Privilege} enum entries 
  * and dynamic {@link DynamicPrivilege} entity instances implement this interface, allowing the security system 
  * to handle all privilege types uniformly without runtime type checking.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * PrivilegeBase privilege = Privilege.canReadOrgData;
  * String dbValue = privilege.getDatabaseValue(); // Returns "[canReadOrgData]"
  * </pre>
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
@@ -65,7 +65,7 @@ public interface PrivilegeBase extends LongIdEntity {
      * to present a user-friendly description of the privilege. For {@link Privilege} enums, 
      * this is a predefined localization-ready label. For {@link DynamicPrivilege} entities, 
      * this is typically stored in the database.
-     * </p>
+
      *
      * @return display label suitable for end-user presentation, never {@code null}
      */
@@ -77,7 +77,7 @@ public interface PrivilegeBase extends LongIdEntity {
      * Privileges are organized into groups for administrative purposes, UI organization, 
      * and privilege management workflows. Common groups include data access, entity management, 
      * system administration, and integration privileges.
-     * </p>
+
      *
      * @return privilege group for categorization, never {@code null}
      * @see PrivilegeGroup
@@ -89,7 +89,7 @@ public interface PrivilegeBase extends LongIdEntity {
      * <p>
      * Provides additional categorization beyond group-level organization. Used for fine-grained 
      * privilege filtering and organizational hierarchy in complex permission models.
-     * </p>
+
      *
      * @return category string for classification, may be {@code null} for uncategorized privileges
      */
@@ -102,7 +102,7 @@ public interface PrivilegeBase extends LongIdEntity {
      * For {@link Privilege} enums, this returns the enum constant name. For {@link DynamicPrivilege} 
      * entities, this returns the stored name field. The name must follow naming conventions validated 
      * by {@link #checkName(String)}.
-     * </p>
+
      *
      * @return privilege name/code, never {@code null}
      */
@@ -114,7 +114,7 @@ public interface PrivilegeBase extends LongIdEntity {
      * Hidden privileges are used internally by the system and should not be directly assignable 
      * by administrators in typical privilege management interfaces. Default implementation returns 
      * {@code false}, making privileges visible by default.
-     * </p>
+
      *
      * @return {@code true} if privilege should be hidden from standard UI, {@code false} otherwise
      */
@@ -126,7 +126,7 @@ public interface PrivilegeBase extends LongIdEntity {
      * Enables privilege range partitioning and ID namespace management. Default implementation 
      * returns 0, but can be overridden to support multiple privilege ID ranges for different 
      * privilege types or organizational scopes.
-     * </p>
+
      *
      * @return ID offset multiplier, default 0
      */
@@ -139,11 +139,11 @@ public interface PrivilegeBase extends LongIdEntity {
      * (e.g., "[canReadOrgData]") using {@code BB_OPEN} and {@code BB_CLOSE} constants 
      * from {@code HasSecurityRules}. This format is used for privilege storage in role 
      * privilege strings and permission evaluation queries.
-     * </p>
+
      * <p>
      * Implementations may override this to provide alternative serialization formats 
      * or to incorporate the {@link #idOffset()} in the value calculation.
-     * </p>
+
      *
      * @return database storage value with bracket delimiters, never {@code null}
      * @see com.openkoda.core.security.HasSecurityRules
@@ -160,7 +160,7 @@ public interface PrivilegeBase extends LongIdEntity {
      * configuration drift and ensures privilege definitions remain consistent with their 
      * declared names. Typically used during system initialization to validate enum privilege 
      * definitions.
-     * </p>
+
      *
      * @param nameCheck expected privilege name to validate against
      * @throws IllegalArgumentException if {@code nameCheck} does not match {@link #name()}
@@ -176,7 +176,7 @@ public interface PrivilegeBase extends LongIdEntity {
      * {@link DynamicPrivilege} instances may override this to return {@code true}, allowing 
      * administrative deletion. Default implementation returns {@code false}, protecting 
      * privileges from accidental removal.
-     * </p>
+
      *
      * @return {@code true} if privilege can be deleted, {@code false} for protected privileges
      */
@@ -192,7 +192,7 @@ public interface PrivilegeBase extends LongIdEntity {
      * {@link DynamicPrivilege} entities, this returns the database-generated ID. Default 
      * implementation returns {@code 0L} as a placeholder, but all concrete implementations 
      * must provide meaningful IDs.
-     * </p>
+
      *
      * @return unique privilege identifier, {@code 0L} in default implementation
      */

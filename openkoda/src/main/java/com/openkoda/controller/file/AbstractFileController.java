@@ -44,15 +44,15 @@ import org.springframework.validation.BindingResult;
  * file storage strategies (filesystem, S3, database). Uses {@code services.file} for storage abstraction. 
  * Extends {@link AbstractController} for Flow-based orchestration and implements {@link HasSecurityRules} 
  * for security rule discovery.
- * </p>
+ * 
  * <p>
  * Design Pattern: Separation of permission-aware reads ({@code secureFileRepository}) from 
  * unconstrained writes ({@code unsecureFileRepository}). Flow-scoped {@link PageModelMap} 
  * avoids per-request mutable fields.
- * </p>
+ * 
  * <p>
  * Usage: Subclass this controller to create concrete file management endpoints (HTML, REST, etc.).
- * </p>
+ * 
  * <p>
  * Example:
  * <pre>{@code
@@ -60,12 +60,11 @@ import org.springframework.validation.BindingResult;
  *     // Implement specific HTTP endpoints
  * }
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see com.openkoda.service.file.FileService
+ * @see com.openkoda.core.service.FileService
  * @see com.openkoda.repository.file.FileRepository
  * @see com.openkoda.repository.file.SecureFileRepository
  * @see com.openkoda.form.FileForm
@@ -79,7 +78,7 @@ public class AbstractFileController extends AbstractController implements HasSec
      * Used for secure file retrieval operations where permission checks are required.
      * Read operations through this repository enforce privilege validation before
      * returning file entities.
-     * </p>
+     * 
      */
     @Inject
     SecureFileRepository secureFileRepository;
@@ -89,7 +88,7 @@ public class AbstractFileController extends AbstractController implements HasSec
      * <p>
      * Used for file persistence operations after validation and privilege checks have been
      * performed. Write operations use this repository to avoid redundant permission validation.
-     * </p>
+     * 
      */
     @Inject
     FileRepository unsecureFileRepository;
@@ -99,7 +98,7 @@ public class AbstractFileController extends AbstractController implements HasSec
      * <p>
      * Used to store and retrieve File entities within Flow execution context,
      * enabling type-safe access in controller methods.
-     * </p>
+     * 
      */
     static PageAttr<File> fileEntity = new PageAttr<>("fileEntity");
     
@@ -108,7 +107,7 @@ public class AbstractFileController extends AbstractController implements HasSec
      * <p>
      * Stores form data during Flow execution to enable validation and entity population
      * operations.
-     * </p>
+     * 
      */
     static PageAttr<FileForm> fileForm = new PageAttr<>("fileForm");
     
@@ -117,7 +116,7 @@ public class AbstractFileController extends AbstractController implements HasSec
      * <p>
      * Used to store paginated file listings for display in views, enabling
      * type-safe access to search results.
-     * </p>
+     * 
      */
     static PageAttr<Page<File>> filePage = new PageAttr<>("filePage");
 
@@ -125,7 +124,7 @@ public class AbstractFileController extends AbstractController implements HasSec
      * Canonical URL path segment 'file' for routing and link generation.
      * <p>
      * Used consistently across controllers for building file-related URLs.
-     * </p>
+     * 
      */
     public final static String fileUrl = "file";
 
@@ -136,13 +135,13 @@ public class AbstractFileController extends AbstractController implements HasSec
      * stores {@link Page}<{@link File}> in Flow context under {@code filePage} attribute.
      * All search operations respect organization-scoped access control and apply
      * privilege validation before returning results.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * PageModelMap result = searchFile(orgId, "invoice", null, pageable);
      * }</pre>
-     * </p>
+     * 
      *
      * @param organizationId Organization scope for multi-tenant filtering (null for global search)
      * @param aSearchTerm Search term applied to filename field (empty string for no filtering)
@@ -167,13 +166,13 @@ public class AbstractFileController extends AbstractController implements HasSec
      * Security: Enforces read privilege via {@code secureFileRepository.findOne()}.
      * Returns {@link PageModelMap} with {@code fileEntity} and {@code fileForm} attributes
      * populated for form rendering or modification.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * PageModelMap result = findFile(orgId, 123L);
      * }</pre>
-     * </p>
+     * 
      *
      * @param organizationId Organization context for form initialization
      * @param fileId File entity ID to retrieve
@@ -193,17 +192,17 @@ public class AbstractFileController extends AbstractController implements HasSec
      * <p>
      * Flow: Retrieves entity via {@code secureFileRepository}, validates form, populates entity,
      * persists via {@code unsecureFileRepository}.
-     * </p>
+     * 
      * <p>
      * Implementation note: Uses {@code unsecureFileRepository.save()} after privilege check
      * to avoid double-validation.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * PageModelMap result = updateFile(orgId, 123L, form, bindingResult);
      * }</pre>
-     * </p>
+     * 
      *
      * @param organizationId Organization context (currently unused in implementation)
      * @param fileId File entity ID to update
@@ -225,13 +224,13 @@ public class AbstractFileController extends AbstractController implements HasSec
      * <p>
      * Flow: Creates new {@link File}(organizationId), validates/populates from form,
      * persists, resets form for next upload.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * PageModelMap result = createFile(orgId, form, bindingResult);
      * }</pre>
-     * </p>
+     * 
      *
      * @param organizationId Organization ID for new file association
      * @param formData {@link FileForm} with file metadata
@@ -253,16 +252,16 @@ public class AbstractFileController extends AbstractController implements HasSec
      * Transaction: Wrapped in {@code Flow.init(transactional)} for atomic execution.
      * Flow: First removes external file references via {@code removeFileReference()},
      * then deletes entity record via {@code removeFile()}.
-     * </p>
+     * 
      * <p>
      * Security: Caller must enforce privilege checks before invoking this method.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * PageModelMap result = removeFile(123L);
      * }</pre>
-     * </p>
+     * 
      *
      * @param fileId File entity ID to remove
      * @return PageModelMap with operation result
@@ -280,16 +279,16 @@ public class AbstractFileController extends AbstractController implements HasSec
      * <p>
      * Purpose: Extension point for subclasses to inject custom update logic within
      * transaction boundary.
-     * </p>
+     * 
      * <p>
      * Usage: Override and call {@code super.updateFile().then(a -> customLogic)}.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * return super.updateFile().then(a -> customProcessing());
      * }</pre>
-     * </p>
+     * 
      *
      * @return PageModelMap with empty Flow context
      */
@@ -304,17 +303,17 @@ public class AbstractFileController extends AbstractController implements HasSec
      * Transaction: Wrapped in {@code Flow.init(transactional)} for atomic execution.
      * Flow: Loads file via {@code secureFileRepository}, invokes {@code services.file.scaleImage()},
      * persists updated entity.
-     * </p>
+     * 
      * <p>
      * Implementation: Uses {@code repositories.unsecure.file.saveAndFlush()} to ensure
      * immediate persistence of rescaled image.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * PageModelMap result = rescaleFile(123L, 800);
      * }</pre>
-     * </p>
+     * 
      *
      * @param fileId Image file entity ID
      * @param width Target width in pixels (height computed to preserve aspect ratio)

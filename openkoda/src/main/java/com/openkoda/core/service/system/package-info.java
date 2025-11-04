@@ -27,9 +27,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * health endpoints, form import workflows, and runtime diagnostics throughout the application.
  * These services provide essential infrastructure capabilities used by controllers, startup 
  * checks, and operational monitoring systems.
- * </p>
+ * 
  *
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  * <ul>
  *   <li><b>DatabaseValidationService</b> - Performs schema reconciliation by comparing 
  *       FrontendMapping metadata definitions against actual JDBC database schema. Used during 
@@ -43,11 +43,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       checking user access rights and computing privilege tokens based on organizational context.</li>
  * </ul>
  *
- * <h2>Package Purpose</h2>
+ * <b>Package Purpose</b>
  * <p>
  * The system service subpackage delivers foundational infrastructure capabilities that are used 
  * across the entire OpenKoda platform. These services handle system-level concerns such as:
- * </p>
+ * 
  * <ul>
  *   <li>Database schema validation and consistency checking for dynamic entities</li>
  *   <li>Application health monitoring and status reporting for operational visibility</li>
@@ -56,11 +56,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Runtime diagnostics and system information gathering for troubleshooting</li>
  * </ul>
  *
- * <h2>Integration Patterns</h2>
+ * <b>Integration Patterns</b>
  * <p>
  * Services in this package follow consistent integration patterns throughout the OpenKoda 
  * architecture:
- * </p>
+ * 
  * <ul>
  *   <li><b>ComponentProvider Extension</b> - Services extend ComponentProvider to gain access 
  *       to common infrastructure components and repositories via dependency injection.</li>
@@ -72,10 +72,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       singleton scope for application-wide access via the Services aggregator.</li>
  * </ul>
  *
- * <h2>Usage Contexts</h2>
+ * <b>Usage Contexts</b>
  * <p>
  * System services are consumed throughout the OpenKoda platform in various operational contexts:
- * </p>
+ * 
  * <ul>
  *   <li><b>Health Endpoints</b> - ApplicationStatusController invokes SystemHealthStatusService 
  *       for GET /ping responses with JVM and database health metrics.</li>
@@ -89,11 +89,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       system resources during application initialization.</li>
  * </ul>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <p>
  * The system service implementation follows established design patterns for reliability and 
  * maintainability:
- * </p>
+ * 
  * <ul>
  *   <li><b>Stateless Services</b> - All services are stateless and safe for concurrent access 
  *       from multiple threads without synchronization.</li>
@@ -107,14 +107,14 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       transaction boundaries for consistent schema introspection.</li>
  * </ul>
  *
- * <h2>Thread Safety</h2>
+ * <b>Thread Safety</b>
  * <p>
  * All services in this package are designed for safe concurrent access. Services maintain no 
  * mutable state and rely only on injected dependencies that are themselves thread-safe. 
  * Database operations use connection pooling with proper isolation guarantees.
- * </p>
+ * 
  *
- * <h2>Dependencies</h2>
+ * <b>Dependencies</b>
  * <ul>
  *   <li>Spring Framework - Bean lifecycle and dependency injection</li>
  *   <li>JPA/Hibernate - Database schema introspection via JDBC metadata</li>

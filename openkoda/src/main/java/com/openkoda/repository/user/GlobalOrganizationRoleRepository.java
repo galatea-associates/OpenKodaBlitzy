@@ -37,7 +37,7 @@ import java.util.List;
  * to provide repository operations for GlobalOrganizationRole entities. GlobalOrganizationRole represents
  * roles that can be assigned across multiple organizations (tenants), combining aspects of both global
  * and organization-scoped roles in the single-table Role inheritance hierarchy.
- * </p>
+
  * <p>
  * Key features:
  * <ul>
@@ -46,11 +46,11 @@ import java.util.List;
  *   <li>Override {@link #save(GlobalOrganizationRole)} for explicit type safety in role persistence</li>
  *   <li>Used by role management UI and cross-tenant user assignment workflows</li>
  * </ul>
- * </p>
+
  * <p>
  * Persists to 'roles' table (single-table inheritance) with type discriminator 'GlobalOrganizationRole'.
  * Shares table with {@link com.openkoda.model.GlobalRole} and {@link com.openkoda.model.OrganizationRole}.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -70,7 +70,7 @@ public interface GlobalOrganizationRoleRepository extends FunctionalRepositoryWi
      * <p>
      * Overrides generic save method from {@link FunctionalRepositoryWithLongId} to provide
      * typed return signature. Delegates to standard JPA persist/merge operations.
-     * </p>
+
      *
      * @param organizationRole GlobalOrganizationRole entity to save (insert or update), must not be null
      * @return Saved GlobalOrganizationRole with generated ID if new, or merged instance if existing
@@ -83,7 +83,7 @@ public interface GlobalOrganizationRoleRepository extends FunctionalRepositoryWi
      * <p>
      * Uses Spring Data query derivation to generate query with single-table inheritance filtering.
      * Name must match exactly (case-sensitive).
-     * </p>
+
      *
      * @param name Unique role name to search for, must not be null
      * @return GlobalOrganizationRole with matching name, null if not found
@@ -95,15 +95,15 @@ public interface GlobalOrganizationRoleRepository extends FunctionalRepositoryWi
      * <p>
      * Executes JPQL constructor expression:
      * {@code SELECT new Tuple(name, name) FROM GlobalOrganizationRole ORDER BY name}
-     * </p>
+
      * <p>
      * Returns Tuple instances with both components set to role name (id and label same).
      * Ordered alphabetically by name for consistent UI display. Requires {@link Tuple} constructor
      * accepting two String arguments.
-     * </p>
+
      * <p>
      * Usage: Populate dropdown lists and autocomplete fields without loading full Role entities.
-     * </p>
+
      *
      * @return List of Tuple(name, name) for all GlobalOrganizationRoles, empty list if none exist
      */

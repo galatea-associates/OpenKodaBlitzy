@@ -37,7 +37,7 @@ import java.util.Map;
  * {@link SchedulerConversionDto} objects to {@link Scheduler} entities and persisting them to the database.
  * The converter is annotated with {@code @YamlToEntityParentConverter(dtoClass = SchedulerConversionDto.class)}
  * to enable auto-discovery by the export/import subsystem.
- * </p>
+
  * <p>
  * Important behavioral characteristics:
  * <ul>
@@ -46,10 +46,10 @@ import java.util.Map;
  *       via {@code services.scheduler.schedule} for runtime execution</li>
  *   <li>Enables hot-reload of scheduled jobs without application restart when using the resources Map overload</li>
  * </ul>
- * </p>
+
  * <p>
  * This class is a stateless Spring {@code @Component} and is safe for concurrent use.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -71,7 +71,7 @@ public class SchedulerYamlToEntityConverter extends ComponentProvider implements
      * it via {@code repositories.secure.scheduler.saveOne}. It does NOT register the scheduler with
      * the runtime scheduler service. To enable runtime execution of the scheduled job, use
      * {@link #convertAndSave(SchedulerConversionDto, String, Map)} instead.
-     * </p>
+
      * <p>
      * DTO to entity field mappings:
      * <ul>
@@ -81,7 +81,7 @@ public class SchedulerYamlToEntityConverter extends ComponentProvider implements
      *   <li>moduleName - Module that owns this scheduler</li>
      *   <li>organizationId - Tenant organization ID for scoped schedulers</li>
      * </ul>
-     * </p>
+
      *
      * @param dto the SchedulerConversionDto containing scheduler metadata (must not be null)
      * @param filePath the YAML file path (unused but required by interface)
@@ -110,18 +110,18 @@ public class SchedulerYamlToEntityConverter extends ComponentProvider implements
      * persistence, then calls {@code services.scheduler.schedule} to register the scheduler job with
      * the runtime scheduler service. The presence of the resources Map parameter triggers scheduler
      * registration, enabling scheduled job execution.
-     * </p>
+
      * <p>
      * This overload enables hot-reload of scheduled jobs without application restart, allowing dynamic
      * import and activation of scheduler configurations.
-     * </p>
+
      *
      * @param dto the SchedulerConversionDto containing scheduler metadata (must not be null)
      * @param filePath the YAML file path (unused but required by interface)
      * @param resources Map of resource paths to content strings (unused, but presence triggers registration)
      * @return the saved Scheduler entity with generated ID, now registered in scheduler service
      * @throws NullPointerException if dto is null
-     * @see com.openkoda.service.scheduler.SchedulerService#schedule(Scheduler)
+     * @see com.openkoda.core.service.event.SchedulerService#schedule(com.openkoda.model.component.Scheduler)
      */
     @Override
     public Scheduler convertAndSave(SchedulerConversionDto dto, String filePath, Map<String, String> resources) {

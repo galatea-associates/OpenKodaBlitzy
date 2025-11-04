@@ -30,12 +30,10 @@ import org.springframework.validation.BindingResult;
  * This form uses {@link OrganizationRelatedMap} DTO for flexible key-value storage
  * without predefined JavaBean structure. It supports dynamic entities where field
  * structure is determined at runtime from {@link FrontendMappingDefinition}.
- * </p>
  * <p>
  * The form stores arbitrary key-value pairs in the database with JSON serialization,
  * enabling dynamic data models without schema changes. Supports partial updates via
  * the {@code singleFieldToUpdate} mechanism for efficient single-field modifications.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -43,7 +41,6 @@ import org.springframework.validation.BindingResult;
  * form.populateFrom(entity);
  * form.populateTo(entity);
  * }</pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @see MapEntity
@@ -59,7 +56,7 @@ public class MapEntityForm extends AbstractOrganizationRelatedEntityForm<Organiz
      * This constructor is used when creating a new MapEntity without an existing
      * database entity. The form will use the provided mapping definition to
      * determine field structure at runtime.
-     * </p>
+     * 
      *
      * @param frontendMappingDefinition the frontend mapping definition that defines
      *                                  field structure and validation rules
@@ -74,7 +71,7 @@ public class MapEntityForm extends AbstractOrganizationRelatedEntityForm<Organiz
      * This constructor initializes the form with an existing MapEntity from the
      * database, along with its organization context. The form will populate its
      * internal {@link OrganizationRelatedMap} DTO from the entity's value map.
-     * </p>
+     * 
      *
      * @param frontendMappingDefinition the frontend mapping definition that defines
      *                                  field structure and validation rules
@@ -91,7 +88,7 @@ public class MapEntityForm extends AbstractOrganizationRelatedEntityForm<Organiz
      * This implementation returns null as validation is handled by the parent
      * class {@link AbstractOrganizationRelatedEntityForm}. The parent class
      * performs validation based on the {@link FrontendMappingDefinition}.
-     * </p>
+     * 
      *
      * @param br the binding result for capturing validation errors
      * @param <F> the form type
@@ -108,7 +105,7 @@ public class MapEntityForm extends AbstractOrganizationRelatedEntityForm<Organiz
      * Retrieves the entity's value map directly via {@link MapEntity#getValueAsMap()}
      * without using reflection. This approach is more efficient for dynamic entities
      * with runtime-defined field structure.
-     * </p>
+     * 
      *
      * @param entity the MapEntity to populate from
      * @return this form instance for method chaining
@@ -123,7 +120,7 @@ public class MapEntityForm extends AbstractOrganizationRelatedEntityForm<Organiz
      * Populates a MapEntity from the form data.
      * <p>
      * Supports two update modes:
-     * </p>
+     * 
      * <ul>
      * <li><b>Partial update</b>: When {@code singleFieldToUpdate} is set, updates only
      * that field via {@link MapEntity#getValueAsMap()}.put() followed by
@@ -152,7 +149,7 @@ public class MapEntityForm extends AbstractOrganizationRelatedEntityForm<Organiz
      * Returns {@code true} to enable {@code dto[field]} binding style in HTML forms,
      * which is required for dynamic entities with runtime-defined fields. This allows
      * Thymeleaf templates to bind form inputs to map keys rather than JavaBean properties.
-     * </p>
+     * 
      *
      * @return true, indicating map-based DTO binding is used
      */

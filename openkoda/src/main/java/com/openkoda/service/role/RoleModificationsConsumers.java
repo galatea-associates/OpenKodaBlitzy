@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * evaluate scripts and performs bulk save/delete operations using unsecure repositories for performance.
  * The service switches authentication contexts via {@link UserProvider} to perform privileged operations when
  * modifying global roles.
- * </p>
+
  * <p>
  * Complete reconciliation workflow:
  * <ol>
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  *   <li>Create new UserRole entities for missing assignments</li>
  *   <li>Save new UserRole entities in bulk</li>
  * </ol>
- * </p>
+
  * <p>
  * JavaScript script interface specification:
  * <pre>
@@ -69,12 +69,12 @@ import java.util.stream.Collectors;
  *   return { 'DEVELOPER': true, 'VIEWER': false };
  * }
  * </pre>
- * </p>
+
  * <p>
  * <b>Thread-safety WARNING:</b> Methods that call {@link UserProvider#setConsumerAuthentication()} and
  * {@link UserProvider#clearAuthentication()} temporarily modify thread-local authentication state. Callers
  * must ensure proper cleanup and avoid concurrent modifications to the same organization's roles.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -92,7 +92,7 @@ public class RoleModificationsConsumers extends ComponentProvider {
      * <p>
      * Scripts are evaluated with organization context and return role assignment decisions
      * as a Map of role names to boolean flags indicating presence requirements.
-     * </p>
+
      */
     @Inject
     ServerJSRunner serverJSRunner;
@@ -105,14 +105,14 @@ public class RoleModificationsConsumers extends ComponentProvider {
      * indicates the role should be added and false indicates removal. The method then computes the set difference
      * between current assignments and desired state, performing bulk delete and save operations using unsecure
      * repositories for performance.
-     * </p>
+
      * <p>
      * Workflow for role removal:
      * <ol>
      *   <li>Query all existing UserRole entities in organization with roles marked for removal</li>
      *   <li>Delete all matched UserRole entities in a single batch operation</li>
      * </ol>
-     * </p>
+
      * <p>
      * Workflow for role addition:
      * <ol>
@@ -122,11 +122,11 @@ public class RoleModificationsConsumers extends ComponentProvider {
      *   <li>Create new UserRole entities for missing assignments</li>
      *   <li>Save all new UserRole entities in a single batch operation</li>
      * </ol>
-     * </p>
+
      * <p>
      * <b>Note:</b> This method does not establish a transactional boundary. Callers are responsible for
      * managing transaction scope if atomicity is required across script execution and role modifications.
-     * </p>
+
      *
      * @param organizationRelatedObject the organization context for role modifications, passed to the JavaScript
      *                                  script for evaluation criteria (must not be null)
@@ -179,7 +179,7 @@ public class RoleModificationsConsumers extends ComponentProvider {
      * Similar to user-level role modifications, it executes a JavaScript script to determine desired role state,
      * then performs bulk operations to add or remove global roles. Unlike user-level modifications, this method
      * requires temporary authentication context switching via {@link UserProvider} to perform privileged operations.
-     * </p>
+
      * <p>
      * Workflow for global role removal:
      * <ol>
@@ -188,7 +188,7 @@ public class RoleModificationsConsumers extends ComponentProvider {
      *   <li>Delete all matched UserRole entities in a single batch operation</li>
      *   <li>Clear authentication context via {@link UserProvider#clearAuthentication()}</li>
      * </ol>
-     * </p>
+
      * <p>
      * Workflow for global role addition:
      * <ol>
@@ -197,12 +197,12 @@ public class RoleModificationsConsumers extends ComponentProvider {
      *   <li>Create new UserRole entities with null userId for global assignment</li>
      *   <li>Save all new UserRole entities in a single batch operation</li>
      * </ol>
-     * </p>
+
      * <p>
      * <b>Security note:</b> This method temporarily elevates privileges via {@link UserProvider#setConsumerAuthentication()}
      * during role removal operations. The authentication context is cleared in a finally-like pattern to prevent
      * privilege leakage, but callers should be aware of the security implications.
-     * </p>
+
      *
      * @param organizationRelatedObject the organization context for role modifications, passed to the JavaScript
      *                                  script for evaluation criteria (must not be null)
@@ -246,12 +246,12 @@ public class RoleModificationsConsumers extends ComponentProvider {
      * {@link PageAttributes#organizationRelatedObject}, invokes {@link ServerJSRunner} to evaluate the named
      * script, and returns the result as a map of role names to boolean presence flags. If the script returns
      * null or encounters an error, an empty map is returned and an error is logged.
-     * </p>
+
      * <p>
      * The script is expected to access the organizationRelatedObject from its execution context and return a
      * Map&lt;String, Boolean&gt; where each key is a role name and each value indicates whether the role should
      * be present (true) or absent (false).
-     * </p>
+
      *
      * @param organizationRelatedObject the organization context to pass to the script execution model, available
      *                                  to the script for evaluation logic (must not be null)
@@ -278,7 +278,7 @@ public class RoleModificationsConsumers extends ComponentProvider {
      * This method processes the role modification decisions returned by the JavaScript script, identifying
      * all role names where the boolean flag is false (indicating the role should be removed). The result
      * is used to query and delete existing UserRole entities matching the removal criteria.
-     * </p>
+
      *
      * @param roles a map of role names to presence flags from script execution, where false indicates the
      *              role should be removed (must not be null, may be empty)
@@ -296,7 +296,7 @@ public class RoleModificationsConsumers extends ComponentProvider {
      * This method processes the role modification decisions returned by the JavaScript script, identifying
      * all role names where the boolean flag is true (indicating the role should be added). The result is
      * used to create new UserRole entities for users or organizations that lack the required roles.
-     * </p>
+
      *
      * @param roles a map of role names to presence flags from script execution, where true indicates the
      *              role should be added (must not be null, may be empty)

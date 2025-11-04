@@ -30,21 +30,21 @@ import com.openkoda.model.EmailConfig;
  * standard SMTP servers and Mailgun API integration. It encapsulates connection
  * parameters, authentication credentials, encryption settings, and sender information
  * used by email services for notification delivery.
- * </p>
+ * 
  * <p>
  * Implements {@link CanonicalObject} for notification message formatting and
  * {@link OrganizationRelatedObject} for multi-tenant support. Used by email services,
  * notification delivery systems, and configuration management components.
- * </p>
+ * 
  * <p>
  * <b>Security Note:</b> Password and API keys are stored as plain String values.
  * Callers are responsible for encryption and secure handling of sensitive credentials.
- * </p>
+ * 
  * <p>
  * <b>Design Note:</b> The {@link #getOrganizationId()} method returns the {@code id}
  * field rather than a separate organizationId field. This unusual design means the
  * configuration ID doubles as the organization identifier.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -57,7 +57,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Email configuration identifier.
      * <p>
      * Also serves as organizationId per the {@link #getOrganizationId()} implementation.
-     * </p>
+     * 
      */
     private Long id;
     
@@ -65,7 +65,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * SMTP server hostname.
      * <p>
      * Example values: smtp.gmail.com, smtp.office365.com, mail.example.com
-     * </p>
+     * 
      */
     private String host;
     
@@ -73,7 +73,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * SMTP server port number.
      * <p>
      * Typical values: 587 for TLS, 465 for SSL, 25 for plain SMTP.
-     * </p>
+     * 
      */
     private Integer port;
     
@@ -81,7 +81,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * SMTP authentication username.
      * <p>
      * Used for authenticating with the SMTP server when {@code smtpAuth} is enabled.
-     * </p>
+     * 
      */
     private String username;
     
@@ -89,7 +89,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * SMTP authentication password.
      * <p>
      * Stored as plain text. Encryption responsibility rests with the caller.
-     * </p>
+     * 
      */
     private String password;
     
@@ -97,7 +97,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Email protocol identifier.
      * <p>
      * Typically "smtp" for standard SMTP or "smtps" for SMTP over SSL.
-     * </p>
+     * 
      */
     private String protocol;
     
@@ -105,7 +105,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Flag enabling SSL/TLS encryption for SMTP connections.
      * <p>
      * When true, establishes encrypted connection to the SMTP server.
-     * </p>
+     * 
      */
     private Boolean ssl;
     
@@ -113,7 +113,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Flag requiring SMTP authentication.
      * <p>
      * When true, username and password are used to authenticate with the server.
-     * </p>
+     * 
      */
     private Boolean smtpAuth;
     
@@ -121,7 +121,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Flag enabling STARTTLS protocol upgrade.
      * <p>
      * When true, upgrades plain connection to encrypted TLS connection during handshake.
-     * </p>
+     * 
      */
     private Boolean starttls;
     
@@ -129,7 +129,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Default sender email address.
      * <p>
      * Used as the "From" header in outgoing emails.
-     * </p>
+     * 
      */
     private String from;
     
@@ -137,7 +137,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Default reply-to email address.
      * <p>
      * Used as the "Reply-To" header in outgoing emails.
-     * </p>
+     * 
      */
     private String replyTo;
     
@@ -145,7 +145,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Mailgun API key for Mailgun provider integration.
      * <p>
      * Stored as plain text. Encryption responsibility rests with the caller.
-     * </p>
+     * 
      */
     private String mailgunApiKey;
     
@@ -153,7 +153,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Constructs an empty EmailConfigDto.
      * <p>
      * No-argument constructor for serialization frameworks and manual property setting.
-     * </p>
+     * 
      */
     public EmailConfigDto() {
     }
@@ -163,7 +163,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * <p>
      * Mapping constructor that copies only the ID from the entity. Other fields
      * remain uninitialized and must be set separately.
-     * </p>
+     * 
      *
      * @param emailConfig the EmailConfig entity to extract the ID from
      */
@@ -175,7 +175,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Constructs an EmailConfigDto with specified ID.
      * <p>
      * Minimal constructor for ID-only initialization. Other fields remain uninitialized.
-     * </p>
+     * 
      *
      * @param id the email configuration identifier
      */
@@ -205,7 +205,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * Returns a formatted notification message for this email configuration.
      * <p>
      * Formats the message as "EmailConfig {id}" for notification and logging purposes.
-     * </p>
+     * 
      *
      * @return formatted notification message containing the configuration ID
      */
@@ -220,7 +220,7 @@ public class EmailConfigDto implements CanonicalObject, OrganizationRelatedObjec
      * <b>Note:</b> This implementation returns the {@code id} field rather than
      * a separate organizationId field. This is an intentional design where the
      * configuration ID doubles as the organization identifier.
-     * </p>
+     * 
      *
      * @return the organization ID (same as configuration ID)
      */

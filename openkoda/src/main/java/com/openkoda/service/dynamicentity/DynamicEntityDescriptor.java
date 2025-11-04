@@ -13,10 +13,10 @@ import static com.openkoda.service.dynamicentity.DynamicEntityRegistrationServic
  * Value object storing complete entity definition metadata used by Byte Buddy for dynamic class generation.
  * Contains entity class name, database table name, field definitions (name, Java type, nullable, length,
  * default value, SQL formulas), JPA mapping metadata, validation constraints, and load state tracking.
- * </p>
+ * 
  * <p>
  * <b>Descriptor Lifecycle:</b>
- * </p>
+ * 
  * <ol>
  * <li><b>Creation:</b> DynamicEntityDescriptorFactory.create() builds descriptor from Form entity</li>
  * <li><b>Storage:</b> Registered in DynamicEntityDescriptorFactory static map keyed by entityKey</li>
@@ -29,10 +29,10 @@ import static com.openkoda.service.dynamicentity.DynamicEntityRegistrationServic
  * <b>Mutability Design:</b>
  * Unlike typical value objects, this class is mutable with public setters to support incremental descriptor
  * building during complex form processing workflows. Thread-safety must be managed externally.
- * </p>
+ * 
  * <p>
  * <b>Key Components:</b>
- * </p>
+ * 
  * <ul>
  * <li>entityClassName: Base name without package (e.g., 'FormEntity')</li>
  * <li>tableName: Database table name (e.g., 'dynamic_entity_form_123')</li>
@@ -45,7 +45,7 @@ import static com.openkoda.service.dynamicentity.DynamicEntityRegistrationServic
  * </ul>
  * <p>
  * <b>Example Usage:</b>
- * </p>
+ * 
  * <pre>
  * DynamicEntityDescriptor descriptor = factory.createDescriptor(formEntity);
  * DynamicType.Unloaded entityClass = byteBuddy.subclass(Object.class).name(descriptor.getSuffixedEntityClassName()).make();
@@ -78,7 +78,7 @@ public class DynamicEntityDescriptor {
      * Package-private access ensures only DynamicEntityDescriptorFactory creates instances.
      * Initializes descriptor with metadata, sets isLoaded=false, and creates DynamicEntityTypeDescription
      * with fully qualified suffixed name.
-     * </p>
+     * 
      *
      * @param entityClassName Base entity class name without package prefix
      * @param tableName Database table name for CREATE TABLE DDL
@@ -104,7 +104,7 @@ public class DynamicEntityDescriptor {
      * <p>
      * Returns versioned class name for Byte Buddy generation. Suffix enables class reloading
      * during hot-deploy scenarios.
-     * </p>
+     * 
      *
      * @return Entity class name with optional '_timeMillis' suffix (e.g., 'FormEntity_1234567890')
      */
@@ -116,7 +116,7 @@ public class DynamicEntityDescriptor {
      * Returns repository interface name with optional timestamp suffix.
      * <p>
      * Returns versioned repository name matching entity naming pattern.
-     * </p>
+     * 
      *
      * @return Repository interface name with optional '_timeMillis' suffix
      */
@@ -129,7 +129,7 @@ public class DynamicEntityDescriptor {
      * <p>
      * Used by loadableInstances() filtering in DynamicEntityRegistrationService to identify
      * descriptors not yet processed.
-     * </p>
+     * 
      *
      * @return true if descriptor ready for Byte Buddy processing (!isLoaded)
      */
@@ -199,7 +199,7 @@ public class DynamicEntityDescriptor {
      * <p>
      * WARNING: Returns collection by reference, not defensive copy. External modifications
      * will affect the descriptor.
-     * </p>
+     * 
      *
      * @return Collection of field definitions with types, constraints, and formulas
      */
@@ -230,7 +230,7 @@ public class DynamicEntityDescriptor {
      * <p>
      * Called by DynamicEntityRegistrationService after successful Byte Buddy class generation
      * and JPA registration.
-     * </p>
+     * 
      *
      * @param loaded true to mark as processed, false to mark as pending
      */

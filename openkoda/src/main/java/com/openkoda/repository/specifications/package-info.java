@@ -28,9 +28,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * promoting code reuse and type-safe query building. All specification factories return 
  * {@link org.springframework.data.jpa.domain.Specification} instances that can be composed via 
  * {@code and()}/{@code or()} operators for complex filtering scenarios.
- * </p>
+ * 
  *
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  * <ul>
  *   <li>{@link FrontendResourceSpecifications} - Factory methods for FrontendResource and File entity queries 
  *       (name search, time-based filtering, resource type matching)</li>
@@ -45,43 +45,43 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       and organization scoping</li>
  * </ul>
  *
- * <h2>Usage Patterns</h2>
+ * <b>Usage Patterns</b>
  * <p>
  * Specifications are designed for composition with repository methods such as 
  * {@code JpaRepository.findAll(Specification)} and {@code JpaSpecificationExecutor.findOne(Specification)}. 
  * Compose multiple specifications using: {@code Specification.where(spec1).and(spec2).or(spec3)} 
  * for complex query logic.
- * </p>
+ * 
  *
- * <h3>Usage Example</h3>
+ * <b>Usage Example</b>
  * <pre>{@code
  * Specification<User> spec = UserSpecifications.searchSpecification(orgId)
  *     .and(UserSpecifications.searchUserRoleSpecification(orgId));
  * List<User> users = userRepository.findAll(spec);
  * }</pre>
  *
- * <h2>Authorization Considerations</h2>
+ * <b>Authorization Considerations</b>
  * <p>
  * Several specifications (GlobalSearchSpecifications, UserSpecifications) enforce row-level security 
  * by consulting {@link com.openkoda.core.security.UserProvider#getFromContext()} to filter results 
  * based on current user privileges. Unauthenticated requests typically return {@code disjunction()} 
  * (always-false predicates).
- * </p>
+ * 
  *
- * <h2>Technical Limitations</h2>
+ * <b>Technical Limitations</b>
  * <p>
  * Most specification factories use string-based attribute names (e.g., 'name', 'userId', 'organizationId') 
  * via {@code root.get(String)}, making them fragile to entity refactoring. Consider migrating to the 
  * type-safe JPA metamodel ({@code EntityName_}) to eliminate string literals and enable compile-time validation.
- * </p>
+ * 
  *
- * <h2>Recommended Maintenance Actions</h2>
+ * <b>Recommended Maintenance Actions</b>
  * <p>
  * Add unit and integration tests for authorization branches, time-sensitive predicates (searchNotOlderThan), 
  * and null/empty input handling. Remove unused imports (e.g., java.util.List in ServerJsSpecification). 
  * Replace null-returning placeholder methods (UserSpecifications.dict()) with proper implementations or 
  * remove from API.
- * </p>
+ * 
  *
  * @see org.springframework.data.jpa.domain.Specification
  * @see jakarta.persistence.criteria.CriteriaBuilder

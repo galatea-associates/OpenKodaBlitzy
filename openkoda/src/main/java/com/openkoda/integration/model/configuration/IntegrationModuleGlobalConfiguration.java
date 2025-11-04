@@ -31,22 +31,22 @@ import org.springframework.stereotype.Component;
  * This Spring-managed bean provides application-wide integration credentials that are
  * injected from property sources such as application.properties, environment variables,
  * or external configuration files.
- * </p>
+
  * <p>
  * All fields are public and mutable at runtime without synchronization. The class is
  * instantiated by the Spring container as a singleton bean. Property values are injected
  * during bean initialization using {@code @Value} annotations with empty-string defaults,
  * ensuring non-null values even when credentials are not configured.
- * </p>
+
  * <p>
  * <b>Usage Context:</b> Autowire or inject this bean into services or controllers to
  * read global credentials for OAuth flows and API integrations.
- * </p>
+
  * <p>
  * <b>Security Note:</b> Credentials are stored in plain text fields. Avoid logging
  * secrets in production environments. Use external secret stores like HashiCorp Vault
  * or AWS Secrets Manager for production deployments.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -54,7 +54,7 @@ import org.springframework.stereotype.Component;
  * IntegrationModuleGlobalConfiguration config;
  * String clientId = config.gitHubClientId;
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -70,7 +70,7 @@ public class IntegrationModuleGlobalConfiguration {
      * The Spring framework invokes this constructor to create the singleton bean
      * instance during application context initialization. Property values are
      * injected into fields after construction.
-     * </p>
+
      */
     public IntegrationModuleGlobalConfiguration() {}
 
@@ -82,7 +82,7 @@ public class IntegrationModuleGlobalConfiguration {
      * Injected from application property {@code module.integration.github.client.id}.
      * Defaults to empty string if property is not configured. Used for GitHub OAuth
      * authorization flows to identify the application.
-     * </p>
+
      */
     @Value("${module.integration.github.client.id:}")
     public String gitHubClientId;
@@ -93,11 +93,11 @@ public class IntegrationModuleGlobalConfiguration {
      * Injected from application property {@code module.integration.github.client.secret}.
      * Defaults to empty string if property is not configured. This is a sensitive
      * credential used during GitHub OAuth token exchange.
-     * </p>
+
      * <p>
      * <b>Security Warning:</b> This field contains sensitive data. Avoid logging or
      * exposing this value in error messages or API responses.
-     * </p>
+
      */
     @Value("${module.integration.github.client.secret:}")
     public String gitHubClientSecret;
@@ -109,7 +109,7 @@ public class IntegrationModuleGlobalConfiguration {
      * Injected from application property {@code module.integration.jira.client.id}.
      * Defaults to empty string if property is not configured. Used for Jira OAuth
      * authorization flows to identify the application.
-     * </p>
+
      */
     @Value("${module.integration.jira.client.id:}")
     public String jiraClientId;
@@ -120,11 +120,11 @@ public class IntegrationModuleGlobalConfiguration {
      * Injected from application property {@code module.integration.jira.client.secret}.
      * Defaults to empty string if property is not configured. This is a sensitive
      * credential used during Jira OAuth token exchange.
-     * </p>
+
      * <p>
      * <b>Security Warning:</b> This field contains sensitive data. Avoid logging or
      * exposing this value in error messages or API responses.
-     * </p>
+
      */
     @Value("${module.integration.jira.client.secret:}")
     public String jiraClientSecret;
@@ -136,7 +136,7 @@ public class IntegrationModuleGlobalConfiguration {
      * Injected from application property {@code module.integration.basecamp.client.id}.
      * Defaults to empty string if property is not configured. Used for Basecamp OAuth
      * authorization flows to identify the application.
-     * </p>
+
      */
     @Value("${module.integration.basecamp.client.id:}")
     public String basecampClientId;
@@ -147,11 +147,11 @@ public class IntegrationModuleGlobalConfiguration {
      * Injected from application property {@code module.integration.basecamp.client.secret}.
      * Defaults to empty string if property is not configured. This is a sensitive
      * credential used during Basecamp OAuth token exchange.
-     * </p>
+
      * <p>
      * <b>Security Warning:</b> This field contains sensitive data. Avoid logging or
      * exposing this value in error messages or API responses.
-     * </p>
+
      */
     @Value("${module.integration.basecamp.client.secret:}")
     public String basecampClientSecret;

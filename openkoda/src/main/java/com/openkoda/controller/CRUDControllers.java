@@ -49,7 +49,7 @@ import static com.openkoda.model.Privilege.canReadReports;
  * {@link HtmlCRUDControllerConfigurationMap} including: organizations, page-builder,
  * frontend-resources, and query-reports. Each registration binds entity key to repository,
  * form class, frontend mapping definition, and privilege requirements.
- * </p>
+ * 
  * <p>
  * Enables automatic CRUD endpoints for registered entities:
  * <ul>
@@ -60,12 +60,11 @@ import static com.openkoda.model.Privilege.canReadReports;
  *   <li>{@code GET /{entity}/{id}/edit} - Edit form</li>
  *   <li>{@code POST /{entity}/{id}/delete} - Delete entity</li>
  * </ul>
- * </p>
  * <p>
  * Custom modules can register additional CRUD controllers by listening to
  * {@link CustomisationService#registerOnApplicationStartListener(Consumer)} and calling
  * {@link HtmlCRUDControllerConfigurationMap#registerCRUDControllerBuilder}.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -99,7 +98,7 @@ public class CRUDControllers {
      * during {@code @PostConstruct} phase. Calls
      * {@link HtmlCRUDControllerConfigurationMap#registerCRUDController} for each standard
      * entity with appropriate privileges and configuration.
-     * </p>
+     * 
      * <p>
      * Registered entities and their configurations:
      * <ul>
@@ -113,11 +112,11 @@ public class CRUDControllers {
      *       {@code canCreateReports} privileges. Table fields: name, organizationId. Navigation:
      *       reporting tab</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> Registration order matters for dependencies. Foundational entities like
      * organizations are registered first to ensure availability for dependent entities.
-     * </p>
+     * 
      */
     @PostConstruct
     void init() {

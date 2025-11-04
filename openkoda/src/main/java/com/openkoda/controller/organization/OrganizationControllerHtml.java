@@ -44,7 +44,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
  * Provides organization list with search/filter, create form with property editor, edit form with member management,
  * organization switcher, and delete confirmation. Routes under /organizations. Extends AbstractOrganizationController
  * with HTML response handling and Flow pipeline integration.
- * </p>
+ * 
  * <p>
  * This controller acts as a thin HTTP adapter layer that:
  * <ul>
@@ -54,11 +54,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
  *   <li>Enforces organization-scoped security via @PreAuthorize annotations</li>
  *   <li>Returns Thymeleaf template fragments for HTMX-based UI updates</li>
  * </ul>
- * </p>
  * <p>
  * Key endpoints include organization dashboard, settings page, member management (invite/remove/change role),
  * audit history view, and complete organization deletion with cascade.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -75,12 +74,12 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Renders the organization dashboard view with organization details and member list.
      * <p>
      * Endpoint: GET /organizations/{organizationId}/dashboard
-     * </p>
+     * 
      * <p>
      * Displays organization information including name, properties, and associated users with pagination.
      * Delegates to {@link AbstractOrganizationController#findOrganizationWithSettings(Long)} flow and renders
      * the dashboard template.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization to display
      * @param userPageable pagination parameters for the user list (qualified as "user")
@@ -105,12 +104,12 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Renders the organization settings page with editable organization properties and member management.
      * <p>
      * Endpoint: GET /organizations/{organizationId}/settings
-     * </p>
+     * 
      * <p>
      * Displays organization settings form with property bag editor, user membership list with search/pagination,
      * and module configuration. Supports multi-pageable with separate pagination for users and modules.
      * Delegates to {@link AbstractOrganizationController#getOrganizationSettings(Long, String, Pageable)} flow.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization to display settings for
      * @param userPageable pagination parameters for the user list (qualified as "user")
@@ -138,15 +137,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Changes the role of an existing user within the organization.
      * <p>
      * Endpoint: POST /organizations/{organizationId}/member
-     * </p>
+     * 
      * <p>
      * Updates the role assignment for a user in the specified organization. Delegates to
      * {@link AbstractOrganizationController#changeUserOrganizationRole(long, long, String)} flow
      * and returns boolean success/failure result.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_SAVE_USER_ROLES privilege.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization
      * @param userId the ID of the user whose role is being changed
@@ -167,15 +166,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Renders the audit history view for an organization with paginated log entries.
      * <p>
      * Endpoint: GET /organizations/{organizationId}/history
-     * </p>
+     * 
      * <p>
      * Displays paginated audit log entries for the organization with optional search filtering.
      * Delegates to {@link AbstractOrganizationController#getHistory(Long, Pageable, String)} flow
      * and renders the organization-history template.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_MANAGE_ORG_DATA privilege.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization to retrieve history for
      * @param auditPageable pagination parameters for the audit log (qualified as "audit")
@@ -199,15 +198,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Renders the new organization creation form.
      * <p>
      * Endpoint: GET /organizations/new/settings
-     * </p>
+     * 
      * <p>
      * Displays an empty organization form for creating a new organization. Delegates to
      * {@link AbstractOrganizationController#getNewOrganizationSettings(Pageable)} flow
      * and renders the organization-new template.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_MANAGE_ORG_DATA privilege.
-     * </p>
+     * 
      *
      * @param userPageable pagination parameters for user selection (qualified as "user")
      * @return ModelAndView with organization-new template containing empty organization form
@@ -225,15 +224,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Creates a new organization from submitted form data.
      * <p>
      * Endpoint: POST /organizations/new/settings
-     * </p>
+     * 
      * <p>
      * Validates the organization form and creates a new organization entity with initial configuration.
      * Delegates to {@link AbstractOrganizationController#createOrganization(OrganizationForm, BindingResult)} flow.
      * Returns success or error fragment based on validation and creation result.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_MANAGE_ORG_DATA privilege.
-     * </p>
+     * 
      *
      * @param organizationForm the validated organization form data containing name and properties
      * @param br binding result containing validation errors if any
@@ -254,15 +253,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Deletes an organization by ID.
      * <p>
      * Endpoint: DELETE /organizations/{organizationId}
-     * </p>
+     * 
      * <p>
      * Marks the organization for deletion. Delegates to
      * {@link AbstractOrganizationController#deleteOrganization(Long)} flow.
      * Uses HTTP DELETE method for RESTful semantics.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_MANAGE_ORG_DATA privilege.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization to delete
      * @return Object result from the delete operation flow
@@ -279,15 +278,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Lists all organizations with pagination and optional search filtering.
      * <p>
      * Endpoint: GET /organizations/all
-     * </p>
+     * 
      * <p>
      * Displays a paginated list of all organizations with optional search filter. Delegates to
      * {@link AbstractOrganizationController#findOrganizationsFlow(String, org.springframework.data.jpa.domain.Specification, Pageable)}
      * and renders the organization-all template.
-     * </p>
+     * 
      * <p>
      * Note: TODO - Missing @PreAuthorize annotation per Rule 1.4.
-     * </p>
+     * 
      *
      * @param organizationPageable pagination parameters for the organization list (qualified as "organization")
      * @param search optional search term for filtering organizations (defaults to empty string)
@@ -308,15 +307,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Updates an existing organization with submitted form data.
      * <p>
      * Endpoint: POST /organizations/{organizationId}/settings
-     * </p>
+     * 
      * <p>
      * Validates and saves changes to organization properties including name, property bag customization,
      * and other editable fields. Delegates to {@link AbstractOrganizationController#saveOrganization(Long, OrganizationForm, BindingResult)}
      * flow. Returns success or error fragment based on validation and save result.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_MANAGE_ORG_DATA privilege.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization to update
      * @param form the organization form data containing updated values
@@ -343,16 +342,16 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Invites a new or existing user to join the organization with a specified role.
      * <p>
      * Endpoint: POST /organizations/{organizationId}/invite
-     * </p>
+     * 
      * <p>
      * Validates the invite form and adds the user to the organization. If the user does not exist,
      * creates a new user account and sends an invitation email. Delegates to
      * {@link AbstractOrganizationController#inviteUser(InviteUserForm, Long, BindingResult)} flow.
      * On success, redirects to organization settings page.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_MANAGE_ORG_DATA privilege.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization to invite the user to
      * @param userFormData the validated invite form containing user email and role information
@@ -375,15 +374,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Adds a global organization role to the specified organization.
      * <p>
      * Endpoint: POST /organizations/{organizationId}/addGlobalOrgRole
-     * </p>
+     * 
      * <p>
      * Validates and assigns a global role that applies across the organization. Delegates to
      * {@link AbstractOrganizationController#globalOrgRole(GlobalOrgRoleForm, Long)} flow.
      * Returns success or error fragment based on validation and assignment result.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_ACCESS_GLOBAL_SETTINGS privilege (elevated permission).
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization to add the global role to
      * @param globalOrgRoleForm the validated global role form containing role configuration
@@ -403,15 +402,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Removes a user from the organization by deleting their user role association.
      * <p>
      * Endpoint: POST /organizations/{organizationId}/remove
-     * </p>
+     * 
      * <p>
      * Removes the user's membership in the organization by deleting the user role record.
      * Delegates to {@link AbstractOrganizationController#removeUserRole(long)} flow.
      * Returns boolean success/failure result.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_MANAGE_ORG_DATA privilege.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization (used for routing and logging)
      * @param userRoleId the ID of the user role association to remove
@@ -432,20 +431,20 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Performs complete organization removal including all associated data and schema cleanup.
      * <p>
      * Endpoint: POST /organizations/{organizationId}/entity/remove
-     * </p>
+     * 
      * <p>
      * Executes cascade deletion of the organization including marking schema as deleted,
      * dropping schema constraints, and removing the organization entity. Delegates to
-     * {@link AbstractOrganizationController#removeOrganization(Long)} flow which orchestrates
+     * {@link AbstractOrganizationController#removeOrganization(long)} flow which orchestrates
      * schema-level teardown operations. Returns boolean success/failure result.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_MANAGE_ORG_DATA privilege.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization to completely remove
      * @return Boolean true if organization removal succeeded, false otherwise
-     * @see AbstractOrganizationController#removeOrganization(Long)
+     * @see AbstractOrganizationController#removeOrganization(long)
      */
     @PreAuthorize(CHECK_CAN_MANAGE_ORG_DATA)
     @PostMapping(_ORGANIZATIONID + _ENTITY + _REMOVE)
@@ -459,15 +458,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Renders a dynamic rule form fragment for building conditional logic statements.
      * <p>
      * Endpoint: GET /organizations/{organizationId}/rule-line/{type}
-     * </p>
+     * 
      * <p>
      * Generates a Thymeleaf fragment for a rule editor component used in dynamic form construction.
      * The fragment supports various rule types and configurations including field selection, operators,
      * and value inputs. Returns a parameterized forms::rule-part fragment.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_MANAGE_ORG_DATA privilege.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization (used for routing and context)
      * @param type the type of rule statement to generate
@@ -501,15 +500,15 @@ public class OrganizationControllerHtml extends AbstractOrganizationController {
      * Renders a selected item box fragment for searchable rule components.
      * <p>
      * Endpoint: GET /organizations/{organizationId}/rule/search/selected
-     * </p>
+     * 
      * <p>
      * Generates a Thymeleaf fragment displaying a selected item in a searchable dropdown component
      * used within rule editors. The fragment shows the selected item with its label, image, and
      * provides a link for further actions. Returns a parameterized forms::selected-searchable fragment.
-     * </p>
+     * 
      * <p>
      * Security: Requires CHECK_CAN_MANAGE_ORG_DATA privilege.
-     * </p>
+     * 
      *
      * @param organizationId the ID of the organization (used for routing and context)
      * @param fieldName the name of the field this selected item belongs to

@@ -35,14 +35,12 @@ import static java.lang.String.valueOf;
  * dynamic entities without predefined Java class structures. Extends HashMap
  * to support arbitrary field storage while implementing OrganizationRelatedObject
  * for multi-tenancy integration.
- * </p>
  * <p>
  * Used by MapEntityForm to handle MapEntity instances where field structure
  * is determined at runtime from FrontendMappingDefinition rather than static
  * JavaBean properties. The map stores field names as keys and field values
  * as objects, with special handling for the "organizationId" key to support
  * tenant-scoped operations.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -53,7 +51,6 @@ import static java.lang.String.valueOf;
  * Long orgId = map.getOrganizationId(); // Returns 123L
  * boolean isGlobal = map.isGlobal();    // Returns false
  * }</pre>
- * </p>
  *
  * @see MapEntityForm
  * @see OrganizationRelatedObject
@@ -68,12 +65,12 @@ public class OrganizationRelatedMap extends HashMap<String, Object> implements O
      * Retrieves the value stored under the "organizationId" key, converts it
      * to a String, and parses it as a Long. Used by multi-tenancy infrastructure
      * to determine the tenant scope for this entity.
-     * </p>
+     * 
      * <p>
      * Exception handling: If the organizationId key is missing, the value is null,
      * or parsing fails (invalid format), returns null to indicate a global entity
      * without organization scope.
-     * </p>
+     * 
      *
      * @return the organization ID as Long, or null for global entities or parsing errors
      */
@@ -93,11 +90,11 @@ public class OrganizationRelatedMap extends HashMap<String, Object> implements O
      * indicating a global entity accessible across all tenants. Returns false if
      * the entity is scoped to a specific organization, restricting access to that
      * tenant only.
-     * </p>
+     * 
      * <p>
      * Used by security infrastructure to enforce tenant isolation and determine
      * privilege evaluation scope (global privileges vs organization-scoped privileges).
-     * </p>
+     * 
      *
      * @return true if the entity is global (no organization scope), false if tenant-specific
      */

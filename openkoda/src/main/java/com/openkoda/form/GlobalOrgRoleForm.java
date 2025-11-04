@@ -34,11 +34,11 @@ import java.util.List;
  * This request-scoped form extends AbstractForm and seeds GlobalOrgRoleDto with a list of
  * global organization roles. It is used for managing global organization role assignments,
  * providing a frontend mapping for role selection and submission.
- * </p>
+ * 
  * <p>
  * The form supports two initialization patterns: default construction with an empty DTO,
  * and pre-seeded construction with an existing list of global organization role identifiers.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -55,7 +55,7 @@ public class GlobalOrgRoleForm extends AbstractForm<GlobalOrgRoleDto> {
      * Initializes the form with a new GlobalOrgRoleDto instance and the predefined
      * frontend mapping definition from FrontendMappingDefinitions.globalOrgRoleForm.
      * The DTO's globalOrganizationRoles list will be empty by default.
-     * </p>
+     * 
      */
     public GlobalOrgRoleForm(){
         super(new GlobalOrgRoleDto(), FrontendMappingDefinitions.globalOrgRoleForm);
@@ -67,7 +67,7 @@ public class GlobalOrgRoleForm extends AbstractForm<GlobalOrgRoleDto> {
      * Initializes the form with a new GlobalOrgRoleDto instance and the predefined
      * frontend mapping definition, then pre-populates the dto.globalOrganizationRoles
      * field with the provided list of global organization role identifiers.
-     * </p>
+     * 
      *
      * @param globalOrgRoles list of global organization role identifiers to pre-seed
      *                       into the DTO; may be null or empty
@@ -83,11 +83,11 @@ public class GlobalOrgRoleForm extends AbstractForm<GlobalOrgRoleDto> {
      * <strong>UNIMPLEMENTED:</strong> This method currently returns null as a stub.
      * To participate in standard validation flows, this method must be completed to
      * perform validation logic and return this form instance for fluent chaining.
-     * </p>
+     * 
      * <p>
      * When implemented, this method should validate the globalOrganizationRoles list
      * in the DTO and register any validation errors in the provided BindingResult.
-     * </p>
+     * 
      *
      * @param br BindingResult for collecting validation errors; unused in current
      *           stub implementation

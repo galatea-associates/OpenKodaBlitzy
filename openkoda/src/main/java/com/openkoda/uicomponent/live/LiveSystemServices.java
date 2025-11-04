@@ -41,20 +41,20 @@ import java.util.Map;
  * This implementation is active when the "cloud" profile is NOT active (configured via
  * {@code @Profile("!cloud")}), making it suitable for local development and testing environments
  * where unrestricted access to system resources is acceptable.
- * </p>
+ * 
  * <p>
  * LiveSystemServices delegates JavaScript execution to {@link ServerJSRunner} for evaluating
  * ServerJS scripts and to {@link ServerJSProcessRunner} for executing operating system commands.
  * All command execution methods provide direct access to system shell commands without restrictions.
- * </p>
+ * 
  * <p>
  * <b>SECURITY WARNING:</b> This implementation allows unrestricted command execution and is intended
  * ONLY for local development and non-production environments. For production and cloud deployments,
  * use {@code SecureLiveSystemServices} which provides appropriate security restrictions.
- * </p>
+ * 
  * <p>
  * Thread-Safety: This class is stateless and thread-safe, delegating to thread-safe service components.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -80,7 +80,7 @@ public class LiveSystemServices implements SystemServices {
      * As this method is used in JavaScript flows which are dynamic by nature, the return type is
      * Object to support JavaScript's dynamic typing and allow flexible flow composition without
      * compile-time type constraints.
-     * </p>
+     * 
      *
      * @param serverJsName the name of the ServerJS entity to execute, must correspond to a registered
      *                     server-side code definition (not null)
@@ -101,7 +101,7 @@ public class LiveSystemServices implements SystemServices {
      * <p>
      * <b>SECURITY NOTE:</b> This method executes commands without restrictions and should only be
      * used in local/development environments. Command input is not sanitized or validated.
-     * </p>
+     * 
      *
      * @param command the shell command to execute (e.g., "ls -la", "cat /etc/hosts"), executed
      *                directly in the system shell without escaping or validation
@@ -118,7 +118,7 @@ public class LiveSystemServices implements SystemServices {
      * <p>
      * <b>SECURITY NOTE:</b> This method executes commands without restrictions and should only be
      * used in local/development environments. Command input is not sanitized or validated.
-     * </p>
+     * 
      *
      * @param command the shell command to execute (e.g., "echo 'Hello'", "pwd"), executed directly
      *                in the system shell without escaping or validation
@@ -134,7 +134,7 @@ public class LiveSystemServices implements SystemServices {
      * <p>
      * <b>SECURITY NOTE:</b> This method executes commands without restrictions and should only be
      * used in local/development environments. Command input is not sanitized or validated.
-     * </p>
+     * 
      *
      * @param command the shell command to execute (e.g., "cat image.png"), executed directly in
      *                the system shell without escaping or validation

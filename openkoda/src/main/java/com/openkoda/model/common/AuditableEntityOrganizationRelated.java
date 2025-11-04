@@ -31,13 +31,13 @@ package com.openkoda.model.common;
  *   <li><b>Organization Scope</b>: Entities are scoped to organizations (tenants) via {@link OrganizationRelatedEntity#getOrganizationId()} 
  *       for multi-tenant data isolation</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Usage Pattern:</b><br>
  * Entities implementing this interface support both audit logging and tenant isolation. The primary implementer 
  * is {@link OpenkodaEntity}, which provides base implementations for organization-scoped entities with automatic 
  * audit trail generation. All concrete domain entities extending {@code OpenkodaEntity} inherit this contract.
- * </p>
+
  * <p>
  * <b>Inherited Methods from {@link AuditableEntity}:</b>
  * <ul>
@@ -45,14 +45,14 @@ package com.openkoda.model.common;
  *   <li>{@code ignorePropertiesInAudit()}: Returns collection of property names to exclude from audit trail (default: empty)</li>
  *   <li>{@code contentProperties()}: Returns collection of property names for {@link Audit#content} storage (default: empty)</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Inherited Methods from {@link OrganizationRelatedEntity}:</b>
  * <ul>
  *   <li>{@code getOrganizationId()}: Returns organization ID for tenant scope and data isolation</li>
  *   <li>{@code getReferenceString()}: Returns computed reference string combining organization ID and entity ID</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Implementation Guidance:</b>
  * <ul>
@@ -61,13 +61,13 @@ package com.openkoda.model.common;
  *   <li>Implementers must ensure organization-scoped data isolation via proper {@code organizationId} field population</li>
  *   <li>This is a marker interface with no additional methods beyond those inherited from parent interfaces</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Audit Trail Integration:</b><br>
  * The auditing subsystem's {@link com.openkoda.core.audit.AuditInterceptor} invokes {@code toAuditString()} 
  * during Hibernate session flush operations to capture entity changes. Results are persisted to {@link Audit} 
  * entity records with operation type, severity, user information, and correlation IDs for traceability.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1

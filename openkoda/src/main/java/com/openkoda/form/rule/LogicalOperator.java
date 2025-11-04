@@ -29,18 +29,18 @@ import com.openkoda.model.OptionWithLabel;
  * Models AND and OR operators used by the form/rule subsystem for building logical expressions.
  * Implements {@link OptionWithLabel} for use in UI option lists, providing human-readable labels
  * for operator selection in form components.
- * </p>
+
  * <p>
  * Each operator provides a SpEL (Spring Expression Language) template fragment with surrounding
  * whitespace for direct concatenation into textual rule expressions. The SpEL fragments include
  * leading and trailing spaces to ensure proper spacing when concatenated with rule clauses.
- * </p>
+
  * <p>
  * <b>Mutability Warning:</b> This enum provides setters for label and spel fields, making the
  * singleton enum instances mutable at runtime. Modifications affect all consumers in the same
  * JVM process and are not thread-safe. Exercise caution when modifying these values during
  * application runtime.
- * </p>
+
  * <p>
  * Example usage in rule expression building:
  * <pre>{@code
@@ -48,7 +48,7 @@ import com.openkoda.model.OptionWithLabel;
  * String expression = "condition1" + op.getSpel() + "condition2";
  * // Results in: "condition1 and condition2"
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -63,7 +63,7 @@ public enum LogicalOperator implements OptionWithLabel {
      * <p>
      * Represents the logical AND operation in rule expressions. The SpEL fragment
      * includes surrounding spaces for proper concatenation into textual expressions.
-     * </p>
+
      */
     and("AND", " and "),
     
@@ -72,7 +72,7 @@ public enum LogicalOperator implements OptionWithLabel {
      * <p>
      * Represents the logical OR operation in rule expressions. The SpEL fragment
      * includes surrounding spaces for proper concatenation into textual expressions.
-     * </p>
+
      */
     or("OR", " or ")
     ;
@@ -82,7 +82,7 @@ public enum LogicalOperator implements OptionWithLabel {
      * <p>
      * This label is used in form components presenting operator choices to users.
      * Satisfies the {@link OptionWithLabel} interface contract for UI option lists.
-     * </p>
+
      */
     private String label;
     
@@ -91,7 +91,7 @@ public enum LogicalOperator implements OptionWithLabel {
      * <p>
      * This fragment is designed for direct concatenation into rule clauses. The leading
      * and trailing spaces ensure proper spacing when building composite expressions.
-     * </p>
+
      */
     private String spel;
 
@@ -100,7 +100,7 @@ public enum LogicalOperator implements OptionWithLabel {
      * <p>
      * Initializes the operator with a human-readable label for UI display and a
      * SpEL expression fragment for rule expression building.
-     * </p>
+
      *
      * @param label the human-readable label for UI display (e.g., "AND", "OR")
      * @param spel the SpEL expression fragment with surrounding whitespace (e.g., " and ", " or ")
@@ -115,7 +115,7 @@ public enum LogicalOperator implements OptionWithLabel {
      * <p>
      * This label is used in form components and option lists where users select
      * logical operators. Satisfies the {@link OptionWithLabel#getLabel()} contract.
-     * </p>
+
      *
      * @return the label string (e.g., "AND", "OR"), never {@code null}
      */
@@ -130,7 +130,7 @@ public enum LogicalOperator implements OptionWithLabel {
      * consumers in the same JVM process. The operation is not thread-safe and may cause
      * unpredictable behavior if invoked during concurrent access. Avoid calling this method
      * at runtime; it is primarily intended for initialization or testing scenarios.
-     * </p>
+
      *
      * @param label the new label string (e.g., "AND", "OR")
      */
@@ -143,7 +143,7 @@ public enum LogicalOperator implements OptionWithLabel {
      * <p>
      * This fragment is designed for direct concatenation into rule clauses. The leading
      * and trailing spaces ensure proper spacing when building composite expressions.
-     * </p>
+
      *
      * @return the SpEL fragment (e.g., " and ", " or "), never {@code null}
      */
@@ -158,7 +158,7 @@ public enum LogicalOperator implements OptionWithLabel {
      * consumers in the same JVM process. The operation is not thread-safe and may cause
      * unpredictable behavior if invoked during concurrent access. Avoid calling this method
      * at runtime; it is primarily intended for initialization or testing scenarios.
-     * </p>
+
      *
      * @param spel the new SpEL fragment (e.g., " and ", " or ")
      */

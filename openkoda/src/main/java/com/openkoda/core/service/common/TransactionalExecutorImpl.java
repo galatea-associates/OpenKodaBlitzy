@@ -35,28 +35,28 @@ import java.util.function.Supplier;
  * It is used when declarative {@code @Transactional} annotation is insufficient, such as when dynamic transaction requirements,
  * conditional transaction boundaries, or programmatic control are needed. The service works with Spring's
  * {@code PlatformTransactionManager} and AOP proxying to ensure proper transaction semantics.
- * </p>
+
  * <p>
  * This implementation also extends {@link LoggingComponentWithRequestId} to provide request correlation IDs for tracing
  * and debugging across transaction boundaries. The service is a stateless singleton that is safe for concurrent use
  * across multiple threads and requests.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * transactionalExecutor.executeInTransaction(() -> repository.save(entity));
  * }</pre>
- * </p>
+
  * <p>
  * <b>Comparison with @Transactional:</b> Use this programmatic approach when transaction boundaries cannot be determined
  * at compile time, when multiple transaction configurations are needed conditionally, or when fine-grained control over
  * transaction propagation is required. For standard use cases, prefer declarative {@code @Transactional} annotation for
  * simplicity and clarity.
- * </p>
+
  * <p>
  * <b>Important:</b> This service requires Spring context injection to ensure AOP interception. Direct instantiation or
  * self-invocation bypasses transactional semantics and will not create transaction boundaries.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -77,15 +77,14 @@ public class TransactionalExecutorImpl implements TransactionalExecutor, Logging
      * returns the result, and commits on success or rolls back on any exception. The transaction attribute
      * {@code rollbackFor = Exception.class} ensures rollback for both checked and unchecked exceptions, which differs
      * from Spring's default behavior of rolling back only on unchecked exceptions.
-     * </p>
+
      * <p>
      * The return value is of type {@code Object}; callers typically cast to the concrete type expected from the supplier.
      * This generic approach allows the method to handle any return type from the transactional operation.
-     * </p>
+
      *
      * @param f the Supplier function to execute within transaction context; must not be null
      * @return the result returned by the supplied function, may be null if supplier returns null
-     * @throws Exception any exception thrown by the supplier function, triggers transaction rollback
      * @see org.springframework.transaction.annotation.Transactional
      */
     @Transactional(rollbackFor = Exception.class)

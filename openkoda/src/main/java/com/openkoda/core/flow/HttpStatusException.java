@@ -30,19 +30,16 @@ import org.springframework.http.ResponseEntity;
  * This exception enables REST API error handling with proper HTTP status codes. When thrown
  * during Flow pipeline execution, {@link Flow#execute()} catches this exception and uses the
  * {@link #status} field to determine the HTTP response status code for the client.
- * </p>
  * <p>
  * Flow treats HttpStatusException specially compared to generic exceptions. While generic
  * exceptions result in HTTP 500 (Internal Server Error), HttpStatusException allows
  * controllers to return specific status codes like 404 (Not Found), 403 (Forbidden),
  * or 401 (Unauthorized) by throwing the appropriate subclass.
- * </p>
  * <p>
  * Example usage with concrete subclass:
  * <pre>
  * if (!hasPermission) { throw new ForbiddenException(); }
  * </pre>
- * </p>
  *
  * @see Flow
  * @see ResponseEntity
@@ -56,7 +53,7 @@ public abstract class HttpStatusException extends RuntimeException {
      * <p>
      * Flow.execute() reads this field to determine the HTTP response status when
      * this exception is caught during pipeline execution.
-     * </p>
+     * 
      */
     public final HttpStatus status;
 
@@ -97,7 +94,7 @@ public abstract class HttpStatusException extends RuntimeException {
      * <p>
      * Creates an empty ResponseEntity with the status code from the {@link #status} field.
      * This method allows REST controllers to easily convert the exception into an HTTP response.
-     * </p>
+     * 
      *
      * @return a ResponseEntity with the configured HTTP status code and no body
      */

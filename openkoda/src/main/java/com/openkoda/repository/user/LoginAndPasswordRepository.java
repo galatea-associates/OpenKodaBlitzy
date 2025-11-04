@@ -34,16 +34,16 @@ import org.springframework.stereotype.Repository;
  * methods, relying on inherited CRUD operations (save, findById, findAll, delete) from JpaRepository.
  * LoginAndPassword entities store hashed passwords (bcrypt) and authentication metadata for local
  * username/password authentication.
- * </p>
+ * 
  * <p>
  * Usage: Authentication filters and services load credentials by login field (typically via custom
  * service methods), verify passwords using {@link org.springframework.security.crypto.password.PasswordEncoder},
  * and establish authenticated sessions upon success.
- * </p>
+ * 
  * <p>
  * Persists to 'login_and_password' table with columns: id (PK), login (unique), password (bcrypt hash),
  * user_id (FK), password_expiration_date, failed_login_attempts.
- * </p>
+ * 
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @version 1.7.1

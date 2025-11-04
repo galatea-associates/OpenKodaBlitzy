@@ -22,25 +22,25 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Provides web controllers for event listener and scheduler management in the OpenKoda Admin panel.
  * 
- * <h2>Package Purpose</h2>
+ * <b>Package Purpose</b>
  * <p>
  * This package contains controllers that expose HTTP endpoints for managing event listeners and schedulers
  * in the OpenKoda platform. Event listeners respond to application events, while schedulers trigger events
  * at specified times using cron expressions. Both components support multi-tenancy and cluster-aware operations.
- * </p>
  * 
- * <h2>Architectural Role</h2>
+ * 
+ * <b>Architectural Role</b>
  * <p>
  * This package sits in the web layer of the OpenKoda architecture, handling HTTP requests for event system
  * configuration. Controllers delegate business logic to service classes and use the Flow pipeline pattern
  * for composable request handling. The abstract-concrete controller pattern separates business logic
  * (abstract controllers) from HTTP binding (concrete HTML controllers).
- * </p>
  * 
- * <h2>Controller Pattern</h2>
+ * 
+ * <b>Controller Pattern</b>
  * <p>
  * The package follows a two-tier controller architecture:
- * </p>
+ * 
  * <ul>
  * <li><b>Abstract Controllers</b>: Contain reusable business logic for CRUD operations, validation,
  *     and service orchestration. These controllers are independent of HTTP binding details.</li>
@@ -49,12 +49,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     validation errors, and view selection.</li>
  * </ul>
  * 
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  * 
- * <h3>AbstractEventListenerController</h3>
+ * <b>AbstractEventListenerController</b>
  * <p>
  * Provides business logic for EventListenerEntry entity management. Key responsibilities include:
- * </p>
+ * 
  * <ul>
  * <li>CRUD operations for event listener configuration</li>
  * <li>Manual event emission for testing listeners</li>
@@ -63,17 +63,17 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li>Component export functionality for version control</li>
  * </ul>
  * 
- * <h3>EventListenerControllerHtml</h3>
+ * <b>EventListenerControllerHtml</b>
  * <p>
  * Spring MVC REST controller providing HTML view endpoints at {@code _HTML + _EVENTLISTENER} paths.
  * Handles form binding, validation, and ModelAndView generation for the Admin UI. Uses Flow pipelines
  * to compose request handling logic with transaction management and error handling.
- * </p>
  * 
- * <h3>AbstractSchedulerController</h3>
+ * 
+ * <b>AbstractSchedulerController</b>
  * <p>
  * Provides business logic for Scheduler entity lifecycle management. Key responsibilities include:
- * </p>
+ * 
  * <ul>
  * <li>CRUD operations for scheduler configuration</li>
  * <li>Cron expression parsing and validation</li>
@@ -82,16 +82,16 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li>Component export functionality for deployment</li>
  * </ul>
  * 
- * <h3>SchedulerControllerHtml</h3>
+ * <b>SchedulerControllerHtml</b>
  * <p>
  * Spring MVC REST controller providing HTML view endpoints at {@code _HTML + _SCHEDULER} paths.
  * Exposes scheduler configuration UI with form validation and Thymeleaf view rendering.
- * </p>
  * 
- * <h2>Admin UI Integration</h2>
+ * 
+ * <b>Admin UI Integration</b>
  * <p>
  * Controllers integrate with the OpenKoda Admin panel using these patterns:
- * </p>
+ * 
  * <ul>
  * <li><b>Security</b>: Spring Security {@code @PreAuthorize} annotations enforce privilege checks
  *     using {@code CHECK_CAN_READ_BACKEND} and {@code CHECK_CAN_MANAGE_BACKEND} privileges</li>
@@ -104,10 +104,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     and error message display</li>
  * </ul>
  * 
- * <h2>Security Requirements</h2>
+ * <b>Security Requirements</b>
  * <p>
  * Access to event listener and scheduler endpoints requires backend privileges:
- * </p>
+ * 
  * <ul>
  * <li><b>READ Privilege</b> ({@code CHECK_CAN_READ_BACKEND}): Required for viewing event listeners
  *     and schedulers via {@code getAll} and {@code settings} endpoints</li>
@@ -117,27 +117,27 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p>
  * Controllers use secure repositories for queries requiring privilege checks and unsecure repositories
  * for mutations after validation. This ensures consistent authorization enforcement across operations.
- * </p>
  * 
- * <h2>Multi-Tenancy Support</h2>
+ * 
+ * <b>Multi-Tenancy Support</b>
  * <p>
  * Event listeners support organization-scoped operations. When creating or updating listeners,
  * the system associates them with the current organization context. This enables tenant-specific
  * event handling and listener configuration isolation.
- * </p>
  * 
- * <h2>Cluster-Aware Operations</h2>
+ * 
+ * <b>Cluster-Aware Operations</b>
  * <p>
  * Both event listeners and schedulers operate in clustered environments. When registering or
  * unregistering listeners/schedulers, the system uses {@code ClusterEventSenderService} to broadcast
  * changes across all application instances. This ensures consistent event handling and scheduling
  * across the cluster without manual coordination.
- * </p>
  * 
- * <h2>Technical Dependencies</h2>
+ * 
+ * <b>Technical Dependencies</b>
  * <p>
  * Controllers depend on these key frameworks and components:
- * </p>
+ * 
  * <ul>
  * <li><b>Spring Framework</b>: {@code @RestController}, {@code @RequestMapping}, {@code @PreAuthorize},
  *     {@code @PathVariable}, {@code @RequestParam}, {@code @Valid} for MVC and security</li>
@@ -152,10 +152,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     for business logic orchestration</li>
  * </ul>
  * 
- * <h2>Operational Characteristics</h2>
+ * <b>Operational Characteristics</b>
  * <p>
  * Controllers in this package exhibit these operational properties:
- * </p>
+ * 
  * <ul>
  * <li><b>Stateless</b>: Controllers are stateless Spring beans with no instance state</li>
  * <li><b>Business Logic Delegation</b>: Side effects like database I/O, file exports, and runtime
@@ -166,10 +166,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     production environments without triggering actual business events</li>
  * </ul>
  * 
- * <h2>Usage Guidance</h2>
+ * <b>Usage Guidance</b>
  * <p>
  * When extending this package:
- * </p>
+ * 
  * <ul>
  * <li>Extend abstract controllers for new access types (e.g., API controllers returning JSON)</li>
  * <li>Implement HTTP binding and result formatting in concrete controllers</li>
@@ -178,7 +178,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li>Follow the secure/unsecure repository pattern for consistent authorization</li>
  * </ul>
  * 
- * <h2>Related Packages</h2>
+ * <b>Related Packages</b>
  * <ul>
  * <li>{@link com.openkoda.core.service.event} - Event listener and scheduler service layer</li>
  * <li>{@code com.openkoda.model.component.event} - Event listener and scheduler entities</li>
@@ -190,7 +190,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Place a class in this package if it is a controller that handles HTTP requests related to event
  * listeners or schedulers. Abstract controllers containing shared business logic belong here,
  * as do concrete controllers providing specific HTTP bindings (HTML, JSON, etc.).
- * </p>
+ * 
  * 
  * @since 1.7.1
  * @author OpenKoda Team

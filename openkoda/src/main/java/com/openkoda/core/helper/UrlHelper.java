@@ -58,23 +58,19 @@ import java.util.regex.Pattern;
  * OpenKoda platform. It serves as the authoritative source for constructing tenant-aware URLs,
  * parsing organization identifiers from request paths, and generating properly encoded links
  * for entities, files, and frontend resources.
- * </p>
  * <p>
  * The class uses a static instance pattern via {@link #getInstance()} to support legacy code
  * that cannot use dependency injection. The {@link #init()} method, invoked by Spring's
  * {@code @PostConstruct}, populates this static reference after bean initialization.
- * </p>
  * <p>
  * <b>Multi-Tenancy Support:</b> Organization-scoped URL patterns enable tenant isolation.
  * URLs follow the format {@code /html/organization/{orgId}/{entityKey}} for tenant-specific
  * resources and {@code /html/{entityKey}} for global resources. Compiled regex patterns
  * extract organization IDs from incoming request paths.
- * </p>
  * <p>
  * <b>Thread Safety:</b> Static Pattern instances are compiled once during class loading and
  * are thread-safe. Instance methods use injected {@code @Value} properties that remain constant
  * after initialization.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -84,7 +80,6 @@ import java.util.regex.Pattern;
  * // Static instance access
  * Long orgId = UrlHelper.getOrganizationIdFromUrlOrNull(request.getServletPath());
  * }</pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -171,7 +166,7 @@ public class UrlHelper implements URLConstants, ReadableCode {
      * Provides access to URL helper functionality in legacy code that cannot use
      * Spring's dependency injection. The instance is populated by {@link #init()}
      * after Spring initializes the bean.
-     * </p>
+     * 
      *
      * @return the singleton UrlHelper instance
      */
@@ -207,7 +202,7 @@ public class UrlHelper implements URLConstants, ReadableCode {
      *   <li>Global (orgId is null): {@code /html/{entityKey}}</li>
      *   <li>Organization entity: {@code /html/organization} (special case)</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param organizationId the tenant organization ID, or null for global resources
      * @param entityKey the entity type identifier (e.g., "users", "roles", "organization")
@@ -255,7 +250,7 @@ public class UrlHelper implements URLConstants, ReadableCode {
      * <p>
      * Appends the operation suffix to the entity base URL. For new entity operations
      * (when {@code entityId} is null), includes the {@code /new} path segment.
-     * </p>
+     * 
      *
      * @param organizationId the tenant organization ID, or null for global
      * @param entityKey the entity type identifier
@@ -1680,7 +1675,7 @@ public class UrlHelper implements URLConstants, ReadableCode {
 
     /**
      * Returns URL query parameters for filters.
-     * Constructs filter parameters in format "&{qualifier}_filter_{key}={value}".
+     * Constructs filter parameters in format "&amp;{qualifier}_filter_{key}={value}".
      *
      * @param qualifier the parameter name prefix
      * @param filters the filter map with key-value pairs
@@ -1760,7 +1755,7 @@ public class UrlHelper implements URLConstants, ReadableCode {
      * <p>
      * <b>Note on URL Encoding:</b> Uses platform default charset via {@link Charset#defaultCharset()},
      * which may vary across systems.
-     * </p>
+     * 
      *
      * @param f the file entity
      * @return the file access URL path with encoded filename
@@ -1785,7 +1780,7 @@ public class UrlHelper implements URLConstants, ReadableCode {
      * <p>
      * <b>Platform Dependency:</b> Encoding behavior depends on {@link Charset#defaultCharset()},
      * which varies by system configuration and may affect URL compatibility.
-     * </p>
+     * 
      *
      * @param string the string to encode
      * @return the URL-encoded string
@@ -1804,7 +1799,7 @@ public class UrlHelper implements URLConstants, ReadableCode {
      * Long orgId = UrlHelper.getOrganizationIdFromUrlOrNull(request);
      * if (orgId != null) { // tenant-specific logic }
      * }</pre>
-     * </p>
+     * 
      *
      * @param request the HTTP servlet request
      * @return the extracted organization ID, or null if not found
@@ -1841,12 +1836,12 @@ public class UrlHelper implements URLConstants, ReadableCode {
      * Parses the request URL and query parameters to extract organization ID, entity key,
      * and access level. Validates that path-based and parameter-based organization IDs match,
      * throwing {@code RuntimeException} on mismatch for security.
-     * </p>
+     * 
      * <p>
      * <b>Multi-Tenancy:</b> Enables tenant isolation by identifying which organization context
      * the request operates within. Returns {@code nonExistingTenantedResource} if URL doesn't
      * match expected patterns.
-     * </p>
+     * 
      *
      * @param request the HTTP servlet request
      * @return the resolved tenanted resource with organization ID, entity key, and access level

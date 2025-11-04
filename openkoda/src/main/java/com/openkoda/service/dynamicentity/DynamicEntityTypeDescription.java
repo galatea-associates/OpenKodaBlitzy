@@ -11,33 +11,33 @@ import java.util.List;
  * Package-private minimal subclass of Byte Buddy's TypeDescription.Latent representing 
  * in-memory dynamic types. Provides lightweight, deterministic TypeDescription implementation 
  * for use by Byte Buddy during dynamic class generation pipeline.
- * </p>
  * 
- * <h3>Byte Buddy Integration</h3>
+ * 
+ * <b>Byte Buddy Integration</b>
  * <p>
  * TypeDescription is Byte Buddy's core abstraction for representing Java types (classes, 
  * interfaces, arrays). TypeDescription.Latent is a concrete implementation that doesn't 
  * require actual {@code Class<?>} objects. This adapter extends Latent with OpenKoda-specific 
  * behavior:
- * </p>
+ * 
  * <ul>
  *   <li>Returns null for declaring type (top-level generated classes)</li>
  *   <li>Returns empty annotation list (annotations added separately via builder)</li>
  * </ul>
  * 
- * <h3>Design Rationale</h3>
+ * <b>Design Rationale</b>
  * <p>
  * Separating type description from entity descriptor enables Byte Buddy integration without 
  * tight coupling to OpenKoda domain model. The Latent approach allows type metadata creation 
  * before actual bytecode generation.
- * </p>
  * 
- * <h3>Usage Context</h3>
+ * 
+ * <b>Usage Context</b>
  * <p>
  * Created by DynamicEntityDescriptor constructor and passed to DynamicEntityRegistrationService 
  * for Byte Buddy DynamicType.Builder operations. The typeDescription provides Byte Buddy with 
  * structural metadata (name, modifiers, superclass, interfaces) needed for bytecode generation.
- * </p>
+ * 
  * 
  * <p><strong>Access Modifier:</strong> Package-private - only accessible within dynamicentity 
  * package by design</p>
@@ -59,7 +59,7 @@ class DynamicEntityTypeDescription extends TypeDescription.Latent {
      * <p>
      * Delegates to TypeDescription.Latent superclass constructor. Stores type metadata 
      * for subsequent Byte Buddy operations.
-     * </p>
+     * 
      * 
      * @param name fully qualified class name (e.g., 
      *             'com.openkoda.dynamicentity.generated.FormEntity_1234567890')
@@ -77,7 +77,7 @@ class DynamicEntityTypeDescription extends TypeDescription.Latent {
      * <p>
      * Overrides Latent behavior to explicitly return null. Indicates generated entities 
      * are not inner classes and have no declaring outer class.
-     * </p>
+     * 
      * 
      * @return null - generated classes are top-level (not nested/inner classes)
      */
@@ -92,7 +92,7 @@ class DynamicEntityTypeDescription extends TypeDescription.Latent {
      * Returns empty annotation list as type-level annotations (@Entity, @Table) are added 
      * separately during DynamicType.Builder operations in 
      * DynamicEntityRegistrationService.createDynamicEntityType().
-     * </p>
+     * 
      * 
      * @return empty AnnotationList - annotations added via Byte Buddy builder
      */

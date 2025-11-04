@@ -35,24 +35,24 @@ import org.hibernate.annotations.Formula;
  * Persisted to map_entity table. Provides flexible key-value storage per organization without schema constraints.
  * Stores data as JSON string in value column (length ~65536*4 = 262144 characters). Exposes transient valueAsMap
  * property (OrganizationRelatedMap) deserialized via JsonHelper.from(value, OrganizationRelatedMap.class).
- * </p>
+ * 
  * <p>
  * <strong>WARNING:</strong> setValueAsMap and updateValueFromMap have different serialization behaviors - setValueAsMap
  * caches in transient field, updateValueFromMap immediately serializes to value column. Extends TimestampedEntity for
  * audit timestamps.
- * </p>
+ * 
  * <p>
  * Usage: Store organization-specific configuration, preferences, or metadata that doesn't fit fixed schema. Alternative
  * to properties Map in Organization entity for bulk key-value storage.
- * </p>
+ * 
  * <p>
  * JSON handling: Uses JsonHelper for serialization/deserialization. transient valueAsMap field holds parsed Map, value
  * column holds serialized JSON string.
- * </p>
+ * 
  * <p>
  * <strong>WARNING:</strong> setValueAsMap vs updateValueFromMap semantics differ. setValueAsMap only updates transient
  * field and caches for later serialization. updateValueFromMap immediately serializes to value column for persistence.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

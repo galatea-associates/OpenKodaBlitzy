@@ -29,13 +29,13 @@ import com.openkoda.controller.common.URLConstants;
  * This interface centralizes routing keys and OAuth callback parameter names used by
  * integration controllers and views. All constants are implicitly {@code public static final}
  * per Java interface contract, enabling compile-time constant inlining by the JVM.
- * </p>
+
  * <p>
  * The interface-as-constants pattern provides type-safe, discoverable URL fragments that
  * ensure consistent route registration across Trello, GitHub, Slack, Microsoft Teams,
  * Jira, and Basecamp integrations. Controllers concatenate these constants in
  * {@code @GetMapping} and {@code @PostMapping} annotations to build complete endpoint paths.
- * </p>
+
  * <p>
  * Example controller usage:
  * <pre>{@code
@@ -44,11 +44,11 @@ import com.openkoda.controller.common.URLConstants;
  *     // OAuth callback handler
  * }
  * }</pre>
- * </p>
+
  * <p>
  * <strong>Important:</strong> Changing these constants requires coordinated updates to
  * controller endpoints, integration tests, OAuth provider configurations, and view templates.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1

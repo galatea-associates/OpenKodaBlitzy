@@ -39,13 +39,13 @@ import java.util.regex.Pattern;
  * Extends {@code AbstractEntityForm<IntegrationBasecampDto, IntegrationModuleOrganizationConfiguration>} and
  * implements the {@link FrontendMappingDefinition} lifecycle: {@code populateFrom(entity)} →
  * {@code validate(BindingResult)} → {@code populateTo(entity)}.
- * </p>
+ * 
  * <p>
  * This form parses Basecamp URLs to extract {@code accountId}, {@code projectId}, and {@code todolistId}
  * components using regex pattern matching and {@link org.apache.commons.lang3.StringUtils} helpers.
  * The expected URL format is:
  * {@code https://3.basecamp.com/{accountId}/buckets/{projectId}/todolists/{todolistId}}.
- * </p>
+ * 
  * <p>Form lifecycle:</p>
  * <ol>
  *   <li>{@code populateFrom(entity)}: Loads {@code toDoListUrl} from {@link IntegrationModuleOrganizationConfiguration} into DTO.</li>
@@ -60,7 +60,7 @@ import java.util.regex.Pattern;
  * <p>
  * Note: {@link #validate(org.springframework.validation.BindingResult)} returns {@code null} instead of {@code this},
  * which breaks fluent chaining expected by some callers.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -111,7 +111,7 @@ public class IntegrationBasecampForm extends AbstractEntityForm<IntegrationBasec
      * <p>
      * Loads basecampToDoListUrl from IntegrationModuleOrganizationConfiguration into DTO
      * for form pre-population.
-     * </p>
+     * 
      *
      * @param entity the IntegrationModuleOrganizationConfiguration to load from
      * @return this form instance for fluent chaining
@@ -128,7 +128,7 @@ public class IntegrationBasecampForm extends AbstractEntityForm<IntegrationBasec
      * Extracts accountId, projectId, and toDoListId from URL using private Function lambdas
      * (accountIdFromUrl, projectIdFromUrl, toDoListIdFromUrl). Stores parsed components and
      * raw URL to entity.
-     * </p>
+     * 
      *
      * @param entity the IntegrationModuleOrganizationConfiguration to populate
      * @return the populated entity
@@ -148,7 +148,7 @@ public class IntegrationBasecampForm extends AbstractEntityForm<IntegrationBasec
      * Ensures {@code toDoListUrl} is not blank (rejects with code {@code not.empty}). Then verifies the URL
      * matches the expected Basecamp format (rejects with code {@code not.valid}). To avoid including
      * illegal Javadoc comment terminators, the pattern is described textually instead of as a raw regex:
-     * </p>
+     * 
      * <ul>
      *   <li>Scheme: {@code http}, {@code https}, {@code ftp}, or {@code file}</li>
      *   <li>Host: {@code 3.basecamp.com}</li>
@@ -174,7 +174,7 @@ public class IntegrationBasecampForm extends AbstractEntityForm<IntegrationBasec
      * Lambda function to extract Basecamp account ID from URL.
      * <p>
      * Uses StringUtils.substringBetween(url, ".com/", "/") to extract the account ID portion.
-     * </p>
+     * 
      */
     private Function <String, String> accountIdFromUrl = ((String s) -> StringUtils.substringBetween(dto.getToDoListUrl(), ".com/", "/"));
     
@@ -182,7 +182,7 @@ public class IntegrationBasecampForm extends AbstractEntityForm<IntegrationBasec
      * Lambda function to extract project ID from URL.
      * <p>
      * Uses StringUtils.substringBetween(url, "buckets/", "/") to extract the project ID portion.
-     * </p>
+     * 
      */
     private Function <String, String> projectIdFromUrl = ((String s) -> StringUtils.substringBetween(dto.getToDoListUrl(), "buckets/", "/"));
     
@@ -190,7 +190,7 @@ public class IntegrationBasecampForm extends AbstractEntityForm<IntegrationBasec
      * Lambda function to extract todolist ID from URL.
      * <p>
      * Uses StringUtils.substringAfterLast(url, "todolists/") to extract the todolist ID portion.
-     * </p>
+     * 
      */
     private Function <String, String> toDoListIdFromUrl = ((String s) -> StringUtils.substringAfterLast(dto.getToDoListUrl(), "todolists/"));
 }

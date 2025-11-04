@@ -32,11 +32,11 @@ package com.openkoda.model;
  * to prevent enum-constant naming mismatches. Constants referenced in @Formula annotations
  * for EntityWithRequiredPrivilege implementations to define access control requirements at
  * entity level.
- * </p>
+
  * <p>
  * <b>Naming Convention:</b> All constants prefixed with underscore (_) and match Privilege enum
  * constant names. Example: '_canAccessGlobalSettings' for Privilege.canAccessGlobalSettings
- * </p>
+
  * <p>
  * <b>Usage Example:</b>
  * <pre>
@@ -44,7 +44,7 @@ package com.openkoda.model;
  * private String requiredReadPrivilege;
  * </pre>
  * Used in PrivilegeHelper string serialization/deserialization.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1

@@ -32,16 +32,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  * autowired {@link YamlToEntityConverterFactory} field that subclasses use to convert deserialized YAML DTOs into 
  * persisted domain entities. Serves as a common parent for specialized import strategies including classpath scanning, 
  * ZIP upload, and filesystem monitoring.
- * </p>
+
  * <p>
  * This class implements the Template Method pattern where subclasses implement resource discovery and loading strategies 
  * while sharing the conversion infrastructure provided by this base class. The abstract nature ensures no direct 
  * instantiation - concrete implementations must provide the specific import mechanism.
- * </p>
+
  * <p>
  * Thread-safety: This is a stateless abstract class. Thread-safety depends on subclass implementations and their usage 
  * of the shared yamlToEntityConverterFactory field.
- * </p>
+
  * <p>
  * Subclass responsibilities include:
  * <ul>
@@ -50,7 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <li>Delegate DTO-to-entity conversion to the inherited yamlToEntityConverterFactory</li>
  * <li>Handle resource-specific error scenarios and logging</li>
  * </ul>
- * </p>
+
  *
  * @see ComponentProvider for inherited repository and service infrastructure
  * @see YamlToEntityConverterFactory for DTO-to-entity conversion logic
@@ -66,12 +66,12 @@ public abstract class YamlComponentImportService extends ComponentProvider {
      * <p>
      * This field is package-private to allow access by subclasses within the same package. It is autowired by Spring 
      * during subclass instantiation, ensuring all concrete import services share the same converter factory instance.
-     * </p>
+
      * <p>
      * Subclasses call {@code yamlToEntityConverterFactory.processYamlDto(dto, filePath)} or 
      * {@code processYamlDto(dto, filePath, resources)} to convert deserialized YAML DTOs into persisted domain entities. 
      * The factory handles converter resolution based on DTO type, entity creation, validation, and persistence.
-     * </p>
+
      *
      * @see YamlToEntityConverterFactory#processYamlDto for converter resolution and delegation logic
      */

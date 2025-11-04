@@ -28,16 +28,16 @@ package com.openkoda.model.component.event;
  * {@link com.openkoda.form.EventListenerForm} and {@link EventListenerEntry}. A consumer descriptor
  * consists of a fully qualified class name, method name, parameter type, and the number of static
  * parameters (0-4) provided to the consumer method.
- * </p>
+ * 
  * <p>
  * The consumer string format is comma-separated: {@code className,methodName,parameterType,numberOfStaticParams}.
  * Parsing is performed via {@link String#split(String)} without trimming or CSV-escaping. Invalid input
  * may result in silent field initialization failures or {@link NumberFormatException} propagation.
- * </p>
+ * 
  * <p>
  * Thread-safety: This is a mutable POJO and is not thread-safe. External synchronization is required
  * for concurrent access.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -79,7 +79,7 @@ public class Consumer {
      * Parsing uses {@link String#split(String)} with comma delimiter and validates exactly 4 tokens.
      * If the input has fewer or more than 4 tokens, fields remain null or default-initialized (silent failure).
      * No trimming or CSV-escaping is performed; callers must validate input.
-     * </p>
+     * 
      *
      * @param consumerString comma-separated 4-token format (className,methodName,parameterType,numberOfStaticParams)
      * @throws NumberFormatException if the numberOfStaticParams token is not a valid integer
@@ -99,7 +99,7 @@ public class Consumer {
      * <p>
      * Returns a consumer descriptor in the format: {@code className,methodName,parameterType,numberOfStaticParams}.
      * This method is used by {@link EventListenerEntry#getConsumerString()} for persistence.
-     * </p>
+     * 
      *
      * @param className fully qualified consumer class name
      * @param methodName consumer method name
@@ -188,7 +188,7 @@ public class Consumer {
      * Returns the consumer category used for grouping and filtering.
      * <p>
      * This field is read-only and has no corresponding setter method.
-     * </p>
+     * 
      *
      * @return the consumer category
      */
@@ -200,7 +200,7 @@ public class Consumer {
      * Returns a debug representation of this consumer in bracketed format.
      * <p>
      * Format: {@code Consumer[className,methodName,parameterType,numberOfStaticParams]}
-     * </p>
+     * 
      *
      * @return a string representation of this consumer
      */

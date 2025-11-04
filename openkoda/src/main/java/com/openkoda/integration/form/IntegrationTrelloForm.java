@@ -34,10 +34,10 @@ import org.springframework.validation.BindingResult;
  * Handles form binding and validation for Trello API key and token with strict format requirements.
  * Extends {@code AbstractEntityForm<IntegrationTrelloDto, IntegrationModuleOrganizationConfiguration>}
  * and implements FrontendMappingDefinition lifecycle for seamless Spring MVC integration.
- * </p>
+ * 
  * <p>
  * <b>Form Lifecycle:</b>
- * </p>
+ * 
  * <ol>
  * <li><b>populateFrom(entity)</b>: Loads trelloApiKey, trelloApiToken, trelloBoardName, and trelloListName
  * from IntegrationModuleOrganizationConfiguration into DTO for form pre-population in edit views</li>
@@ -48,7 +48,7 @@ import org.springframework.validation.BindingResult;
  * </ol>
  * <p>
  * <b>Validation Rules (Trello-Specific Requirements):</b>
- * </p>
+ * 
  * <ul>
  * <li><b>trelloApiKey</b>: Required (not blank), must be exactly 32 characters, hexadecimal pattern [0-9a-z]{32}
  * (lowercase alphanumeric via LOWER_CASE_ALPHANUMERIC_REGEX)</li>
@@ -59,7 +59,7 @@ import org.springframework.validation.BindingResult;
  * </ul>
  * <p>
  * <b>Error Codes:</b>
- * </p>
+ * 
  * <ul>
  * <li><b>not.empty</b>: Field is required and cannot be blank</li>
  * <li><b>is.alphanumeric</b>: Value must match lowercase alphanumeric pattern [0-9a-z]*</li>
@@ -68,10 +68,10 @@ import org.springframework.validation.BindingResult;
  * <p>
  * <b>Credential Source:</b> Trello uses long-lived API keys and tokens (no OAuth refresh).
  * Obtain credentials from https://trello.com/app-key. Generate token by clicking 'Token' link on that page.
- * </p>
+ * 
  * <p>
  * <b>Credential Setup Guide:</b>
- * </p>
+ * 
  * <ol>
  * <li>Visit https://trello.com/app-key</li>
  * <li>Copy the API key (32-character hexadecimal string)</li>
@@ -82,7 +82,7 @@ import org.springframework.validation.BindingResult;
  * </ol>
  * <p>
  * Integration with Spring MVC controllers uses @Valid annotation with BindingResult to capture validation errors.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -100,7 +100,7 @@ public class IntegrationTrelloForm extends AbstractEntityForm<IntegrationTrelloD
      * <p>
      * Used to validate Trello API key (32 chars) and token (64 chars) are hexadecimal strings
      * containing only lowercase letters (a-z) and digits (0-9).
-     * </p>
+     * 
      */
     public static final String LOWER_CASE_ALPHANUMERIC_REGEX = "[0-9a-z]*";
 
@@ -109,7 +109,7 @@ public class IntegrationTrelloForm extends AbstractEntityForm<IntegrationTrelloD
      * <p>
      * Initializes the form with an empty DTO and the Trello frontend mapping definition from
      * IntegrationFrontendMappingDefinitions. Used for creating new Trello integration configurations.
-     * </p>
+     * 
      */
     public IntegrationTrelloForm() {
         super(new IntegrationTrelloDto(), null, IntegrationFrontendMappingDefinitions.trelloConfigurationForm);
@@ -120,7 +120,7 @@ public class IntegrationTrelloForm extends AbstractEntityForm<IntegrationTrelloD
      * <p>
      * Used for editing existing Trello integration configurations. The DTO contains form field values
      * and the entity represents the persistent configuration.
-     * </p>
+     * 
      *
      * @param dto the Trello integration DTO containing form field values
      * @param entity the integration configuration entity to populate or update
@@ -135,7 +135,7 @@ public class IntegrationTrelloForm extends AbstractEntityForm<IntegrationTrelloD
      * Copies trelloApiKey, trelloApiToken, trelloBoardName, and trelloListName from the
      * IntegrationModuleOrganizationConfiguration entity into the form's DTO. This method is called
      * when editing existing Trello integration configurations to display current values in the form.
-     * </p>
+     * 
      *
      * @param entity the IntegrationModuleOrganizationConfiguration to load from
      * @return this form instance for fluent chaining
@@ -156,7 +156,7 @@ public class IntegrationTrelloForm extends AbstractEntityForm<IntegrationTrelloD
      * getSafeValue for null-safe field access. Uses frontend mapping keys TRELLO_API_KEY_,
      * TRELLO_API_TOKEN_, TRELLO_BOARD_NAME_, and TRELLO_LIST_NAME_ from IntegrationFrontendMappingDefinitions.
      * This method is called after successful validation to persist the configuration.
-     * </p>
+     * 
      *
      * @param entity the IntegrationModuleOrganizationConfiguration to populate
      * @return the populated entity for fluent chaining
@@ -175,10 +175,10 @@ public class IntegrationTrelloForm extends AbstractEntityForm<IntegrationTrelloD
      * <p>
      * Validates all Trello configuration fields with specific constraints enforced by Trello's API.
      * Validation errors are added to the BindingResult for display in the form UI.
-     * </p>
+     * 
      * <p>
      * <b>Validation Checks Performed:</b>
-     * </p>
+     * 
      * <ol>
      * <li>trelloApiKey not blank (rejectValue 'dto.trelloApiKey', 'not.empty')</li>
      * <li>trelloApiKey matches LOWER_CASE_ALPHANUMERIC_REGEX (rejectValue 'dto.trelloApiKey', 'is.alphanumeric')</li>
@@ -192,7 +192,7 @@ public class IntegrationTrelloForm extends AbstractEntityForm<IntegrationTrelloD
      * <p>
      * The strict 32-character and 64-character length requirements match Trello's API key and token formats.
      * Both must be lowercase hexadecimal strings (0-9, a-z).
-     * </p>
+     * 
      *
      * @param br the Spring BindingResult for error collection
      * @return this form instance for fluent chaining

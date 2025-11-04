@@ -32,23 +32,23 @@ import org.hibernate.annotations.DynamicUpdate;
  * This entity stores Google user profile data retrieved during the OAuth 2.0 authentication flow,
  * enabling social login via Google Sign-In. The entity links a Google identity to an OpenKoda
  * User account through a one-to-one relationship using a shared primary key pattern.
- * </p>
+ * 
  * <p>
  * <b>JPA Mapping:</b> Persisted to the {@code google_users} table with a shared primary key
  * relationship to the {@link User} entity via {@code @MapsId}.
- * </p>
+ * 
  * <p>
  * <b>OAuth Integration:</b> Profile fields are populated from Google People API responses
  * during authentication and synchronized on each login to keep user data current.
- * </p>
+ * 
  * <p>
  * <b>Hibernate Optimization:</b> The {@code @DynamicUpdate} annotation ensures only modified
  * columns are included in SQL UPDATE statements, improving performance for partial updates.
- * </p>
+ * 
  * <p>
  * <b>Relationship:</b> Maintains a bidirectional one-to-one relationship with {@link User}
  * using {@code @MapsId} shared primary key pattern, where {@code GoogleUser.id} equals {@code User.id}.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -56,7 +56,7 @@ import org.hibernate.annotations.DynamicUpdate;
  * @since 1.7.1
  * @see User
  * @see LoggedUser
- * @see com.openkoda.integration.controller.GoogleController
+ * // GoogleController
  */
 @Entity
 @DynamicUpdate
@@ -68,7 +68,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * This ID is managed via {@code @MapsId} annotation, establishing a shared primary key
      * relationship where {@code GoogleUser.id} equals {@code User.id}.
-     * </p>
+     * 
      */
     @Id
     private Long id;
@@ -78,7 +78,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * This value corresponds to the {@code sub} (subject) claim in the Google ID token
      * and uniquely identifies the user within Google's authentication system.
-     * </p>
+     * 
      */
     @Column
     private String googleId;
@@ -87,7 +87,7 @@ public class GoogleUser extends LoggedUser {
      * User's first name (given name) retrieved from Google profile.
      * <p>
      * Populated from the {@code given_name} field in the Google People API response.
-     * </p>
+     * 
      */
     private String firstName;
 
@@ -95,7 +95,7 @@ public class GoogleUser extends LoggedUser {
      * User's last name (family name) retrieved from Google profile.
      * <p>
      * Populated from the {@code family_name} field in the Google People API response.
-     * </p>
+     * 
      */
     private String lastName;
 
@@ -104,7 +104,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * Populated from the {@code name} field in the Google People API response.
      * Typically combines first name and last name.
-     * </p>
+     * 
      */
     private String name;
 
@@ -113,7 +113,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * Populated from the {@code email} claim in the Google ID token.
      * Requires the {@code email} scope during OAuth authentication.
-     * </p>
+     * 
      */
     private String email;
 
@@ -122,7 +122,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * Populated from the {@code picture} field in the Google People API response.
      * Provides a link to the user's profile image hosted by Google.
-     * </p>
+     * 
      */
     private String picture;
 
@@ -132,11 +132,11 @@ public class GoogleUser extends LoggedUser {
      * The {@code @MapsId} annotation establishes that this relationship shares the primary key,
      * where {@code GoogleUser.id} is derived from {@code User.id}. The {@code @JoinColumn}
      * specifies the foreign key column {@code user_id} in the {@code google_users} table.
-     * </p>
+     * 
      * <p>
      * The {@code @JsonIgnore} annotation prevents serialization of the User entity to avoid
      * circular references and unnecessary data exposure in JSON responses.
-     * </p>
+     * 
      */
     @MapsId
     @OneToOne
@@ -149,7 +149,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * This constructor is used by the JPA provider (Hibernate) when loading entities
      * from the database or creating new entity instances via reflection.
-     * </p>
+     * 
      */
     public GoogleUser() {
     }
@@ -159,7 +159,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * This constructor is typically used during OAuth authentication flow to populate
      * the GoogleUser entity with data retrieved from the Google People API response.
-     * </p>
+     * 
      *
      * @param googleId  Google's unique identifier for the user (sub claim from ID token)
      * @param firstName user's first name from Google profile (given name)
@@ -182,7 +182,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * This value corresponds to the {@code sub} (subject) claim from the Google ID token
      * and uniquely identifies the user within Google's authentication system.
-     * </p>
+     * 
      *
      * @return the Google user ID (sub claim), or null if not set
      */
@@ -249,7 +249,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * This email corresponds to the {@code email} claim from the Google ID token
      * and requires the {@code email} scope during OAuth authentication.
-     * </p>
+     * 
      *
      * @return the email address, or null if not available
      */
@@ -290,7 +290,7 @@ public class GoogleUser extends LoggedUser {
      * Combines the user's full display name and email address to create a human-readable
      * identifier for audit logs. This format helps track authentication events and user
      * actions in the audit trail.
-     * </p>
+     * 
      *
      * @return formatted string in the format "name email" for audit logging
      */
@@ -304,7 +304,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * Provides access to the OpenKoda User account linked to this Google authentication.
      * The relationship uses a shared primary key pattern via {@code @MapsId}.
-     * </p>
+     * 
      *
      * @return the associated User entity, or null if not set
      */
@@ -318,7 +318,7 @@ public class GoogleUser extends LoggedUser {
      * Establishes the relationship between this GoogleUser and the corresponding
      * OpenKoda User account. This should be set during the OAuth authentication flow
      * when linking or creating user accounts.
-     * </p>
+     * 
      *
      * @param user the User entity to associate with this GoogleUser
      */
@@ -331,7 +331,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * This ID is managed via {@code @MapsId} annotation, where {@code GoogleUser.id}
      * equals {@code User.id} in the shared primary key relationship pattern.
-     * </p>
+     * 
      *
      * @return the primary key (shared with User.id), or null if not set
      */
@@ -345,7 +345,7 @@ public class GoogleUser extends LoggedUser {
      * <p>
      * Typically managed automatically by JPA through the {@code @MapsId} relationship.
      * Manual setting should be done with caution to maintain referential integrity.
-     * </p>
+     * 
      *
      * @param id the primary key to set (should match the associated User.id)
      */

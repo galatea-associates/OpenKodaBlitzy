@@ -42,24 +42,24 @@ import static com.openkoda.core.security.HasSecurityRules.SecurityScope.USER;
  * This interface extends {@link SearchableFunctionalRepositoryWithLongId} to inherit functional repository contracts
  * and provides secure access to entity operations. It is annotated with {@link NoRepositoryBean} to prevent
  * Spring Data from creating a proxy implementation, as this interface serves as a contract for secure repository wrappers.
- * </p>
+
  * <p>
  * All default methods inject {@link #DEFAULT_SCOPE} (USER) into underlying repository calls, enforcing
  * privilege verification before executing CRUD and search operations. Privilege requirements are computed
  * from entity @Formula annotations (requiredReadPrivilege, requiredWritePrivilege). Method calls throw
  * AccessDeniedException if the user lacks the required privilege.
- * </p>
+
  * <p>
  * The {@link #scoped(SecurityScope)} method provides temporary scope override capability, allowing operations
  * to be executed with ORGANIZATION or GLOBAL scope when needed.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * SecureRepository<Organization> secureRepo = secureRepositories.organization;
  * Optional<Organization> org = secureRepo.findOne(orgId); // privilege-checked
  * }</pre>
- * </p>
+
  *
  * @param <T> Searchable entity type with privilege annotations, must extend {@link SearchableEntity}
  * @author OpenKoda Team
@@ -414,7 +414,7 @@ public interface SecureRepository<T extends SearchableEntity> extends Searchable
      * <p>
      * This method allows temporary override of the default USER scope for operations requiring
      * ORGANIZATION or GLOBAL scope access.
-     * </p>
+
      *
      * @param scope Security scope override (USER, ORGANIZATION, or GLOBAL)
      * @return SecureRepositoryWrapper applying the specified scope to all subsequent operations

@@ -31,16 +31,16 @@ import static com.openkoda.controller.common.URLConstants.AUDIT;
 /**
  * Secure repository marker interface for Audit entities with SearchableRepositoryMetadata.
  * <p>
- * This interface extends {@link SecureRepository} to provide privilege-enforced access to
+ * This interface extends {@link com.openkoda.repository.SecureRepository} to provide privilege-enforced access to
  * {@link Audit} entities. All repository operations automatically enforce security checks
  * based on the current user's privileges and organization context.
- * </p>
+ * 
  * 
  * <p>
  * The {@link SearchableRepositoryMetadata} annotation configures the search index formula
  * used for full-text searching across audit records. The formula creates a normalized,
  * lower-cased composite index from multiple audit fields including:
- * </p>
+ * 
  * <ul>
  *   <li>Entity key and entity ID</li>
  *   <li>Change description</li>
@@ -51,25 +51,25 @@ import static com.openkoda.controller.common.URLConstants.AUDIT;
  * </ul>
  * 
  * <p>
- * This repository inherits standard CRUD operations from {@link SecureRepository} including:
+ * This repository inherits standard CRUD operations from {@link com.openkoda.repository.SecureRepository} including:
  * {@code findOne()}, {@code findAll()}, {@code save()}, and {@code delete()}, all of which
  * enforce privilege checks on audit log access operations.
- * </p>
  * 
- * <h2>Security Enforcement</h2>
+ * 
+ * <b>Security Enforcement</b>
  * <p>
  * Access to audit records is restricted based on:
- * </p>
+ * 
  * <ul>
  *   <li>User privileges for reading support/audit data</li>
  *   <li>Organization-scoped filtering</li>
  *   <li>User-scoped filtering for sensitive operations</li>
  * </ul>
  * 
- * <h2>Search Capabilities</h2>
+ * <b>Search Capabilities</b>
  * <p>
  * The search index formula enables searching audit records by:
- * </p>
+ * 
  * <pre>
  * // Search by user ID: "modifiedby:123"
  * // Search by organization: "orgid:456"

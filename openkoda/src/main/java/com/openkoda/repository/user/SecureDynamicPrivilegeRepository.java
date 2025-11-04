@@ -33,11 +33,11 @@ import static com.openkoda.controller.common.URLConstants.PRIVILEGE;
 /**
  * Secure marker repository interface for privilege-enforced DynamicPrivilege operations with searchable metadata.
  * <p>
- * This interface extends {@link SecureRepository} to provide privilege-checked repository operations for
+ * This interface extends {@link com.openkoda.repository.SecureRepository} to provide privilege-checked repository operations for
  * DynamicPrivilege entities. All inherited methods (findOne, findAll, save, delete) enforce privilege
  * checks based on entity requiredReadPrivilege and requiredWritePrivilege formulas. Operations throw
  * {@link org.springframework.security.access.AccessDeniedException} if user lacks required privileges.
- * </p>
+
  * <p>
  * Searchable metadata configuration via {@link SearchableRepositoryMetadata} annotation:
  * <ul>
@@ -47,11 +47,11 @@ import static com.openkoda.controller.common.URLConstants.PRIVILEGE;
  *   <li><b>entityClass:</b> DynamicPrivilege.class - Entity type for repository operations</li>
  * </ul>
  * Used by search/autocomplete features to index and retrieve privileges by name and category.
- * </p>
+
  * <p>
  * Note: This is a marker interface with no custom methods - all operations inherited from SecureRepository.
  * Instantiated by Spring Data as runtime proxy with security advice.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1

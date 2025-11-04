@@ -26,13 +26,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * creation, configuration, member management, and deletion. Organizations represent tenant
  * boundaries in the OpenKoda multi-tenant architecture, providing data isolation and
  * user access control at the tenant level.
- * </p>
+ * 
  *
- * <h2>Multi-Tenancy Architecture</h2>
+ * <b>Multi-Tenancy Architecture</b>
  * <p>
  * Organizations serve as the primary tenant entity in OpenKoda's multi-tenant model.
  * Each organization maintains:
- * </p>
+ * 
  * <ul>
  *   <li>Isolated data scope with organization-scoped privileges</li>
  *   <li>Custom property bag (JSONB storage) for tenant-specific configuration</li>
@@ -40,7 +40,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Optional dedicated database schema for complete data isolation</li>
  * </ul>
  *
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  * <dl>
  *   <dt>{@link com.openkoda.controller.organization.AbstractOrganizationController}</dt>
  *   <dd>Abstract base controller providing Flow-based business logic for organization
@@ -55,10 +55,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       /organizations with privilege-based access control.</dd>
  * </dl>
  *
- * <h2>Service Dependencies</h2>
+ * <b>Service Dependencies</b>
  * <p>
  * Controllers delegate to service layer for business logic execution:
- * </p>
+ * 
  * <ul>
  *   <li>{@code OrganizationService} - Tenant provisioning, schema management, organization removal</li>
  *   <li>{@code UserService} - Member invitation, user-organization association</li>
@@ -66,10 +66,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code ValidationService} - Form validation and business rule enforcement</li>
  * </ul>
  *
- * <h2>Repository Access</h2>
+ * <b>Repository Access</b>
  * <p>
  * Data access uses both secure and unsecure repository patterns:
- * </p>
+ * 
  * <ul>
  *   <li>{@code repositories.secure.organization} - Privilege-enforcing organization queries</li>
  *   <li>{@code repositories.unsecure.organization} - Administrative operations bypassing privilege checks</li>
@@ -77,10 +77,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code repositories.unsecure.role} - Global role retrieval for assignment</li>
  * </ul>
  *
- * <h2>Typical Usage Patterns</h2>
+ * <b>Typical Usage Patterns</b>
  * <p>
  * Organization CRUD workflow:
- * </p>
+ * 
  * <pre>{@code
  * // Create organization with initial admin user
  * services.organization.createOrganization(form.getName());
@@ -91,7 +91,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * <p>
  * Member management workflow:
- * </p>
+ * 
  * <pre>{@code
  * // Invite user to organization
  * services.user.inviteNewOrExistingUser(email, organizationId, roleName);
@@ -100,15 +100,15 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * services.user.removeUserRole(userRoleId);
  * }</pre>
  *
- * <h2>Package Guidelines</h2>
+ * <b>Package Guidelines</b>
  * <p>
  * <b>Should I put a class into this package?</b>
- * </p>
+ * 
  * <p>
  * Yes, if the class is a Spring MVC controller implementing HTTP endpoints for organization
  * management operations. Controllers should extend AbstractOrganizationController and focus
  * on request/response handling while delegating business logic to the service layer.
- * </p>
+ * 
  *
  * @see com.openkoda.model.Organization
  * @see com.openkoda.service.organization.OrganizationService

@@ -31,19 +31,19 @@ import java.util.zip.ZipOutputStream;
  * This interface provides the foundation for serializing OpenKoda entities to portable YAML format
  * for export/import operations, backup procedures, and cross-environment data migration. Implementations
  * handle entity-to-DTO conversion, ZIP archive generation, and optional database upgrade script generation.
- * </p>
+
  * <p>
  * Typical workflow:
  * <pre>{@code
  * EntityToYamlConverter<MyEntity, MyDTO> converter = ...;
  * converter.addToZip(entity, zipOutputStream, existingEntries);
  * }</pre>
- * </p>
+
  * <p>
  * <b>Thread Safety:</b> Implementations are responsible for handling concurrency when multiple
  * entities are processed in parallel. Callers should consult the zipEntries Set to avoid duplicate
  * ZIP entries during concurrent operations.
- * </p>
+
  *
  * @param <T> the entity type to be converted (e.g., Organization, User, Form)
  * @param <D> the DTO type produced during conversion (e.g., OrganizationDto, UserDto)
@@ -61,17 +61,15 @@ public interface EntityToYamlConverter<T, D> {
      * This method converts the entity into its DTO representation, serializes it to YAML, and adds
      * a corresponding ZIP entry to the output stream. Implementations must consult the zipEntries
      * Set to avoid creating duplicate entries when multiple entities reference the same artifact.
-     * </p>
+
      * <p>
      * ZIP entry names typically follow the pattern: {@code entities/<entity-type>/<entity-id>.yaml}
-     * </p>
+
      *
      * @param entity the domain entity to serialize (must not be null)
      * @param zipOut the ZIP output stream to write serialized data to (must be open and writable)
      * @param zipEntries the set of existing ZIP entry names to prevent duplicates (must not be null)
      * @return the DTO representation of the entity after serialization
-     * @throws java.io.IOException if an I/O error occurs during ZIP writing
-     * @throws IllegalArgumentException if entity or zipOut is null
      */
     D addToZip(T entity, ZipOutputStream zipOut, Set<String> zipEntries);
     
@@ -82,16 +80,14 @@ public interface EntityToYamlConverter<T, D> {
      * storage medium, updating the entity's metadata to reference the saved files. The method
      * returns the saved or updated entity instance with any changes to file paths or export
      * timestamps reflected in its state.
-     * </p>
+
      * <p>
      * Storage location is typically determined by application configuration properties such as
      * {@code FILE_STORAGE_FILESYSTEM_PATH}.
-     * </p>
+
      *
      * @param entity the entity whose export artifacts should be persisted (must not be null)
      * @return the saved or updated entity instance with file references populated
-     * @throws java.io.IOException if an I/O error occurs during file writing
-     * @throws IllegalArgumentException if entity is null
      */
     T saveToFile(T entity);
     
@@ -101,16 +97,14 @@ public interface EntityToYamlConverter<T, D> {
      * This method deletes YAML files and related export artifacts from the filesystem or storage
      * backend, cleaning up resources after export operations are no longer needed. The entity's
      * metadata is updated to reflect the removal of file references.
-     * </p>
+
      * <p>
      * This operation is typically invoked during entity deletion workflows or when re-exporting
      * an entity requires clearing previous export artifacts.
-     * </p>
+
      *
      * @param entity the entity whose export artifacts should be removed (must not be null)
      * @return the entity instance with file references cleared
-     * @throws java.io.IOException if an I/O error occurs during file deletion
-     * @throws IllegalArgumentException if entity is null
      */
     T removeExportedFiles(T entity);
     
@@ -120,15 +114,15 @@ public interface EntityToYamlConverter<T, D> {
      * This method allows converter implementations to contribute SQL statements that should be
      * executed during database schema upgrades when importing entities. The default implementation
      * is a no-op, returning without modification to the dbUpgradeEntries list.
-     * </p>
+
      * <p>
      * Implementations that require database schema changes (e.g., creating tables for dynamic
      * entities, adding columns, or modifying constraints) should override this method and append
      * appropriate SQL fragments to dbUpgradeEntries.
-     * </p>
+
      * <p>
      * SQL fragments are typically processed by {@code DbVersionService} during the upgrade workflow.
-     * </p>
+
      *
      * @param entity the entity being exported/imported that may require schema changes (must not be null)
      * @param dbUpgradeEntries the mutable list to which SQL upgrade statements should be appended (must not be null)

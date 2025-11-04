@@ -64,13 +64,13 @@ import static com.openkoda.service.dynamicentity.DynamicEntityRegistrationServic
  * transaction management ({@code @EnableTransactionManagement}), and JPA repositories
  * ({@code @EnableJpaRepositories}) with support for both standard and dynamically generated
  * entities in the {@code com.openkoda.dynamicentity.generated} package.
- * </p>
+
  * <p>
  * The class maintains a static {@link ConfigurableApplicationContext} reference for lifecycle
  * control, allowing programmatic restart and shutdown operations. Dynamic entity support is
  * provided through integration with Byte Buddy runtime class generation, where forms defined
  * in the database are compiled into JPA entities and registered with the persistence unit.
- * </p>
+
  * <p>
  * Key lifecycle methods include:
  * <ul>
@@ -78,7 +78,7 @@ import static com.openkoda.service.dynamicentity.DynamicEntityRegistrationServic
  *   <li>{@link #restart(boolean)} - Restarts application with optional dynamic entity reloading</li>
  *   <li>{@link #shutdown()} - Terminates the application process</li>
  * </ul>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -103,7 +103,7 @@ public class App extends SpringBootServletInitializer {
      * Used by {@link #restart(boolean)} and {@link #shutdown()} methods to control application
      * lifecycle. The context is set during application startup in {@link #startApp(Class, String[], boolean)}
      * and updated during restart operations.
-     * </p>
+
      */
     protected static ConfigurableApplicationContext context;
     
@@ -113,7 +113,7 @@ public class App extends SpringBootServletInitializer {
      * Preserved across restarts to maintain application class identity. Set in
      * {@link #startApp(Class, String[], boolean)} and used by {@link #restart(boolean)}
      * to relaunch the Spring context with the same application class.
-     * </p>
+
      */
     private static Class mainClass;
 
@@ -123,7 +123,7 @@ public class App extends SpringBootServletInitializer {
      * This is the standard JVM entry point for launching the OpenKoda application.
      * It immediately delegates to the {@code startApp} method with {@link App} class
      * as the application class parameter.
-     * </p>
+
      *
      * @param args command-line arguments passed to the application. Supports {@code --force}
      *             flag for bypassing initialization safety prompts when running in
@@ -140,7 +140,7 @@ public class App extends SpringBootServletInitializer {
      * This method delegates to {@link #startApp(Class, String[], boolean)} with {@code forced}
      * parameter set to {@code false}, ensuring that initialization safety checks are performed
      * when running in destructive initialization profiles.
-     * </p>
+
      * <p>
      * The startup process includes:
      * <ul>
@@ -149,7 +149,7 @@ public class App extends SpringBootServletInitializer {
      *   <li>Initializing {@link BasicCustomisationService} for custom module registration</li>
      *   <li>Performing safety checks for initialization profiles (unless bypassed)</li>
      * </ul>
-     * </p>
+
      *
      * @param appClass the Spring Boot application class to run, typically {@link App} class
      *                 or a subclass for customized configurations
@@ -170,7 +170,7 @@ public class App extends SpringBootServletInitializer {
      * accidental data loss in initialization profiles. The {@code forced} parameter is typically
      * set to {@code true} when called from {@link OpenkodaApp} after safety checks have already
      * been performed by {@link JDBCApp}.
-     * </p>
+
      * <p>
      * Startup sequence:
      * <ol>
@@ -181,7 +181,7 @@ public class App extends SpringBootServletInitializer {
      *   <li>Runs Spring application context via {@link SpringApplication#run(Class, String[])}</li>
      *   <li>Retrieves {@link BasicCustomisationService} bean for custom module initialization</li>
      * </ol>
-     * </p>
+
      *
      * @param appClass the Spring Boot application class to run, typically {@link App} class
      *                 or a subclass for customized application configurations
@@ -211,7 +211,7 @@ public class App extends SpringBootServletInitializer {
      * (such as {@code drop_and_init_database}) using {@link SpringProfilesHelper#isInitializationProfile()}.
      * Initialization profiles perform destructive operations including dropping all database tables
      * and recreating schema from scratch.
-     * </p>
+
      * <p>
      * When an initialization profile is detected:
      * <ul>
@@ -220,11 +220,11 @@ public class App extends SpringBootServletInitializer {
      *   <li>If {@code isforce} is {@code true}, bypasses interactive prompt and assumes confirmation</li>
      *   <li>Exits application with status 0 if user declines to continue</li>
      * </ul>
-     * </p>
+
      * <p>
      * This safety mechanism prevents accidental execution of destructive initialization profiles
      * in production environments or during development when data preservation is important.
-     * </p>
+
      *
      * @param isforce if {@code true}, bypasses interactive confirmation prompt and assumes user consent.
      *                Typically set to {@code true} when {@code --force} flag is present in command-line arguments
@@ -260,12 +260,12 @@ public class App extends SpringBootServletInitializer {
      * This method performs an immediate application termination by calling {@link System#exit(int)}
      * with status code 0, indicating successful termination. The JVM will exit and all non-daemon
      * threads will be stopped.
-     * </p>
+
      * <p>
      * This method does not attempt to close the Spring application context gracefully.
      * For graceful shutdown with proper context cleanup, consider using Spring Boot's
      * actuator shutdown endpoint or {@link ConfigurableApplicationContext#close()}.
-     * </p>
+
      */
     public static void shutdown() {
         System.exit(0);
@@ -277,12 +277,12 @@ public class App extends SpringBootServletInitializer {
      * This convenience method delegates to {@link #restart(boolean)} with {@code reloadAllForms}
      * parameter set to {@code false}. The Spring application context is closed and restarted,
      * but dynamic entity definitions are not regenerated from the database.
-     * </p>
+
      * <p>
      * Use this method when configuration changes require context restart but dynamic entity
      * schemas have not changed. For full restart including dynamic entity regeneration,
      * use {@link #restart(boolean)} with {@code true} parameter.
-     * </p>
+
      *
      * @see #restart(boolean)
      */
@@ -297,17 +297,17 @@ public class App extends SpringBootServletInitializer {
      * the context shutdown process. The restart sequence includes closing the current Spring context,
      * optionally regenerating dynamic entity classes from database form definitions, and launching
      * a new Spring application context with the original command-line arguments.
-     * </p>
+
      * <p>
      * Restart sequence when {@code reloadAllForms} is {@code true}:
      * <ol>
      *   <li>Retrieves all {@link Form} entities from {@link FormRepository}</li>
      *   <li>Closes the current Spring application context</li>
      *   <li>Generates {@link DynamicEntityDescriptor} instances via {@link DynamicEntityRegistrationService}</li>
-     *   <li>Compiles and loads dynamic entity classes using Byte Buddy via {@link #buildAndLoadDynamicClasses(ClassLoader)}</li>
+     *   <li>Compiles and loads dynamic entity classes using Byte Buddy via {@link DynamicEntityRegistrationService#buildAndLoadDynamicClasses(ClassLoader)}</li>
      *   <li>Launches new Spring context with {@link SpringApplicationBuilder} using stored {@code mainClass} and original arguments</li>
      * </ol>
-     * </p>
+
      * <p>
      * Restart sequence when {@code reloadAllForms} is {@code false}:
      * <ol>
@@ -315,19 +315,19 @@ public class App extends SpringBootServletInitializer {
      *   <li>Recompiles existing dynamic entity classes (no database query)</li>
      *   <li>Launches new Spring context with original configuration</li>
      * </ol>
-     * </p>
+
      * <p>
      * The restart executes in a non-daemon thread ({@code setDaemon(false)}) to ensure the thread
      * survives the context shutdown operation. This is critical because daemon threads are terminated
      * when the JVM detects no remaining non-daemon threads.
-     * </p>
+
      *
      * @param reloadAllForms if {@code true}, queries {@link FormRepository} to retrieve all form
      *                       entities, generates {@link DynamicEntityDescriptor} instances via Byte Buddy,
      *                       recompiles and loads dynamic entity classes before context restart.
      *                       If {@code false}, reuses existing dynamic entity descriptors
      * @see FormRepository
-     * @see DynamicEntityRegistrationService#generateDynamicEntityDescriptors(List, long)
+     * @see com.openkoda.service.dynamicentity.DynamicEntityRegistrationService#generateDynamicEntityDescriptors(List, Long)
      * @see DynamicEntityRegistrationService#buildAndLoadDynamicClasses(ClassLoader)
      */
     public static void restart(boolean reloadAllForms) {
@@ -372,18 +372,18 @@ public class App extends SpringBootServletInitializer {
      * and adds their fully-qualified class names to the JPA persistence unit. This enables Hibernate
      * to discover and manage runtime-generated entity classes that are compiled via Byte Buddy and
      * loaded into the {@code com.openkoda.dynamicentity.generated} package.
-     * </p>
+
      * <p>
      * Without this post-processor, JPA would only discover entities via classpath scanning and
      * annotation processing at compile time. Dynamic entities generated at runtime would not be
-     * recognized by the {@link javax.persistence.EntityManager}.
-     * </p>
+     * recognized by the {@link jakarta.persistence.EntityManager}.
+
      * <p>
      * The post-processor is invoked by {@link #entityManagerFactoryBuilder()} and integrated
      * into the {@link EntityManagerFactoryBuilder} configuration. Each dynamic entity class name
      * is constructed by concatenating {@link DynamicEntityRegistrationService#PACKAGE} constant
      * with the suffixed entity class name from the descriptor.
-     * </p>
+
      *
      * @return a {@link PersistenceUnitPostProcessor} that adds managed class names from
      *         {@link DynamicEntityDescriptorFactory} to enable JPA discovery of runtime-generated entities
@@ -406,7 +406,7 @@ public class App extends SpringBootServletInitializer {
      * both standard JPA entities and dynamically generated entities. The builder uses Hibernate as the
      * JPA vendor adapter and integrates the {@link #persistenceUnitPostProcessor()} to register runtime-generated
      * entity classes with the persistence unit.
-     * </p>
+
      * <p>
      * Configuration details:
      * <ul>
@@ -415,13 +415,13 @@ public class App extends SpringBootServletInitializer {
      *   <li>Bootstrap Executor: {@code null} (synchronous entity manager factory creation)</li>
      *   <li>Persistence Unit Post-Processors: Includes {@link #persistenceUnitPostProcessor()} for dynamic entity registration</li>
      * </ul>
-     * </p>
+
      * <p>
      * The bean is named {@code "entityBuilder"} and is used throughout the application for creating
      * entity manager factories that recognize both compile-time and runtime-generated JPA entities.
      * This is essential for the dynamic entity generation feature where form definitions are compiled
      * into JPA entities via Byte Buddy.
-     * </p>
+
      *
      * @return configured {@link EntityManagerFactoryBuilder} with persistence unit post-processor
      *         that enables JPA discovery of runtime-generated dynamic entities

@@ -27,10 +27,10 @@ package com.openkoda.model;
  * Implemented by entities and value objects that need to be presented in dropdown menus, selection widgets, and user 
  * interface components. The label typically represents a display name, title, or user-friendly identifier. This interface 
  * enables generic UI component rendering without coupling to specific entity types.
- * </p>
+ * 
  * <p>
  * Common implementations include entities like Organization, Role, User, and various configuration objects.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -43,7 +43,7 @@ public interface OptionWithLabel {
      * Returns the human-readable label for this option.
      * <p>
      * Used by UI components for dropdown display text and form field rendering.
-     * </p>
+     * 
      *
      * @return the display label, typically non-null but implementation-specific
      */

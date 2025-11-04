@@ -42,21 +42,21 @@ import java.util.zip.ZipOutputStream;
  * to RuntimeException for error propagation, while streaming methods ({@code addFileToZip}, {@code addURLFileToZip})
  * log errors but do not propagate them. Organization-scoped YAML filename generation follows the convention:
  * filePath + entityName + [_orgId] + .yaml for multi-tenant component exports.
- * </p>
+ * 
  * <p>
  * Thread-safety: Stateless but ZipOutputStream parameter is not thread-safe - callers must synchronize access to
  * shared ZipOutputStream instances.
- * </p>
+ * 
  * <p>
  * Resource management: Methods do NOT close the provided ZipOutputStream - caller is responsible for stream lifecycle.
- * </p>
+ * 
  * <p>
  * Exception handling: {@code addToZipFile} throws RuntimeException on failure; {@code addFileToZip} and
  * {@code addURLFileToZip} log and swallow IOExceptions (inconsistent error semantics - callers should verify ZIP integrity).
- * </p>
+ * 
  *
  * @see com.openkoda.service.export.ComponentExportService
- * @see com.openkoda.service.export.converter.AbstractEntityToYamlConverter
+ * // AbstractEntityToYamlConverter
  * @see com.openkoda.core.flow.LoggingComponent
  * @since 1.7.1
  * @author OpenKoda Team
@@ -69,16 +69,16 @@ public class ZipUtils implements LoggingComponent {
      * Creates a new ZipEntry with the specified name, writes UTF-8 encoded bytes if content passes StringUtils.hasText
      * validation, and closes the entry. This method propagates errors as RuntimeException with diagnostic message
      * including the entry name for troubleshooting failed exports.
-     * </p>
+     * 
      * <p>
      * Side effects: Creates ZipEntry, writes UTF-8 bytes to zipOut, closes entry via zipOut.closeEntry().
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>
      * zipUtils.addToZipFile(yamlContent, "config/form.yaml", zipOut);
      * </pre>
-     * </p>
+     * 
      *
      * @param content text content to write; must pass StringUtils.hasText validation (not null/empty/whitespace-only)
      * @param entryName ZIP entry path/name (e.g., "components/form/MyForm.yaml")
@@ -107,10 +107,10 @@ public class ZipUtils implements LoggingComponent {
      * logs IOExceptions via LoggingComponent.error but does NOT rethrow them - creating silent failure risk. The
      * implementation does not consistently call zipOut.closeEntry() in all control flows which may leave ZIP archive
      * malformed on error. Resource management closes FileInputStream on completion.
-     * </p>
+     * 
      * <p>
      * Buffer size: Fixed 1024 bytes.
-     * </p>
+     * 
      *
      * @param file File to read and add to ZIP; must be readable
      * @param entryName ZIP entry path/name
@@ -140,10 +140,10 @@ public class ZipUtils implements LoggingComponent {
      * Creates a new ZipEntry, opens InputStream from url.openStream() (supporting http://, file://, jar:// protocols),
      * and streams resource contents in 1024-byte chunks. Error handling logs IOExceptions but does NOT rethrow them -
      * creating silent failure risk. Resource management closes InputStream obtained from url.openStream() on completion.
-     * </p>
+     * 
      * <p>
      * Buffer size: Fixed 1024 bytes.
-     * </p>
+     * 
      *
      * @param url URL to resource (supports url.openStream() - typically http://, file://, jar:// protocols)
      * @param entryName ZIP entry path/name
@@ -173,14 +173,14 @@ public class ZipUtils implements LoggingComponent {
      * Generates organization-scoped YAML file paths for multi-tenant component exports. If organizationId is non-null,
      * appends _organizationId suffix to the entity name for tenant isolation. Logs debug message at invocation for
      * export operation diagnostics.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>
      * setResourceFilePath("components/form/", "ContactForm", 123L)
      * // returns "components/form/ContactForm_123.yaml"
      * </pre>
-     * </p>
+     * 
      *
      * @param filePath directory path prefix (typically from FolderPathConstants)
      * @param entityName component name (without extension)

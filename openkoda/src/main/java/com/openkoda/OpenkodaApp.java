@@ -24,13 +24,13 @@ import static com.openkoda.service.dynamicentity.DynamicEntityRegistrationServic
  *   <li>Byte Buddy runtime class compilation before Spring context initialization</li>
  *   <li>Forced startup mode that bypasses redundant safety checks</li>
  * </ul>
- * </p>
+
  * <p>
  * The startup sequence delegates to {@link JDBCApp} for database operations, then invokes
  * {@link com.openkoda.service.dynamicentity.DynamicEntityRegistrationService#buildAndLoadDynamicClasses(ClassLoader)}
  * to compile dynamically-generated entity classes using Byte Buddy. Finally, it launches the Spring Boot application
  * context via {@link App#startApp(Class, String[], boolean)} with forced mode enabled.
- * </p>
+
  * <p>
  * Profile configuration follows a precedence hierarchy:
  * <ol>
@@ -38,7 +38,7 @@ import static com.openkoda.service.dynamicentity.DynamicEntityRegistrationServic
  *   <li>Command-line argument {@code --spring.profiles.active=value}</li>
  *   <li>Environment variable {@code SPRING_PROFILES_ACTIVE}</li>
  * </ol>
- * </p>
+
  *
  * @see App
  * @see JDBCApp
@@ -55,7 +55,7 @@ public class OpenkodaApp {
      * <p>
      * Currently unused in OpenkodaApp, but retained for potential future direct query execution
      * during application startup or database discovery operations.
-     * </p>
+
      */
     @Autowired
     NativeQueries nativeQueries;
@@ -69,11 +69,11 @@ public class OpenkodaApp {
      *   <li>Invoke {@link App#initializationSafetyCheck(boolean)} to validate initialization profile usage</li>
      *   <li>Delegate full startup orchestration to {@link #startOpenkodaApp(Class, String[])}</li>
      * </ol>
-     * </p>
+
      * <p>
      * The {@code --force} flag bypasses interactive confirmation prompts when using database initialization
      * profiles such as {@code drop_and_init_database}, allowing non-interactive automated deployments.
-     * </p>
+
      *
      * @param args command-line arguments, supports {@code --force} flag for initialization bypass
      * @throws ClassNotFoundException if JDBC driver or dynamic entity classes cannot be loaded
@@ -99,17 +99,17 @@ public class OpenkodaApp {
      *       compiles Byte Buddy-generated entity classes (skipped for initialization profiles)</li>
      *   <li>{@link App#startApp(Class, String[], boolean)} launches Spring Boot context with {@code forced=true}</li>
      * </ol>
-     * </p>
+
      * <p>
      * The {@code forced=true} parameter passed to {@link App#startApp(Class, String[], boolean)} bypasses
      * duplicate safety checks, since {@link App#initializationSafetyCheck(boolean)} was already performed
      * in {@link #main(String[])}.
-     * </p>
+
      * <p>
      * Dynamic entity compilation is conditionally skipped when {@link SpringProfilesHelper#isInitializationProfile()}
      * returns true, as initialization profiles (e.g., {@code drop_and_init_database}) operate on empty databases
      * where no dynamic entities exist yet.
-     * </p>
+
      *
      * @param appClass application class to run, typically {@link App}.class
      * @param args command-line arguments for profile configuration and application parameters
@@ -139,20 +139,20 @@ public class OpenkodaApp {
      *   <li>Command-line argument {@code --spring.profiles.active=value} extracted from args array</li>
      *   <li>Environment variable {@code SPRING_PROFILES_ACTIVE} (lowest priority, typically Docker deployments)</li>
      * </ol>
-     * </p>
+
      * <p>
      * Converts Maven/Gradle format {@code -Dspring-boot.run.profiles} to Spring Boot format
      * {@code --spring.profiles.active} when processing command-line arguments. The conversion is
      * handled by the JVM argument parser before args reaches this method.
-     * </p>
+
      * <p>
      * Sets the {@code spring.profiles.active} system property for Spring Boot auto-detection during
      * {@link org.springframework.context.ApplicationContext} initialization.
-     * </p>
+
      * <p>
      * Example: {@code --spring.profiles.active=openkoda,local} sets system property {@code spring.profiles.active}
      * to enable both the {@code openkoda} and {@code local} profiles for the application runtime.
-     * </p>
+
      *
      * @param args command-line arguments potentially containing {@code --spring.profiles.active=value}
      * @see SpringProfilesHelper#SPRING_PROFILES_ACTIVE_PROP

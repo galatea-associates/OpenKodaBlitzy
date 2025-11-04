@@ -61,9 +61,9 @@ import static net.bytebuddy.implementation.attribute.AnnotationValueFilter.Defau
  * ({@code @Entity}, {@code @Table}, {@code @Column}, {@code @Id}, {@code @GeneratedValue}, {@code @Formula}, 
  * {@code @ManyToOne}, {@code @ManyToMany}), compiles to byte arrays, loads via custom ClassLoader injection, 
  * and registers with JPA EntityManagerFactory for persistence operations.
- * </p>
  * 
- * <h3>Complete Workflow</h3>
+ * 
+ * <b>Complete Workflow</b>
  * <ol>
  * <li><b>Descriptor Generation:</b> {@link #generateDynamicEntityDescriptors(List, Long)} converts Form entities 
  * to DynamicEntityDescriptor instances via {@code DynamicEntityDescriptorFactory}</li>
@@ -83,7 +83,7 @@ import static net.bytebuddy.implementation.attribute.AnnotationValueFilter.Defau
  * {@link #dynamicRepositoryClasses} maps for runtime access</li>
  * </ol>
  * 
- * <h3>Field Type Mapping</h3>
+ * <b>Field Type Mapping</b>
  * <p>Maps {@code FrontendMappingFieldDefinition} types to Java types and JPA column types:</p>
  * <ul>
  * <li>{@code FieldType.text} → {@code String.class} with VARCHAR</li>
@@ -97,7 +97,7 @@ import static net.bytebuddy.implementation.attribute.AnnotationValueFilter.Defau
  * <li>{@code FieldType.many_to_one} → Dynamically resolved via {@code DynamicEntityDescriptorFactory.getInstanceByEntityKey()}</li>
  * </ul>
  * 
- * <h3>JPA Annotations Applied</h3>
+ * <b>JPA Annotations Applied</b>
  * <ul>
  * <li>{@code @Entity}: Marks class as JPA entity</li>
  * <li>{@code @Table(name=tableName)}: Maps to database table</li>
@@ -110,7 +110,7 @@ import static net.bytebuddy.implementation.attribute.AnnotationValueFilter.Defau
  * <li>{@code @JsonIgnore}: Prevents JSON serialization of file collections</li>
  * </ul>
  * 
- * <h3>Formula Generation</h3>
+ * <b>Formula Generation</b>
  * <p>Automatically generates description and search index formulas:</p>
  * <ul>
  * <li><b>descriptionFormula:</b> CONCATENATES text fields: {@code (''||id||' '||COALESCE(field1,'')||' '||...)}</li>
@@ -118,7 +118,7 @@ import static net.bytebuddy.implementation.attribute.AnnotationValueFilter.Defau
  * {@code (''||'id:'||id||' '||'field1:'||COALESCE(field1,'')||...)}</li>
  * </ul>
  * 
- * <h3>Repository Synthesis</h3>
+ * <b>Repository Synthesis</b>
  * <p>Creates Spring Data JPA SecureRepository interfaces with annotations:</p>
  * <ul>
  * <li>{@code @Repository}: Spring component registration</li>
@@ -156,7 +156,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <p>
      * All runtime-generated classes are created in the {@code com.openkoda.dynamicentity.generated} package
      * to isolate them from hand-written source code and enable efficient scanning.
-     * </p>
+     * 
      */
     public static final String PACKAGE = "com.openkoda.dynamicentity.generated.";
     
@@ -169,7 +169,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <li>T1: Lowercase entity class name (e.g., "userprofile_1234567890")</li>
      * <li>T2: Generated repository interface class implementing {@code SecureRepository<OpenkodaEntity>}</li>
      * </ul>
-     * </p>
+     * 
      * <p><b>Thread Safety:</b> NOT thread-safe. External synchronization required during concurrent access.
      * Populated by {@link #buildAndLoadDynamicClasses(ClassLoader)} during single-threaded startup.</p>
      * 
@@ -183,7 +183,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <p>
      * Key: Entity key identifier from {@code DynamicEntityDescriptor.getEntityKey()}<br>
      * Value: Generated entity class extending {@link OpenkodaEntity}
-     * </p>
+     * 
      * <p><b>Thread Safety:</b> NOT thread-safe. External synchronization required during concurrent access.
      * Populated by {@link #buildAndLoadDynamicClasses(ClassLoader)} during single-threaded startup.</p>
      * 
@@ -199,7 +199,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * Injected by Spring's {@code @PersistenceContext} annotation. Used by 
      * {@link #registerDynamicRepositories(boolean)} to create concrete repository instances
      * via {@code JpaRepositoryFactory}.
-     * </p>
+     * 
      */
     @PersistenceContext
     EntityManager em;
@@ -213,11 +213,11 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * instances. Each repository is instantiated via {@code JpaRepositoryFactory.getRepository()} using the 
      * injected {@link #em EntityManager}, then registered in {@code SearchableRepositories} by table name 
      * for runtime query execution.
-     * </p>
+     * 
      * <p>
      * Called after {@link #buildAndLoadDynamicClasses(ClassLoader)} during application bootstrap to complete 
      * the repository lifecycle: generation → loading → registration.
-     * </p>
+     * 
      * <p><b>JPA Integration:</b> Uses {@code @PersistenceContext} EntityManager and 
      * {@code JpaRepositoryFactory.getRepository()} to create proxied repository implementations with 
      * Spring Data query derivation and custom query method support.</p>
@@ -248,12 +248,12 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * Extracts {@code FrontendMappingDefinition} from each Form via {@code FormService.getFrontendMappingDefinition()}, 
      * then delegates to {@link #generateDynamicEntityDescriptors(List, Map, Long)} with pre-computed mapping 
      * definitions. Returns count of successfully generated descriptors for logging and monitoring.
-     * </p>
+     * 
      * <p>
      * This is a convenience method that automatically parses frontend mapping definitions from Form entities.
      * Use the overloaded version {@link #generateDynamicEntityDescriptors(List, Map, Long)} when definitions 
      * are already available to avoid redundant parsing.
-     * </p>
+     * 
      * <p><b>Thread Safety:</b> NOT thread-safe. External synchronization required for concurrent invocations.
      * Modifies static registries in {@code DynamicEntityDescriptorFactory}.</p>
      * 
@@ -282,12 +282,12 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * {@code frontendMappingDefinitions} map. For each Form, creates a {@code DynamicEntityDescriptor} 
      * via {@code DynamicEntityDescriptorFactory.create()} with the form name, table name, field definitions, 
      * and timestamp suffix. Returns total count for verification.
-     * </p>
+     * 
      * <p>
      * This method is the core descriptor generation implementation. The single-parameter overload 
      * {@link #generateDynamicEntityDescriptors(List, Long)} delegates to this method after parsing 
      * mapping definitions.
-     * </p>
+     * 
      * <p><b>Thread Safety:</b> NOT thread-safe. External synchronization required for concurrent invocations.
      * Modifies static registries in {@code DynamicEntityDescriptorFactory}.</p>
      * 
@@ -325,9 +325,9 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <p>
      * Executes a three-phase process to transform {@code DynamicEntityDescriptor} instances into 
      * fully-loaded JPA entities and Spring Data repositories:
-     * </p>
      * 
-     * <h3>Phase 1: Create Unloaded Byte Buddy Artifacts</h3>
+     * 
+     * <b>Phase 1: Create Unloaded Byte Buddy Artifacts</b>
      * <p>
      * Iterates {@code DynamicEntityDescriptorFactory.loadableInstances()} to create unloaded 
      * {@code DynamicType.Unloaded} artifacts for all descriptors. Stores in a temporary map keyed by 
@@ -338,9 +338,9 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <li>T3: String - Generated search index formula for full-text search</li>
      * <li>T4: List&lt;String&gt; - Entity keys of many_to_one referenced types for dependency resolution</li>
      * </ul>
-     * </p>
      * 
-     * <h3>Phase 2: Load Entity Classes with Dependency Resolution</h3>
+     * 
+     * <b>Phase 2: Load Entity Classes with Dependency Resolution</b>
      * <p>
      * Loads all entity classes via {@code classLoader.load(INJECTION)}, resolving many_to_one inter-descriptor 
      * dependencies. For each descriptor:
@@ -351,9 +351,9 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <li>Stores loaded class in {@link #dynamicEntityClasses} static map</li>
      * </ol>
      * This phase handles circular dependencies and ensures referenced entity classes are available during loading.
-     * </p>
      * 
-     * <h3>Phase 3: Create and Load Repository Interfaces</h3>
+     * 
+     * <b>Phase 3: Create and Load Repository Interfaces</b>
      * <p>
      * Creates Spring Data JPA repository interfaces for all loaded entities. For each descriptor:
      * <ol>
@@ -364,7 +364,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <li>Stores in {@link #dynamicRepositoryClasses} map with table name as key</li>
      * <li>Marks descriptor as loaded via {@code setLoaded(true)}</li>
      * </ol>
-     * </p>
+     * 
      * 
      * <p><b>Static Effect:</b> Populates {@link #dynamicEntityClasses} and {@link #dynamicRepositoryClasses} 
      * static maps. These registries are used by {@link #registerDynamicRepositories(boolean)} for JPA 
@@ -386,8 +386,6 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * @see #createAndLoadDynamicRepository
      * @see DynamicEntityDescriptorFactory#loadableInstances()
      * @see DynamicEntityDescriptor#setLoaded(boolean)
-     * @see net.bytebuddy.dynamic.DynamicType.Unloaded#load(ClassLoader, net.bytebuddy.dynamic.loading.ClassLoadingStrategy)
-     * @see net.bytebuddy.dynamic.DynamicType.Unloaded#include(DynamicType.Unloaded)
      */
     public static void buildAndLoadDynamicClasses(ClassLoader classLoader) throws IOException, URISyntaxException {
         debugLogger.debug("[buildAndLoadDynamicClasses]");
@@ -433,9 +431,9 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * Creates a Byte Buddy {@code DynamicType.Unloaded} entity class with JPA annotations and field mappings.
      * <p>
      * Generates a complete JPA entity class at runtime with the following characteristics:
-     * </p>
      * 
-     * <h3>Class Structure</h3>
+     * 
+     * <b>Class Structure</b>
      * <ol>
      * <li>{@code @Entity} and {@code @Table(name=tableName)} annotations for JPA persistence</li>
      * <li>Extends {@link OpenkodaEntity} superclass for base entity functionality (id, timestamps)</li>
@@ -444,7 +442,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <li>Public no-arg constructor delegating to {@code OpenkodaEntity(Long)} superclass constructor</li>
      * </ol>
      * 
-     * <h3>Field Generation and Annotations</h3>
+     * <b>Field Generation and Annotations</b>
      * <p>For each {@code FrontendMappingFieldDefinition}:</p>
      * <ul>
      * <li><b>Standard Fields:</b> Defines public field with appropriate Java type, annotates with 
@@ -465,7 +463,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * {@code @Formula(value=(sqlFormula))} instead of {@code @Column}</li>
      * </ul>
      * 
-     * <h3>Generated SQL Formulas</h3>
+     * <b>Generated SQL Formulas</b>
      * <p>Automatically constructs two formulas for entity display and search indexing:</p>
      * <ul>
      * <li><b>descriptionFormula:</b> Concatenates text fields for entity description:
@@ -474,7 +472,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * {@code (''||'id:'||id||' '||'field1:'||COALESCE(field1,'')||' '||'field2:'||COALESCE(cast(field2 as varchar),'')||...)}</li>
      * </ul>
      * 
-     * <h3>Privilege Fields</h3>
+     * <b>Privilege Fields</b>
      * <p>Adds two protected fields with null {@code @Formula} annotations for security integration:</p>
      * <ul>
      * <li>{@code requiredReadPrivilege} - For read access control</li>
@@ -482,7 +480,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * </ul>
      * <p>Both fields have getters implementing {@code FieldAccessor.ofBeanProperty()} for property access.</p>
      * 
-     * <h3>Byte Buddy Details</h3>
+     * <b>Byte Buddy Details</b>
      * <p>Uses {@code ByteBuddy.subclass()} with:</p>
      * <ul>
      * <li>{@code SKIP_DEFAULTS} attribute filtering to minimize generated bytecode size</li>
@@ -663,9 +661,9 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * Creates a {@code SecureRepository} interface at runtime with Spring annotations for JPA repository 
      * factory creation and metadata embedding. The generated interface is ready for 
      * {@code JpaRepositoryFactory.getRepository()} proxy instantiation.
-     * </p>
      * 
-     * <h3>Generated Interface Structure</h3>
+     * 
+     * <b>Generated Interface Structure</b>
      * <ol>
      * <li><b>Interface Declaration:</b> Creates public interface implementing {@code SecureRepository<T>} 
      * where T is the generated entity class</li>
@@ -682,7 +680,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <li><b>ClassLoader Injection:</b> Loads interface via {@code INJECTION} strategy into provided ClassLoader</li>
      * </ol>
      * 
-     * <h3>Repository Capabilities</h3>
+     * <b>Repository Capabilities</b>
      * <p>The generated {@code SecureRepository<T>} interface provides:</p>
      * <ul>
      * <li>Standard Spring Data JPA CRUD operations (findById, save, delete, etc.)</li>
@@ -691,7 +689,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <li>Search functionality via embedded {@code searchIndexFormula}</li>
      * </ul>
      * 
-     * <h3>JPA Factory Integration</h3>
+     * <b>JPA Factory Integration</b>
      * <p>The loaded interface class is passed to {@code JpaRepositoryFactory.getRepository()} in 
      * {@link #registerDynamicRepositories(boolean)} to create a concrete proxy implementation with 
      * Spring Data query derivation.</p>
@@ -763,9 +761,9 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * Extends {@link CanonicalObject} to provide JSON-like string representation of dynamically-generated 
      * entity instances for logging and notification systems. All generated entity classes implement this 
      * interface via Byte Buddy's {@code .implement(CanonicalObjectInterceptor.class)} directive.
-     * </p>
      * 
-     * <h3>Default Implementation Behavior</h3>
+     * 
+     * <b>Default Implementation Behavior</b>
      * <p>The {@link #notificationMessage()} default method uses reflection to:</p>
      * <ol>
      * <li>Extract entity class simple name (e.g., "FormEntity_1234567890")</li>
@@ -775,7 +773,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <li>Assemble into compact string: {@code ClassName{\"id\":123, \"field1\":\"value1\", ...}}</li>
      * </ol>
      * 
-     * <h3>Field Filtering</h3>
+     * <b>Field Filtering</b>
      * <p>Only includes fields matching ALL criteria:</p>
      * <ul>
      * <li>Public visibility ({@code Modifier.isPublic()})</li>
@@ -784,12 +782,12 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * </ul>
      * <p>This filters out constants, static utilities, and private/protected implementation details.</p>
      * 
-     * <h3>Thread Safety</h3>
+     * <b>Thread Safety</b>
      * <p>Safe for read-only reflection operations. The method does not modify field values, only reads 
      * them for string formatting. Multiple threads can safely call {@code notificationMessage()} concurrently 
      * on the same entity instance.</p>
      * 
-     * <h3>Error Handling</h3>
+     * <b>Error Handling</b>
      * <p>Catches {@code IllegalAccessException}, {@code IllegalArgumentException}, 
      * {@code NoSuchMethodException}, and general {@code Throwable}. On exception, falls back to 
      * {@code this.toString()} to prevent notification failures from breaking application flow.</p>
@@ -804,7 +802,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
          * <p>
          * Uses reflection to extract entity ID and all public non-static non-final fields, formatting 
          * them as {@code ClassName{\"id\":123, \"field1\":\"value1\", \"field2\":\"value2\"}}.
-         * </p>
+         * 
          * <p><b>Example Output:</b></p>
          * <pre>
          * FormEntity_1234567890{"id":42, "name":"Sample", "value":"123"}
@@ -858,7 +856,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * Constructs a {@code TypeDescription.Generic} representing {@code java.util.List<T>} where T is 
      * the provided class parameter. Used to define collection fields such as {@code List<File>} for 
      * file attachments and {@code List<Long>} for file ID collections.
-     * </p>
+     * 
      * 
      * @param c Element type for the list. Example: {@code File.class} produces {@code List<File>}, 
      *          {@code Long.class} produces {@code List<Long>}.
@@ -875,9 +873,9 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <p>
      * Translates {@code FieldType} enum values from form definitions to corresponding Java types 
      * for entity class field declarations. Handles all standard database column types.
-     * </p>
      * 
-     * <h3>Type Mapping</h3>
+     * 
+     * <b>Type Mapping</b>
      * <ul>
      * <li>{@code FieldType.text} (VARCHAR) → {@code String.class}</li>
      * <li>{@code FieldType.bigint} (BIGINT) → {@code Long.class}</li>
@@ -916,7 +914,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * Constructs getter name following JavaBean naming conventions: {@code "get" + capitalizedFieldName}.
      * Delegates to {@link #capitalize(String)} to handle edge cases like fields starting with multiple 
      * uppercase letters (e.g., "URLField" → "getURLField" not "getURLfield").
-     * </p>
+     * 
      * 
      * @param fieldName Field name to generate getter for. Example: "userName" → "getUserName", 
      *                  "id" → "getId", "URLField" → "getURLField".
@@ -933,7 +931,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <p>
      * Constructs setter name following JavaBean naming conventions: {@code "set" + capitalizedFieldName}.
      * Delegates to {@link #capitalize(String)} to handle edge cases.
-     * </p>
+     * 
      * 
      * @param fieldName Field name to generate setter for. Example: "userName" → "setUserName", 
      *                  "id" → "setId", "URLField" → "setURLField".
@@ -949,7 +947,7 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * Capitalizes field name with special handling for acronyms and multi-letter uppercase prefixes.
      * <p>
      * Implements smart capitalization logic for JavaBean accessor generation:
-     * </p>
+     * 
      * <ul>
      * <li><b>Standard case:</b> "userName" → "UserName" (capitalize first letter)</li>
      * <li><b>Already capitalized:</b> "UserName" → "UserName" (no change)</li>
@@ -957,12 +955,12 @@ public class DynamicEntityRegistrationService implements LoggingComponent {
      * <li><b>Single letter:</b> "x" → "X" (simple capitalization)</li>
      * </ul>
      * 
-     * <h3>Edge Case Handling</h3>
+     * <b>Edge Case Handling</b>
      * <p>
      * The method checks if the second character (index 1) is already uppercase. If so, returns the field 
      * name unchanged to preserve acronyms. This ensures {@code "URLField"} generates {@code "getURLField"} 
      * not {@code "getURLfield"}, maintaining readability for acronyms.
-     * </p>
+     * 
      * 
      * @param fieldName Field name to capitalize. Must be non-null and non-empty.
      * @return Capitalized field name suitable for JavaBean accessor methods.

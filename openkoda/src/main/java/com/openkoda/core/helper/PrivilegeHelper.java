@@ -56,17 +56,14 @@ import static java.util.stream.Collectors.toList;
  * (defined in {@link DynamicPrivilege}) to provide a unified privilege management interface. It implements
  * JPA's {@link AttributeConverter} interface for automatic privilege persistence and provides JSON serialization
  * and string format conversions for privilege sets.
- * </p>
  * <p>
  * The class uses an {@link AtomicReference}-backed singleton pattern initialized via {@link PostConstruct} and
  * accessible through {@link #getInstance()}. During initialization, it registers all privilege enum classes and
  * populates predefined role-specific privilege sets (admin, orgAdmin, user, orgUser).
- * </p>
  * <p>
  * Privileges are stored in the database using a parenthesized format: {@code "(PRIV1),(PRIV2),(PRIV3)"}. The helper
  * provides conversion methods between this format and Java collections ({@link Set}, arrays) as well as JSON arrays
  * for frontend consumption.
- * </p>
  * <p>
  * Example usage:
  * <pre>
@@ -79,13 +76,11 @@ import static java.util.stream.Collectors.toList;
  * // Get current user context
  * Long userId = privilegeHelper.getCurrentUserId();
  * </pre>
- * </p>
  * <p>
  * <b>Thread Safety:</b> This class uses an {@link AtomicReference} for singleton management and populates
  * static maps during initialization. After startup, most operations are read-only and safe for concurrent use.
  * The {@code nameToEnum} map and privilege set constants are populated during {@link #init()} and should not
  * be modified afterward.
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -318,7 +313,7 @@ public class PrivilegeHelper implements HasSecurityRules, AttributeConverter<Pri
      * <p>
      * The method strips the outer parentheses (first and last characters) and splits on {@code "),("}.
      * Empty input returns an empty array.
-     * </p>
+     * 
      * 
      * @param joinedPrivileges privilege string in parenthesized format, can be null or empty
      * @return array of privilege name strings without parentheses
@@ -529,7 +524,7 @@ public class PrivilegeHelper implements HasSecurityRules, AttributeConverter<Pri
      * <p>
      * This method enables dynamic privilege enum registration via the
      * {@code application.classes.privileges-enum} configuration property.
-     * </p>
+     * 
      *
      * @param enumClasses array of privilege enum classes to register (must implement {@link PrivilegeBase})
      * @see #init()
@@ -617,7 +612,7 @@ public class PrivilegeHelper implements HasSecurityRules, AttributeConverter<Pri
      * </ol>
      * <p>
      * Called automatically by Spring after bean construction and dependency injection.
-     * </p>
+     * 
      * 
      * @see #registerEnumClasses(Class[])
      * @see Privilege

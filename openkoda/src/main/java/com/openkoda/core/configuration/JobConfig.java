@@ -39,18 +39,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  * <li>{@code @EnableAsync} - Enables asynchronous method execution via {@code @Async} annotation</li>
  * <li>{@code @EnableScheduling} - Enables scheduled job execution via {@code @Scheduled} annotation</li>
  * </ul>
- * </p>
  * <p>
  * Configures two thread pool executors:
  * <ul>
  * <li>{@link ThreadPoolTaskExecutor} for async operations - core 5 threads, max 10 threads, queue capacity 250 tasks</li>
  * <li>{@link ThreadPoolTaskScheduler} for scheduled jobs - pool size 5 threads</li>
  * </ul>
- * </p>
  * <p>
  * This configuration is used by JobsScheduler and background job implementations across the application,
  * including EmailSenderJob, WebhookJob, SearchIndexUpdaterJob, and SystemHealthAlertJob.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -75,12 +73,12 @@ public class JobConfig {
      * <li>Queue capacity: 250 tasks - number of tasks that can be queued when all threads are busy</li>
      * <li>Thread name prefix: 'async-' - for identification in logs and monitoring</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * This executor is used by Spring to execute methods annotated with {@code @Async} throughout
      * the application. When an async method is invoked, Spring submits it to this thread pool for
      * asynchronous background processing.
-     * </p>
+     * 
      *
      * @return configured ThreadPoolTaskExecutor for async method execution
      */
@@ -101,7 +99,7 @@ public class JobConfig {
      * <li>Pool size: 5 threads - number of threads available for scheduled task execution</li>
      * <li>Bean name: 'taskScheduler' - required by Spring scheduling infrastructure</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * This scheduler is used by JobsScheduler to execute scheduled background jobs including:
      * <ul>
@@ -111,7 +109,7 @@ public class JobConfig {
      * <li>SystemHealthAlertJob - monitors system health and sends alerts</li>
      * </ul>
      * Jobs are executed on cron schedules configured via {@code @Scheduled} annotations.
-     * </p>
+     * 
      *
      * @return configured ThreadPoolTaskScheduler for scheduled job execution
      */

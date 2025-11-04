@@ -37,7 +37,7 @@ import com.openkoda.core.flow.PageModelMap;
  * and delegate business logic to these protected methods. Extends {@link AbstractController} for injected
  * services and repositories access, and implements {@link ApiAttributes} for standard flow key constants
  * like {@code tokenResponse} and {@code userEntity}.
- * </p>
+ * 
  * <p>
  * <b>Design Characteristics:</b>
  * <ul>
@@ -45,14 +45,13 @@ import com.openkoda.core.flow.PageModelMap;
  *   <li>Protected visibility: All methods return {@link PageModelMap} for controller consumption</li>
  *   <li>Delegation pattern: HTTP handling delegated to subclasses; token business logic centralized here</li>
  * </ul>
- * </p>
  * <p>
  * <b>Core Methods:</b> {@link #getToken(Long, TokenRequest)}, {@link #refreshToken(RefreshTokenRequest)},
  * {@link #getTokenRefresher(RefresherTokenRequest, String)}. Each method orchestrates Flow pipelines that
  * load users, validate requests, issue tokens via {@code services.token}, and map results to
  * {@link com.openkoda.controller.api.v1.model.TokenResponse} stored in the {@code tokenResponse}
  * PageModelMap attribute.
- * </p>
+ * 
  * <p>
  * <b>Service Dependencies:</b>
  * <ul>
@@ -61,7 +60,6 @@ import com.openkoda.core.flow.PageModelMap;
  *   <li>{@code services.user} - User authentication and password verification</li>
  *   <li>{@code repositories.unsecure.user} - Unsecured user repository for authentication flows</li>
  * </ul>
- * </p>
  *
  * @see TokenControllerApiV1
  * @see AbstractController
@@ -78,7 +76,7 @@ public class AbstractTokenControllerApiV1 extends AbstractController implements 
      * This method orchestrates a Flow pipeline that loads the user entity, verifies the provided API key
      * against the user's registered keys, creates a JWT access token, and maps it to a TokenResponse DTO.
      * The result is stored in the {@code tokenResponse} PageModelMap attribute for consumption by controllers.
-     * </p>
+     * 
      * <p>
      * <b>Flow Pipeline:</b>
      * <ol>
@@ -87,11 +85,11 @@ public class AbstractTokenControllerApiV1 extends AbstractController implements 
      *   <li>Create JWT token via {@code services.token.createTokenForUser(user)}</li>
      *   <li>Map token to TokenResponse via {@code services.apiKey.createTokenResponse(token)}</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * <b>Security Note:</b> API key must be valid and associated with the specified user. Tokens are
      * sensitive credentials - enforce TLS in production and avoid logging raw token values.
-     * </p>
+     * 
      *
      * @param userId the user ID for token issuance (must exist in user repository)
      * @param aTokenRequest the token request DTO containing {@code apiKey} field for verification
@@ -114,18 +112,18 @@ public class AbstractTokenControllerApiV1 extends AbstractController implements 
      * This method orchestrates a Flow pipeline that validates the provided refresh token (tokenRefresher),
      * creates a new JWT access token for the authenticated user, and maps it to a TokenResponse DTO.
      * The result is stored in the {@code tokenResponse} PageModelMap attribute.
-     * </p>
+     * 
      * <p>
      * <b>Flow Pipeline:</b>
      * <ol>
      *   <li>Verify refresh token via {@code services.token.createTokenForRefresher(tokenRefresher)}</li>
      *   <li>Map new token to TokenResponse via {@code services.apiKey.createTokenResponse(token)}</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * <b>Usage:</b> Clients use this method to obtain new access tokens without re-authenticating with
      * username/password. The refresh token must be valid and not expired.
-     * </p>
+     * 
      *
      * @param aTokenRequest the refresh token request DTO containing {@code tokenRefresher} field
      * @return {@link PageModelMap} with {@code tokenResponse} attribute containing new JWT access token
@@ -146,7 +144,7 @@ public class AbstractTokenControllerApiV1 extends AbstractController implements 
      * creates a refresh token (tokenRefresher), and maps it to a TokenResponse DTO. The refresh token can
      * later be exchanged for access tokens via {@link #refreshToken(RefreshTokenRequest)} without requiring
      * password re-entry.
-     * </p>
+     * 
      * <p>
      * <b>Flow Pipeline:</b>
      * <ol>
@@ -155,11 +153,11 @@ public class AbstractTokenControllerApiV1 extends AbstractController implements 
      *   <li>Create refresh token via {@code services.token.createRefresherTokenForUser(user)}</li>
      *   <li>Map token to TokenResponse via {@code services.apiKey.createTokenResponse(token)}</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * <b>Security Note:</b> Credentials are sensitive - enforce TLS and avoid logging passwords. Failed
      * authentication attempts should be rate-limited to prevent brute-force attacks.
-     * </p>
+     * 
      *
      * @param aRefresherTokenRequest the refresher token request DTO containing {@code login} and {@code password} fields
      * @param username the user login name extracted from {@code aRefresherTokenRequest.getLogin()}

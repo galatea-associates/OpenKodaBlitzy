@@ -27,14 +27,14 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p>If the class is a service performing event-related logic or is a helper object user in other event-related
  * services then YES.</p>
  * <br/>
- * <h2>Package Purpose</h2>
+ * <b>Package Purpose</b>
  * <p>Application event publishing and handling infrastructure providing synchronous in-process events 
  * (ApplicationEvent) and asynchronous cluster-wide events (ClusterEvent) with scheduled event triggers 
  * (SchedulerService) and dynamic listener registration (EventListenerService).</p>
  *
- * <h2>Key Architecture Patterns</h2>
+ * <b>Key Architecture Patterns</b>
  *
- * <h3>1. IN-PROCESS EVENT BUS (ApplicationEvent)</h3>
+ * <b>1. IN-PROCESS EVENT BUS (ApplicationEvent)</b>
  * <ul>
  * <li>Synchronous and asynchronous event dispatch within single JVM instance via ApplicationEventService</li>
  * <li>Type-safe event descriptors (AbstractApplicationEvent, ApplicationEvent) pairing canonical names with payload Classes</li>
@@ -42,7 +42,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li>Event listeners registered programmatically or persisted in EventListenerEntry entities</li>
  * </ul>
  *
- * <h3>2. CLUSTER EVENT PROPAGATION (ClusterEvent)</h3>
+ * <b>2. CLUSTER EVENT PROPAGATION (ClusterEvent)</b>
  * <ul>
  * <li>Cross-node configuration synchronization in distributed Hazelcast deployments</li>
  * <li>ClusterEventSenderService publishes lifecycle events (SCHEDULER_*, EVENT_LISTENER_*, FORM_*) to cluster topic</li>
@@ -50,7 +50,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li>Active only in 'hazelcast' profile; no-op in single-instance mode</li>
  * </ul>
  *
- * <h3>3. SCHEDULED EVENT TRIGGERS (SchedulerService)</h3>
+ * <b>3. SCHEDULED EVENT TRIGGERS (SchedulerService)</b>
  * <ul>
  * <li>Cron-based task scheduling via Spring TaskScheduler publishing SCHEDULER_EXECUTED events</li>
  * <li>Persisted Scheduler entities with cronExpression, eventData, organizationId, onMasterOnly, isAsync configuration</li>
@@ -58,7 +58,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li>Cluster-aware lifecycle methods propagate scheduler registration/removal across nodes</li>
  * </ul>
  *
- * <h3>4. EVENT LISTENER REGISTRY (EventListenerService)</h3>
+ * <b>4. EVENT LISTENER REGISTRY (EventListenerService)</b>
  * <ul>
  * <li>Discovery, conversion, and lifecycle management of persisted EventListenerEntry records</li>
  * <li>Reflection-based event type and consumer method discovery for UI dropdowns</li>
@@ -66,16 +66,16 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li>Cluster-aware registration/unregistration propagates listener configuration across nodes</li>
  * </ul>
  *
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  *
- * <h3>Event Descriptors</h3>
+ * <b>Event Descriptors</b>
  * <ul>
  * <li><b>AbstractApplicationEvent</b>: Generic base class for typed event descriptors with static registry</li>
  * <li><b>ApplicationEvent</b>: Concrete subclass declaring canonical application-wide events 
  * (USER_*, ORGANIZATION_*, NOTIFICATION_*, BACKUP_*, SCHEDULER_EXECUTED, etc.)</li>
  * </ul>
  *
- * <h3>Event Services</h3>
+ * <b>Event Services</b>
  * <ul>
  * <li><b>ApplicationEventService</b>: Central in-process event bus managing listener registration and 
  * synchronous/asynchronous event dispatch</li>
@@ -85,7 +85,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * with event publishing</li>
  * </ul>
  *
- * <h3>Cluster Synchronization</h3>
+ * <b>Cluster Synchronization</b>
  * <ul>
  * <li><b>ClusterEvent</b>: Serializable DTO propagating configuration lifecycle events 
  * (SCHEDULER_*, EVENT_LISTENER_*, FORM_*) via Hazelcast</li>
@@ -93,7 +93,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li><b>ClusterEventListenerService</b>: Hazelcast MessageListener routing cluster events to service handlers</li>
  * </ul>
  *
- * <h3>Consumer Infrastructure</h3>
+ * <b>Consumer Infrastructure</b>
  * <ul>
  * <li><b>EventConsumer</b>: Immutable wrapper normalizing functional (Consumer&lt;T&gt;, BiConsumer&lt;T,String[]&gt;) 
  * and reflective (Method) consumer modalities</li>
@@ -102,9 +102,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * (INTEGRATION, BACKUP, MESSAGE, PUSH_NOTIFICATION, ROLE_MODIFICATION, SERVER_SIDE_CODE)</li>
  * </ul>
  *
- * <h2>Usage Patterns</h2>
+ * <b>Usage Patterns</b>
  *
- * <h3>Event Publishing</h3>
+ * <b>Event Publishing</b>
  * <pre>{@code
  * // Synchronous event dispatch
  * services.applicationEvent.emitEvent(ApplicationEvent.USER_CREATED, basicUser);
@@ -113,7 +113,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * services.applicationEvent.emitEventAsync(ApplicationEvent.BACKUP_CREATED, backupFile);
  * }</pre>
  *
- * <h3>Listener Registration (Programmatic)</h3>
+ * <b>Listener Registration (Programmatic)</b>
  * <pre>{@code
  * // Lambda consumer
  * services.applicationEvent.registerEventListener(
@@ -128,7 +128,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * );
  * }</pre>
  *
- * <h3>Listener Registration (Persisted)</h3>
+ * <b>Listener Registration (Persisted)</b>
  * <pre>{@code
  * // Cluster-aware registration from EventListenerEntry
  * EventListenerEntry entry = new EventListenerEntry(
@@ -138,7 +138,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * eventListenerService.registerListenerClusterAware(entry);
  * }</pre>
  *
- * <h3>Scheduled Event Configuration</h3>
+ * <b>Scheduled Event Configuration</b>
  * <pre>{@code
  * // Create scheduler publishing event on cron schedule
  * Scheduler scheduler = new Scheduler();
@@ -150,9 +150,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * schedulerService.schedule(scheduler);
  * }</pre>
  *
- * <h2>Cluster Propagation Workflow</h2>
+ * <b>Cluster Propagation Workflow</b>
  *
- * <h3>Scheduler Lifecycle</h3>
+ * <b>Scheduler Lifecycle</b>
  * <ol>
  * <li>Node A: schedulerService.schedule(scheduler) persists Scheduler entity</li>
  * <li>Node A: clusterEventSenderService.loadScheduler(id) publishes SCHEDULER_ADD to cluster topic</li>
@@ -160,7 +160,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li>All nodes: schedulerService.loadFromDb(id) loads entity and registers with Spring TaskScheduler</li>
  * </ol>
  *
- * <h3>Event Listener Lifecycle</h3>
+ * <b>Event Listener Lifecycle</b>
  * <ol>
  * <li>Node B: eventListenerService.registerListenerClusterAware(entry) persists EventListenerEntry</li>
  * <li>Node B: clusterEventSenderService.loadEventListener(id) publishes EVENT_LISTENER_ADD</li>
@@ -168,68 +168,68 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li>All nodes: eventListenerService.loadFromDb(id) registers consumer with ApplicationEventService</li>
  * </ol>
  *
- * <h2>Error Handling and Retry</h2>
+ * <b>Error Handling and Retry</b>
  *
- * <h3>ApplicationEvent Dispatch</h3>
+ * <b>ApplicationEvent Dispatch</b>
  * <ul>
  * <li>Synchronous emitEvent(): First listener exception propagates to caller, halting remaining listeners</li>
  * <li>Asynchronous emitEventAsync(): Listener exceptions swallowed by fixed thread pool (4 threads); no error feedback</li>
  * <li>No automatic retry mechanism; consumers must implement own error recovery</li>
  * </ul>
  *
- * <h3>ClusterEvent Propagation</h3>
+ * <b>ClusterEvent Propagation</b>
  * <ul>
  * <li>Hazelcast publish() exceptions propagate to caller; no built-in retry</li>
  * <li>Message ordering guaranteed from single publisher; concurrent publishers may interleave</li>
  * <li>Handler operations designed to be idempotent for rare duplicate message scenarios</li>
  * </ul>
  *
- * <h2>Thread-Safety Considerations</h2>
+ * <b>Thread-Safety Considerations</b>
  *
- * <h3>ApplicationEventService</h3>
+ * <b>ApplicationEventService</b>
  * <ul>
  * <li>Registration methods synchronized; event dispatch NOT synchronized</li>
  * <li>Public listeners Map is mutable; external modifications bypass synchronization</li>
  * <li>Async executor (4 fixed threads) may invoke listeners concurrently; consumers must be thread-safe</li>
  * </ul>
  *
- * <h3>EventListenerService</h3>
+ * <b>EventListenerService</b>
  * <ul>
  * <li>Internal collections (events, consumers, consumersArray) NOT synchronized</li>
  * <li>Reflection-based discovery operates on immutable ApplicationEvent static fields (thread-safe)</li>
  * </ul>
  *
- * <h3>SchedulerService</h3>
+ * <b>SchedulerService</b>
  * <ul>
  * <li>currentlyScheduled HashMap NOT synchronized; concurrent modifications may cause race conditions</li>
  * <li>Spring TaskScheduler handles concurrent task execution safely</li>
  * <li>SchedulerTask.run() sets MDC context before event publishing for request correlation</li>
  * </ul>
  *
- * <h2>Integration Notes</h2>
+ * <b>Integration Notes</b>
  *
- * <h3>Spring Framework</h3>
+ * <b>Spring Framework</b>
  * <ul>
  * <li>ApplicationEventService can optionally integrate with Spring ApplicationEventPublisher for unified event system</li>
  * <li>SchedulerService uses Spring TaskScheduler (typically ThreadPoolTaskScheduler) with CronTrigger for cron evaluation</li>
  * <li>EventListenerService uses @DependsOn to ensure ApplicationEventService initialized before listener registration</li>
  * </ul>
  *
- * <h3>Hazelcast</h3>
+ * <b>Hazelcast</b>
  * <ul>
  * <li>Cluster events published to ITopic&lt;ClusterEvent&gt; named CLUSTER_EVENT_TOPIC</li>
  * <li>ClusterEventListenerService registered as MessageListener&lt;ClusterEvent&gt; during Hazelcast configuration</li>
  * <li>Active only when ClusterHelper.isCluster() returns true ('hazelcast' profile)</li>
  * </ul>
  *
- * <h3>Database Persistence</h3>
+ * <b>Database Persistence</b>
  * <ul>
  * <li>Scheduler entities persisted for durable scheduled task configuration across restarts</li>
  * <li>EventListenerEntry entities enable dynamic listener registration without code deployment</li>
  * <li>Cluster event handlers reload entities by ID after receiving propagation messages</li>
  * </ul>
  *
- * <h2>Common Pitfalls</h2>
+ * <b>Common Pitfalls</b>
  * <ol>
  * <li>Forgetting to publish cluster events after database changes in distributed deployments</li>
  * <li>Not handling null event payloads in consumer methods</li>
@@ -239,7 +239,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li>Not implementing idempotent cluster event handlers (duplicate messages may arrive)</li>
  * </ol>
  *
- * <h2>Related Packages</h2>
+ * <b>Related Packages</b>
  * <ul>
  * <li>com.openkoda.model.component.event: EventListenerEntry and Consumer entity definitions</li>
  * <li>com.openkoda.model.component: Scheduler entity for cron-based task configuration</li>

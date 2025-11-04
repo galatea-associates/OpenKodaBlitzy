@@ -55,7 +55,6 @@ import static com.openkoda.service.export.FolderPathConstants.UI_COMPONENT_;
  * entity in the database, enabling tenant-specific template customization. If the template is not found in the database
  * and frontendResourceCreateIfNotExist is enabled, it automatically creates the entity from the corresponding classpath resource.
  * Falls back to the packaged error.html template if all resolution attempts fail.
- * </p>
  * <p>
  * <b>Template Resolution Order:</b>
  * <ol>
@@ -65,12 +64,10 @@ import static com.openkoda.service.export.FolderPathConstants.UI_COMPONENT_;
  *   <li>Fallback to classpath resource</li>
  *   <li>Ultimate fallback to error.html template</li>
  * </ol>
- * </p>
  * <p>
  * <b>Tenant Awareness:</b> Uses TenantResolver to determine the current organization context. Queries FrontendResource
  * entities scoped to the current organization, allowing template customization per tenant. Templates can have different
  * access levels (PUBLIC, ORGANIZATION, GLOBAL) with priority-based resolution when multiple matches exist.
- * </p>
  * <p>
  * <b>Configuration Flags:</b>
  * <ul>
@@ -78,11 +75,9 @@ import static com.openkoda.service.export.FolderPathConstants.UI_COMPONENT_;
  *   <li>frontendResourceCreateIfNotExist: When true, auto-creates database entities from classpath templates on first access</li>
  * </ul>
  * Supports URL flags RESOURCE (force classpath loading) and DRAFT (return draft content version) for testing purposes.
- * </p>
  * <p>
  * <b>Thread Safety:</b> Instance fields are final or injected Spring beans. Uses QueryExecutor.runEntityManagerOperationInTransaction
  * for transaction management, ensuring thread-safe database operations in multi-tenant context.
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -149,7 +144,7 @@ public class FrontendResourceOrClassLoaderTemplateResolver extends ClassLoaderTe
      * Initializes the resolver with services for database operations, template loading, and path processing.
      * Configuration flags control whether templates are always loaded from classpath and whether database
      * entities are auto-created from classpath resources when not found.
-     * </p>
+     * 
      *
      * @param queryExecutor transaction executor for database operations in multi-tenant context,
      *                      ensuring proper tenant isolation and transaction boundaries
@@ -187,7 +182,7 @@ public class FrontendResourceOrClassLoaderTemplateResolver extends ClassLoaderTe
      * the database for the FrontendResource entity, auto-creates if missing (when enabled), and returns a
      * StringTemplateResource with the template content. For standard templates, delegates to the superclass
      * ClassLoaderTemplateResolver for traditional classpath loading.
-     * </p>
+     * 
      * <p>
      * <b>Resolution Logic for 'frontend-resource#' Templates:</b>
      * <ol>
@@ -200,11 +195,11 @@ public class FrontendResourceOrClassLoaderTemplateResolver extends ClassLoaderTe
      *   <li>Return draft content if DRAFT URL parameter present, otherwise return regular content</li>
      * </ol>
      * Uses priority-based query to handle multiple access level matches, preferring organization-specific over global templates.
-     * </p>
+     * 
      * <p>
      * <b>Transaction Management:</b> Uses QueryExecutor.runEntityManagerOperationInTransaction for database queries
      * to ensure proper transaction boundaries and tenant context isolation in multi-tenant deployments.
-     * </p>
+     * 
      *
      * @param configuration Thymeleaf engine configuration (unused but required by interface contract)
      * @param ownerTemplate parent template name for fragment resolution (unused in current implementation)

@@ -35,7 +35,7 @@ import java.util.List;
  * Manages {@link UserRole} entities that represent the many-to-many relationship between
  * users and roles. This service provides queries for retrieving user-role assignments
  * scoped by organization, supporting the multi-tenant role-based access control system.
- * </p>
+
  * <p>
  * The UserRole junction entity contains:
  * <ul>
@@ -46,14 +46,14 @@ import java.util.List;
  * </ul>
  * The entity enforces a unique constraint on (userId, roleId, organizationId) to prevent
  * duplicate role assignments. The createdAt timestamp provides audit trail for assignments.
- * </p>
+
  * <p>
  * This stateless service acts as a façade, isolating callers from direct repository and
  * specification wiring. All operations use secure repositories with privilege enforcement.
- * </p>
+
  * <p>
  * Thread-safety: This service is stateless and thread-safe.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -72,11 +72,11 @@ public class UserRoleService extends ComponentProvider {
      * Queries UserRole entities filtered by organization ID using a join query with the Role
      * entity. This method supports organization-scoped role queries for multi-tenant scenarios
      * where users have different roles in different organizations.
-     * </p>
+
      * <p>
      * The query uses {@link UserRoleSpecification#getUserRolesForOrganizations()} to build
      * the JPA Specification and executes through the secure repository to enforce privilege checks.
-     * </p>
+
      *
      * @param organizationId the organization ID to filter user-role assignments; must not be null
      * @return list of {@link UserRole} entities for the specified organization; empty list if none found

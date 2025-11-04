@@ -37,13 +37,13 @@ import static com.openkoda.controller.common.URLConstants.*;
  *   <li>Privilege system placeholders and column names</li>
  *   <li>Path formula bases for UI navigation URLs</li>
  * </ul>
- * </p>
+
  * <p>
  * This interface is typically implemented by base entity classes such as {@code TimestampedEntity} 
  * and {@code OpenkodaEntity} to provide convenient access to these constants throughout the domain model.
  * All constants defined here follow OpenKoda naming conventions and are used consistently across
  * JPA entity mappings, repository queries, and SQL formulas.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -63,7 +63,7 @@ public interface ModelConstants {
     * <p>
     * This constant defines the conventional column name "id" for primary key fields
     * in JPA entity mappings.
-    * </p>
+
     */
    String ID = "id";
 
@@ -74,7 +74,7 @@ public interface ModelConstants {
     * such as system-wide configuration entities. The sequence uses {@code allocationSize=10}
     * for performance optimization, allowing Hibernate to pre-allocate ID blocks and reduce
     * database round-trips during entity persistence.
-    * </p>
+
     *
     * @see #INITIAL_GLOBAL_VALUE
     */
@@ -86,7 +86,7 @@ public interface ModelConstants {
     * This dedicated sequence generates primary keys for the Organization entity,
     * which represents tenants in the multi-tenancy architecture. Uses {@code allocationSize=10}
     * for batch ID allocation.
-    * </p>
+
     *
     * @see #INITIAL_ORGANIZATION_VALUE
     * @see com.openkoda.model.Organization
@@ -100,7 +100,7 @@ public interface ModelConstants {
     * to specific organizations in the multi-tenancy system. These entities include an
     * {@code organization_id} foreign key column. The sequence employs {@code allocationSize=10}
     * to optimize batch inserts.
-    * </p>
+
     *
     * @see #INITIAL_ORGANIZATION_RELATED_VALUE
     * @see #ORGANIZATION_ID
@@ -114,7 +114,7 @@ public interface ModelConstants {
     * This sequence is designated for mass data import or bulk entity creation scenarios
     * where high-volume ID generation is required. Uses the same performance optimization
     * strategy with pre-allocated ID blocks.
-    * </p>
+
     */
    String MASS_ID_GENERATOR = "massGlobalId";
 
@@ -128,7 +128,7 @@ public interface ModelConstants {
     * <strong>THREAD-SAFETY WARNING:</strong> {@link SimpleDateFormat} is NOT thread-safe.
     * Concurrent access to this shared instance must be synchronized, or use {@link ThreadLocal}
     * wrappers for thread-local instances.
-    * </p>
+
     * <p>
     * Example of safe usage:
     * <pre>
@@ -136,11 +136,11 @@ public interface ModelConstants {
     *     String formatted = ModelConstants.simpleDateFormat.format(date);
     * }
     * </pre>
-    * </p>
+
     * <p>
     * For modern applications, consider using {@link java.time.format.DateTimeFormatter} which
     * is immutable and thread-safe.
-    * </p>
+
     */
    SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "dd/MM/yy" );
 
@@ -154,7 +154,7 @@ public interface ModelConstants {
     * This column stores a concatenated, searchable string representation of entity data
     * used for full-text search functionality. Entities implementing {@code SearchableEntity}
     * typically define this as a non-insertable, non-updatable column with {@code @ColumnDefault('')}.
-    * </p>
+
     *
     * @see #INDEX_STRING_COLUMN_LENGTH
     * @see com.openkoda.model.common.SearchableEntity
@@ -168,7 +168,7 @@ public interface ModelConstants {
     * used in full-text search indexes. The value of 16300 characters provides sufficient
     * capacity for comprehensive entity data concatenation while remaining within database
     * varchar limits.
-    * </p>
+
     *
     * @see #INDEX_STRING_COLUMN
     */
@@ -184,7 +184,7 @@ public interface ModelConstants {
     * This column stores the date and time when an entity was last updated.
     * Used by {@code TimestampedEntity} in conjunction with the {@code @LastModifiedDate}
     * annotation from Spring Data JPA auditing.
-    * </p>
+
     *
     * @see #CREATED_ON
     * @see com.openkoda.model.common.TimestampedEntity
@@ -197,7 +197,7 @@ public interface ModelConstants {
     * This column stores the date and time when an entity was first persisted.
     * Used by {@code TimestampedEntity} in conjunction with the {@code @CreatedDate}
     * annotation from Spring Data JPA auditing.
-    * </p>
+
     *
     * @see #UPDATED_ON
     * @see com.openkoda.model.common.TimestampedEntity
@@ -214,7 +214,7 @@ public interface ModelConstants {
     * This column links entities to their owning organization in the multi-tenancy system.
     * All entities extending {@code OpenkodaEntity} include this foreign key to provide
     * tenant-aware data isolation.
-    * </p>
+
     *
     * @see #ORGANIZATION_RELATED_ID_GENERATOR
     * @see com.openkoda.model.Organization
@@ -227,9 +227,9 @@ public interface ModelConstants {
     * <p>
     * This column links entities to ServerJs script definitions used in the
     * GraalVM JavaScript integration subsystem.
-    * </p>
+
     *
-    * @see com.openkoda.model.ServerJs
+    * @see com.openkoda.model.component.ServerJs
     */
    String SERVER_JS_ID = "server_js_id";
 
@@ -238,9 +238,9 @@ public interface ModelConstants {
     * <p>
     * This column links entities to frontend resource definitions such as
     * JavaScript, CSS, or HTML template resources.
-    * </p>
+
     *
-    * @see com.openkoda.model.FrontendResource
+    * @see com.openkoda.model.component.FrontendResource
     */
    String FRONTEND_RESOURCE_ID = "frontend_resource_id";
 
@@ -249,7 +249,7 @@ public interface ModelConstants {
     * <p>
     * This provides a conventional column name for email fields across various
     * entity types in the domain model.
-    * </p>
+
     */
    String EMAIL = "email";
 
@@ -262,7 +262,7 @@ public interface ModelConstants {
     * <p>
     * This formula generates a standardized reference string in the format "OOOOO/IIIII"
     * where OOOOO is the zero-padded organization ID (5 digits) and IIIII is the entity ID.
-    * </p>
+
     * <p>
     * Formula breakdown:
     * <ul>
@@ -270,18 +270,18 @@ public interface ModelConstants {
     *   <li>{@code coalesce(organization_id, 0)} - Uses 0 if organization_id is NULL</li>
     *   <li>{@code || '/' || id} - Concatenates with '/' separator and entity ID</li>
     * </ul>
-    * </p>
+
     * <p>
     * Example results:
     * <ul>
     *   <li>organization_id=123, id=45678 → "00123/45678"</li>
     *   <li>organization_id=NULL, id=789 → "00000/789"</li>
     * </ul>
-    * </p>
+
     * <p>
     * This formula is used by {@code OpenkodaEntity} in the {@code referenceString} field
     * with the {@code @Formula} annotation to provide human-readable, sortable entity identifiers.
-    * </p>
+
     *
     * @see com.openkoda.model.common.OpenkodaEntity
     * @see #ORGANIZATION_ID
@@ -299,7 +299,7 @@ public interface ModelConstants {
     * This high initial value of 10,000 helps avoid conflicts with seed data and
     * enables range-based detection of entity types during data operations.
     * Global entities start their ID sequence from this value.
-    * </p>
+
     *
     * @see #GLOBAL_ID_GENERATOR
     */
@@ -311,7 +311,7 @@ public interface ModelConstants {
     * Privilege entities begin ID allocation from 100,000 to clearly segregate
     * privilege identifiers from other entity types and reserve lower ranges
     * for system-defined privileges.
-    * </p>
+
     *
     * @see com.openkoda.model.Privilege
     * @see com.openkoda.model.PrivilegeBase
@@ -323,7 +323,7 @@ public interface ModelConstants {
     * <p>
     * Organization IDs begin at 122, which reserves IDs below this value for
     * seed organizations and system tenants created during initial database setup.
-    * </p>
+
     *
     * @see #ORGANIZATION_ID_GENERATOR
     * @see com.openkoda.model.Organization
@@ -336,7 +336,7 @@ public interface ModelConstants {
     * This high initial value of 120,150 for organization-related entities ensures
     * clear separation from global entities and provides ample room for seed data.
     * All entities extending {@code OpenkodaEntity} use this sequence starting point.
-    * </p>
+
     *
     * @see #ORGANIZATION_RELATED_ID_GENERATOR
     * @see com.openkoda.model.common.OpenkodaEntity
@@ -353,18 +353,18 @@ public interface ModelConstants {
     * This token "##userId##" is replaced at runtime with the actual current user ID
     * when evaluating {@code @Formula} expressions in {@code EntityWithRequiredPrivilege} implementations.
     * This enables dynamic, user-specific privilege checks directly in SQL.
-    * </p>
+
     * <p>
     * Example usage in a {@code @Formula} annotation:
     * <pre>
     * {@code @Formula("CASE WHEN user_id = ##userId## THEN NULL ELSE 'canReadUserData' END")}
     * private String requiredReadPrivilege;
     * </pre>
-    * </p>
+
     * <p>
     * The formula returns NULL (no privilege required) if the entity belongs to the current user,
     * otherwise it requires the 'canReadUserData' privilege.
-    * </p>
+
     *
     * @see com.openkoda.model.common.EntityWithRequiredPrivilege
     */
@@ -380,7 +380,7 @@ public interface ModelConstants {
     * This column name "required_privilege" represents the legacy approach to
     * storing privilege requirements. Modern implementations use separate
     * read and write privilege columns.
-    * </p>
+
     *
     * @see #REQUIRED_PRIVILEGE
     */
@@ -391,7 +391,7 @@ public interface ModelConstants {
     * <p>
     * This camelCase field name corresponds to the {@code required_privilege}
     * database column for legacy entities with unified privilege checking.
-    * </p>
+
     *
     * @see #REQUIRED_PRIVILEGE_COLUMN
     */
@@ -403,7 +403,7 @@ public interface ModelConstants {
     * This field stores the privilege name required to read (view) an entity.
     * Used by {@code EntityWithRequiredPrivilege} implementations to enforce
     * fine-grained, row-level read access control.
-    * </p>
+
     *
     * @see #REQUIRED_READ_PRIVILEGE_COLUMN
     * @see #REQUIRED_WRITE_PRIVILEGE
@@ -417,7 +417,7 @@ public interface ModelConstants {
     * This field stores the privilege name required to modify (update/delete) an entity.
     * Used by {@code EntityWithRequiredPrivilege} implementations to enforce
     * fine-grained, row-level write access control.
-    * </p>
+
     *
     * @see #REQUIRED_READ_PRIVILEGE
     * @see com.openkoda.model.common.EntityWithRequiredPrivilege
@@ -430,7 +430,7 @@ public interface ModelConstants {
     * This column "required_read_privilege" stores the privilege name string
     * that must be possessed by a user to read the entity. Computed via
     * {@code @Formula} annotations using conditional logic and {@link #USER_ID_PLACEHOLDER}.
-    * </p>
+
     *
     * @see #REQUIRED_READ_PRIVILEGE
     * @see #USER_ID_PLACEHOLDER
@@ -446,11 +446,11 @@ public interface ModelConstants {
     * <p>
     * This constant provides the starting path "/html/" for constructing navigation
     * URLs to global entities that are not scoped to specific organizations.
-    * </p>
+
     * <p>
     * Example usage in {@code @SearchableRepositoryMetadata} path formulas for
     * generating entity detail and settings page URLs.
-    * </p>
+
     *
     * @see #ID_PATH_FORMULA
     * @see #ID_VIEW_PATH_FORMULA
@@ -463,18 +463,18 @@ public interface ModelConstants {
     * This SQL formula conditionally includes the organization context in the URL path.
     * For organization-scoped entities, it generates paths like:
     * {@code /html/organization/{organizationId}/...}
-    * </p>
+
     * <p>
     * Formula logic:
     * <ul>
     *   <li>If {@code organization_id} is NULL: returns "/html/"</li>
     *   <li>If {@code organization_id} has a value: returns "/html/organization/{organizationId}/"</li>
     * </ul>
-    * </p>
+
     * <p>
     * This enables tenant-aware URL generation for multi-tenancy navigation where
     * organization context is preserved in the URL structure.
-    * </p>
+
     *
     * @see #ORGANIZATION_ID
     * @see #ID_PATH_FORMULA
@@ -487,11 +487,11 @@ public interface ModelConstants {
     * <p>
     * This formula fragment appends "/{id}/settings" to a base path, constructing
     * URLs that navigate to entity settings/configuration pages.
-    * </p>
+
     * <p>
     * Combined with {@link #GLOBAL_PATH_FORMULA_BASE} or {@link #ORG_RELATED_PATH_FORMULA_BASE},
     * produces paths like: {@code /html/user/12345/settings}
-    * </p>
+
     *
     * @see #ID_VIEW_PATH_FORMULA
     */
@@ -502,11 +502,11 @@ public interface ModelConstants {
     * <p>
     * This formula fragment appends "/{id}/view" to a base path, constructing
     * URLs that navigate to entity detail/view pages.
-    * </p>
+
     * <p>
     * Combined with {@link #GLOBAL_PATH_FORMULA_BASE} or {@link #ORG_RELATED_PATH_FORMULA_BASE},
     * produces paths like: {@code /html/organization/123/user/45678/view}
-    * </p>
+
     *
     * @see #ID_PATH_FORMULA
     */

@@ -42,39 +42,39 @@ import static com.openkoda.controller.common.URLConstants.*;
  * parameters, and schedule configuration. Supports parameterized reports with named parameter
  * substitution (:paramName syntax), output format selection, and email delivery for scheduled reports.
  * Routes accessible under /reports/query with both global and organization-scoped endpoints.
- * </p>
+ * 
  * <p>
  * Extends {@link AbstractController} for Flow-based pipeline utilities and logging helpers
  * (debug(), error()). Implements {@link HasSecurityRules} for privilege checking helpers
  * (hasGlobalOrOrgPrivilege()).
- * </p>
+ * 
  * <p>
  * Methods protected with {@code @PreAuthorize} annotations requiring CHECK_CAN_CREATE_REPORTS
  * or CHECK_CAN_READ_REPORTS privileges. Organization-scoped authorization enforced via
  * hasGlobalOrOrgPrivilege() checks.
- * </p>
+ * 
  * <p>
  * Injects {@link NativeQueries} for read-only SQL execution, uses Services registry for
  * validation/CSV/file operations, accesses Repositories for QueryReport persistence.
- * </p>
+ * 
  * <p>
  * Operational prerequisites: Requires accessible database connection, functioning services.csv
  * and services.file subsystems, properly configured Spring Security privilege evaluation.
- * </p>
+ * 
  * <p>
  * Controller is stateless with no instance fields (except injected NativeQueries). Thread-safe
  * for concurrent requests. Discovered via component scanning.
- * </p>
+ * 
  * <p>
  * Comprehensive exception handling for SQL errors (InvalidDataAccessResourceUsageException,
  * JpaSystemException, GenericJDBCException) with nested cause message extraction. Missing reports
  * return 404. Authorization failures return 401. Validation errors return field-specific messages.
- * </p>
+ * 
  * <p>
  * Removing this controller removes CRUD operations for saved reports, ad-hoc query execution,
  * CSV export functionality, and report re-run capabilities. Reports remain in database but
  * become inaccessible via REST API.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -95,7 +95,7 @@ public class QueryReportController extends AbstractController implements HasSecu
      * Provides runReadOnly() method with SQL injection prevention and query timeout enforcement.
      * Used by runQuery() and runQueryToCsv() methods to execute user-provided and saved report
      * SQL queries securely.
-     * </p>
+     * 
      */
     @Inject
     NativeQueries nativeQueries;
@@ -109,7 +109,7 @@ public class QueryReportController extends AbstractController implements HasSecu
      * services.validation.validateAndPopulateToEntity() and persists via
      * conf.getSecureRepository().saveOne(). Returns report ID and updated form on success, or field
      * error details on validation failure. Uses Flow pipeline for transactional entity lifecycle management.
-     * </p>
+     * 
      *
      * @param existingReportId Optional ID of existing QueryReport to update. If null, creates new report.
      *                        Used to distinguish between create and update operations in POST /new/settings
@@ -158,17 +158,17 @@ public class QueryReportController extends AbstractController implements HasSecu
      * Optionally associates execution with saved QueryReport entity via reportId parameter. Prepares
      * form for saving query if user has save privilege (CHECK_CAN_CREATE_REPORTS). Uses Flow pipeline
      * to populate model with query, results, reportId, form, and error log.
-     * </p>
+     * 
      * <p>
      * Flow execution: 1) Execute query via nativeQueries.runReadOnly() with exception handling,
      * 2) Check user save privilege, 3) Load QueryReport entity if reportId provided, 4) Create form
      * if save permitted, 5) Populate model with results/errors/form, 6) Render via resultView template.
-     * </p>
+     * 
      * <p>
      * Enforces CHECK_CAN_CREATE_REPORTS privilege via @PreAuthorize. Uses nativeQueries.runReadOnly()
      * which restricts to SELECT statements and applies query timeout (default 30 seconds). SQL injection
      * prevention via JDBC PreparedStatement under the hood.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>
@@ -178,7 +178,7 @@ public class QueryReportController extends AbstractController implements HasSecu
      * // Re-run saved report
      * runQuery(orgId, "SELECT revenue FROM sales", reportId, "report-chart-view");
      * </pre>
-     * </p>
+     * 
      *
      * @param organizationId Optional organization ID for tenant-scoped query execution. Null indicates
      *                      global context. Used for authorization checks and report saving
@@ -240,7 +240,7 @@ public class QueryReportController extends AbstractController implements HasSecu
      * Content-Disposition header for browser download. Handles database and I/O exceptions gracefully
      * with error logging. Uses Flow pipeline to orchestrate: load report → build filename → transform
      * results → create CSV file → return File entity.
-     * </p>
+     * 
      * <p>
      * Timestamp format: yyyy-MM-dd-HH-mm (DateTimeFormatter). CSV generation: 1) Extract headers from
      * first result row keys, 2) Extract data rows from result values, 3) Call services.csv.createCSV()
@@ -248,11 +248,11 @@ public class QueryReportController extends AbstractController implements HasSecu
      * Exception handling: catches InvalidDataAccessResourceUsageException, JpaSystemException,
      * GenericJDBCException during query execution and logs errors but continues to return empty CSV
      * rather than failing.
-     * </p>
+     * 
      * <p>
      * Protected by @PreAuthorize(CHECK_CAN_READ_REPORTS) privilege. Executes queries as read-only
      * via nativeQueries.runReadOnly() which prevents DML/DDL operations.
-     * </p>
+     * 
      * <p>
      * Result transformation example:
      * <pre>
@@ -266,7 +266,7 @@ public class QueryReportController extends AbstractController implements HasSecu
      * // John,john@example.com
      * // Jane,jane@example.com
      * </pre>
-     * </p>
+     * 
      *
      * @param organizationId Optional organization ID for tenant-scoped query execution. Used for
      *                      authorization and multi-tenancy. Null indicates global context
@@ -329,17 +329,17 @@ public class QueryReportController extends AbstractController implements HasSecu
      * render results. If report not found (null), returns HTTP 404 Not Found response. Useful for
      * report library functionality where users can save, list, and re-run reports. Respects
      * organization-scoped authorization via secure repository access.
-     * </p>
+     * 
      * <p>
      * Flow: 1) Load QueryReport by reportId via repositories.secure.queryReport.findOne(),
      * 2) If found: delegate to runQuery(organizationId, report.getQuery(), reportId, resultView),
      * 3) If null: return ResponseEntity.notFound().
-     * </p>
+     * 
      * <p>
      * Protected by @PreAuthorize(CHECK_CAN_READ_REPORTS) privilege. Uses
      * repositories.secure.queryReport.findOne() which enforces privilege-based access control.
      * Only returns reports user has permission to read based on global/organization privileges.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>
@@ -347,7 +347,7 @@ public class QueryReportController extends AbstractController implements HasSecu
      * getReport(orgId, 42L, "report-chart-view");
      * // Loads QueryReport ID 42, executes its query, renders as chart
      * </pre>
-     * </p>
+     * 
      *
      * @param organizationId Optional organization ID for tenant-scoped report access. Used for
      *                      authorization checks. Passed through to runQuery() for execution context.

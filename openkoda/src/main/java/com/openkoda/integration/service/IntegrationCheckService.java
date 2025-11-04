@@ -34,11 +34,11 @@ import org.springframework.stereotype.Component;
  * health checks. Uses Apache Commons Lang3 StringUtils (isNotBlank/isNotEmpty) for all validations.
  * This {@code @Component} is stateless, safe as a Spring singleton, and relied upon to avoid 
  * runtime integration operations when credentials or tokens are missing.
- * </p>
+ * 
  * <p>
  * Provides synchronous, read-only boolean predicates used by controllers, UIs, and services to 
  * gate features. Methods fall into three categories:
- * </p>
+ * 
  * <ul>
  *   <li>Global configuration checks: Verify OAuth client IDs and secrets are configured at the 
  *       application level (e.g., {@link #isJiraConfiguredGlobally()})</li>
@@ -51,7 +51,7 @@ import org.springframework.stereotype.Component;
  * All methods query configuration entities via {@code integrationService.getGlobalConfiguration()} 
  * and {@code integrationService.getOrganizationConfiguration(orgId)}. No external API calls are 
  * made; validations are purely based on stored configuration data.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -68,7 +68,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Fetches {@link IntegrationModuleGlobalConfiguration} and validates that both Jira client ID
      * and client secret are present and not blank. This check is required before initiating any
      * Jira OAuth flow.
-     * </p>
+     * 
      *
      * @return {@code true} if Jira client ID and secret are configured, {@code false} otherwise
      * @see #isJiraConnected(Long)
@@ -87,7 +87,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Fetches {@link IntegrationModuleGlobalConfiguration} and validates that both Basecamp client 
      * ID and client secret are present and not blank. This check is required before initiating any
      * Basecamp OAuth flow.
-     * </p>
+     * 
      *
      * @return {@code true} if Basecamp client ID and secret are configured, {@code false} otherwise
      * @see #isBasecampConnected(Long)
@@ -106,7 +106,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Fetches {@link IntegrationModuleGlobalConfiguration} and validates that both GitHub client ID
      * and client secret are present and not blank. This check is required before initiating any
      * GitHub OAuth flow.
-     * </p>
+     * 
      *
      * @return {@code true} if GitHub client ID and secret are configured, {@code false} otherwise
      * @see #isGitHubConnected(Long)
@@ -125,7 +125,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Verifies that a GitHub access token has been obtained and stored in the organization's
      * configuration. Does not validate token freshness or permissions. This indicates that the
      * OAuth flow has completed successfully at least once.
-     * </p>
+     * 
      *
      * @param orgId the organization ID to check for GitHub token presence
      * @return {@code true} if GitHub token exists and is not empty, {@code false} otherwise
@@ -142,7 +142,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Verifies that a Jira access token has been obtained and stored in the organization's
      * configuration. Does not validate token freshness or permissions. This indicates that the
      * OAuth flow has completed successfully at least once.
-     * </p>
+     * 
      *
      * @param orgId the organization ID to check for Jira token presence
      * @return {@code true} if Jira token exists and is not empty, {@code false} otherwise
@@ -159,7 +159,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Verifies that a Basecamp access token has been obtained and stored in the organization's
      * configuration. Does not validate token freshness or permissions. This indicates that the
      * OAuth flow has completed successfully at least once.
-     * </p>
+     * 
      *
      * @param orgId the organization ID to check for Basecamp token presence
      * @return {@code true} if Basecamp access token exists and is not empty, {@code false} otherwise
@@ -176,7 +176,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Validates complete configuration including API key, API token, board name, and list name. All
      * four fields must be present and not blank for Trello operations to function. This is the most
      * comprehensive check for Trello readiness.
-     * </p>
+     * 
      *
      * @param orgId the organization ID to check for complete Trello configuration
      * @return {@code true} if all required Trello fields are configured, {@code false} otherwise
@@ -195,7 +195,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Validates complete configuration including OAuth access token, repository name, and repository
      * owner. All three fields must be present and not blank for GitHub operations to function. This
      * is the most comprehensive check for GitHub readiness.
-     * </p>
+     * 
      *
      * @param orgId the organization ID to check for complete GitHub configuration
      * @return {@code true} if all required GitHub fields are configured, {@code false} otherwise
@@ -213,7 +213,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * <p>
      * Validates that a Slack webhook URL is present and not blank. The webhook URL is required for
      * sending notifications to Slack channels. This is the only required field for Slack integration.
-     * </p>
+     * 
      *
      * @param orgId the organization ID to check for Slack webhook configuration
      * @return {@code true} if Slack webhook URL is configured, {@code false} otherwise
@@ -230,7 +230,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Validates that a Microsoft Teams webhook URL is present and not blank. The webhook URL is
      * required for sending notifications to Teams channels. This is the only required field for
      * Microsoft Teams integration.
-     * </p>
+     * 
      *
      * @param orgId the organization ID to check for Microsoft Teams webhook configuration
      * @return {@code true} if Teams webhook URL is configured, {@code false} otherwise
@@ -247,7 +247,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Validates complete configuration including OAuth access token, organization name, and project
      * name. All three fields must be present and not blank for Jira operations to function. This is
      * the most comprehensive check for Jira readiness.
-     * </p>
+     * 
      *
      * @param orgId the organization ID to check for complete Jira configuration
      * @return {@code true} if all required Jira fields are configured, {@code false} otherwise
@@ -266,7 +266,7 @@ public class IntegrationCheckService extends IntegrationComponentProvider {
      * Validates complete configuration including OAuth access token and to-do list URL. Both fields
      * must be present and not blank for Basecamp operations to function. This is the most
      * comprehensive check for Basecamp readiness.
-     * </p>
+     * 
      *
      * @param orgId the organization ID to check for complete Basecamp configuration
      * @return {@code true} if all required Basecamp fields are configured, {@code false} otherwise

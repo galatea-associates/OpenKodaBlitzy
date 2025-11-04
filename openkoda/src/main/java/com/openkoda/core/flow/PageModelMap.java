@@ -41,7 +41,6 @@ import static java.util.Optional.ofNullable;
  * It provides type-safe access to model attributes using {@link PageAttr} keys, eliminating the need
  * for manual casting and reducing runtime errors. The container is created and populated by Flow pipelines
  * during request processing, then passed to views via {@link ModelAndView}.
- * </p>
  * <p>
  * Key features include:
  * <ul>
@@ -51,7 +50,6 @@ import static java.util.Optional.ofNullable;
  *   <li>Automatic view selection based on {@link BasePageAttributes#isError} flag</li>
  *   <li>Filtering of internal metadata (bindingResult) when converting to plain Map</li>
  * </ul>
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -59,15 +57,12 @@ import static java.util.Optional.ofNullable;
  * model.put(userAttr, currentUser);
  * User user = model.get(userAttr); // Type-safe retrieval
  * }</pre>
- * </p>
  * <p>
  * <b>Thread Safety:</b> This class is not synchronized. External synchronization is required
  * when accessed concurrently from multiple threads.
- * </p>
  * <p>
  * <b>Implementation Note:</b> Many methods use unchecked casts from Object to the target type T.
  * Type safety relies on correct usage of PageAttr keys with matching value types.
- * </p>
  *
  * @see Flow
  * @see PageAttr
@@ -85,7 +80,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Records each key-value pair added via {@link #put(PageAttr, Object)} or {@link #put(String, Object)}.
      * Used for change tracking and debugging purposes. Cleared by {@link #clearTrace()}.
-     * </p>
+     * 
      */
     final Map<String, Object> added = new HashMap<>();
     
@@ -94,7 +89,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Records each key-value pair removed via {@link #remove(PageAttr)} or when null values are set.
      * Used for change tracking and debugging purposes. Cleared by {@link #clearTrace()}.
-     * </p>
+     * 
      */
     final Map<String, Object> removed = new HashMap<>();
 
@@ -103,7 +98,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Provides type-safe access to model attributes without manual casting. Returns the value
      * associated with the given key's name, or null if no mapping exists.
-     * </p>
+     * 
      *
      * @param <T> the expected type of the value
      * @param key the PageAttr key identifying the attribute
@@ -121,7 +116,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Retrieves the value at {@code fromKey}, applies the transformation function, removes the original
      * key, and stores the result at {@code targetKey}. If the source value is null, no transformation occurs.
-     * </p>
+     * 
      *
      * @param <F> the source value type
      * @param <T> the target value type
@@ -148,7 +143,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Creates a new HashMap with the {@link BasePageAttributes#isError} flag and all specified keys.
      * Automatically filters out the {@link BasePageAttributes#bindingResult} to prevent exposing
      * internal validation metadata to templates.
-     * </p>
+     * 
      *
      * @param keys the PageAttr keys to include in the result map
      * @return a new Map containing the specified attributes without bindingResult
@@ -169,7 +164,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Batch retrieval operation that returns two values in a single call. Uses unchecked casts
      * from Object to the expected types.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -187,7 +182,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Batch retrieval operation that returns three values in a single call. Uses unchecked casts
      * from Object to the expected types.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -207,7 +202,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Batch retrieval operation that returns four values in a single call. Uses unchecked casts
      * from Object to the expected types.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -229,7 +224,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Batch retrieval operation that returns five values in a single call. Uses unchecked casts
      * from Object to the expected types.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -253,7 +248,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Batch retrieval operation that returns six values in a single call. Uses unchecked casts
      * from Object to the expected types.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -279,7 +274,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Type-safe put operation that delegates to {@link #put(String, Object)}.
      * Records the operation in the {@link #added} map for change tracking.
-     * </p>
+     * 
      *
      * @param <T> the type of the value
      * @param key the PageAttr key identifying the attribute
@@ -297,7 +292,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Overrides HashMap's put to track changes. When value is null, removes the mapping and records
      * it in {@link #removed}. Otherwise, stores the value and records it in {@link #added}.
-     * </p>
+     * 
      *
      * @param key the attribute name
      * @param value the value to store, or null to remove the mapping
@@ -321,7 +316,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores two typed values from a Tuple2.
      * <p>
      * Batch put operation that stores the tuple components at their respective keys.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -339,7 +334,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores two typed values from a generic Tuple with unchecked casts.
      * <p>
      * Batch put operation accepting a generic Tuple. Uses unchecked casts to extract values.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -357,7 +352,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores two typed values at specified keys.
      * <p>
      * Batch put operation that stores individual values at their respective keys.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -376,7 +371,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores three typed values at specified keys.
      * <p>
      * Batch put operation that stores three individual values at their respective keys.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -398,7 +393,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores three typed values from a Tuple3.
      * <p>
      * Batch put operation that stores the tuple components at their respective keys.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -418,7 +413,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores three typed values from a generic Tuple with unchecked casts.
      * <p>
      * Batch put operation accepting a generic Tuple. Uses unchecked casts to extract values.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -438,7 +433,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores four typed values from a Tuple4.
      * <p>
      * Batch put operation that stores the tuple components at their respective keys.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -460,7 +455,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores four typed values from a generic Tuple with unchecked casts.
      * <p>
      * Batch put operation accepting a generic Tuple. Uses unchecked casts to extract values.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -482,7 +477,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores four typed values at specified keys.
      * <p>
      * Batch put operation that stores four individual values at their respective keys.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -507,7 +502,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores five typed values from a Tuple5.
      * <p>
      * Batch put operation that stores the tuple components at their respective keys.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -531,7 +526,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores five typed values from a generic Tuple with unchecked casts.
      * <p>
      * Batch put operation accepting a generic Tuple. Uses unchecked casts to extract values.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -555,7 +550,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores five typed values at specified keys.
      * <p>
      * Batch put operation that stores five individual values at their respective keys.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -584,7 +579,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores six typed values from a Tuple6.
      * <p>
      * Batch put operation that stores the tuple components at their respective keys.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -610,7 +605,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores six typed values from a generic Tuple with unchecked casts.
      * <p>
      * Batch put operation accepting a generic Tuple. Uses unchecked casts to extract values.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -636,7 +631,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Stores six typed values at specified keys.
      * <p>
      * Batch put operation that stores six individual values at their respective keys.
-     * </p>
+     * 
      *
      * @param <T1> the type of the first value
      * @param <T2> the type of the second value
@@ -668,7 +663,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Removes a value using a PageAttr key and tracks the removal.
      * <p>
      * Type-safe removal that records the removed value in the {@link #removed} map for change tracking.
-     * </p>
+     * 
      *
      * @param <T> the expected type of the removed value
      * @param key the PageAttr key identifying the attribute to remove
@@ -685,7 +680,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Retrieves a typed value or returns a default if not present.
      * <p>
      * Type-safe access with fallback value. Uses unchecked cast to the expected type.
-     * </p>
+     * 
      *
      * @param <T> the expected type of the value
      * @param key the PageAttr key identifying the attribute
@@ -714,7 +709,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Removes all entries from {@link #added} and {@link #removed}, resetting change tracking
      * without affecting the model's actual contents.
-     * </p>
+     * 
      */
     void clearTrace() {
         added.clear();
@@ -725,7 +720,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * Checks whether validation passed for this model.
      * <p>
      * Always returns false. This method exists for subclass overrides that track validation state.
-     * </p>
+     * 
      *
      * @return false in this base implementation
      */
@@ -738,7 +733,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Returns this model directly without view selection. Delegates to {@link #mav(HttpServletRequest, ViewAndObjectProvider)}
      * with a null provider.
-     * </p>
+     * 
      *
      * @param request the HTTP servlet request
      * @return this PageModelMap instance
@@ -752,7 +747,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Consults {@link BasePageAttributes#isError} to select between success and error paths.
      * Allows specifying both view names and custom result providers for each outcome.
-     * </p>
+     * 
      *
      * @param request the HTTP servlet request
      * @param viewNameForSuccess view name used when validation passes
@@ -778,7 +773,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Convenience method when success and error handling are identical. Typically used for
      * JSON responses where the same function generates output regardless of validation state.
-     * </p>
+     * 
      *
      * @param request the HTTP servlet request
      * @param viewName view name used for both success and error
@@ -809,7 +804,7 @@ public class PageModelMap extends HashMap<String, Object> {
      *   <li>If success function exists, invokes success function</li>
      *   <li>Otherwise, returns this model</li>
      * </ol>
-     * </p>
+     * 
      *
      * @param request the HTTP servlet request
      * @param viewProvider function providing view names and result functions
@@ -863,7 +858,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Checks the {@code isError} attribute to select between success and error views.
      * Returns a ModelAndView with this model as the view model data.
-     * </p>
+     * 
      *
      * @param viewNameForSuccess view name used when isError is false
      * @param viewNameForValidationError view name used when isError is true
@@ -879,7 +874,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Invokes the appropriate function provider depending on the isError state.
      * Useful for generating JSON responses or custom result objects.
-     * </p>
+     * 
      *
      * @param forSuccess function invoked when isError is false
      * @param forValidationError function invoked when isError is true
@@ -895,7 +890,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Invokes the success function when isError is false, or creates a ModelAndView with the error view
      * when isError is true. Useful for JSON success responses with fallback to error views.
-     * </p>
+     * 
      *
      * @param forSuccess function invoked when isError is false
      * @param viewNameForValidationError view name used when isError is true
@@ -911,7 +906,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Creates a ModelAndView with the success view when isError is false, or invokes the error function
      * when isError is true. Useful for standard success views with custom error handling.
-     * </p>
+     * 
      *
      * @param viewNameForSuccess view name used when isError is false
      * @param forValidationError function invoked when isError is true
@@ -927,7 +922,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Convenience method when the same result provider applies to both success and error cases.
      * Delegates to {@link #mav(PageModelFunction, PageModelFunction)} with the same function for both.
-     * </p>
+     * 
      *
      * @param resultProvider function to generate the result
      * @return the result object from the function
@@ -941,7 +936,7 @@ public class PageModelMap extends HashMap<String, Object> {
      * <p>
      * Convenience method when the same view applies to both success and error cases.
      * Delegates to {@link #mav(String, String)} with the same view name for both.
-     * </p>
+     * 
      *
      * @param viewName name of the view
      * @return ModelAndView with the specified view and this model

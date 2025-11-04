@@ -78,7 +78,6 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  * content validation, draft/live content management, and runtime execution of JavaScript flows via GraalVM.
  * For FrontendResource instances of {@link FrontendResource.ResourceType#UI_COMPONENT}, this controller resolves 
  * and executes {@link ControllerEndpoint} flows based on URL sub-paths and HTTP methods.
- * </p>
  * <p>
  * <b>Primary Responsibilities:</b>
  * <ul>
@@ -90,20 +89,17 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  *   <li>Preparing empty forms for FrontendResource creation</li>
  *   <li>Resolving and executing ControllerEndpoint flows for UI_COMPONENT resources</li>
  * </ul>
- * </p>
  * <p>
  * <b>Controller-Endpoint Execution Feature:</b><br>
  * For FrontendResource instances of type {@link FrontendResource.ResourceType#UI_COMPONENT}, this controller
  * resolves {@link ControllerEndpoint} entities by matching frontendResourceId, URL subPath, and 
  * {@link ControllerEndpoint.HttpMethod}. The matched endpoint's JavaScript flow is executed via 
  * {@link JsFlowRunner#runPreviewFlow} or {@link JsFlowRunner#runLiveFlow} based on the preview flag.
- * </p>
  * <p>
  * <b>Script Naming Convention:</b><br>
  * JavaScript flow scripts are named using the pattern {@code controllerEndpoint-<id>.mjs} where {@code <id>}
  * is the ControllerEndpoint entity ID. This convention is implemented by {@link #deductScriptSourceFileName(ControllerEndpoint)}
  * and used for script source mapping and debugging in the GraalVM context.
- * </p>
  * <p>
  * <b>Response Type Mapping:</b><br>
  * The controller supports multiple response types for ControllerEndpoint execution:
@@ -114,18 +110,15 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  *   <li><b>STREAM:</b> Wraps InputStream into InputStreamResource for binary streaming</li>
  *   <li><b>HTML:</b> Returns ModelAndView with Thymeleaf template name resolution</li>
  * </ul>
- * </p>
  * <p>
  * <b>Security:</b><br>
  * Operations are protected by {@code @PreAuthorize} annotations that enforce privilege checks.
  * Unauthorized access returns HTTP 401. The controller implements {@link HasSecurityRules} for 
  * consistent security rule application.
- * </p>
  * <p>
  * <b>Multi-Tenancy:</b><br>
  * All operations are tenant-aware via {@link TenantResolver} and organizationId parameters.
  * Resource queries are scoped by organization and access level to ensure tenant isolation.
- * </p>
  * <p>
  * <b>Flow Pipeline Patterns:</b><br>
  * The controller extensively uses the fluent {@link Flow} API for composing backend workflows:
@@ -133,7 +126,6 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  * Flow.init().then(a -> operation1()).thenSet(key, a -> operation2()).execute();
  * }</pre>
  * This pattern enables transactional execution, error handling, and model composition.
- * </p>
  * <p>
  * <b>Dependency Injection:</b><br>
  * Key dependencies injected via {@code @Inject}:
@@ -145,7 +137,6 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  *   <li>{@link UserProvider} - Provides userId for JavaScript flow execution</li>
  *   <li>{@link PageModelMap}, {@link PageAttr} - Model data carriers for Flow pipelines</li>
  * </ul>
- * </p>
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
@@ -173,7 +164,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * This method executes a transactional Flow pipeline that validates the provided content string
      * for syntax and structure correctness, updates the FrontendResource entity's content field in the
      * database, and evicts the cached entity to ensure subsequent queries return the updated content.
-     * </p>
+     * 
      *
      * @param content JavaScript or HTML code string to validate and persist. Must conform to the 
      *                resource type's expected syntax (JavaScript for UI_COMPONENT, HTML for PAGE types).
@@ -199,7 +190,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * This method queries the FrontendResource repository for the entity matching the provided ID,
      * then constructs a FrontendResourceForm populated with the entity data and organization context
      * for use in update operations.
-     * </p>
+     * 
      *
      * @param organizationId Organization context for multi-tenancy. Used to scope the form to the
      *                       correct tenant and validate organization-level permissions.
@@ -226,7 +217,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * calls {@link FrontendResourceService#publish(FrontendResource)} to copy the draftContent field
      * to the content field (making it live), and persists the updated entity. This operation makes
      * draft changes visible to end users.
-     * </p>
+     * 
      *
      * @param frontendResourceId ID of the FrontendResource to publish. Must reference an existing
      *                           entity with draft content.
@@ -253,7 +244,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * where {@code isDraft == true} via {@link FrontendResourceRepository#findAllAsStreamByIsDraftTrue()},
      * then calls {@link FrontendResourceService#publishAll(Stream)} to copy draftContent to content field
      * for all entities in the stream. This operation makes all pending draft changes live simultaneously.
-     * </p>
+     * 
      *
      * @return {@link PageModelMap} containing a Stream of published FrontendResource entities. Each entity
      *         in the stream has draft content copied to live content.
@@ -276,7 +267,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * {@link FrontendResourceService#clear(FrontendResource)}, then loads fresh content directly from 
      * packaged application resources or retrieves the default content based on the resource's type, name, 
      * access level, and organizationId. The resource remains in draft state after reload.
-     * </p>
+     * 
      *
      * @param frontendResourceId ID of the FrontendResource entity to reload. Must reference an existing entity.
      * @return {@link PageModelMap} containing the reloaded FrontendResource entity with content reset to
@@ -306,7 +297,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * resources via {@link FrontendResourceService#getContentOrDefault} based on the resource's type, name,
      * access level and organizationId, then sets this content as draftContent. The live content field remains
      * unchanged, allowing the default content to be edited before publishing.
-     * </p>
+     * 
      *
      * @param frontendResourceId ID of the FrontendResource entity to update with default draft content.
      * @return {@link PageModelMap} containing the updated FrontendResource entity with draftContent populated
@@ -333,7 +324,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * This method retrieves the FrontendResource entity and copies the current live content (content field)
      * to the draftContent field, enabling modifications to the live version without affecting the currently
      * published content. The updated entity is persisted to the database.
-     * </p>
+     * 
      *
      * @param frontendResourceId ID of the FrontendResource entity to copy live content from.
      * @return {@link PageModelMap} containing the updated FrontendResource entity with draftContent set to
@@ -364,7 +355,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      *   <li>Saves the validated entity to the database</li>
      *   <li>Returns a new empty form for subsequent create operations</li>
      * </ol>
-     * </p>
+     * 
      *
      * @param frontendResourceFormData Form containing {@link FrontendResourceDto} with name, content, type,
      *                                 and accessLevel fields. All fields undergo validation.
@@ -395,7 +386,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * This method constructs and returns a new, unpopulated FrontendResourceForm scoped to the
      * specified organization context. The form is ready to accept user input for creating a new
      * FrontendResource entity.
-     * </p>
+     * 
      *
      * @param organizationId Organization context for multi-tenancy. The created resource will be
      *                       scoped to this organization.
@@ -417,30 +408,30 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * This method finds the requested {@link FrontendResource} by URL path and organization context,
      * prepares the model for display, and for {@link FrontendResource.ResourceType#UI_COMPONENT} types,
      * resolves and executes matching {@link ControllerEndpoint} JavaScript flows.
-     * </p>
+     * 
      * <p>
      * <b>Resolution Strategy:</b><br>
      * Uses {@link TenantResolver#getTenantedResource()} to determine the current tenant's access level,
      * then queries via {@link FrontendResourceRepository#findByUrlPathAndAccessLevelAndOrganizationId}
      * with priority-based sorting to find the most specific matching resource.
-     * </p>
+     * 
      * <p>
      * <b>Special Path Handling:</b><br>
      * For the special "REGISTER" path, injects a {@link RegisterUserForm} into the ModelAndView for
      * user registration functionality.
-     * </p>
+     * 
      * <p>
      * <b>View Name Resolution:</b><br>
      * Constructs Thymeleaf view names using the pattern: {@code frontendResourceTemplateNamePrefix + resource.getName()}.
      * If no resource is found in the database, falls back to a template named after the frontendResourcePath.
-     * </p>
+     * 
      * <p>
      * <b>UI_COMPONENT Handling:</b><br>
      * For resources of type {@link FrontendResource.ResourceType#UI_COMPONENT}, resolves a 
      * {@link ControllerEndpoint} by matching frontendResourceId, subPath, and httpMethod. If found,
      * delegates to {@link #evaluateControllerEndpoint} to execute the endpoint's JavaScript flow and
      * return the appropriate response (HTML ModelAndView or ResponseEntity for JSON/FILE/STREAM types).
-     * </p>
+     * 
      * <p>
      * Example query pattern:
      * <pre>{@code
@@ -448,7 +439,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      *     "/dashboard", resourceId, PUBLIC, orgId, PageRequest.of(0,1, ASC, "priority")
      * );
      * }</pre>
-     * </p>
+     * 
      *
      * @param organizationId Organization context for multi-tenancy. Used to scope resource queries and
      *                       JavaScript flow execution to the correct tenant.
@@ -528,24 +519,24 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * {@link JsFlowRunner} in GraalVM context, merges the resulting {@link PageModelMap} into the provided
      * ModelAndView, and determines the appropriate view name or response entity based on the execution result
      * and configured {@link ControllerEndpoint.ResponseType}.
-     * </p>
+     * 
      * <p>
      * <b>Script Source Filename Deduction:</b><br>
      * Generates script filename via {@link #deductScriptSourceFileName(ControllerEndpoint)} using pattern
      * {@code controllerEndpoint-<id>.mjs} for GraalVM debugging and stack traces.
-     * </p>
+     * 
      * <p>
      * <b>Preview vs. Live Execution:</b><br>
      * Executes {@link JsFlowRunner#runPreviewFlow} when preview=true for draft content with relaxed validation,
      * or {@link JsFlowRunner#runLiveFlow} when preview=false for published content with strict validation.
      * Both executions inject organizationId and userId from {@link UserProvider#getUserIdOrNotExistingId()}
      * into the JavaScript context.
-     * </p>
+     * 
      * <p>
      * <b>PageModelMap Merge:</b><br>
      * The returned PageModelMap from JavaScript execution is merged into the ModelAndView's ModelMap, making
      * all JavaScript-set page attributes available in the Thymeleaf template context.
-     * </p>
+     * 
      * <p>
      * <b>View Name Selection Logic (HTML Response Type):</b><br>
      * Determines view name based on PageModelMap attributes and form presence:
@@ -557,16 +548,16 @@ public class AbstractFrontendResourceController extends AbstractController imple
      *   <li>If no error and form present: {@code "generic-settings-entity-form::generic-settings-form-reload"}</li>
      * </ul>
      * Error state is determined by {@link BasePageAttributes#isError} attribute.
-     * </p>
+     * 
      * <p>
      * <b>ResponseType.HTML Switch Case:</b><br>
      * Returns the populated ModelAndView for rendering via Thymeleaf with the determined view name.
-     * </p>
+     * 
      * <p>
      * <b>Default Case (Non-HTML Response Types):</b><br>
      * Delegates to {@link #getControllerEndpointResult} for MODEL_AS_JSON, FILE, and STREAM response types,
      * which returns a ResponseEntity with appropriate Content-Type headers and response body.
-     * </p>
+     * 
      * <p>
      * Example JavaScript flow execution:
      * <pre>{@code
@@ -574,7 +565,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      *     jsCode, requestParams, organizationId, userId, form, "controllerEndpoint-123.mjs"
      * );
      * }</pre>
-     * </p>
+     * 
      *
      * @param organizationId Organization context for JavaScript flow execution and multi-tenancy.
      * @param frontendResourcePath URL path of the {@link FrontendResource} for logging and context.
@@ -655,7 +646,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * calls {@link FrontendResourceService#prepareFrontendResourcePageEntity} to retrieve and prepare the
      * FrontendResource entity with page-specific processing, then constructs a FrontendResourcePageForm
      * populated with the entity data for editing HTML content.
-     * </p>
+     * 
      *
      * @param organizationId Organization context for multi-tenancy and form scoping.
      * @param frontendResourceId Primary key of the FrontendResource entity to retrieve. Must be of type HTML.
@@ -686,7 +677,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      *   <li>Performs Jakarta Bean Validation and populates the prepared entity from form data</li>
      *   <li>Saves the validated entity to the database</li>
      * </ol>
-     * </p>
+     * 
      *
      * @param frontendResourceForm {@link FrontendResourcePageForm} containing {@link FrontendResourceDto}
      *                             with name, content, and contentEditable fields for HTML page updates.
@@ -717,7 +708,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * FrontendResource entity, JavaScript execution results, configured HTTP headers, and the final response
      * body. It handles response types MODEL_AS_JSON, FILE, and STREAM by executing the JavaScript flow and
      * transforming results into appropriate response formats.
-     * </p>
+     * 
      * <p>
      * <b>Flow Pipeline Execution:</b><br>
      * Executes a Flow pipeline that:
@@ -738,10 +729,10 @@ public class AbstractFrontendResourceController extends AbstractController imple
      *     </ul>
      *   </li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Script source filename is deduced via {@link #deductScriptSourceFileName(ControllerEndpoint)}.
-     * </p>
+     * 
      *
      * @param organizationId Organization context for JavaScript flow execution and multi-tenancy.
      * @param frontendResourceUrl URL path of the {@link FrontendResource} for logging and context.
@@ -805,7 +796,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * This private method creates a new {@link HttpHeaders} object and populates it by iterating over
      * the ControllerEndpoint's configured HTTP headers map. Each key-value pair from
      * {@link ControllerEndpoint#getHttpHeadersMap()} is added to the response headers.
-     * </p>
+     * 
      *
      * @param controllerEndpoint {@link ControllerEndpoint} entity containing httpHeadersMap configuration
      *                           with custom HTTP headers to include in the response.
@@ -827,20 +818,20 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * This private method serializes the PageModelMap returned from JavaScript flow execution into a
      * JSON string. It sets the Content-Type header to {@code application/json;charset=UTF-8} and performs
      * conditional serialization based on ControllerEndpoint configuration.
-     * </p>
+     * 
      * <p>
      * <b>Conditional Serialization Logic:</b><br>
      * If {@link ControllerEndpoint#getModelAttributes()} is not blank, serializes only the selected PageAttr
      * keys specified in {@link ControllerEndpoint#getPageAttributesNames()}. Each attribute name is converted
      * to a {@link PageAttr} enum (or creates a new PageAttr if not found), and the resulting array is passed to
      * {@link PageModelMap#getAsMap(PageAttr...)} to extract only those attributes.
-     * </p>
+     * 
      * <p>
      * If modelAttributes is blank, serializes only the {@code isError} attribute from the model.
-     * </p>
+     * 
      * <p>
      * Serialization is performed via {@link JsonHelper#to(Object)}.
-     * </p>
+     * 
      *
      * @param resultModel {@link PageModelMap} from JavaScript flow execution containing page attributes
      *                    to serialize (e.g., data, isError, message).
@@ -868,13 +859,13 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * page attribute name from {@link ControllerEndpoint#getPageAttributesNames()}, configures HTTP headers
      * via {@link #setupFileResultHeaders(HttpHeaders, File)}, and creates an InputStreamResource wrapping
      * the file's content stream for streaming to the client.
-     * </p>
+     * 
      * <p>
      * <b>Exception Handling:</b><br>
      * Catches {@link IOException} and {@link SQLException} from {@link File#getContentStream()} and prints
      * stack trace. Returns null on exception, which should be handled by the caller to provide appropriate
      * error response to the client.
-     * </p>
+     * 
      *
      * @param resultModel {@link PageModelMap} from JavaScript flow execution. Must contain a {@link File}
      *                    object at the key specified by controllerEndpoint.getPageAttributesNames()[0].
@@ -905,7 +896,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * This private method populates HTTP headers required for file streaming responses. Each header is only
      * set if not already present (checked via {@code !httpHeaders.containsKey()}) to preserve any custom
      * headers configured in the ControllerEndpoint.
-     * </p>
+     * 
      * <p>
      * <b>Configured Headers:</b>
      * <ul>
@@ -918,7 +909,7 @@ public class AbstractFrontendResourceController extends AbstractController imple
      *   <li><b>Content-Disposition:</b> Set to {@code "inline; filename=\"<filename>\""} to display file
      *       in browser with filename hint. Uses {@link File#getFilename()} for the filename value.</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param httpHeaders {@link HttpHeaders} to configure. Only headers not already present are added.
      * @param file {@link File} entity with content metadata (contentType, filename) used for header values.
@@ -945,21 +936,21 @@ public class AbstractFrontendResourceController extends AbstractController imple
      * <p>
      * This private method generates a standardized filename using the naming convention
      * {@code controllerEndpoint-<id>.mjs} where {@code <id>} is the ControllerEndpoint entity's primary key.
-     * </p>
+     * 
      * <p>
      * <b>Purpose:</b><br>
      * The generated filename is used by {@link JsFlowRunner} for script source mapping and debugging in the
      * GraalVM context. This naming convention enables clear identification of script sources in stack traces
      * and debugging output, mapping each executed script back to its ControllerEndpoint entity.
-     * </p>
+     * 
      * <p>
      * <b>File Extension:</b><br>
      * The {@code .mjs} extension indicates ES6 module JavaScript, signaling to the GraalVM engine that the
      * script uses ECMAScript module syntax with import/export statements.
-     * </p>
+     * 
      * <p>
      * Example: For ControllerEndpoint with id=123, returns {@code "controllerEndpoint-123.mjs"}.
-     * </p>
+     * 
      *
      * @param ce {@link ControllerEndpoint} entity. Must not be null and must have a non-null ID.
      * @return String filename in the format {@code "controllerEndpoint-<id>.mjs"}. Never null.

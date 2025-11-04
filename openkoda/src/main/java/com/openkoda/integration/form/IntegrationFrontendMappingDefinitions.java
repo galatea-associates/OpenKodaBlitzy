@@ -36,27 +36,27 @@ import static com.openkoda.model.Privilege.readOrgData;
  * for all supported third-party integrations (Trello, GitHub, Jira, Basecamp, Slack, MS Teams).
  * Used to maintain consistency between backend form processing (AbstractEntityForm implementations)
  * and frontend form rendering (Thymeleaf templates).
- * </p>
+
  * <p>
  * Each FrontendMappingDefinition instance declares form name, required privileges
  * (readOrgData for view, manageOrgData for edit), and field definitions using builder DSL
  * ({@code .text(...)} for text input fields).
- * </p>
+
  * <p>
  * <b>Architecture Role:</b> Single source of truth for frontend field identifiers.
  * Controllers, form adapters, and templates depend on this interface for stable mapping keys.
  * Changes to field names here propagate to all integration forms.
- * </p>
+
  * <p>
  * <b>Privilege Semantics:</b> Forms created with readOrgData privilege are editable by users
  * with organization data management rights. Forms created with readOrgData privilege and null
  * manageOrgData privilege (e.g., gitHubConfigurationFormDisabled) render as read-only/disabled variants.
- * </p>
+
  * <p>
  * <b>Builder DSL:</b> FrontendMappingDefinition uses createFrontendMappingDefinition factory
  * with functional builder: {@code .text(fieldName)} adds text input field, additional methods
  * available for other field types.
- * </p>
+
  * <p>
  * <b>Inherited Field Identifiers:</b> Extends TemplateFormFieldNames which declares canonical
  * String constants for field identifiers:
@@ -77,7 +77,7 @@ import static com.openkoda.model.Privilege.readOrgData;
  * <li>WEBHOOK_URL_ = 'webhookUrl': Frontend field name for Slack/MS Teams webhook URL</li>
  * <li>EMAIL_ = 'email': Frontend field name for email address</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Usage Pattern:</b>
  * <pre>{@code
@@ -87,7 +87,7 @@ import static com.openkoda.model.Privilege.readOrgData;
  * Form adapter uses mapping to bind DTO fields to entity properties via
  * {@code getSafeValue(entity.getProperty(), FIELD_IDENTIFIER_)}.
  * Thymeleaf templates reference same field identifiers for consistent form rendering.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -143,7 +143,7 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * Trello integration form mapping definition with editable text fields.
      * <p>
      * Privileges: readOrgData (view), manageOrgData (edit)
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
@@ -152,7 +152,7 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * <li>TRELLO_BOARD_NAME_ (target board name)</li>
      * <li>TRELLO_LIST_NAME_ (target list name)</li>
      * </ul>
-     * </p>
+
      * Used by IntegrationTrelloForm
      */
     FrontendMappingDefinition trelloConfigurationForm = createFrontendMappingDefinition(TRELLO_CONFIGURATION_FORM, readOrgData, manageOrgData,
@@ -166,14 +166,14 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * GitHub integration form mapping definition with editable text fields.
      * <p>
      * Privileges: readOrgData (view), manageOrgData (edit)
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
      * <li>GITHUB_REPO_OWNER_ (repository owner username)</li>
      * <li>GITHUB_REPO_NAME_ (repository name)</li>
      * </ul>
-     * </p>
+
      * Used by IntegrationGitHubForm
      */
     FrontendMappingDefinition gitHubConfigurationForm = createFrontendMappingDefinition(GITHUB_CONFIGURATION_FORM, readOrgData, manageOrgData,
@@ -185,14 +185,14 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * Read-only variant of GitHub integration form.
      * <p>
      * Privileges: readOrgData (view), null (no edit)
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
      * <li>GITHUB_REPO_NAME_ (rendered as disabled input)</li>
      * <li>GITHUB_REPO_OWNER_ (rendered as disabled input)</li>
      * </ul>
-     * </p>
+
      * Used for display-only scenarios where users should not modify GitHub configuration
      */
     FrontendMappingDefinition gitHubConfigurationFormDisabled = createFrontendMappingDefinition(GITHUB_CONFIGURATION_FORM, readOrgData, null,
@@ -204,13 +204,13 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * Slack integration form mapping definition with webhook URL field.
      * <p>
      * Privileges: readOrgData (view), manageOrgData (edit)
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
      * <li>WEBHOOK_URL_ (Slack incoming webhook URL format: https://hooks.slack.com/services/*)</li>
      * </ul>
-     * </p>
+
      * Used by IntegrationSlackForm
      */
     FrontendMappingDefinition slackConfigurationForm = createFrontendMappingDefinition(SLACK_CONFIGURATION_FORM, readOrgData, manageOrgData,
@@ -221,13 +221,13 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * Microsoft Teams integration form mapping definition with webhook URL field.
      * <p>
      * Privileges: readOrgData (view), manageOrgData (edit)
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
      * <li>WEBHOOK_URL_ (MS Teams incoming webhook URL format: https://outlook.office.com/webhook/* or https://*.webhook.office.com/*)</li>
      * </ul>
-     * </p>
+
      * Used by IntegrationMsTeamsForm
      */
     FrontendMappingDefinition msTeamsConfigurationForm = createFrontendMappingDefinition(MSTEAMS_CONFIGURATION_FORM, readOrgData, manageOrgData,
@@ -238,13 +238,13 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * Email integration form mapping definition.
      * <p>
      * Privileges: readOrgData (view), manageOrgData (edit)
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
      * <li>EMAIL_ (email address for notifications)</li>
      * </ul>
-     * </p>
+
      */
     FrontendMappingDefinition emailConfigurationForm = createFrontendMappingDefinition(EMAIL_CONFIGURATION_FORM, readOrgData, manageOrgData,
             a -> a  .text(EMAIL_)
@@ -254,18 +254,18 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * Jira integration form mapping definition with editable text fields.
      * <p>
      * Privileges: readOrgData (view), manageOrgData (edit)
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
      * <li>ORGANIZATION_NAME_ (Jira organization/site name)</li>
      * <li>PROJECT_NAME_ (Jira project key or name)</li>
      * </ul>
-     * </p>
+
      * <p>
      * Used by IntegrationJiraForm. Note: OAuth tokens (jiraAccessToken, jiraRefreshToken, jiraCloudId)
      * are set via OAuth callback controller, not via this form.
-     * </p>
+
      */
     FrontendMappingDefinition jiraConfigurationForm = createFrontendMappingDefinition(JIRA_CONFIGURATION_FORM, readOrgData, manageOrgData,
             a -> a  .text(ORGANIZATION_NAME_)
@@ -276,14 +276,14 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * Read-only variant of Jira integration form.
      * <p>
      * Privileges: readOrgData (view), null (no edit)
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
      * <li>ORGANIZATION_NAME_ (rendered as disabled input)</li>
      * <li>PROJECT_NAME_ (rendered as disabled input)</li>
      * </ul>
-     * </p>
+
      * Used for display-only scenarios
      */
     FrontendMappingDefinition jiraConfigurationFormDisabled = createFrontendMappingDefinition(JIRA_CONFIGURATION_FORM, readOrgData, null,
@@ -295,17 +295,17 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * Basecamp integration form mapping definition with todo list URL field.
      * <p>
      * Privileges: readOrgData (view), manageOrgData (edit)
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
      * <li>TODO_LIST_URL_ (Basecamp todo list URL format: https://3.basecamp.com/{accountId}/buckets/{projectId}/todolists/{todolistId})</li>
      * </ul>
-     * </p>
+
      * <p>
      * Used by IntegrationBasecampForm. Form extracts accountId, projectId, todolistId from URL
      * during validation.
-     * </p>
+
      */
     FrontendMappingDefinition basecampConfigurationForm = createFrontendMappingDefinition(BASECAMP_CONFIGURATION_FORM, readOrgData, manageOrgData,
             a -> a  .text(TODO_LIST_URL_)
@@ -315,13 +315,13 @@ public interface IntegrationFrontendMappingDefinitions extends TemplateFormField
      * Read-only variant of Basecamp integration form.
      * <p>
      * Privileges: readOrgData (view), null (no edit)
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
      * <li>TODO_LIST_URL_ (rendered as disabled input)</li>
      * </ul>
-     * </p>
+
      * Used for display-only scenarios
      */
     FrontendMappingDefinition basecampConfigurationFormDisabled = createFrontendMappingDefinition(BASECAMP_CONFIGURATION_FORM, readOrgData, null,

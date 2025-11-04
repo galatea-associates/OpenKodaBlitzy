@@ -31,22 +31,18 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * This exception represents HTTP 401 Unauthorized status, which indicates that authentication
  * is required but has failed or has not been provided. Common scenarios include missing
  * credentials, invalid tokens, or expired authentication sessions.
- * </p>
  * <p>
  * This differs from HTTP 403 Forbidden, which indicates the user is authenticated but lacks
  * authorization to access the resource. Use this exception for authentication failures, not
  * authorization denials.
- * </p>
  * <p>
  * The {@code @ResponseStatus} annotation automatically maps this exception to HTTP 401
  * when thrown from Spring MVC controllers. Spring handles serialization and error response
  * generation. The exception extends {@link HttpStatusException} to allow programmatic
  * inspection of the HTTP status code.
- * </p>
  * <p>
  * The {@code serialVersionUID} field ensures serialization stability across versions when
  * this exception is transmitted across network boundaries or persisted.
- * </p>
  * <p>
  * Example usage in authentication filter:
  * <pre>{@code
@@ -54,7 +50,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *     throw new UnauthorizedException("Invalid JWT token");
  * }
  * }</pre>
- * </p>
  * <p>
  * Example usage in service layer:
  * <pre>{@code
@@ -62,14 +57,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *     throw new UnauthorizedException();
  * }
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see HttpStatusException
- * @see org.springframework.security.access.AccessDeniedException
- * @see com.openkoda.core.security.ErrorLoggingExceptionResolver
+ * See {@code HttpStatusException}
+ * See {@code org.springframework.security.access.AccessDeniedException}
+ * See {@code com.openkoda.core.security.ErrorLoggingExceptionResolver}
  */
 @ResponseStatus(code = HttpStatus.UNAUTHORIZED, reason = "Unauthorized")
 public class UnauthorizedException extends HttpStatusException {
@@ -85,7 +79,7 @@ public class UnauthorizedException extends HttpStatusException {
      * Use this constructor to provide specific information about why authentication failed,
      * such as "Invalid JWT token", "Session expired", or "Missing authentication credentials".
      * The message helps with debugging and can be logged for security auditing.
-     * </p>
+     * 
      *
      * @param message the authentication failure reason, providing details about what went wrong
      */
@@ -99,7 +93,7 @@ public class UnauthorizedException extends HttpStatusException {
      * Use this no-argument constructor when a generic authentication failure message is
      * sufficient. Spring's {@code @ResponseStatus} annotation provides the "Unauthorized"
      * reason phrase in the HTTP response.
-     * </p>
+     * 
      */
     public UnauthorizedException() {
         super(HttpStatus.UNAUTHORIZED);

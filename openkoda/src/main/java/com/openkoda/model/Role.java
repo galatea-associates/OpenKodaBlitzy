@@ -47,30 +47,30 @@ import static com.openkoda.model.common.ModelConstants.*;
  * global and tenant access). Roles contain a collection of privileges serialized as a joined
  * string in the privileges column and deserialized on demand to transient privilegesSet via
  * PrivilegeHelper.
- * </p>
+ * 
  * <p>
  * Supports dynamic privilege assignment, role name management, and computed access control tokens.
  * Uses GLOBAL_ID_GENERATOR sequence with initial value 10000 and allocationSize 10 for batch ID
  * allocation. Implements custom UseIdOrGenerate strategy to allow explicit ID assignment for
  * predefined roles.
- * </p>
+ * 
  * <p>
  * Inheritance strategy: {@code @Inheritance(SINGLE_TABLE)} with {@code @DiscriminatorColumn(name='type')}.
  * Subtypes: GlobalRole ('GLOBAL'), OrganizationRole ('ORG'), GlobalOrganizationRole ('GLOBAL_ORG').
- * </p>
+ * 
  * <p>
  * Privilege serialization: privileges column stores joined string format '(privilege1)(privilege2)'.
  * Lazy deserialization to privilegesSet Set&lt;PrivilegeBase&gt; on first access via getPrivilegesSet().
- * </p>
+ * 
  * <p>
  * Audit fields: {@code @LastModifiedDate} on updatedOn column with database-level default CURRENT_TIMESTAMP.
  * {@code @PostUpdate} lifecycle callback ensures updatedOn refresh on entity modifications.
- * </p>
+ * 
  * <p>
  * Computed fields: {@code @Formula}-derived requiredReadPrivilege (_canReadBackend),
  * requiredWritePrivilege (_canManageBackend), indexString (database-generated search index with
  * default empty string).
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

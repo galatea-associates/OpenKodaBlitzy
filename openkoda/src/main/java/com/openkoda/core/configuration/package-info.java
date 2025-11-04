@@ -30,7 +30,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * post-login routing. Includes utility components (Datasources POJO for multi-tenant datasource binding,
  * TemplatePathFilteringProcessor for template path parsing).
  *
- * <h2>Key Classes and Interfaces</h2>
+ * <b>Key Classes and Interfaces</b>
  * <ul>
  *   <li><b>AuditConfig</b>: JPA auditing enablement, AuditorAware registration, Hibernate interceptor injection
  *       for entity change tracking</li>
@@ -61,13 +61,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       email flags from Thymeleaf template paths</li>
  * </ul>
  *
- * <h2>Package Structure</h2>
+ * <b>Package Structure</b>
  * <ul>
  *   <li>Root configuration classes for core Spring infrastructure (this package)</li>
  *   <li>session/ subpackage: Hazelcast-aware distributed session scope for clustered deployments</li>
  * </ul>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <ul>
  *   <li><b>Configuration pattern</b>: @Configuration classes with @Bean methods for dependency injection and
  *       framework integration</li>
@@ -79,7 +79,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       securityFilterChain)</li>
  * </ul>
  *
- * <h2>Configuration Properties</h2>
+ * <b>Configuration Properties</b>
  * <ul>
  *   <li>spring.mail.host, spring.mail.port, spring.mail.username, spring.mail.password: JavaMail SMTP configuration</li>
  *   <li>recaptcha.site-key, recaptcha.secret-key, recaptcha.validation: reCAPTCHA integration properties</li>
@@ -89,14 +89,14 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>base.url, application.name, application.admin.email: OpenAPI metadata for documentation generation</li>
  * </ul>
  *
- * <h2>Usage Examples</h2>
+ * <b>Usage Examples</b>
  * <pre>
  * // Accessing configured beans in controllers or services
  * {@code @Autowired} private JavaMailSender mailSender;
  * {@code @Autowired} private TaskExecutor taskExecutor;
  * </pre>
  *
- * <h2>Relationships with Other Packages</h2>
+ * <b>Relationships with Other Packages</b>
  * <ul>
  *   <li>Provides Spring infrastructure for entire application (security, MVC, scheduling, mail, WebSocket)</li>
  *   <li>Used by controller, service, model, repository modules for framework integration</li>

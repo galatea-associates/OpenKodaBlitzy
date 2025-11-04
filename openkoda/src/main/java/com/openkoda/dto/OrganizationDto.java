@@ -30,21 +30,21 @@ import com.openkoda.model.Organization;
  * tenant identification, database routing, and UI branding. It implements
  * {@link CanonicalObject} for standardized notification message formatting and
  * {@link OrganizationRelatedObject} for multi-tenant contract support.
- * </p>
+
  * <p>
  * OrganizationDto is used by organization services for tenant provisioning,
  * by tenant resolution mechanisms for routing requests to the correct datasource,
  * and by UI customization services for applying organization-specific branding.
  * The DTO includes branding fields for visual customization (colors, logo) and
  * feature flags for trial setup and dashboard personalization.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * OrganizationDto dto = new OrganizationDto(organization);
  * String brandColor = dto.getMainBrandColor();
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -60,7 +60,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * <p>
      * Creates an empty OrganizationDto with all fields uninitialized.
      * This constructor is required by serialization frameworks and ORM tools.
-     * </p>
+
      */
     public OrganizationDto() {
     }
@@ -70,7 +70,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * <p>
      * Copies the id, name, and assignedDatasource fields from the entity.
      * Branding fields and feature flags are not copied and remain uninitialized.
-     * </p>
+
      *
      * @param organization the Organization entity to map from
      */
@@ -85,7 +85,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * <p>
      * All other fields remain uninitialized. Useful for lightweight references
      * when only the organization identifier is needed.
-     * </p>
+
      *
      * @param id the organization identifier
      */
@@ -99,7 +99,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * Maps to the Organization entity primary key. Used for tenant identification,
      * database routing, and multi-tenant isolation. This field is also returned by
      * {@link #getOrganizationId()} to satisfy the OrganizationRelatedObject contract.
-     * </p>
+
      */
     public Long id;
 
@@ -109,7 +109,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * Human-readable organization name used in UI displays, notifications,
      * and administrative interfaces. This value is included in the notification
      * message format returned by {@link #notificationMessage()}.
-     * </p>
+
      */
     public String name;
 
@@ -120,7 +120,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * data resides in. Used by the multi-tenancy system to route database operations
      * to the correct datasource when multiple databases are configured.
      * Null when using the default primary datasource.
-     * </p>
+
      */
     public Integer assignedDatasource;
 
@@ -130,7 +130,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * Boolean flag indicating whether this organization is in trial setup mode.
      * When true, trial-specific features or limitations may be applied during
      * organization provisioning and configuration.
-     * </p>
+
      */
     public boolean setupTrial;
 
@@ -139,7 +139,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * <p>
      * Boolean flag controlling whether users in this organization can personalize
      * their dashboards. When true, enables dashboard customization features in the UI.
-     * </p>
+
      */
     public boolean personalizeDashboard;
 
@@ -149,7 +149,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * Hex color code (e.g., "#FF5733") used as the primary brand color in the
      * organization's UI theme. Applied to headers, buttons, and other primary
      * UI elements to match the organization's branding.
-     * </p>
+
      */
     public String mainBrandColor;
 
@@ -159,7 +159,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * Hex color code (e.g., "#33C3FF") used as the secondary brand color in the
      * organization's UI theme. Applied to accents, secondary buttons, and
      * complementary UI elements.
-     * </p>
+
      */
     public String secondBrandColor;
 
@@ -169,7 +169,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * References the File entity ID of the uploaded organization logo.
      * The logo is displayed in the application header, login pages, and
      * other branding locations. Null when no custom logo is configured.
-     * </p>
+
      */
     public Long logoId;
 
@@ -179,7 +179,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * Copies the id and name fields from the entity and sets the setupTrial flag.
      * This constructor is typically used during trial organization provisioning
      * when the trial status needs to be explicitly set. Other fields remain uninitialized.
-     * </p>
+
      *
      * @param organization the Organization entity to map from
      * @param setupTrial true if the organization is in trial setup mode, false otherwise
@@ -232,7 +232,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * Implements {@link CanonicalObject#notificationMessage()} to provide
      * a standardized text representation used by notification and logging subsystems.
      * The message format is "Organization [name]".
-     * </p>
+
      *
      * @return formatted notification message containing the organization name
      */
@@ -247,7 +247,7 @@ public class OrganizationDto implements CanonicalObject, OrganizationRelatedObje
      * Implements {@link OrganizationRelatedObject#getOrganizationId()} by returning
      * the id field. This self-referential implementation is intentional since this DTO
      * represents the organization itself, making the organization ID the same as the DTO's ID.
-     * </p>
+
      *
      * @return the organization ID, or null if not set
      */

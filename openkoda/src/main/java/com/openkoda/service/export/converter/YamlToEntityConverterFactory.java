@@ -38,32 +38,32 @@ import java.util.Map;
  * This factory discovers and manages {@link YamlToEntityConverter} implementations at application startup,
  * building a registry keyed by DTO class. It provides a centralized entry point for processing deserialized
  * YAML DTOs and converting them into persisted domain entities during import operations.
- * </p>
+
  * <p>
  * At construction time, the factory inspects each autowired converter for the {@link YamlToEntityParentConverter}
  * annotation. Converters bearing this annotation are registered in a private static {@code Map<Class<?>, YamlToEntityConverter<?,?>}
  * keyed by the {@code dtoClass} attribute declared in the annotation. This registration occurs once during Spring
  * bean initialization and relies on Spring's initialization ordering guarantees.
- * </p>
+
  * <p>
  * The {@code processYamlDto} methods resolve the appropriate converter by inspecting the runtime class of the
  * provided DTO. If no converter is registered for the DTO class, an {@code IllegalArgumentException} is thrown.
  * The no-resources overload performs additional precondition checks to ensure referenced {@link Organization}
  * and {@link OpenkodaModule} entities exist in the database, creating placeholder entities when necessary.
  * This prevents foreign key constraint violations during entity persistence.
- * </p>
+
  * <p>
  * Thread-safety: The static registry map is populated during construction and remains immutable thereafter.
  * Read operations are thread-safe without synchronization. The factory is not designed to support dynamic
  * registration of converters after initialization.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * FormConversionDto dto = yamlParser.parse(yamlContent);
  * Form savedForm = factory.processYamlDto(dto, "forms/contact-form.yaml");
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -80,7 +80,7 @@ public class YamlToEntityConverterFactory extends ComponentProvider {
      * Populated during construction by inspecting {@link YamlToEntityParentConverter} annotations
      * on autowired converter beans. The map remains immutable after initialization and provides
      * thread-safe read access for converter lookups during runtime import operations.
-     * </p>
+
      */
     private static Map<Class<?>, YamlToEntityConverter<?, ?>> parentConverters = new HashMap<>();
 
@@ -91,12 +91,12 @@ public class YamlToEntityConverterFactory extends ComponentProvider {
      * context. This constructor iterates through each converter, examines its {@link YamlToEntityParentConverter}
      * annotation (if present), and registers the converter in the static {@code parentConverters} map using
      * the annotation's {@code dtoClass} attribute as the key.
-     * </p>
+
      * <p>
      * Converters lacking the annotation are silently ignored. Duplicate registrations for the same DTO class
      * result in the last-processed converter overwriting earlier entries, with behavior dependent on Spring's
      * bean instantiation order.
-     * </p>
+
      *
      * @param converterList the complete list of {@link YamlToEntityConverter} beans autowired by Spring;
      *                      must not be {@code null} but may be empty if no converters are defined
@@ -120,12 +120,12 @@ public class YamlToEntityConverterFactory extends ComponentProvider {
      * that is not found, a placeholder {@code Organization} is created. Similarly, if the DTO's module name
      * is not registered, a placeholder {@code OpenkodaModule} is created. These preconditions prevent foreign
      * key constraint violations during subsequent entity persistence operations.
-     * </p>
+
      * <p>
      * After precondition setup, the method delegates to the converter's {@code convertAndSave(dto, filePath)}
      * method, which handles DTO-to-entity mapping, validation, and persistence. The returned entity reflects
      * the saved state from the database, including generated IDs and computed fields.
-     * </p>
+
      *
      * @param <T> the type of the domain entity produced by the conversion
      * @param <D> the type of the YAML DTO consumed by the conversion; must extend {@link ComponentDto}
@@ -168,13 +168,13 @@ public class YamlToEntityConverterFactory extends ComponentProvider {
      * Unlike {@link #processYamlDto(Object, String)}, this variant does NOT perform precondition checks for
      * {@link Organization} or {@link OpenkodaModule} existence, assuming the caller has already ensured these
      * entities are present or that the converter will handle their creation.
-     * </p>
+
      * <p>
      * The {@code resources} map supplies in-memory content (such as code templates, frontend resources, or
      * configuration files) that the converter may need during entity construction. This allows converters to
      * avoid classpath I/O by accessing resources directly from the map, which is particularly useful during
      * bulk imports or when resources are sourced from ZIP archives.
-     * </p>
+
      *
      * @param <T> the type of the domain entity produced by the conversion
      * @param <D> the type of the YAML DTO consumed by the conversion

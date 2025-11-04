@@ -46,7 +46,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
  * This implementation of the {@link DataServices} interface offers tenant-aware
  * data operations with privilege enforcement through secure repositories. It manages
  * form creation, validation, and persistence for organization-scoped entities.
- * </p>
+
  * <p>
  * Key features:
  * <ul>
@@ -56,10 +56,10 @@ import org.springframework.validation.BeanPropertyBindingResult;
  * <li>Tenant-scoped operations via {@link TenantResolver}</li>
  * <li>User registration with idempotent behavior</li>
  * </ul>
- * </p>
+
  * <p>
  * This class is stateless and thread-safe. All injected dependencies are thread-safe.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -97,7 +97,7 @@ public class LiveDataServices implements DataServices {
      * <p>
      * The repository enforces privilege checks based on the user's organization membership.
      * All operations require the user to be authenticated and associated with an organization.
-     * </p>
+
      *
      * @param entityKey the entity type identifier (e.g., "User", "Organization")
      * @return a {@link ScopedSecureRepository} with USER_IN_ORGANIZATION security scope
@@ -111,7 +111,7 @@ public class LiveDataServices implements DataServices {
      * <p>
      * Allows explicit control over privilege enforcement level. Common scopes include
      * USER_IN_ORGANIZATION, GLOBAL, and ORGANIZATION_ADMIN.
-     * </p>
+
      *
      * @param entityKey the entity type identifier (e.g., "User", "Organization")
      * @param securityScope the security scope defining privilege enforcement rules
@@ -126,7 +126,7 @@ public class LiveDataServices implements DataServices {
      * <p>
      * Convenience method for dynamic scope resolution from configuration or UI input.
      * The scope string must match a valid {@link HasSecurityRules.SecurityScope} enum name.
-     * </p>
+
      *
      * @param entityKey the entity type identifier (e.g., "User", "Organization")
      * @param securityScope string representation of the security scope (e.g., "USER_IN_ORGANIZATION")
@@ -142,13 +142,13 @@ public class LiveDataServices implements DataServices {
      * <p>
      * The form is populated from the entity if provided, or a new entity instance is created
      * for the current tenant. Binding results are initialized for validation support.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * AbstractOrganizationRelatedEntityForm form = dataServices.getForm("userForm", user);
      * }</pre>
-     * </p>
+
      *
      * @param frontendMappingName the name of the frontend mapping definition
      * @param entity the entity to populate the form from, or null to create a new entity
@@ -178,7 +178,7 @@ public class LiveDataServices implements DataServices {
      * This method provides idempotent user registration behavior. If a user with the
      * given email already exists, that user is returned without modification. Otherwise,
      * a new user is created with the provided details.
-     * </p>
+
      *
      * @param email the user's email address, used as login identifier
      * @param firstName the user's first name
@@ -200,7 +200,7 @@ public class LiveDataServices implements DataServices {
      * <p>
      * Convenience method that creates a form with a new entity instance for the current tenant.
      * Equivalent to calling {@link #getForm(String, SearchableOrganizationRelatedEntity)} with null entity.
-     * </p>
+
      *
      * @param frontendMappingName the name of the frontend mapping definition
      * @return an initialized form with a new entity instance
@@ -216,13 +216,13 @@ public class LiveDataServices implements DataServices {
      * The form is validated using Jakarta Bean Validation, then populated to the entity.
      * If validation fails, binding errors are recorded in the form's binding result.
      * The entity is persisted using a secure repository that enforces privilege checks.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * SearchableOrganizationRelatedEntity saved = dataServices.saveForm(form, entity);
      * }</pre>
-     * </p>
+
      *
      * @param form the validated form containing user input
      * @param entity the entity to populate and save, or null to create a new entity
@@ -251,7 +251,7 @@ public class LiveDataServices implements DataServices {
      * Convenience method that creates a new entity for the current tenant before saving.
      * Equivalent to calling {@link #saveForm(AbstractOrganizationRelatedEntityForm, SearchableOrganizationRelatedEntity)}
      * with null entity.
-     * </p>
+
      *
      * @param form the validated form containing user input for the new entity
      * @return the persisted entity with generated ID

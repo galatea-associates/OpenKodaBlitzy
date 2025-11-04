@@ -40,22 +40,22 @@ import static com.openkoda.service.export.FolderPathConstants.SUBDIR_ORGANIZATIO
  * objects into persisted {@link ControllerEndpoint} entities. It provides lookup-or-create semantics by searching
  * for existing endpoints using the combination of frontendResourceId, subPath, httpMethod, and organizationId,
  * creating new instances when no match is found.
- * </p>
+
  * <p>
  * The converter supports two modes of operation: file-based code loading using {@code loadResourceAsString}
  * and in-memory code loading from a provided resources Map. This flexibility enables both filesystem-based
  * and memory-based import workflows.
- * </p>
+
  * <p>
  * Thread-safety: This stateless Spring component is safe for concurrent use across multiple threads.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * ControllerEndpointConversionDto dto = ...;
  * ControllerEndpoint endpoint = converter.convertAndSave(dto, "path/to/file.yaml");
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -74,7 +74,7 @@ public class ControllerEndpointYamlToEntityConverter extends ComponentProvider i
      * This method uses lookup-or-create semantics via {@link #getControllerEndpoint(ControllerEndpointConversionDto)}
      * to find existing endpoints or create new instances. The endpoint code content is loaded from the filesystem
      * using {@code loadResourceAsString} based on the path specified in the DTO.
-     * </p>
+
      *
      * @param dto the ControllerEndpointConversionDto containing endpoint metadata (must not be null)
      * @param filePath the YAML file path (unused but required by interface contract)
@@ -98,7 +98,7 @@ public class ControllerEndpointYamlToEntityConverter extends ComponentProvider i
      * This overload avoids filesystem I/O by retrieving endpoint code content from the provided resources Map
      * using the key specified by {@code dto.getCode()}. This enables efficient batch import operations where
      * all resources are preloaded into memory.
-     * </p>
+
      *
      * @param dto the ControllerEndpointConversionDto containing endpoint metadata (must not be null)
      * @param filePath the YAML file path (unused but required by interface contract)
@@ -121,7 +121,7 @@ public class ControllerEndpointYamlToEntityConverter extends ComponentProvider i
      * This method uses {@code StringUtils.substringBetween} to parse the organization ID that appears
      * between {@code SUBDIR_ORGANIZATION_PREFIX} and the next forward slash in the file path. Returns
      * null if the path does not contain the organization prefix or if the extracted string is empty.
-     * </p>
+
      *
      * @param filePath the file path potentially containing organization prefix (may be null or not contain prefix)
      * @return organization ID as Long if found, null if path does not contain organization prefix or orgIdString is empty
@@ -139,7 +139,7 @@ public class ControllerEndpointYamlToEntityConverter extends ComponentProvider i
      * of frontendResourceId, subPath, httpMethod, and organizationId. If an existing endpoint is found, it is returned
      * and updated with the DTO values. If no match exists, a new ControllerEndpoint instance is created and populated
      * with metadata from the DTO.
-     * </p>
+
      * <p>
      * DTO to entity field mappings:
      * <ul>
@@ -152,7 +152,7 @@ public class ControllerEndpointYamlToEntityConverter extends ComponentProvider i
      * <li>responseType → responseType</li>
      * <li>module → moduleName</li>
      * </ul>
-     * </p>
+
      *
      * @param dto the ControllerEndpointConversionDto containing endpoint metadata (must not be null)
      * @return existing ControllerEndpoint if found via lookup query, or new instance with fields populated from DTO (never null)

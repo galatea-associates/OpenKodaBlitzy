@@ -30,7 +30,7 @@ import java.io.Serializable;
  * to entity identifiers without coupling to specific entity implementations. All OpenKoda domain entities 
  * implement this interface either directly or transitively through base classes like {@link TimestampedEntity} 
  * or {@link OpenkodaEntity}.
- * </p>
+
  * <p>
  * By extending {@link Serializable}, this interface enables entity serialization for multiple use cases:
  * <ul>
@@ -39,7 +39,7 @@ import java.io.Serializable;
  *   <li>Remote method invocation and inter-process communication</li>
  *   <li>Persistence of entity state to external storage</li>
  * </ul>
- * </p>
+
  * <p>
  * <strong>Entity Hierarchy:</strong><br>
  * This interface is extended by several specialized interfaces that add additional contracts:
@@ -48,7 +48,7 @@ import java.io.Serializable;
  *   <li>{@link OrganizationRelatedEntity} - adds multi-tenancy support with organization scoping</li>
  *   <li>{@link SearchableEntity} - adds full-text search capabilities (often combined with organization scoping)</li>
  * </ul>
- * </p>
+
  * <p>
  * <strong>Typical Implementations:</strong><br>
  * Most entities extend from base classes that implement this interface:
@@ -56,7 +56,7 @@ import java.io.Serializable;
  *   <li>{@link TimestampedEntity} - provides automatic timestamp management</li>
  *   <li>{@link OpenkodaEntity} - primary application base class combining multiple concerns</li>
  * </ul>
- * </p>
+
  * <p>
  * <strong>Equality and HashCode Best Practices:</strong><br>
  * When implementing {@code equals()} and {@code hashCode()} for entities:
@@ -71,7 +71,7 @@ import java.io.Serializable;
  *     return getId().equals(other.getId());
  * }
  * }</pre>
- * </p>
+
  * <p>
  * <strong>ID Generation Patterns:</strong><br>
  * Entity IDs are typically generated using JPA strategies defined in {@link ModelConstants}:
@@ -79,7 +79,7 @@ import java.io.Serializable;
  *   <li>Sequence-based: {@code @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "GLOBAL_ID_GENERATOR")}</li>
  *   <li>Identity-based: {@code @GeneratedValue(strategy = GenerationType.IDENTITY)} for certain databases</li>
  * </ul>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -97,13 +97,13 @@ public interface LongIdEntity extends Serializable {
      * The ID is a unique Long value that identifies this entity instance within the persistence context. 
      * This method provides type-safe access to the primary key without requiring knowledge of the specific 
      * entity implementation.
-     * </p>
+
      * <p>
      * <strong>Null Handling:</strong><br>
      * This method returns {@code null} for transient (unsaved) entities that have not yet been persisted 
      * to the database. Once an entity is saved, the ID is assigned by the persistence provider and will 
      * remain non-null for the lifetime of the entity.
-     * </p>
+
      * <p>
      * <strong>Typical ID Generation Implementations:</strong>
      * <ul>
@@ -112,7 +112,7 @@ public interface LongIdEntity extends Serializable {
      *   <li>Identity-generated IDs: {@code @GeneratedValue(strategy = GenerationType.IDENTITY)} - 
      *       ID assigned after INSERT using auto-increment column (MySQL, PostgreSQL IDENTITY)</li>
      * </ul>
-     * </p>
+
      * <p>
      * <strong>ID Immutability:</strong><br>
      * Once an ID is assigned during entity persistence, it should never change. The ID is critical for:
@@ -123,7 +123,7 @@ public interface LongIdEntity extends Serializable {
      *   <li>Audit trail consistency</li>
      * </ul>
      * Changing an entity's ID after persistence can lead to data corruption and cache inconsistencies.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
@@ -132,7 +132,7 @@ public interface LongIdEntity extends Serializable {
      * organizationRepository.save(org);
      * org.getId(); // returns assigned ID (e.g., 12345L)
      * }</pre>
-     * </p>
+
      *
      * @return the entity's primary key ID as a Long value, or {@code null} if the entity is transient 
      *         (not yet persisted to the database)

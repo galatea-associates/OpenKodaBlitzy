@@ -44,11 +44,11 @@ import java.util.Optional;
  * Supports both global {@link Privilege#readUserData} privilege (allowing unrestricted access) and
  * organization-scoped privilege checks. Uses {@link CollectionJoin} on the roles collection to filter users
  * by organization membership. Calls {@code query.distinct(true)} to eliminate duplicate rows from the join.
- * </p>
+ * 
  * <p>
  * <b>Note:</b> Uses string-based attribute names ('organizationId', 'roles') which are fragile to entity
  * refactoring. The dict() method currently returns null as a placeholder and should be implemented or removed.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -68,7 +68,7 @@ public class UserSpecifications implements ReadableCode {
      * This method is a placeholder that returns a Specification with a null predicate. This is potentially
      * dangerous as it may cause NullPointerExceptions when evaluated by the JPA provider. This method should
      * either be properly implemented with a valid predicate or removed from the API.
-     * </p>
+     * 
      *
      * @return Specification for Tuple that returns null predicate (placeholder implementation)
      * @deprecated This method returns null and should be implemented or removed
@@ -87,10 +87,10 @@ public class UserSpecifications implements ReadableCode {
      * Constructs a specification that matches UserRole entities belonging to the specified organization.
      * When specificOrganizationId is null, returns {@code conjunction()} (always-true predicate) allowing
      * all roles. When non-null, applies exact equality matching on the organizationId attribute.
-     * </p>
+     * 
      * <p>
      * Usage example: {@code searchUserRoleSpecification(123L).and(additionalFilters)}
-     * </p>
+     * 
      *
      * @param specificOrganizationId The organization ID to filter by, or null to allow all organizations (returns conjunction)
      * @return Specification for UserRole filtering by organizationId. Returns always-true predicate when parameter is null
@@ -129,13 +129,13 @@ public class UserSpecifications implements ReadableCode {
      *     organizationIds via roles join.</li>
      * <li>Returns {@code disjunction()} if user has no organization access.</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Usage example: {@code searchSpecification(null).and(nameFilter)}
-     * </p>
+     * 
      * <p>
      * <b>Security note:</b> This method enforces row-level security based on user privileges and organization memberships.
-     * </p>
+     * 
      *
      * @param specificOrganizationId The specific organization ID to scope the query to, or null to use user's accessible organizations
      * @return Specification for User filtering with privilege enforcement and organization scoping. Returns always-false predicate for unauthorized access

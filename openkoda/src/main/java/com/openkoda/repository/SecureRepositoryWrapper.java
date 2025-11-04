@@ -42,7 +42,7 @@ import java.util.Set;
  * Implements {@link ScopedSecureRepository} to provide scoped repository access with privilege enforcement.
  * This wrapper binds any {@link SearchableFunctionalRepositoryWithLongId} instance with a fixed {@link HasSecurityRules.SecurityScope},
  * forwarding all method calls to the wrapped repository while pre-applying the bound scope.
- * </p>
+
  * <p>
  * Created via {@code SecureRepository.scoped(SecurityScope)} for temporary scope elevation scenarios.
  * The scope determines the privilege level for all operations:
@@ -52,18 +52,18 @@ import java.util.Set;
  *   <li><b>GLOBAL</b>: System-admin level access for cross-tenant operations</li>
  * </ul>
  * All CRUD operations (find, save, delete, search, count) enforce privilege checks based on the bound scope level.
- * </p>
+
  * <p>
  * The wrapper is <b>immutable</b> after construction - the scope cannot be changed once set.
  * Thread-safety is guaranteed as long as the wrapped repository is thread-safe.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * ScopedSecureRepository&lt;Organization&gt; orgScoped = secureRepo.scoped(ORGANIZATION);
  * List&lt;Organization&gt; orgs = orgScoped.findAll(); // Privilege-checked
  * </pre>
- * </p>
+
  *
  * @param <T> Searchable entity type with privilege annotations extending {@link SearchableEntity}
  * @author OpenKoda Team
@@ -81,7 +81,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * <p>
      * This repository performs the actual data access operations and privilege enforcement.
      * All method invocations on this wrapper are delegated to this repository with the pre-configured scope.
-     * </p>
+
      */
     private final SearchableFunctionalRepositoryWithLongId<T> wrapped;
     
@@ -91,7 +91,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * This scope determines the privilege level for all repository operations and cannot be changed
      * after construction. The scope is automatically passed as the first parameter to all wrapped
      * repository method calls.
-     * </p>
+
      */
     private final HasSecurityRules.SecurityScope scope;
 
@@ -101,7 +101,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * The provided scope is permanently bound to this wrapper instance and will be
      * applied to all subsequent repository operations. Both parameters are required and
      * must not be null.
-     * </p>
+
      *
      * @param wrapped Repository instance to wrap, must not be null
      * @param scope Security scope (USER/ORGANIZATION/GLOBAL) to apply to all operations, must not be null
@@ -116,7 +116,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * <p>
      * Performs a field-equality search with privilege enforcement based on the wrapper's bound scope.
      * Only entities accessible within the configured scope level are returned.
-     * </p>
+
      *
      * @param fieldName Field name to search on, must be a valid entity field
      * @param value Value to match, null searches for null values
@@ -132,7 +132,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * All search method variants follow the same privilege-enforcement pattern: forwarding to the
      * wrapped repository with the bound scope parameter prepended. Results are filtered based on
      * the scope's privilege level (USER/ORGANIZATION/GLOBAL).
-     * </p>
+
      *
      * @param specification JPA specification defining search criteria
      * @return List of entities matching the specification within bound scope
@@ -311,7 +311,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * Accepts multiple input types for flexible retrieval. Returns the entity if found and accessible
      * within the bound scope, null otherwise. Write operations with insufficient privilege throw
      * {@code AccessDeniedException}.
-     * </p>
+
      *
      * @param idOrEntityOrSpecification Entity ID (Long), entity instance, or JPA specification
      * @return Entity if found and accessible within scope, null otherwise
@@ -325,7 +325,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * <p>
      * Returns all entities the current user can access based on the wrapper's scope level.
      * Use with caution on large datasets - consider paginated search methods instead.
-     * </p>
+
      *
      * @return List of all accessible entities within bound scope, empty list if none found
      */
@@ -339,7 +339,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * Persists a new entity or updates an existing one. Write operations require appropriate
      * privileges at the bound scope level. Throws {@code AccessDeniedException} if the scope
      * is insufficient for the write operation.
-     * </p>
+
      *
      * @param <S> Entity subtype extending T
      * @param entity Entity to persist, must not be null
@@ -355,7 +355,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * <p>
      * Applies form values to the entity via {@code form.populateTo(entity)} before saving.
      * Useful for MVC controller scenarios where form validation has already occurred.
-     * </p>
+
      *
      * @param <S> Entity subtype extending T
      * @param entity Entity to update and save
@@ -372,7 +372,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * <p>
      * Accepts any collection type containing entities. All entities must be accessible
      * within the bound scope for the save operation to succeed.
-     * </p>
+
      *
      * @param <S> Entity subtype extending T
      * @param entitiesCollection Collection (List, Set, etc.) of entities to save
@@ -389,7 +389,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * Accepts either an entity ID (Long) or entity instance. Returns false if entity not found
      * or not accessible within bound scope. Throws {@code AccessDeniedException} if scope
      * insufficient for delete operation.
-     * </p>
+
      *
      * @param idOrEntity Entity ID (Long) or entity instance to delete
      * @return true if entity was deleted, false if not found or not accessible within scope
@@ -404,7 +404,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * <p>
      * Accepts collection of IDs, collection of entities, or JPA specification.
      * All matching entities must be accessible within the bound scope.
-     * </p>
+
      *
      * @param idsOrEntitiesCollectionOrSpecification IDs, entities collection, or specification defining entities to delete
      * @return Count of entities actually deleted
@@ -419,7 +419,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * <p>
      * Returns true only if the entity exists and is accessible within the bound scope level.
      * Entities outside the scope are treated as non-existent.
-     * </p>
+
      *
      * @param idOrEntity Entity ID (Long) or entity instance to check
      * @return true if entity exists and is accessible within scope, false otherwise
@@ -432,7 +432,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * Checks if any entities exist matching IDs, collection, or specification within bound scope.
      * <p>
      * Returns true if at least one matching entity is accessible within the bound scope.
-     * </p>
+
      *
      * @param idsOrEntitiesCollectionOrSpecification IDs, entities collection, or specification to check
      * @return true if at least one matching entity exists within scope, false otherwise
@@ -445,7 +445,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * Counts all entities accessible within the bound security scope.
      * <p>
      * Returns the count of entities the current user can access based on the wrapper's scope level.
-     * </p>
+
      *
      * @return Count of entities accessible within bound scope
      */
@@ -490,7 +490,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * <p>
      * Delegates to the wrapped repository's factory method. Useful for creating
      * entity instances without direct constructor invocation.
-     * </p>
+
      *
      * @return New entity instance, never null
      */
@@ -505,11 +505,11 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * This method introspects the wrapped repository's class to find the {@code SearchableRepositoryMetadata}
      * annotation on the first implemented interface. The metadata contains configuration for search operations,
      * including searchable field definitions and display properties.
-     * </p>
+
      * <p>
      * Implementation note: Reads annotation from the first interface of the wrapped repository class.
      * Returns null if the wrapped repository has no annotated interfaces.
-     * </p>
+
      *
      * @return Metadata annotation if present on wrapped repository's first interface, null otherwise
      */
@@ -526,7 +526,7 @@ public class SecureRepositoryWrapper<T extends SearchableEntity> implements Scop
      * <p>
      * Utility method for validating that this wrapper has been properly initialized
      * with a repository instance.
-     * </p>
+
      *
      * @return true if wrapped repository is non-null, false otherwise
      */

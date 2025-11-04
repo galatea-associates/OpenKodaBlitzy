@@ -40,14 +40,14 @@ import static com.openkoda.core.controller.generic.AbstractController.*;
  * The controller follows a clear separation of concerns: HTTP binding and view rendering are handled here,
  * while validation, persistence, component export, and cluster-aware scheduler operations are delegated to
  * the abstract parent controller.
- * </p>
+ * 
  * <p>
  * <b>Request Mapping Pattern:</b> All endpoints are mapped under {@code _HTML + _SCHEDULER} path prefix,
  * providing server-side rendered HTML responses with Thymeleaf view fragments for AJAX-based partial page updates.
- * </p>
+ * 
  * <p>
  * <b>Security Requirements:</b>
- * </p>
+ * 
  * <ul>
  *   <li>READ operations (getAll, settings, newScheduler) require {@code CHECK_CAN_READ_BACKEND} privilege</li>
  *   <li>MANAGE operations (updateScheduler, createScheduler, remove) require {@code CHECK_CAN_MANAGE_BACKEND} privilege</li>
@@ -56,10 +56,10 @@ import static com.openkoda.core.controller.generic.AbstractController.*;
  * <b>Flow Pipeline Integration:</b> All methods delegate to AbstractSchedulerController Flow-producing methods,
  * then invoke {@code .mav()} to convert the PageModelMap result into ModelAndView objects with appropriate
  * view fragment names for success and error states.
- * </p>
+ * 
  * <p>
  * <b>Scheduler Management Features:</b>
- * </p>
+ * 
  * <ul>
  *   <li>Paginated scheduler search with name-based filtering</li>
  *   <li>Scheduler configuration CRUD operations with cron expression validation</li>
@@ -71,7 +71,7 @@ import static com.openkoda.core.controller.generic.AbstractController.*;
  * <b>Cluster-Aware Operations:</b> Scheduler lifecycle operations (create, update, remove) are synchronized
  * across all application instances in the cluster through services.scheduler cluster-aware methods
  * (loadClusterAware, reloadClusterAware, removeClusterAware), ensuring consistent scheduler state.
- * </p>
+ * 
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
@@ -91,16 +91,16 @@ public class SchedulerControllerHtml extends AbstractSchedulerController {
      * This GET endpoint provides the main scheduler listing page for the Admin panel. It delegates to
      * {@link AbstractSchedulerController#findSchedulersFlow(String, org.springframework.data.jpa.domain.Specification, Pageable)}
      * to execute a secure paginated query, then renders the result using the "scheduler-all" Thymeleaf view fragment.
-     * </p>
+     * 
      * <p>
      * <b>Security:</b> Requires {@code CHECK_CAN_READ_BACKEND} privilege via @PreAuthorize annotation.
-     * </p>
+     * 
      * <p>
      * <b>Request Mapping:</b> GET {@code _HTML + _SCHEDULER + _ALL}
-     * </p>
+     * 
      * <p>
      * <b>Query Parameters:</b>
-     * </p>
+     * 
      * <ul>
      *   <li>scheduler_search - Optional search term for filtering schedulers by name (default: empty string)</li>
      *   <li>Pagination parameters handled by @Qualifier("scheduler") Pageable (page, size, sort)</li>
@@ -128,23 +128,23 @@ public class SchedulerControllerHtml extends AbstractSchedulerController {
      * This GET endpoint retrieves a scheduler entity by ID and prepares a SchedulerForm populated with
      * its current configuration including name, cron expression, event code, and enabled state. The form
      * is rendered in the "scheduler-settings" view fragment for editing.
-     * </p>
+     * 
      * <p>
      * <b>Security:</b> Requires {@code CHECK_CAN_READ_BACKEND} privilege via @PreAuthorize annotation.
-     * </p>
+     * 
      * <p>
      * <b>Request Mapping:</b> GET {@code _HTML + _SCHEDULER + _ID + _SETTINGS}
-     * </p>
+     * 
      * <p>
-     * <b>Flow Delegation:</b> Delegates to {@link AbstractSchedulerController#find(Long)} which retrieves
+     * <b>Flow Delegation:</b> Delegates to {@link AbstractSchedulerController#find(long)} which retrieves
      * the Scheduler entity via repositories.unsecure.scheduler.findOne and initializes SchedulerForm with
      * the entity's current values.
-     * </p>
+     * 
      *
      * @param schedulerId Database primary key identifier of the Scheduler entity to retrieve
      * @return ModelAndView containing the "scheduler-settings" view fragment with model attributes
      *         "schedulerEntity" (Scheduler) and "schedulerForm" (SchedulerForm) populated by the Flow pipeline
-     * @see AbstractSchedulerController#find(Long)
+     * @see AbstractSchedulerController#find(long)
      * @see com.openkoda.model.component.Scheduler
      * @see com.openkoda.form.SchedulerForm
      */
@@ -159,27 +159,27 @@ public class SchedulerControllerHtml extends AbstractSchedulerController {
     /**
      * Displays the scheduler creation page with an empty configuration form for defining a new scheduled task.
      * <p>
-     * This GET endpoint initializes a new SchedulerForm by calling {@link AbstractSchedulerController#find(Long)}
+     * This GET endpoint initializes a new SchedulerForm by calling {@link AbstractSchedulerController#find(long)}
      * with ID=-1 as a convention for creating new entities. The empty form is rendered in the "scheduler-settings"
      * view fragment, allowing administrators to configure scheduler name, cron expression, event code to execute,
      * and enabled state.
-     * </p>
+     * 
      * <p>
      * <b>Security:</b> Requires {@code CHECK_CAN_MANAGE_BACKEND} privilege via @PreAuthorize annotation,
      * as this endpoint initiates the creation workflow.
-     * </p>
+     * 
      * <p>
      * <b>Request Mapping:</b> GET {@code _HTML + _SCHEDULER + _NEW_SETTINGS}
-     * </p>
+     * 
      * <p>
      * <b>Form Initialization:</b> The SchedulerForm is initialized with default values suitable for a new
      * scheduler. After form submission, the scheduler will be registered cluster-wide via
      * services.scheduler.loadClusterAware.
-     * </p>
+     * 
      *
      * @return ModelAndView containing the "scheduler-settings" view fragment with model attribute
      *         "schedulerForm" (empty SchedulerForm) ready for user input
-     * @see AbstractSchedulerController#find(Long)
+     * @see AbstractSchedulerController#find(long)
      * @see com.openkoda.form.SchedulerForm
      */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
@@ -197,16 +197,16 @@ public class SchedulerControllerHtml extends AbstractSchedulerController {
      * Jakarta Bean Validation on the SchedulerForm, updates the Scheduler entity in the database, exports the
      * component definition for version control, and triggers cluster-aware scheduler reload via
      * services.scheduler.reloadClusterAware to ensure all application instances reflect the updated configuration.
-     * </p>
+     * 
      * <p>
      * <b>Security:</b> Requires {@code CHECK_CAN_MANAGE_BACKEND} privilege via @PreAuthorize annotation.
-     * </p>
+     * 
      * <p>
      * <b>Request Mapping:</b> POST {@code _HTML + _SCHEDULER + _ID + _SETTINGS}
-     * </p>
+     * 
      * <p>
      * <b>Validation and Processing:</b>
-     * </p>
+     * 
      * <ul>
      *   <li>Form is validated using Jakarta Bean Validation (@Valid annotation)</li>
      *   <li>Cron expression syntax is validated by Spring's CronExpression parser</li>
@@ -218,14 +218,14 @@ public class SchedulerControllerHtml extends AbstractSchedulerController {
      * <p>
      * <b>Cluster Synchronization:</b> The services.scheduler.reloadClusterAware operation ensures that the updated
      * scheduler configuration is reloaded on all nodes in the application cluster, maintaining consistency.
-     * </p>
+     * 
      *
      * @param schedulerId   Database primary key identifier of the Scheduler entity to update
      * @param schedulerForm SchedulerForm object populated from form submission, validated with @Valid annotation
      * @param br            BindingResult containing validation errors if any; checked in AbstractSchedulerController.update
      * @return ModelAndView with conditional view fragments: "entity-forms::scheduler-settings-form-success" on
      *         successful update, or "entity-forms::scheduler-settings-form-error" when validation fails
-     * @see AbstractSchedulerController#update(Long, SchedulerForm, BindingResult)
+     * @see AbstractSchedulerController#update(long, SchedulerForm, BindingResult)
      * @see com.openkoda.form.SchedulerForm
      */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
@@ -244,16 +244,16 @@ public class SchedulerControllerHtml extends AbstractSchedulerController {
      * Jakarta Bean Validation on the SchedulerForm, creates a new Scheduler entity in the database,
      * exports the component definition for version control, and registers the scheduler cluster-wide via
      * services.scheduler.loadClusterAware to ensure all application instances begin executing the scheduled task.
-     * </p>
+     * 
      * <p>
      * <b>Security:</b> Requires {@code CHECK_CAN_MANAGE_BACKEND} privilege via @PreAuthorize annotation.
-     * </p>
+     * 
      * <p>
      * <b>Request Mapping:</b> POST {@code _HTML + _SCHEDULER + _NEW_SETTINGS}
-     * </p>
+     * 
      * <p>
      * <b>Validation and Processing:</b>
-     * </p>
+     * 
      * <ul>
      *   <li>Form is validated using Jakarta Bean Validation (@Valid annotation)</li>
      *   <li>Cron expression syntax is validated by Spring's CronExpression parser</li>
@@ -266,7 +266,7 @@ public class SchedulerControllerHtml extends AbstractSchedulerController {
      * <p>
      * <b>Cluster Registration:</b> The services.scheduler.loadClusterAware operation registers the new scheduler
      * on all nodes in the application cluster, ensuring distributed execution according to the cron schedule.
-     * </p>
+     * 
      *
      * @param schedulerForm SchedulerForm object populated from form submission with name, cron expression, event code,
      *                      and enabled state; validated with @Valid annotation
@@ -291,16 +291,16 @@ public class SchedulerControllerHtml extends AbstractSchedulerController {
      * This POST endpoint removes a scheduler entity, cleaning up its exported component files, deleting the
      * database record, and unregistering the scheduler from all application instances via
      * services.scheduler.removeClusterAware to stop scheduled task execution across the cluster.
-     * </p>
+     * 
      * <p>
      * <b>Security:</b> Requires {@code CHECK_CAN_MANAGE_BACKEND} privilege via @PreAuthorize annotation.
-     * </p>
+     * 
      * <p>
      * <b>Request Mapping:</b> POST {@code _HTML + _SCHEDULER + _ID_REMOVE}
-     * </p>
+     * 
      * <p>
      * <b>Deletion Process:</b>
-     * </p>
+     * 
      * <ul>
      *   <li>Scheduler entity is retrieved via repositories.unsecure.scheduler.findOne</li>
      *   <li>Exported component files are removed via services.componentExport.removeExportedFilesIfRequired</li>
@@ -310,15 +310,15 @@ public class SchedulerControllerHtml extends AbstractSchedulerController {
      * <p>
      * <b>Response Handling:</b> Uses boolean lambda-based view selection via {@code .mav(a -> true, a -> false)}
      * to return success (true) or failure (false) indicators for AJAX response handling in the frontend.
-     * </p>
+     * 
      * <p>
      * <b>Cluster Synchronization:</b> The services.scheduler.removeClusterAware operation ensures that the
      * scheduler is unregistered and stopped on all nodes in the application cluster.
-     * </p>
+     * 
      *
      * @param schedulerId Database primary key identifier of the Scheduler entity to delete
      * @return ModelAndView with boolean result: success view on successful deletion, failure view otherwise
-     * @see AbstractSchedulerController#removeScheduler(Long)
+     * @see AbstractSchedulerController#removeScheduler(long)
      * @see com.openkoda.model.component.Scheduler
      */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)

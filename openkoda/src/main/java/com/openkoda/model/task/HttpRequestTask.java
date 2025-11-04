@@ -38,17 +38,17 @@ import java.util.*;
  * This entity represents an HTTP request task in the single-table inheritance hierarchy (discriminator value "httprequest").
  * It supports asynchronous HTTP request workflows: creation → scheduling → execution by background worker → response capture.
  * The task can execute multiple HTTP methods (GET, POST, PUT, DELETE) with JSON payloads and custom headers.
- * </p>
+ * 
  * <p>
  * HTTP request tasks are organization-scoped for multi-tenant webhook isolation, ensuring each tenant's webhooks
  * are executed within their security context. Request/response handling includes JSON payload processing,
  * custom header configuration, timeout management, and error handling capabilities.
- * </p>
+ * 
  * <p>
  * Persistence: Entity stored in 'tasks' table with {@code @DiscriminatorValue("httprequest")} for single-table inheritance.
  * The requestUrl field is required ({@code @Column(nullable=false)}). Large text fields (json, headersJson) use
  * {@code @Column(length=65535)} for TEXT storage in database.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -104,7 +104,7 @@ public class HttpRequestTask extends Task implements AuditableEntityOrganization
      * <p>
      * Note: Cache is not invalidated when {@link #setHeadersJson(String)} is called,
      * which may lead to stale cached headers if JSON is modified after first access.
-     * </p>
+     * 
      */
     @Transient
     private Map<String, String> headersMap;
@@ -243,7 +243,7 @@ public class HttpRequestTask extends Task implements AuditableEntityOrganization
      * <p>
      * Note: Does not invalidate the cached {@link #headersMap}, which may lead to
      * stale cached headers if called after {@link #getHeadersMap()} has been invoked.
-     * </p>
+     * 
      *
      * @param headersJson serialized headers as JSON string
      */
@@ -257,11 +257,11 @@ public class HttpRequestTask extends Task implements AuditableEntityOrganization
      * Lazily parses headersJson into Map&lt;String, String&gt; using {@link JsonHelper}.
      * The result is cached transiently for subsequent calls. If headersJson is null or empty,
      * defaults to empty JSON object "{}".
-     * </p>
+     * 
      * <p>
      * Warning: Cache is not invalidated when {@link #setHeadersJson(String)} is called,
      * which could lead to stale cached headers if JSON is modified after first access.
-     * </p>
+     * 
      *
      * @return parsed headers as map of header names to header values
      */

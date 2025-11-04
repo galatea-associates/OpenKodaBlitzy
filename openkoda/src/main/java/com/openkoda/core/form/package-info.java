@@ -26,11 +26,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * and JPA entities using reflection, validating form data with Jakarta Bean Validation, enforcing field-level read/write
  * privileges, and automatically instantiating/binding forms in Spring MVC controllers. Supports both standard JavaBean
  * entities (via ReflectionBasedEntityForm) and dynamic map-based entities (via MapEntityForm) with a unified API.
- * </p>
+ * 
  *
- * <h2>Key Components</h2>
+ * <b>Key Components</b>
  *
- * <h3>1. Form Definition DSL</h3>
+ * <b>1. Form Definition DSL</b>
  * <ul>
  *   <li>FormFieldDefinitionBuilderStart: Entry point providing field creation methods (text(), dropdown(), manyToOne(), files(), etc.)</li>
  *   <li>FormFieldDefinitionBuilder: Continuation providing field configuration methods (validate(), datalist(), converter(), privileges())</li>
@@ -38,7 +38,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>FrontendMappingFieldDefinition: Immutable descriptor for a single form field with type, validation, privileges, datalists, converters</li>
  * </ul>
  *
- * <h3>2. Form Class Hierarchy</h3>
+ * <b>2. Form Class Hierarchy</b>
  * <ul>
  *   <li>Form: Base abstraction defining populateFrom/validate/populateTo lifecycle</li>
  *   <li>AbstractForm: Request-scoped base with reflection-based field mapping, cached accessor Functions, and privilege-aware field processing</li>
@@ -48,7 +48,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>MapEntityForm: Handles MapEntity dynamic entities where both DTO and entity are Map-based</li>
  * </ul>
  *
- * <h3>3. Spring MVC Integration</h3>
+ * <b>3. Spring MVC Integration</b>
  * <ul>
  *   <li>MapFormArgumentResolver: HandlerMethodArgumentResolver that auto-creates and binds form instances for controller methods</li>
  *   <li>CRUDControllerConfiguration: Builder/factory encapsulating CRUD controller config (privileges, views, repositories, forms)</li>
@@ -56,7 +56,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>RenamingProcessor (deprecated): Converts dotted parameter names to bracketed notation</li>
  * </ul>
  *
- * <h3>4. Supporting Types</h3>
+ * <b>4. Supporting Types</b>
  * <ul>
  *   <li>FieldType: Enum of frontend field types (text, number, email, dropdown, etc.)</li>
  *   <li>FieldDbType: Enum mapping form fields to PostgreSQL column types for dynamic entity DDL generation</li>
@@ -66,7 +66,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Validator: Factory for common validation functions</li>
  * </ul>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <ul>
  *   <li>Builder pattern: Fluent FormFieldDefinitionBuilder API for declarative form construction</li>
  *   <li>Factory pattern: CRUDControllerConfiguration creates forms and entities via cached reflective Constructors</li>
@@ -75,7 +75,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Caching: Static Maps cache field accessors (fieldMapping), parameter rename maps (replaceMaps), and reflective Constructors</li>
  * </ul>
  *
- * <h2>Data Flow</h2>
+ * <b>Data Flow</b>
  * <ol>
  *   <li>Developer declares form structure via FormFieldDefinitionBuilderStart DSL → produces FrontendMappingDefinition</li>
  *   <li>MapFormArgumentResolver resolves controller method parameter → looks up CRUDControllerConfiguration by URL/key</li>
@@ -86,7 +86,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Controller persists entity via repository → form lifecycle complete</li>
  * </ol>
  *
- * <h2>Usage Example</h2>
+ * <b>Usage Example</b>
  * <pre>{@code
  * // Define form structure
  * FrontendMappingDefinition employeeForm = new FormFieldDefinitionBuilderStart()
@@ -109,7 +109,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * }
  * }</pre>
  *
- * <h2>Key Frameworks &amp; Dependencies</h2>
+ * <b>Key Frameworks &amp; Dependencies</b>
  * <ul>
  *   <li>Spring MVC: WebDataBinder, HandlerMethodArgumentResolver, BindingResult for request binding</li>
  *   <li>Spring Data JPA: Specification support for query filtering</li>
@@ -119,14 +119,14 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Jackson: @JsonIgnore for DTO serialization</li>
  * </ul>
  *
- * <h2>Thread Safety</h2>
+ * <b>Thread Safety</b>
  * <ul>
  *   <li>Form instances: Request-scoped, single-threaded use, NOT thread-safe</li>
  *   <li>Static caches: ConcurrentHashMap or synchronized collections for shared accessor/constructor caches</li>
  *   <li>FrontendMappingDefinition: Immutable after construction, thread-safe</li>
  * </ul>
  *
- * <h2>Common Pitfalls</h2>
+ * <b>Common Pitfalls</b>
  * <ul>
  *   <li>Form classes must have either no-arg constructor OR constructor accepting (FrontendMappingDefinition) OR (FrontendMappingDefinition, Long, Entity)</li>
  *   <li>Entity classes must have constructor accepting (Long organizationId) for CRUDControllerConfiguration factory methods</li>
@@ -134,7 +134,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Privilege evaluation requires PrivilegeHelper to be properly initialized with SecurityService context</li>
  * </ul>
  *
- * <h2>Related Packages</h2>
+ * <b>Related Packages</b>
  * <ul>
  *   <li>com.openkoda.core.flow: Flow pipeline for controller orchestration</li>
  *   <li>com.openkoda.core.security: PrivilegeHelper and PrivilegeBase for access control</li>

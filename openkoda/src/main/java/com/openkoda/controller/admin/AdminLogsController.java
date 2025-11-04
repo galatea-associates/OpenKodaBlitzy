@@ -39,18 +39,18 @@ import static com.openkoda.controller.common.URLConstants._LOGS;
  * ({@link #downloadLogs()}), log viewing UI ({@link #showLogs()}), logger configuration retrieval 
  * ({@link #getSettings()}), and configuration persistence ({@link #setSettings(LoggerForm, BindingResult)}). 
  * All endpoints require elevated admin privileges enforced via {@code @PreAuthorize}.
- * </p>
+ * 
  * <p>
  * <b>Request Mapping:</b> Base path "/html/logs" ({@code URLConstants._HTML + _LOGS})
- * </p>
+ * 
  * <p>
  * <b>Security:</b> Implements {@link HasSecurityRules} for privilege enforcement. Log viewing requires 
  * {@code CHECK_CAN_READ_SUPPORT_DATA}, configuration changes require {@code CHECK_CAN_MANAGE_SUPPORT_DATA}.
- * </p>
+ * 
  * <p>
  * <b>Response Types:</b> Returns JSON via {@code @ResponseBody} for download endpoint, HTML views via 
  * ModelAndView for UI endpoints, HTMX fragments for AJAX form submission.
- * </p>
+ * 
  * <p>
  * <b>Admin-Specific Patterns:</b>
  * <ul>
@@ -62,23 +62,21 @@ import static com.openkoda.controller.common.URLConstants._LOGS;
  * <li>View naming: Convention-based view names (logs-all, logs-settings) resolved by Thymeleaf</li>
  * <li>URL constants: Uses static imports from URLConstants (_HTML, _LOGS, _DOWNLOAD, _ALL, _SETTINGS)</li>
  * </ul>
- * </p>
  * <p>
  * <b>Privilege Requirements:</b>
  * <ul>
  * <li>{@code CHECK_CAN_READ_SUPPORT_DATA}: Required for viewing logs and configuration (GET endpoints)</li>
  * <li>{@code CHECK_CAN_MANAGE_SUPPORT_DATA}: Required for changing configuration (POST /settings)</li>
  * </ul>
- * </p>
  * <p>
  * <b>Thread-Safety:</b> Stateless, thread-safe.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
  * @since 1.7.1
  * @see AbstractAdminLogsController for Flow-based helper implementation
- * @see com.openkoda.service.log.LogConfigService for log configuration service
+ * @see com.openkoda.core.service.LogConfigService for log configuration service
  */
 @RestController
 @RequestMapping({_HTML + _LOGS})
@@ -88,14 +86,14 @@ public class AdminLogsController extends AbstractAdminLogsController implements 
      * Downloads in-memory log buffer as text for offline log analysis.
      * <p>
      * <b>HTTP Mapping:</b> GET /html/logs/download
-     * </p>
+     * 
      * <p>
      * <b>Security:</b> {@code @PreAuthorize(CHECK_CAN_READ_SUPPORT_DATA)} - requires support data read privilege.
-     * </p>
+     * 
      * <p>
      * <b>Response Format:</b> Plain text with newline-delimited log entries. Used by admin UI "Download Logs" 
      * button for offline log analysis.
-     * </p>
+     * 
      *
      * @return String containing complete debug log buffer from services.logConfig.getDebugEntries()
      */
@@ -111,15 +109,15 @@ public class AdminLogsController extends AbstractAdminLogsController implements 
      * Displays log viewing UI with log entries list.
      * <p>
      * <b>HTTP Mapping:</b> GET /html/logs/all
-     * </p>
+     * 
      * <p>
      * <b>Security:</b> {@code @PreAuthorize(CHECK_CAN_READ_SUPPORT_DATA)} - requires support data read privilege.
-     * </p>
+     * 
      * <p>
      * Model populated by {@link AbstractAdminLogsController#getLogsFlow()} with key "logsEntryList" containing 
      * List of log entries. Returns {@code @ResponseBody} JSON for AJAX requests. Used by admin dashboard log 
      * viewer tab.
-     * </p>
+     * 
      *
      * @return Object resolving to ModelAndView with view name "logs-all"
      */
@@ -136,14 +134,14 @@ public class AdminLogsController extends AbstractAdminLogsController implements 
      * Retrieves current logger configuration UI.
      * <p>
      * <b>HTTP Mapping:</b> GET /html/logs/settings
-     * </p>
+     * 
      * <p>
      * <b>Security:</b> {@code @PreAuthorize(CHECK_CAN_READ_SUPPORT_DATA)} - requires support data read privilege.
-     * </p>
+     * 
      * <p>
      * Model populated by {@link AbstractAdminLogsController#getSettingsFlow()} with key "loggerForm" containing 
      * {@link LoggerForm} (debugLoggers, maxEntries). Used by admin UI logger configuration panel.
-     * </p>
+     * 
      *
      * @return Object resolving to ModelAndView with view name "logs-settings"
      */
@@ -159,15 +157,15 @@ public class AdminLogsController extends AbstractAdminLogsController implements 
      * Persists logger configuration changes via AJAX form submission.
      * <p>
      * <b>HTTP Mapping:</b> POST /html/logs/settings
-     * </p>
+     * 
      * <p>
      * <b>Security:</b> {@code @PreAuthorize(CHECK_CAN_MANAGE_SUPPORT_DATA)} - requires support data management 
      * privilege (higher privilege than read).
-     * </p>
+     * 
      * <p>
      * Model updated by {@link AbstractAdminLogsController#saveSettings(LoggerForm, BindingResult)} with 
      * validation results. Used by AJAX form submission from logger settings UI.
-     * </p>
+     * 
      *
      * @param loggerFormData validated {@link LoggerForm} with buffer size and logging class names
      * @param br validation {@link BindingResult} for error tracking

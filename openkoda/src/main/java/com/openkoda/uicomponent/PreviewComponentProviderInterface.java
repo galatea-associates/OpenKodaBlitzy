@@ -27,23 +27,23 @@ package com.openkoda.uicomponent;
  * Empty interface used for type-based Spring bean selection and autowiring. Implementations provide
  * restricted service access during development/preview mode. Used by JsFlowRunner.runPreviewFlow to
  * inject preview-mode services instead of live services.
- * </p>
+ * 
  * <p>
  * Enables safe flow preview execution without side effects (no actual emails sent, no database writes).
  * Spring @Autowired(required=false) allows graceful degradation when preview mode not configured.
- * </p>
+ * 
  * <p>
  * Use case: Form designers can preview JavaScript flows without triggering real email sends or external API calls.
- * </p>
+ * 
  * <p>
  * Note: No methods defined - purely for type identification and DI selection.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see JsFlowRunner
- * @see LiveComponentProvider
+ * // LiveComponentProvider
  */
 public interface PreviewComponentProviderInterface {
 

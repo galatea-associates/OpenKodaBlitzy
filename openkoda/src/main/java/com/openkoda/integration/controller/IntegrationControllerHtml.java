@@ -52,7 +52,7 @@ import static com.openkoda.integration.controller.common.IntegrationURLConstants
  *   <li>Enforces security with @PreAuthorize checks (CHECK_CAN_MANAGE_ORG_DATA)</li>
  *   <li>Returns Thymeleaf fragments via Flow.mav() for partial page updates</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>OAuth Callback Flow:</b>
  * <ol>
@@ -65,11 +65,11 @@ import static com.openkoda.integration.controller.common.IntegrationURLConstants
  *   <li>Token stored in IntegrationModuleOrganizationConfiguration entity</li>
  *   <li>User redirected to integration settings page with success navigation fragment</li>
  * </ol>
- * </p>
+
  * <p>
  * <b>Flow Pipeline Pattern:</b>
  * Flow.init() → thenSet(form) → then(validate) → then(persist) → execute() → mav(successView, errorView)
- * </p>
+
  *
  * @see IntegrationComponentProvider
  * @see com.openkoda.integration.service.IntegrationService

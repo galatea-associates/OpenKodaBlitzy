@@ -25,26 +25,26 @@ package com.openkoda.model;
  * Marker interface for entities that are associated with multiple organizations in a many-to-many relationship.
  * <p>
  * Implemented by entities that can belong to or be shared across multiple tenant organizations. This enables 
- * cross-organizational data sharing and multi-tenant access control. Unlike {@link OrganizationRelatedEntity} 
+ * cross-organizational data sharing and multi-tenant access control. Unlike OrganizationRelatedEntity 
  * which binds to a single organization, entities implementing this interface maintain relationships with multiple 
  * organizations simultaneously.
- * </p>
+ * 
  * <p>
  * Used for entities like shared resources, cross-organizational users, or global reference data that needs 
  * organization-specific visibility. This pattern is essential in multi-tenant architectures where certain 
  * entities must be accessible across tenant boundaries while maintaining proper access control.
- * </p>
+ * 
  * <p>
  * Security implication: Repository queries must filter by organizationIds to enforce proper tenant isolation. 
  * Secure repositories use the organization IDs returned by {@link #getOrganizationIds()} to restrict query 
  * results to only those entities accessible by the current user's organizations.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see Organization
- * @see OrganizationRelatedEntity
+ * @see com.openkoda.model.Organization
+ * // OrganizationRelatedEntity
  */
 public interface IsManyOrganizationsRelatedEntity {
 
@@ -54,12 +54,12 @@ public interface IsManyOrganizationsRelatedEntity {
      * Used by secure repositories to filter entities based on the user's accessible organizations. When querying 
      * entities that implement this interface, the repository layer compares the returned organization IDs against 
      * the current user's organization memberships to enforce multi-tenant isolation.
-     * </p>
+     * 
      * <p>
      * Data handling note: The returned array should contain the primary keys of all {@link Organization} entities 
      * that this entity is associated with. An empty array indicates the entity is not associated with any specific 
      * organizations (which may represent a global or system-level entity).
-     * </p>
+     * 
      *
      * @return array of organization IDs, may be empty but typically non-null. Returns null only if not yet initialized.
      */

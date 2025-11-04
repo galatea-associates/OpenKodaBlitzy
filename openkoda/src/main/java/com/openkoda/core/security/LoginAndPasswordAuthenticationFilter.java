@@ -42,11 +42,11 @@ import org.springframework.stereotype.Service;
  * POST authentication via the /login endpoint. Its key responsibility is mapping legacy login
  * identifiers (stored in LoginAndPassword.login field) to canonical email usernames (stored in
  * User.email field) via {@link UserRepository#findUsernameLowercaseByLogin(String)}.
- * </p>
+ * 
  * <p>
  * The filter integrates with {@link CustomAuthenticationSuccessHandler} for role-based post-login
  * redirects:
- * </p>
+ * 
  * <ul>
  *   <li>Global admin users (superuser privilege) → dashboard</li>
  *   <li>Single organization users → organization settings page</li>
@@ -55,15 +55,15 @@ import org.springframework.stereotype.Service;
  * <p>
  * It also integrates with {@link CustomAuthenticationFailureHandler} for login error handling
  * and user feedback.
- * </p>
+ * 
  * <p>
  * <b>Use Case:</b> Supports organizations that allow users to authenticate with custom login
  * identifiers (such as employee ID or username) distinct from the email address stored in the
  * User entity.
- * </p>
+ * 
  * <p>
  * <b>Login/Email Distinction:</b>
- * </p>
+ * 
  * <ul>
  *   <li>LoginAndPassword.login: custom identifier chosen by user (may be username, employee ID, or email)</li>
  *   <li>User.email: canonical lowercase email address used as Spring Security username</li>
@@ -71,7 +71,7 @@ import org.springframework.stereotype.Service;
  * </ul>
  * <p>
  * <b>Authentication Flow Example:</b>
- * </p>
+ * 
  * <pre>
  * 1. User submits form: username="john.doe", password="secret123"
  * 2. obtainUsername() queries: findUsernameLowercaseByLogin("john.doe") → "john.doe@example.com"
@@ -100,11 +100,11 @@ public class LoginAndPasswordAuthenticationFilter extends UsernamePasswordAuthen
      * organization membership and privilege level. It instantiates {@link CustomAuthenticationSuccessHandler}
      * to perform intelligent post-login redirects and {@link CustomAuthenticationFailureHandler} to
      * render login error messages.
-     * </p>
+     * 
      * <p>
      * <b>Redirect Logic:</b> The success handler evaluates the OrganizationUser principal after
      * authentication and redirects according to the following rules:
-     * </p>
+     * 
      * <ul>
      *   <li>If user.isSuperUser() (canManageBackend privilege) → pageAfterAuthForGlobalAdmin</li>
      *   <li>If user.organizationNames.size() == 1 → pageAfterAuthForOneOrganization (formatted with organizationId)</li>
@@ -112,7 +112,7 @@ public class LoginAndPasswordAuthenticationFilter extends UsernamePasswordAuthen
      * </ul>
      * <p>
      * <b>Typical Property Configuration:</b>
-     * </p>
+     * 
      * <pre>
      * page.after.auth.for.multiple.organizations=/html/organization/all
      * page.after.auth.for.one.organization=/html/organization/%s/settings
@@ -155,10 +155,10 @@ public class LoginAndPasswordAuthenticationFilter extends UsernamePasswordAuthen
      * identifier, not necessarily an email), then queries the database to find the corresponding
      * User.email address. If a match is found, it returns the canonical email; otherwise, it
      * returns the original login identifier unchanged.
-     * </p>
+     * 
      * <p>
      * <b>Lookup Algorithm:</b>
-     * </p>
+     * 
      * <ol>
      *   <li>super.obtainUsername(request) extracts "username" parameter from form POST</li>
      *   <li>userRepository.findUsernameLowercaseByLogin(login) queries database:
@@ -169,12 +169,12 @@ public class LoginAndPasswordAuthenticationFilter extends UsernamePasswordAuthen
      * <p>
      * <b>Email Normalization:</b> This method always returns a lowercase email address per User.email
      * storage conventions and Spring Security username requirements.
-     * </p>
+     * 
      * <p>
      * <b>Fallback Behavior:</b> If the login is not found in the LoginAndPassword table, authentication
      * proceeds with the login as the username. This handles users who authenticate directly with their
      * email address.
-     * </p>
+     * 
      *
      * @param request HttpServletRequest containing form POST data with "username" parameter (actually
      *        a login identifier, not necessarily an email address)
@@ -195,10 +195,10 @@ public class LoginAndPasswordAuthenticationFilter extends UsernamePasswordAuthen
      * This method configures the authentication flow by connecting the filter to the authentication
      * provider chain. The {@link Lazy @Lazy} annotation breaks a circular dependency during Spring
      * Security configuration initialization.
-     * </p>
+     * 
      * <p>
      * <b>Circular Dependency Resolution:</b>
-     * </p>
+     * 
      * <ul>
      *   <li>SecurityConfiguration creates LoginAndPasswordAuthenticationFilter bean</li>
      *   <li>SecurityConfiguration creates AuthenticationManager bean referencing the filter</li>
@@ -206,7 +206,7 @@ public class LoginAndPasswordAuthenticationFilter extends UsernamePasswordAuthen
      * </ul>
      * <p>
      * <b>Authentication Flow After Manager Set:</b>
-     * </p>
+     * 
      * <ol>
      *   <li>Filter calls attemptAuthentication() with UsernamePasswordAuthenticationToken</li>
      *   <li>AuthenticationManager delegates to LoginByPasswordOrTokenAuthenticationProvider</li>

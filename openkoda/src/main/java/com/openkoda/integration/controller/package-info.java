@@ -28,7 +28,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Controllers extend {@link IntegrationComponentProvider} for service access, use Flow-based 
  * request handling, enforce @PreAuthorize security checks, bind @Valid DTOs with BindingResult,
  * and persist via repositories.unsecure.integration.
- * </p>
+
  * <p>
  * <b>OAuth Authorization Flow:</b>
  * <ol>
@@ -41,7 +41,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Access token stored in IntegrationModuleOrganizationConfiguration entity</li>
  *   <li>User redirected to integration settings page with success message</li>
  * </ol>
- * </p>
+
  * <p>
  * <b>Key Endpoints:</b>
  * <ul>
@@ -50,23 +50,23 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>GET /organization/{organizationId}/integration/{provider} - OAuth callback endpoints (GitHub, Jira, Basecamp)</li>
  *   <li>GET /organization/{organizationId}/integration/settings/{provider}/disconnect - Remove provider configuration</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Subpackage:</b>
  * {@link com.openkoda.integration.controller.common} - URL constants and page attributes for typed model binding
- * </p>
+
  * <p>
  * <b>Security:</b>
  * All configuration endpoints require CHECK_CAN_MANAGE_ORG_DATA privilege via @PreAuthorize.
  * OAuth state parameter provides CSRF protection for callback flows.
- * </p>
+
  * <p>
  * <b>Key Classes:</b>
  * <ul>
  *   <li>{@link IntegrationComponentProvider} - Abstract base providing injected integration services</li>
  *   <li>{@link IntegrationControllerHtml} - Main controller implementing all integration endpoints</li>
  * </ul>
- * </p>
+
  *
  * @see com.openkoda.integration.service.IntegrationService
  * @see com.openkoda.integration.controller.common.IntegrationURLConstants

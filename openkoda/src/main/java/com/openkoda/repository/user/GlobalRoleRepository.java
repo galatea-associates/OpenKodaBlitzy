@@ -35,7 +35,7 @@ import java.util.List;
  * This interface extends {@link FunctionalRepositoryWithLongId} to provide repository operations
  * for GlobalRole entities. GlobalRole represents system-wide roles that apply across all organizations
  * (e.g., ROLE_ADMIN, ROLE_SYSTEM_ADMIN) in the single-table Role inheritance hierarchy.
- * </p>
+
  * <p>
  * Key features:
  * <ul>
@@ -45,11 +45,11 @@ import java.util.List;
  *   <li>Override {@link #save(GlobalRole)} for explicit type safety in role persistence</li>
  *   <li>Used by system initialization, role management, and global privilege assignment</li>
  * </ul>
- * </p>
+
  * <p>
  * Persists to 'roles' table (single-table inheritance) with type discriminator 'GlobalRole'.
  * Shares table with {@link com.openkoda.model.OrganizationRole} and {@link com.openkoda.model.GlobalOrganizationRole}.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -68,7 +68,7 @@ public interface GlobalRoleRepository extends FunctionalRepositoryWithLongId<Glo
      * Uses Spring Data query derivation to generate query with single-table inheritance filtering:
      * {@code SELECT * FROM roles WHERE name = ? AND dtype = 'GlobalRole'}
      * Name comparison is case-sensitive.
-     * </p>
+
      *
      * @param name Unique global role name to search for (e.g., 'ROLE_ADMIN'), must not be null
      * @return GlobalRole with matching name, null if not found
@@ -80,7 +80,7 @@ public interface GlobalRoleRepository extends FunctionalRepositoryWithLongId<Glo
      * <p>
      * Overrides generic save method from {@link FunctionalRepositoryWithLongId} to provide
      * typed return signature. Delegates to standard JPA persist/merge operations.
-     * </p>
+
      *
      * @param globalRole GlobalRole entity to save (insert or update), must not be null
      * @return Saved GlobalRole with generated ID if new, or merged instance if existing
@@ -94,16 +94,16 @@ public interface GlobalRoleRepository extends FunctionalRepositoryWithLongId<Glo
      * Executes JPQL constructor expression:
      * {@code SELECT new Tuple(name, 'label.globalRole.' || name) FROM GlobalRole 
      *        WHERE name NOT LIKE '%UNAUTHENTICATED%' ORDER BY name}
-     * </p>
+
      * <p>
      * Returns Tuple instances with role name and i18n label key (e.g., 'label.globalRole.ROLE_ADMIN').
      * Filters out internal UNAUTHENTICATED role not meant for user assignment. Ordered alphabetically
      * by name for consistent UI display.
-     * </p>
+
      * <p>
      * Usage: Populate role dropdowns in user management UI with localized labels.
      * Label key should resolve via MessageSource to display name.
-     * </p>
+
      *
      * @return List of Tuple(name, labelKey) for assignable GlobalRoles, empty list if none exist
      */

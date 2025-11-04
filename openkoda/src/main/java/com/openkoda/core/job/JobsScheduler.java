@@ -33,17 +33,17 @@ import org.springframework.stereotype.Component;
  * orchestration using Spring's {@code @Scheduled} annotation. The scheduler uses two
  * timing strategies: fixed-delay intervals for continuous jobs (email, webhook, search)
  * and cron expressions for periodic jobs (system health checks).
- * </p>
+ * 
  * <p>
  * All scheduled methods are stateless delegates that pass control to injected job beans.
  * Actual concurrency control, transaction management, and error handling are implemented
  * within the individual job classes. This separation ensures the scheduler remains simple
  * and focused solely on timing orchestration.
- * </p>
+ * 
  * <p>
  * This class implements {@link LoggingComponentWithRequestId} to enable request-id-aware
  * tracing for all scheduled job executions, facilitating debugging and audit trails.
- * </p>
+ * 
  *
  * @since 1.7.1
  * @version 1.7.1
@@ -86,13 +86,13 @@ public class JobsScheduler implements LoggingComponentWithRequestId {
      * Runs every 5 seconds after the previous execution completes, with an initial 10-second
      * delay after application startup. The fixed-delay scheduling ensures no overlapping
      * executions occur, preventing concurrent email delivery attempts.
-     * </p>
+     * 
      * <p>
      * This method delegates all business logic to {@link EmailSenderJob#send()}, which handles
      * transactional email queue processing, SMTP delivery, and error recovery. Any exceptions
      * thrown by the delegate propagate to Spring's scheduler, which logs the error and continues
      * scheduling subsequent executions.
-     * </p>
+     * 
      */
     @Scheduled(initialDelay = 10000, fixedDelay = 5000)
     public void emailSenderJob() {
@@ -105,12 +105,12 @@ public class JobsScheduler implements LoggingComponentWithRequestId {
      * Runs every 5 seconds after the previous execution completes, with an initial 10-second
      * delay after application startup. The timing parameters match {@link #emailSenderJob()}
      * to provide consistent message delivery frequency across channels.
-     * </p>
+     * 
      * <p>
      * This method delegates to {@link PostMessagesToWebhookJob#send()}, which handles
      * transactional HTTP POST operations to configured webhook endpoints. The fixed-delay
      * scheduling prevents concurrent webhook deliveries and ensures ordered processing.
-     * </p>
+     * 
      */
     @Scheduled(initialDelay = 10000, fixedDelay = 5000)
     public void postMessagesToWebhookJob() {
@@ -123,12 +123,12 @@ public class JobsScheduler implements LoggingComponentWithRequestId {
      * Runs every 10 seconds after the previous execution completes, with an initial 10-second
      * delay after application startup. The slower interval (compared to email/webhook jobs)
      * reflects the less time-sensitive nature of search index updates.
-     * </p>
+     * 
      * <p>
      * This method delegates to {@link SearchIndexUpdaterJob#updateSearchIndexes()}, which
      * executes native SQL updates to synchronize search indexes with database changes. The
      * entire index update runs within a single transaction, ensuring consistency.
-     * </p>
+     * 
      */
     @Scheduled(initialDelay = 10000, fixedDelay = 10000)
     public void searchIndexUpdaterJob() {
@@ -141,13 +141,13 @@ public class JobsScheduler implements LoggingComponentWithRequestId {
      * Runs daily at 4:00 AM by default, using the cron expression "0 0 4 * * ?" (second=0,
      * minute=0, hour=4, any day/month/weekday). The schedule can be overridden via the
      * {@code scheduled.systemHealth.check} property in application configuration.
-     * </p>
+     * 
      * <p>
      * This method uses cron-based scheduling instead of fixed-delay because system health
      * checks are resource-intensive and only need periodic execution rather than continuous
      * monitoring. Delegates to {@link SystemHealthAlertJob#checkSystem()}, which monitors
      * RAM usage, CPU load, and disk space, generating alerts when thresholds are exceeded.
-     * </p>
+     * 
      */
     @Scheduled(cron = "${scheduled.systemHealth.check:0 0 4 * * ?}")
     public void systemHealthAlertJob() {

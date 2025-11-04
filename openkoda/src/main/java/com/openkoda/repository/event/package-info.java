@@ -24,15 +24,15 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This package contains Spring Data JPA repository interfaces for accessing event listener and scheduler entities,
  * supporting both secure and unsecured data access patterns.
  * 
- * <h2>Package Purpose</h2>
+ * <b>Package Purpose</b>
  * <p>
  * This package implements the data access layer for OpenKoda's event-driven architecture and job scheduling system.
  * Event listeners enable dynamic registration of business logic that responds to application events, while schedulers
  * support cron-based job execution that emits events at specified intervals. Together, these repositories provide
  * the persistence foundation for runtime-configurable event processing workflows.
- * </p>
  * 
- * <h2>Key Repository Interfaces</h2>
+ * 
+ * <b>Key Repository Interfaces</b>
  * <ul>
  *   <li><b>EventListenerRepository</b> - Base repository for EventListener entities supporting dynamic event handler registration</li>
  *   <li><b>SchedulerRepository</b> - Base repository for Scheduler entities enabling cron-based job scheduling</li>
@@ -40,10 +40,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>SecureSchedulerRepository</b> - Privilege-enforcing wrapper for Scheduler access with role-based security</li>
  * </ul>
  * 
- * <h2>Package Organization</h2>
+ * <b>Package Organization</b>
  * <p>
  * Repositories in this package follow OpenKoda's dual-repository pattern:
- * </p>
+ * 
  * <ul>
  *   <li><b>Base Repositories</b> - Extend {@code UnsecuredFunctionalRepositoryWithLongId} providing standard CRUD operations
  *       and custom query methods without privilege enforcement. Used by service layer components that implement
@@ -53,10 +53,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       to enforce read, write, and delete permissions based on user roles and organization context.</li>
  * </ul>
  * 
- * <h2>Integration Points</h2>
+ * <b>Integration Points</b>
  * <p>
  * This package integrates with several key OpenKoda subsystems:
- * </p>
+ * 
  * <ul>
  *   <li><b>Event Processing Framework</b> ({@code com.openkoda.core.flow}) - Repositories supply event listener
  *       configurations that determine which Flow pipelines execute in response to application events. Event listeners
@@ -68,21 +68,21 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       Scheduler domain entities that define event handling behavior and scheduling rules.</li>
  * </ul>
  * 
- * <h2>Usage Patterns</h2>
+ * <b>Usage Patterns</b>
  * 
- * <h3>Dynamic Event Listener Registration</h3>
+ * <b>Dynamic Event Listener Registration</b>
  * <pre>
  * EventListener listener = eventListenerRepository.findByEventName("USER_CREATED");
  * listener.executeFlow(eventData);
  * </pre>
  * 
- * <h3>Cron-Based Job Scheduling</h3>
+ * <b>Cron-Based Job Scheduling</b>
  * <pre>
  * Scheduler job = schedulerRepository.findByName("DailyReportJob");
  * jobsScheduler.schedule(job.getCronExpression(), job::execute);
  * </pre>
  * 
- * <h2>Relationships with Other Packages</h2>
+ * <b>Relationships with Other Packages</b>
  * <ul>
  *   <li>{@code com.openkoda.model.component.event} - Defines EventListener and Scheduler entity classes persisted by these repositories</li>
  *   <li>{@code com.openkoda.core.job} - Consumes Scheduler configurations to execute background jobs</li>
@@ -90,18 +90,18 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code com.openkoda.repository} - Inherits base repository contracts and secure repository infrastructure</li>
  * </ul>
  * 
- * <h2>Why Schedulers Are in the Event Package</h2>
+ * <b>Why Schedulers Are in the Event Package</b>
  * <p>
  * Schedulers are included in this event-focused package because scheduled jobs fundamentally emit events at their
  * configured execution times. A scheduler executing a cron job publishes an event that triggers registered event
  * listeners, making schedulers event producers within OpenKoda's event-driven architecture. This co-location
  * reflects the tight coupling between scheduling and event emission.
- * </p>
  * 
- * <h2>Adding Classes to This Package</h2>
+ * 
+ * <b>Adding Classes to This Package</b>
  * <p>
  * <b>Should I add a class to this package?</b> Consider these guidelines:
- * </p>
+ * 
  * <ul>
  *   <li><b>YES</b> if implementing a Spring Data JPA repository for EventListener or Scheduler entities</li>
  *   <li><b>YES</b> if creating custom query methods for event listener discovery or scheduler lookup</li>

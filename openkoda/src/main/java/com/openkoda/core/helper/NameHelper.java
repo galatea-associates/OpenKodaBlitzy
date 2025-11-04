@@ -39,17 +39,14 @@ import static com.google.common.base.CaseFormat.*;
  * This helper class converts between camelCase, snake_case, and PascalCase using Guava CaseFormat.
  * It is primarily used for dynamic entity generation, repository naming, and database schema mapping.
  * The class facilitates the translation of Java naming conventions to database naming conventions and vice versa.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
  * String tableName = NameHelper.toTableName("userRole"); // Returns "user_role"
  * String fieldName = NameHelper.toFieldName("user_name"); // Returns "userName"
  * }</pre>
- * </p>
  * <p>
  * Thread-safety: All methods are static with no shared mutable state, making them safe for concurrent use.
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -71,7 +68,7 @@ public class NameHelper {
      * The signature format is "ClassName :: methodName(Type1, Type2)". This format provides
      * a clear and readable representation of method signatures, useful for logging, debugging,
      * and generating dynamic documentation.
-     * </p>
+     * 
      *
      * @param method the Method object to describe (null-safe, returns empty string if null)
      * @return formatted method signature string, or empty string if method is null
@@ -94,7 +91,7 @@ public class NameHelper {
      * <p>
      * This method returns the substring after the last dot character, effectively
      * converting a fully qualified class name to its simple name.
-     * </p>
+     * 
      *
      * @param eventObjectType the fully qualified type name (e.g., "com.openkoda.model.User")
      * @return the simple class name (e.g., "User"), or the original string if no dot is present
@@ -109,7 +106,7 @@ public class NameHelper {
      * This method uses reflection to load each class by name. If a class cannot be found,
      * the ClassNotFoundException is caught, the stack trace is printed, and an empty array
      * is returned instead of propagating the exception.
-     * </p>
+     * 
      *
      * @param classNames array of fully qualified class names (e.g., "java.lang.String")
      * @return array of Class objects corresponding to the class names, or empty array if
@@ -135,10 +132,10 @@ public class NameHelper {
      * <p>
      * This conversion is used when mapping Java entity names to database table names,
      * following standard database naming conventions.
-     * </p>
+     * 
      * <p>
      * Example: "userRole" converts to "user_role"
-     * </p>
+     * 
      *
      * @param entityKey the entity key in lowerCamel format (e.g., "userRole")
      * @return the table name in lower_underscore format (e.g., "user_role")
@@ -152,10 +149,10 @@ public class NameHelper {
      * <p>
      * This conversion is used when generating entity class names from form definitions,
      * following Java class naming conventions.
-     * </p>
+     * 
      * <p>
      * Example: "userRole" converts to "UserRole"
-     * </p>
+     * 
      *
      * @param formName the form name in lowerCamel format (e.g., "userRole")
      * @return the entity class name in UpperCamel format (e.g., "UserRole")
@@ -170,7 +167,7 @@ public class NameHelper {
      * This method currently serves as an identity function, returning the form name unchanged.
      * It provides a consistent API for entity key generation and allows for future modifications
      * to the entity key format without changing client code.
-     * </p>
+     * 
      *
      * @param formName the form name to convert
      * @return the entity key (currently identical to the input formName)
@@ -184,10 +181,10 @@ public class NameHelper {
      * <p>
      * This conversion is used when mapping database column names to Java field names,
      * following standard Java naming conventions.
-     * </p>
+     * 
      * <p>
      * Example: "user_name" converts to "userName"
-     * </p>
+     * 
      *
      * @param columnName the database column name in lower_underscore format (e.g., "user_name")
      * @return the Java field name in lowerCamel format (e.g., "userName")
@@ -201,10 +198,10 @@ public class NameHelper {
      * <p>
      * This conversion is used when mapping Java field names to database column names,
      * following standard database naming conventions.
-     * </p>
+     * 
      * <p>
      * Example: "userName" converts to "user_name"
-     * </p>
+     * 
      *
      * @param fieldName the Java field name in lowerCamel format (e.g., "userName")
      * @return the database column name in lower_underscore format (e.g., "user_name")
@@ -219,10 +216,10 @@ public class NameHelper {
      * The generated repository name has the format "SecureGenerated[EntityName]Repository",
      * where [EntityName] is the PascalCase version of the form name. This naming convention
      * is used for dynamically generated secure repository classes.
-     * </p>
+     * 
      * <p>
      * Example: "user" converts to "SecureGeneratedUserRepository"
-     * </p>
+     * 
      *
      * @param formName the entity form name (e.g., "user")
      * @return the repository class name with "SecureGenerated" prefix (e.g., "SecureGeneratedUserRepository")

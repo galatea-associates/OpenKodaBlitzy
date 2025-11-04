@@ -50,12 +50,10 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  *   <li>Token validated</li>
  *   <li>Password updated</li>
  * </ol>
- * </p>
  * <p>
  * Routes under {@code /password} endpoint. Uses {@code services.user} for token management
  * and password updates, {@code services.email} for delivery. Supports custom redirect pages via
  * {@code passwordRecoveryPageCustomUrl} and {@code passwordChangePageCustomUrl} configuration properties.
- * </p>
  * <p>
  * <b>Security Measures:</b>
  * <ul>
@@ -67,7 +65,6 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  *   <li>Session hijacking prevention (userId validation)</li>
  *   <li>BCrypt password hashing before storage</li>
  * </ul>
- * </p>
  * <p>
  * <b>Password Reset Flow:</b><br>
  * Step 1: User clicks 'Forgot password' and enters email<br>
@@ -77,7 +74,6 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  * Step 5: User enters new password meeting policy requirements<br>
  * Step 6: System validates token again, hashes and updates password, invalidates token<br>
  * Step 7: User redirected to login page with success message
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -98,7 +94,7 @@ public class PasswordRecoveryController extends AbstractController {
      * to this URL after submitting the password recovery form instead of displaying the default
      * confirmation page. The URL is appended with {@code /true} or {@code /false} indicating
      * whether the user exists.
-     * </p>
+     * 
      */
     @Value("${page.after.password.recovery:}")
     private String passwordRecoveryPageCustomUrl;
@@ -109,7 +105,7 @@ public class PasswordRecoveryController extends AbstractController {
      * Configured via {@code page.after.password.change} property. When set, users are redirected
      * to this custom page after clicking the password reset link instead of the default password
      * change form.
-     * </p>
+     * 
      */
     @Value("${page.after.password.change:}")
     private String passwordChangePageCustomUrl;
@@ -119,7 +115,7 @@ public class PasswordRecoveryController extends AbstractController {
      * <p>
      * Returns Thymeleaf fragment for embedding password recovery form into page. The fragment
      * includes an email input field and submit button for initiating the password reset workflow.
-     * </p>
+     * 
      *
      * @return ModelAndView with {@code password-recovery::password-recovery-form} Thymeleaf fragment
      */
@@ -142,15 +138,15 @@ public class PasswordRecoveryController extends AbstractController {
      *   <li>Always returns success to prevent email enumeration attack</li>
      *   <li>Optionally redirects to {@code passwordRecoveryPageCustomUrl} if configured</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * If user exists but lacks password authentication, shows specific error. If user doesn't exist,
      * shows generic error but logs success for security.
-     * </p>
+     * 
      * <p>
      * <b>Security note:</b> Prevents email enumeration by showing success even for non-existent emails.
      * Only sends email if user exists AND has password authentication enabled.
-     * </p>
+     * 
      *
      * @param email User email address for password reset
      * @return ModelAndView with success message or redirect to custom URL
@@ -189,7 +185,7 @@ public class PasswordRecoveryController extends AbstractController {
      * Thymeleaf alert fragment for AJAX response. Success: {@code template.resetPassword.sent} with
      * {@code alert-success} class. Error: {@code template.resetPassword.sent.error} with
      * {@code alert-danger} class.
-     * </p>
+     * 
      *
      * @param email User email address for password reset
      * @return ModelAndView with {@code forms::post-alert} fragment showing success or error
@@ -209,11 +205,10 @@ public class PasswordRecoveryController extends AbstractController {
      * <p>
      * Validates reset token from query parameter, redirects to {@code passwordChangePageCustomUrl}
      * if configured, otherwise forwards to {@code /password/change} endpoint internally.
-     * </p>
+     * 
      *
      * @param request HTTP request containing token parameter
      * @return ModelAndView redirecting to password change form or custom page
-     * @throws com.openkoda.core.exception.InvalidTokenException if token invalid, expired (&gt;24 hours), or already used
      */
     @GetMapping(_RECOVERY + _VERIFY)
     @ResponseBody
@@ -231,7 +226,7 @@ public class PasswordRecoveryController extends AbstractController {
      * <p>
      * Loads current user from SecurityContextHolder (OrganizationUser), creates PasswordChangeForm
      * with userId for validation, returns Thymeleaf template for password entry.
-     * </p>
+     * 
      *
      * @return ModelAndView with {@code password-recovery} template and PasswordChangeForm
      */
@@ -259,16 +254,14 @@ public class PasswordRecoveryController extends AbstractController {
      *   <li>Clears SecurityContextHolder to force re-login</li>
      *   <li>Redirects to login with passwordChanged flag</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * <b>Password policy:</b> Minimum 8 characters, must contain uppercase, lowercase, number,
      * and special character.
-     * </p>
+     * 
      *
      * @param passwordChangeForm Form containing userId and new password (validated with @Valid)
      * @return RedirectView to login page with {@code ?passwordChanged} parameter
-     * @throws SecurityException if userId mismatch detected (possible attack), clears security context
-     * @throws com.openkoda.core.exception.PasswordPolicyException if password doesn't meet requirements
      */
     @PostMapping(_CHANGE + _SAVE)
     @ResponseBody

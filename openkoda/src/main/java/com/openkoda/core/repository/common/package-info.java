@@ -26,7 +26,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * extended by concrete repository interfaces throughout the application, providing consistent patterns for
  * data access, specification-based filtering, and organization-scoped operations.
  *
- * <h2>Key Interfaces</h2>
+ * <b>Key Interfaces</b>
  * <ul>
  *   <li>{@link com.openkoda.core.repository.common.FunctionalRepository} - Marker interface for compile-time
  *       repository grouping and type-safe classification</li>
@@ -44,10 +44,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       providing searchable, filterable, and security-aware repository operations</li>
  * </ul>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <p>
  * This package implements several key design patterns:
- * </p>
+ * 
  * <ul>
  *   <li><b>Abstract Repository Pattern</b>: Uses {@code @NoRepositoryBean} annotation to mark base interfaces
  *       that should not be instantiated as Spring Data repositories</li>
@@ -59,7 +59,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       and security checks</li>
  * </ul>
  *
- * <h2>Usage Example</h2>
+ * <b>Usage Example</b>
  * <pre>{@code
  * // Define a concrete repository by extending searchable base
  * public interface OrganizationRepository
@@ -69,13 +69,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * }
  * }</pre>
  *
- * <h2>Relationships</h2>
+ * <b>Relationships</b>
  * <p>
  * The interfaces in this package serve as base contracts extended by concrete repository interfaces in the
  * {@code com.openkoda.repository} package. They integrate with core framework components including
  * SecurityScope, UserProvider, TenantResolver, and SearchableRepositoryMetadata to provide comprehensive
  * data access capabilities with built-in security and multi-tenancy support.
- * </p>
+ * 
  *
  * @see org.springframework.data.jpa.repository.JpaRepository
  * @see org.springframework.data.jpa.repository.JpaSpecificationExecutor

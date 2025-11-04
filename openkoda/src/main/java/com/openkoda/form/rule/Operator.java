@@ -30,17 +30,17 @@ import com.openkoda.model.OptionWithLabel;
  * membership, and relational operators. Implements {@link OptionWithLabel} for UI display
  * in option lists and selection components. Provides SpEL expression templates with
  * placeholders (%s for strings, %f for floats) for operand substitution in rule evaluation.
- * </p>
+ * 
  * <p>
  * Each operator carries applicability flags ({@code stringsOperator}, {@code numbersOperator})
  * that inform UI and evaluator logic whether the operator is valid for string or numeric
  * operand types. Implementers must apply correct escaping and formatting when substituting
  * values into SpEL templates to avoid injection or formatting errors.
- * </p>
+ * 
  * <p>
  * <strong>Mutability Warning:</strong> Setters exist making enum singletons mutable at runtime.
  * Changes are process-local and immediate for all consumers with no synchronization.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -81,7 +81,7 @@ public enum Operator implements OptionWithLabel {
     greaterThan(">", " > '%f'", false, true),
     
     /**
-     * Less-than relational operator with label "<" and SpEL template " < '%f'".
+     * Less-than relational operator with label "&lt;" and SpEL template " &lt; '%f'".
      * Applicable to numeric operands only.
      */
     lessThan("<", " < '%f'", false, true),
@@ -138,7 +138,7 @@ public enum Operator implements OptionWithLabel {
      * <p>
      * <strong>Warning:</strong> Mutates enum singleton state. Changes are process-local,
      * immediate for all consumers, and unsynchronized. Avoid runtime mutations in production.
-     * </p>
+     * 
      *
      * @param label the new label value
      */
@@ -161,7 +161,7 @@ public enum Operator implements OptionWithLabel {
      * <p>
      * <strong>Warning:</strong> Mutates enum singleton state. Changes are process-local,
      * immediate for all consumers, and unsynchronized. Avoid runtime mutations in production.
-     * </p>
+     * 
      *
      * @param spel the new SpEL template
      */
@@ -184,7 +184,7 @@ public enum Operator implements OptionWithLabel {
      * <p>
      * <strong>Warning:</strong> Mutates enum singleton state. Changes are process-local,
      * immediate for all consumers, and unsynchronized. Avoid runtime mutations in production.
-     * </p>
+     * 
      *
      * @param stringsOperator true if operator applies to strings
      */
@@ -207,7 +207,7 @@ public enum Operator implements OptionWithLabel {
      * <p>
      * <strong>Warning:</strong> Mutates enum singleton state. Changes are process-local,
      * immediate for all consumers, and unsynchronized. Avoid runtime mutations in production.
-     * </p>
+     * 
      *
      * @param numbersOperator true if operator applies to numbers
      */

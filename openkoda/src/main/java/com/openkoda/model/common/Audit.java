@@ -34,12 +34,12 @@ import java.util.Collection;
  * and system operations. Each audit record is organization-scoped (multi-tenant aware) and includes correlation
  * identifiers for distributed tracing. The audit subsystem uses this entity to maintain compliance, support
  * forensic analysis, and enable operational monitoring.
- * </p>
+
  * <p>
  * The entity extends {@link TimestampedEntity} to automatically track creation and modification timestamps,
  * implements {@link SearchableEntity} to enable full-text search via the indexString field, and implements
  * {@link OrganizationRelatedEntity} to enforce tenant isolation through organization-scoped queries.
- * </p>
+
  * <p>
  * Key features:
  * <ul>
@@ -50,7 +50,7 @@ import java.util.Collection;
  *   <li>Full-text search support through computed indexString column</li>
  *   <li>Computed reference string using DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA</li>
  * </ul>
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -58,12 +58,12 @@ import java.util.Collection;
  * audit.setOperation(AuditOperation.EDIT);
  * audit.setSeverity(Severity.INFO);
  * }</pre>
- * </p>
+
  * <p>
  * The entity is persisted to the 'audit' table with id generated using IDENTITY strategy.
  * Audit records are created by the core auditing subsystem (AuditInterceptor) during entity
  * lifecycle events and security-sensitive operations.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -81,7 +81,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * <p>
     * Uses the default organization-related reference field formula from ModelConstants
     * to generate a human-readable reference string combining organization and entity identifiers.
-    * </p>
+
     *
     * @see com.openkoda.model.common.ModelConstants#DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA
     */
@@ -92,7 +92,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * <p>
     * This enum categorizes audit records by the nature of the action taken on the entity.
     * The operation type is persisted as a String value using {@link EnumType#STRING}.
-    * </p>
+
     * <ul>
     *   <li>{@code ADD} - Entity creation or new data insertion</li>
     *   <li>{@code EDIT} - Entity modification or data update</li>
@@ -111,7 +111,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * This enum classifies audit records by their importance or risk level, enabling
     * filtering, alerting, and compliance reporting. The severity level is persisted
     * as a String value using {@link EnumType#STRING}.
-    * </p>
+
     * <ul>
     *   <li>{@code INFO} - Informational event for normal operations and routine activities</li>
     *   <li>{@code WARNING} - Potentially concerning event requiring attention but not critical</li>
@@ -127,7 +127,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * Primary key for the audit record.
     * <p>
     * Generated using database IDENTITY strategy for optimal performance with PostgreSQL sequences.
-    * </p>
+
     */
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -138,7 +138,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * <p>
     * References the User entity's primary key. May be null for system-initiated operations
     * or unauthenticated requests.
-    * </p>
+
     */
    @Column
    private Long userId;
@@ -150,7 +150,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * the security context of the user when the audited action occurred, enabling retrospective
     * privilege analysis. Set via {@link #setUserRoleIds(Collection)} which converts the collection
     * to a string representation.
-    * </p>
+
     */
    @Column(length=2047)
    private String userRoleIds;
@@ -170,7 +170,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * This method accepts any Collection type and converts it to its string representation for storage.
     * Null collections are converted to an empty string. The collection typically contains Long role IDs
     * from the user's current security context.
-    * </p>
+
     *
     * @param userRoleIds a {@link java.util.Collection} of role IDs (typically Long values), or null
     */
@@ -183,7 +183,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * <p>
     * Stores the Java class name (e.g., "com.openkoda.model.Organization") of the entity
     * that was accessed or modified, enabling entity-type based audit queries and reports.
-    * </p>
+
     */
    private String entityName;
 
@@ -193,7 +193,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * Stores a human-readable identifier for the entity (e.g., username, organization name)
     * to complement the entityId and provide meaningful audit trail readability without
     * requiring joins to the actual entity tables.
-    * </p>
+
     */
    private String entityKey;
 
@@ -202,7 +202,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * <p>
     * Persisted as a String using {@link EnumType#STRING} for database readability
     * and forward compatibility. See {@link AuditOperation} for available operation types.
-    * </p>
+
     *
     * @see AuditOperation
     */
@@ -215,7 +215,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * Persisted as a String using {@link EnumType#STRING} for database readability.
     * Used for filtering audit records by importance level and triggering alerts
     * for WARNING and ERROR severity events.
-    * </p>
+
     *
     * @see Severity
     */
@@ -228,7 +228,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * References the primary key of the entity identified by entityName. Combined with
     * entityName, provides a complete reference to the audited entity. May be null for
     * operations that don't target a specific entity (e.g., login attempts, system operations).
-    * </p>
+
     */
    @Column
    private Long entityId;
@@ -239,7 +239,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * Enforces tenant isolation by associating each audit record with a specific organization.
     * Used by SecureRepository and organization-scoped queries to ensure audit records are
     * only accessible within their tenant context. May be null for global system operations.
-    * </p>
+
     */
    @Column
    private Long organizationId;
@@ -250,7 +250,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * Stored as varchar(16380) to accommodate detailed change tracking. Typically contains
     * before/after values, modified field names, or structured change metadata. For larger
     * change descriptions, use the content field which supports TEXT data type.
-    * </p>
+
     */
    @Column(length=16380)
    private String change;
@@ -260,7 +260,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * <p>
     * Captures the source IP address for security analysis, geolocation tracking,
     * and forensic investigation. Supports both IPv4 and IPv6 address formats.
-    * </p>
+
     */
    @Column
    private String ipAddress;
@@ -271,7 +271,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * Links this audit record to the request processing context managed by
     * LoggingComponentWithRequestId. Enables correlation of audit events with
     * application logs, performance traces, and error reports across service boundaries.
-    * </p>
+
     *
     * @see com.openkoda.core.tracker.LoggingComponentWithRequestId
     */
@@ -284,7 +284,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * Uses TEXT columnDefinition to support unlimited length content such as full
     * request/response payloads, serialized entity state, or detailed operation logs.
     * Use this field when the change field (varchar 16380) is insufficient.
-    * </p>
+
     */
    @Column(columnDefinition = "TEXT")
    private String content;
@@ -295,7 +295,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * Non-insertable column with default empty string, populated by database triggers or
     * computed columns for full-text search functionality. Implements SearchableEntity
     * contract to enable text-based audit record queries.
-    * </p>
+
     *
     * @see SearchableEntity
     */
@@ -310,7 +310,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA in ModelConstants).
     * Combines organization and entity identifiers into a display-friendly format
     * for UI presentation and reporting.
-    * </p>
+
     *
     * @see #REFERENCE_FORMULA
     * @see com.openkoda.model.common.ModelConstants#DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA
@@ -324,7 +324,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * Implements {@link OrganizationRelatedEntity#getReferenceString()} to provide
     * a human-readable identifier combining organization and entity information.
     * The value is computed by the database using the REFERENCE_FORMULA.
-    * </p>
+
     *
     * @return the computed reference string, or null if not yet persisted
     */
@@ -528,7 +528,7 @@ public class Audit extends TimestampedEntity implements SearchableEntity, Organi
     * <p>
     * Implements {@link SearchableEntity#getIndexString()} to provide text-based
     * search functionality for audit records.
-    * </p>
+
     *
     * @return the index string for full-text search, or empty string
     */

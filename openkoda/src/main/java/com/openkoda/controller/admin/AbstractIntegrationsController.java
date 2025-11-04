@@ -36,19 +36,19 @@ import com.openkoda.model.EmailConfig;
  * This stateless abstract controller implements integration configuration UI workflows, specifically
  * for email SMTP settings. It provides email configuration retrieval via {@code findEmailConfigFlow}
  * and {@code getIntegrations}, as well as persistence through {@code saveEmailConfig} with validation.
- * </p>
+ * 
  * <p>
  * The controller uses unsecure repository access as email configuration is system-wide rather than
  * tenant-scoped. It is designed for reuse by concrete controllers that handle HTTP bindings
  * (such as {@code @GetMapping} and {@code @PostMapping} annotations) and view resolution.
- * </p>
+ * 
  * <p>
  * <b>Integration Context:</b> Currently supports email/SMTP configuration via the {@link EmailConfig}
  * entity, extensible for additional integration types such as OAuth providers or API keys.
- * </p>
+ * 
  * <p>
  * <b>Thread-Safety:</b> This controller is stateless and thread-safe.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -65,10 +65,10 @@ public class AbstractIntegrationsController extends AbstractController {
      * This method delegates to {@link #findEmailConfigFlow()} to execute the Flow pipeline that
      * fetches the system-wide email configuration and binds it to a form for display in the
      * integrations management UI.
-     * </p>
+     * 
      * <p>
      * Typical usage: Called by GET /integrations endpoint in concrete controller implementations.
-     * </p>
+     * 
      *
      * @return PageModelMap containing model keys "emailConfig" (the {@link EmailConfig} entity)
      *         and "emailConfigForm" (the bound {@link EmailConfigForm})
@@ -89,14 +89,14 @@ public class AbstractIntegrationsController extends AbstractController {
      * </ol>
      * The Flow returns the first {@link EmailConfig} found in the system or creates a new instance,
      * as only a single system-wide email configuration is supported.
-     * </p>
+     * 
      * <p>
      * <b>Model Keys:</b>
      * <ul>
      *   <li>{@code emailConfig}: The fetched or newly created EmailConfig entity</li>
      *   <li>{@code emailConfigForm}: A new EmailConfigForm initialized with the fetched configuration</li>
      * </ul>
-     * </p>
+     * 
      *
      * @return Flow pipeline initialized with this controller context, typed as
      *         {@code Flow<Object, EmailConfigForm, AbstractIntegrationsController>}
@@ -123,15 +123,15 @@ public class AbstractIntegrationsController extends AbstractController {
      * </ol>
      * The returned PageModelMap contains validation results and the updated email configuration,
      * suitable for rendering success or error view fragments (typically for HTMX/Thymeleaf AJAX forms).
-     * </p>
+     * 
      * <p>
      * <b>Validation Pattern:</b> Uses the validation service to perform Jakarta Bean Validation checks
      * and populate the entity. Validation errors are captured in the {@link BindingResult}.
-     * </p>
+     * 
      * <p>
      * <b>Repository Access:</b> Uses {@code repositories.unsecure} as email configuration is system-wide
      * and not tenant-scoped.
-     * </p>
+     * 
      *
      * @param form the submitted {@link EmailConfigForm} containing SMTP settings (host, port, username, password)
      * @param br the {@link BindingResult} for capturing validation errors

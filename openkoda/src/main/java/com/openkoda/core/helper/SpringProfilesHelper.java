@@ -34,13 +34,11 @@ import java.util.regex.Pattern;
  * first checking system properties, then parsing the sun.java.command system property,
  * and finally checking environment variables. This approach is useful for early
  * application initialization before the Spring Environment is fully available.
- * </p>
  * <p>
  * The profile detection follows this priority order:
  * 1. System property: {@code spring.profiles.active}
  * 2. Command-line argument parsed from {@code sun.java.command}
  * 3. Environment variable: {@code SPRING_PROFILES_ACTIVE}
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -48,12 +46,10 @@ import java.util.regex.Pattern;
  *     // Perform database initialization
  * }
  * }</pre>
- * </p>
  * <p>
  * Thread-safety: All methods are static and read from system properties or environment
  * variables. Safe for concurrent use, but results may vary during startup if profiles
  * are modified dynamically.
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -68,7 +64,7 @@ public class SpringProfilesHelper {
      * When this profile is active, the application performs database drop and
      * initialization operations. Use {@link #isInitializationProfile()} to check
      * if this profile is active.
-     * </p>
+     * 
      */
     public static final String INITIALIZATION_PROFILE = "drop_and_init_database";
     
@@ -77,7 +73,7 @@ public class SpringProfilesHelper {
      * <p>
      * This profile indicates the application is running in test mode. Use
      * {@link #isTestProfile()} to check if this profile is active.
-     * </p>
+     * 
      */
     public static final String TEST_PROFILE = "test";
     
@@ -86,7 +82,7 @@ public class SpringProfilesHelper {
      * <p>
      * Standard Spring property key used to specify comma-separated active profiles.
      * Example: {@code -Dspring.profiles.active=openkoda,local}
-     * </p>
+     * 
      */
     public static final String SPRING_PROFILES_ACTIVE_PROP = "spring.profiles.active";
     
@@ -95,7 +91,7 @@ public class SpringProfilesHelper {
      * <p>
      * Standard environment variable used to specify comma-separated active profiles.
      * Example: {@code SPRING_PROFILES_ACTIVE=openkoda,production}
-     * </p>
+     * 
      */
     public static final String SPRING_PROFILES_ACTIVE_ENV = "SPRING_PROFILES_ACTIVE";
 
@@ -105,7 +101,7 @@ public class SpringProfilesHelper {
      * Checks if a specific Spring profile is currently active.
      * <p>
      * This method uses a three-stage detection priority to determine active profiles:
-     * </p>
+     * 
      * <ol>
      * <li>System property lookup: {@code spring.profiles.active}</li>
      * <li>Command-line parsing: extracts profiles from {@code sun.java.command}</li>
@@ -114,7 +110,7 @@ public class SpringProfilesHelper {
      * <p>
      * The method handles comma-separated profile lists and performs exact string
      * matching against the provided profile name.
-     * </p>
+     * 
      *
      * @param profile the profile name to check (e.g., "openkoda", "test", "production")
      * @return {@code true} if the specified profile is active, {@code false} otherwise
@@ -145,7 +141,7 @@ public class SpringProfilesHelper {
      * This is a convenience method that checks for the {@code drop_and_init_database}
      * profile. When active, the application performs database drop and initialization
      * operations, typically used for development or testing environments.
-     * </p>
+     * 
      *
      * @return {@code true} if the {@code drop_and_init_database} profile is active,
      *         {@code false} otherwise
@@ -161,7 +157,7 @@ public class SpringProfilesHelper {
      * This is a convenience method that checks for the {@code test} profile.
      * When active, the application runs in test mode, typically used during
      * automated testing or test execution environments.
-     * </p>
+     * 
      *
      * @return {@code true} if the {@code test} profile is active,
      *         {@code false} otherwise

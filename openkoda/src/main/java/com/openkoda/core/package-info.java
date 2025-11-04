@@ -29,9 +29,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * by all higher-level modules including controller, service, model, and repository packages. It provides
  * essential cross-cutting concerns such as request tracing, entity auditing, caching, security enforcement,
  * and multi-tenancy support that span across the entire application architecture.
- * </p>
  * 
- * <h2>Key Classes and Interfaces</h2>
+ * 
+ * <b>Key Classes and Interfaces</b>
  * <ul>
  *   <li>{@code LoggingComponentWithRequestId} (tracker): Base component providing request correlation ID tracking
  *       and distributed tracing capabilities across all service layers</li>
@@ -51,7 +51,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       path construction across the application</li>
  * </ul>
  * 
- * <h2>Package Structure</h2>
+ * <b>Package Structure</b>
  * <p>The core package is organized into 16 specialized subpackages, each focused on specific framework concerns:</p>
  * <ul>
  *   <li><b>tracker/</b> - Request and job correlation ID tracking for distributed tracing and log aggregation</li>
@@ -74,7 +74,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>service/</b> - Core domain-agnostic services used across business logic layers</li>
  * </ul>
  * 
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <p>The core module implements several key design patterns:</p>
  * <ul>
  *   <li><b>Interceptor Pattern</b> - AuditInterceptor captures entity changes transparently during
@@ -89,7 +89,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       selection at runtime</li>
  * </ul>
  * 
- * <h2>Usage Examples</h2>
+ * <b>Usage Examples</b>
  * 
  * <p><b>Flow Pipeline Composition:</b></p>
  * <pre>
@@ -111,7 +111,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * repository.save(organization); // Audit entry created
  * </pre>
  * 
- * <h2>Relationships with Other Packages</h2>
+ * <b>Relationships with Other Packages</b>
  * <ul>
  *   <li><b>core → controller, service, model, repository</b> - Provides foundation classes and utilities
  *       used throughout all application layers</li>
@@ -125,11 +125,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       defined in the model package</li>
  * </ul>
  * 
- * <h2>Guidelines for Adding Classes</h2>
+ * <b>Guidelines for Adding Classes</b>
  * <p>
  * <b>Should I put a class into this package?</b> If the class is NOT an implementation of concrete business
  * functionality, then it probably belongs in core. Consider these questions:
- * </p>
+ * 
  * <ul>
  *   <li>Is it domain-agnostic and reusable across multiple business contexts?</li>
  *   <li>Does it provide framework-level infrastructure or cross-cutting concerns?</li>
@@ -138,7 +138,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p>
  * If you answered yes to any of these questions, place the class in the appropriate core subpackage based
  * on its specific concern area (tracker, audit, cache, security, etc.).
- * </p>
+ * 
  * 
  * @see com.openkoda.core.flow.Flow
  * @see com.openkoda.core.audit.AuditInterceptor

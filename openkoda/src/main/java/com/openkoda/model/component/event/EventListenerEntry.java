@@ -38,21 +38,21 @@ import org.hibernate.annotations.Formula;
  * listener configuration including event identity (eventClassName, eventName, eventObjectType),
  * consumer signature (consumerClassName, consumerMethodName, consumerParameterClassName), and up
  * to 4 static parameters (staticData1-4) passed to the consumer method at runtime.
- * </p>
+ * 
  * <p>
  * Event listeners are registered at application startup and reloaded from the database, then
  * dispatched at runtime when matching events occur. The unique constraint on event_name,
  * consumer_method_name, and all static_data columns prevents duplicate registrations.
- * </p>
+ * 
  * <p>
  * Persistence details: Sequence-generated Long id with allocationSize=10 using
  * ORGANIZATION_RELATED_ID_GENERATOR. Unique constraint enforced on (event_name,
  * consumer_method_name, static_data_1, static_data_2, static_data_3, static_data_4).
- * </p>
+ * 
  * <p>
  * Thread-safety: This is a JPA entity managed by Hibernate session. All operations require proper
  * transaction context.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -71,7 +71,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Inherited formula for computing reference string.
      * <p>
      * Uses DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA from ComponentEntity.
-     * </p>
+     * 
      */
     public static final String REFERENCE_FORMULA = DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA;
 
@@ -79,7 +79,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Sequence-generated primary key using ORGANIZATION_RELATED_ID_GENERATOR.
      * <p>
      * Allocation size of 10 for performance optimization during batch inserts.
-     * </p>
+     * 
      */
     @Id
     @SequenceGenerator(name = ORGANIZATION_RELATED_ID_GENERATOR, sequenceName = ORGANIZATION_RELATED_ID_GENERATOR, initialValue = ModelConstants.INITIAL_ORGANIZATION_RELATED_VALUE, allocationSize = 10)
@@ -90,7 +90,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Fully qualified class name of the event emitter.
      * <p>
      * Example: "com.openkoda.core.flow.PageModelMap"
-     * </p>
+     * 
      */
     @Column(name = "event_class_name")
     private String eventClassName;
@@ -99,7 +99,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Event identifier used for listener matching.
      * <p>
      * This name is matched against registered listeners to dispatch events at runtime.
-     * </p>
+     * 
      */
     @Column(name = "event_name")
     private String eventName;
@@ -108,7 +108,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Type of event object passed to the consumer method.
      * <p>
      * Fully qualified class name of the object passed as the event payload.
-     * </p>
+     * 
      */
     @Column(name = "event_object_type")
     private String eventObjectType;
@@ -117,7 +117,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Fully qualified class name of the consumer (event handler).
      * <p>
      * Example: "com.openkoda.service.notification.NotificationService"
-     * </p>
+     * 
      */
     @Column(name = "consumer_class_name")
     private String consumerClassName;
@@ -126,7 +126,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Method name invoked when the event is dispatched.
      * <p>
      * This method is called on the consumer class with the event object and static parameters.
-     * </p>
+     * 
      */
     @Column(name = "consumer_method_name")
     private String consumerMethodName;
@@ -135,7 +135,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Fully qualified parameter class name for the consumer method.
      * <p>
      * Specifies the type of the first parameter expected by the consumer method.
-     * </p>
+     * 
      */
     @Column(name = "consumer_parameter_class_name")
     private String consumerParameterClassName;
@@ -144,7 +144,7 @@ public class EventListenerEntry extends ComponentEntity {
      * First static parameter passed to the consumer method at runtime.
      * <p>
      * Nullable. Part of the unique constraint with event_name and consumer_method_name.
-     * </p>
+     * 
      */
     @Column(name = "static_data_1")
     private String staticData1;
@@ -153,7 +153,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Second static parameter passed to the consumer method at runtime.
      * <p>
      * Nullable. Part of the unique constraint with event_name and consumer_method_name.
-     * </p>
+     * 
      */
     @Column(name = "static_data_2")
     private String staticData2;
@@ -162,7 +162,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Third static parameter passed to the consumer method at runtime.
      * <p>
      * Nullable. Part of the unique constraint with event_name and consumer_method_name.
-     * </p>
+     * 
      */
     @Column(name = "static_data_3")
     private String staticData3;
@@ -172,7 +172,7 @@ public class EventListenerEntry extends ComponentEntity {
      * <p>
      * Nullable. Part of the unique constraint with event_name and consumer_method_name.
      * Up to 4 static parameters are supported.
-     * </p>
+     * 
      */
     @Column(name = "static_data_4")
     private String staticData4;
@@ -181,7 +181,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Database-generated index string for search and filtering.
      * <p>
      * Column defaults to empty string, insertable=false means value is managed by database.
-     * </p>
+     * 
      */
     @Column(name = INDEX_STRING_COLUMN, length = INDEX_STRING_COLUMN_LENGTH, insertable = false)
     @ColumnDefault("''")
@@ -191,7 +191,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Computed reference string via Formula annotation.
      * <p>
      * Uses DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA for consistent reference generation.
-     * </p>
+     * 
      */
     @Formula(REFERENCE_FORMULA)
     private String referenceString;
@@ -200,7 +200,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Computed required read privilege via Formula annotation.
      * <p>
      * Returns PrivilegeNames._canReadBackend for read access control.
-     * </p>
+     * 
      */
     @Formula("( '" + PrivilegeNames._canReadBackend + "' )")
     private String requiredReadPrivilege;
@@ -209,7 +209,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Computed required write privilege via Formula annotation.
      * <p>
      * Returns PrivilegeNames._canManageBackend for write access control.
-     * </p>
+     * 
      */
     @Formula("( '" + PrivilegeNames._canManageBackend + "' )")
     private String requiredWritePrivilege;
@@ -234,7 +234,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Creates event listener with event identity and consumer signature.
      * <p>
      * All static data parameters are set to null.
-     * </p>
+     * 
      *
      * @param eventClassName fully qualified class name of event emitter
      * @param eventName event identifier for listener matching
@@ -286,7 +286,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Copy constructor creating a new EventListenerEntry from an existing entry.
      * <p>
      * Copies all fields except id (new entity will get new id on persist).
-     * </p>
+     * 
      *
      * @param entry source entry to copy from
      */
@@ -324,7 +324,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Returns the event class name, optionally in user-friendly format.
      * <p>
      * When userFriendly is true, delegates to NameHelper.getClassName() for shortened class name.
-     * </p>
+     * 
      *
      * @param userFriendly if true, returns shortened class name without package prefix
      * @return the event class name
@@ -376,7 +376,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Returns the consumer class name, optionally in user-friendly format.
      * <p>
      * When userFriendly is true, delegates to NameHelper.getClassName() for shortened class name.
-     * </p>
+     * 
      *
      * @param userFriendly if true, returns shortened class name without package prefix
      * @return the consumer class name
@@ -509,7 +509,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Returns the event object type, optionally in user-friendly format.
      * <p>
      * When userFriendly is true, delegates to NameHelper.getClassName() for shortened class name.
-     * </p>
+     * 
      *
      * @param userFriendly if true, returns shortened class name without package prefix
      * @return the event object type
@@ -553,7 +553,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Serializes event descriptor to comma-separated format.
      * <p>
      * Format: "eventClassName,eventName,eventObjectType" using StringUtils.join().
-     * </p>
+     * 
      *
      * @return comma-separated event descriptor string
      */
@@ -566,7 +566,7 @@ public class EventListenerEntry extends ComponentEntity {
      * <p>
      * Counts number of provided static parameters (0-4) and delegates to
      * Consumer.canonicalMethodName() for signature generation.
-     * </p>
+     * 
      *
      * @return canonical method name with parameter count
      */
@@ -636,7 +636,7 @@ public class EventListenerEntry extends ComponentEntity {
      * Format: "EventListenerEntry{eventClassName='...', eventName='...', eventObjectType='...',
      * consumerClassName='...', consumerMethodName='...', staticData1='...', staticData2='...',
      * staticData3='...', staticData4='...'}"
-     * </p>
+     * 
      *
      * @return string representation for debugging
      */

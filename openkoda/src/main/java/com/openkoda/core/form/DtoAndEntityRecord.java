@@ -30,7 +30,6 @@ import com.openkoda.model.common.LongIdEntity;
  * representation and the persistent entity representation need to be passed together.
  * This record is commonly used in datalist suppliers and field converters where both
  * representations are needed to compute field values or populate dropdown options.
- * </p>
  * <p>
  * As a Java 17 record, this class automatically provides:
  * <ul>
@@ -39,13 +38,11 @@ import com.openkoda.model.common.LongIdEntity;
  *   <li>Implementations of equals(), hashCode(), and toString()</li>
  *   <li>Immutability guarantees for the record components</li>
  * </ul>
- * </p>
  * <p>
  * Example usage in form processing:
  * <pre>{@code
  * DtoAndEntityRecord<UserDto, User> record = new DtoAndEntityRecord<>(formDto, persistedEntity);
  * }</pre>
- * </p>
  *
  * @param <D> the DTO type used for form binding and display
  * @param <E> the entity type extending {@link LongIdEntity} for database persistence

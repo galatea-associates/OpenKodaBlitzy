@@ -31,20 +31,20 @@ import org.springframework.stereotype.Component;
  * a legacy dependency injection pattern where a single bean injection point gives access to all repository instances
  * instead of injecting individual repository beans. It exposes two public injected fields: {@code secure} for
  * privilege-enforced operations and {@code unsecure} for direct database access bypassing privilege checks.
- * </p>
+
  * <p>
  * This aggregator is used throughout controllers and services that need access to multiple repositories. Modern code
  * should prefer injecting specific repository interfaces directly instead of using this aggregator, as it provides
  * better type safety and clearer dependency declarations. However, removing this class would break many injection
  * sites in legacy code paths that rely on the convenience of dot-notation access pattern.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * @Autowired Repositories repositories;
  * repositories.secure.organization.findOne(id);
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -61,7 +61,7 @@ public class Repositories {
      * <p>
      * Use this accessor for user-facing operations that require access control validation. All repository
      * methods accessed through this field will enforce privilege checks based on the current security context.
-     * </p>
+
      */
     @Inject public SecureRepositories secure;
 
@@ -70,7 +70,7 @@ public class Repositories {
      * <p>
      * Use this accessor only for system-level operations and internal processing where access has already been
      * validated or privilege enforcement is not required. Direct database access without security checks.
-     * </p>
+
      */
     @Inject public UnsecureRepositories unsecure;
 

@@ -25,12 +25,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This package provides centralized routing keys and model binding descriptors used by IntegrationControllerHtml
  * and Thymeleaf views. It contains interface-based constant definitions that establish consistent naming conventions
  * for integration-related endpoints and page model attributes.
- * </p>
+ * 
  * <p>
  * Key classes include IntegrationPageAttributes for typed model descriptors used in integration form binding,
  * and IntegrationURLConstants for URL path constants that define integration routing patterns.
  * These artifacts ensure type-safe access to model attributes and URL paths across the integration controller layer.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

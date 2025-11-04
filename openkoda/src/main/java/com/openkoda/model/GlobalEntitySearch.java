@@ -41,15 +41,15 @@ import java.time.LocalDateTime;
  * entities by projecting common fields (id, name, organizationId, timestamps, indexString, requiredReadPrivilege) into single queryable view. 
  * Read-only entity - insert/update operations disabled. Used by global search functionality to query across multiple entity types with single 
  * query while respecting privilege-based access control via requiredReadPrivilege column.
- * </p>
+ * 
  * <p>
  * <b>Immutability:</b> {@code @Immutable} annotation prevents Hibernate from tracking changes or issuing UPDATE statements. Entity is snapshot 
  * of database view at query time.
- * </p>
+ * 
  * <p>
  * <b>Search workflow:</b> Query GlobalEntitySearch with user's search term against indexString column, filter by user's privileges via 
  * requiredReadPrivilege, return unified search results across all entity types.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

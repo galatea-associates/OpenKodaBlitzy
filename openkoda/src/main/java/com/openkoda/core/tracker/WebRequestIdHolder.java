@@ -31,16 +31,16 @@ import org.springframework.web.context.annotation.RequestScope;
  * The ID persists for the entire HTTP request lifecycle, enabling distributed tracing across controllers,
  * services, and repositories. Spring creates a new instance per HTTP request (via {@code @RequestScope})
  * and destroys it after response completion. Thread-safe as each request thread gets its own instance.
- * </p>
+
  * <p>
  * <b>Bean Lifecycle:</b> Instantiated when first accessed during HTTP request processing, field
  * {@code webRequestId} initialized via {@link RequestIdHolder#generate()} in field initializer,
  * bean destroyed after HTTP response sent.
- * </p>
+
  * <p>
  * <b>Integration:</b> Retrieved by {@link RequestIdHolder#getId()} when web request context exists.
  * Used by {@code LoggingComponentWithRequestId} for request correlation in log messages.
- * </p>
+
  * <p>
  * Example - Spring automatically injects per-request instance:
  * <pre>
@@ -51,11 +51,11 @@ import org.springframework.web.context.annotation.RequestScope;
  * String id = holder.getWebRequestId();
  * }
  * </pre>
- * </p>
+
  * <p>
  * <b>Note:</b> Not suitable for scheduled jobs or async tasks - use {@link RequestIdHolder#generate()}
  * directly for non-web contexts.
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @version 1.7.1
@@ -72,7 +72,7 @@ public class WebRequestIdHolder {
      * <p>
      * Format: yyyyMMddHHmmss-[8-char-random] (e.g., 20240115143022-aB3dEf7H).
      * Immutable after initialization during bean construction.
-     * </p>
+
      */
     private String webRequestId = RequestIdHolder.generate();
 
@@ -82,11 +82,11 @@ public class WebRequestIdHolder {
      * Retrieves the immutable correlation ID assigned to this HTTP request. The ID was generated
      * once during bean initialization and does not change during the request lifecycle. Used by
      * logging components, audit services, and trace correlation systems.
-     * </p>
+
      * <p>
      * <b>Thread-safety:</b> This bean is request-scoped (one instance per request thread),
      * making this method inherently thread-safe.
-     * </p>
+
      *
      * @return web request correlation ID in format yyyyMMddHHmmss-[8-char-random],
      *         generated at bean instantiation

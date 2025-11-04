@@ -58,14 +58,14 @@ import java.util.*;
  * JPA Criteria API {@link Specification} objects that support various search and filter scenarios.
  * It is designed to simplify repository development by combining functional programming patterns,
  * security-aware data access, and multi-tenancy support into a single cohesive interface.
- * </p>
+ * 
  * <p>
  * Most entities in OpenKoda use Long IDs and repositories are frequently used in chained lambda expressions.
  * This interface assumes both functional and searchable repository patterns with Long ID entities,
  * eliminating boilerplate code in concrete repository implementations.
- * </p>
  * 
- * <h3>Key Capabilities</h3>
+ * 
+ * <b>Key Capabilities</b>
  * <ul>
  * <li><b>Free-Text Search</b>: Builds LIKE clauses on {@code indexString} field for full-text matching</li>
  * <li><b>Frontend Filter Translation</b>: Converts {@link Tuple3} filter definitions into typed predicates 
@@ -82,21 +82,21 @@ import java.util.*;
  * <li><b>Pagination Support</b>: Creates {@link PageRequest} with {@code Sort.Direction} and sort field</li>
  * </ul>
  * 
- * <h3>Security Model</h3>
+ * <b>Security Model</b>
  * <p>
  * All query methods use {@link #secureSpecification} to enforce access control. Mutating methods
  * ({@link #saveOne}, {@link #saveAll}, {@link #saveForm}) enforce write privilege checks and throw
  * {@link AccessDeniedException} on privilege denial.
- * </p>
  * 
- * <h3>Multi-Tenancy Support</h3>
+ * 
+ * <b>Multi-Tenancy Support</b>
  * <p>
  * Organization-scoped operations automatically compose specifications with {@link #organizationIdSpecification}
  * to isolate data by tenant. The {@link #getNew} method uses {@link TenantResolver} to initialize
  * new entities with the current tenant's organization ID.
- * </p>
  * 
- * <h3>Usage Example</h3>
+ * 
+ * <b>Usage Example</b>
  * <pre>{@code
  * // Build secure specification with organization constraint
  * Specification<User> spec = secureSpecification(
@@ -110,7 +110,7 @@ import java.util.*;
  * <p>
  * <b>Important</b>: Changes to this interface are highly breaking as concrete repositories inherit
  * all security-aware behavior. All methods should maintain {@code secureSpecification} usage.
- * </p>
+ * 
  *
  * @param <T> the searchable entity type extending {@link SearchableEntity}
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
@@ -137,10 +137,10 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * the entity requires privileges (via {@link EntityWithRequiredPrivilege#getRequiredWritePrivilege}),
      * retrieves the current user from {@link UserProvider#getFromContext}, and checks for global or
      * organization-specific privileges.
-     * </p>
+     * 
      * <p>
      * Privilege evaluation logic:
-     * </p>
+     * 
      * <ul>
      * <li>If entity class does not implement {@link EntityWithRequiredPrivilege}, returns {@code true}</li>
      * <li>If {@code getRequiredWritePrivilege()} returns {@code null}, returns {@code true}</li>
@@ -187,11 +187,11 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method delegates to {@link #searchSpecificationFactory} to build a {@link Specification}
      * that performs case-insensitive partial matching on the {@code indexString} field for each
      * search term provided. All search terms are combined with AND logic.
-     * </p>
+     * 
      * <p>
      * Example: {@code ["John", "Smith"]} produces:
      * {@code (indexString LIKE '%john%') AND (indexString LIKE '%smith%')}
-     * </p>
+     * 
      *
      * @param searchTerm array of search terms to match (case-insensitive, partial match)
      * @return a {@link Specification} combining all search terms with AND, or a conjunction if empty
@@ -207,10 +207,10 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This static factory builds a {@link Specification} that applies case-insensitive {@code LIKE}
      * clauses on the {@code indexString} field for each search term. Empty or {@code null} terms
      * are converted to empty strings. All predicates are combined with AND logic.
-     * </p>
+     * 
      * <p>
      * Search behavior:
-     * </p>
+     * 
      * <ul>
      * <li>Empty array: returns conjunction (matches all records)</li>
      * <li>Non-empty array: each term generates {@code LOWER(indexString) LIKE '%term%'}</li>
@@ -239,10 +239,10 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method converts {@link Tuple3} filter tuples (field name, field definition, filter value)
      * into typed {@link Predicate} objects based on the field type. Supported field types include
      * text, number, date, dropdown, and boolean filters.
-     * </p>
+     * 
      * <p>
      * Filter type mappings:
-     * </p>
+     * 
      * <ul>
      * <li><b>text/textarea</b>: Case-insensitive {@code LIKE '%value%'} on field</li>
      * <li><b>number</b>: Exact equality comparison using {@link BigDecimal}</li>
@@ -299,11 +299,11 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method builds a {@link Specification} that constrains results to entities belonging
      * to the specified organization. If {@code organizationId} is {@code null}, returns a
      * conjunction (matches all records).
-     * </p>
+     * 
      * <p>
      * This specification is fundamental for multi-tenant data isolation, ensuring users only
      * access data within their organization scope.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID to filter by, or {@code null} to match all
      * @return a {@link Specification} constraining results to the specified organization
@@ -319,7 +319,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method builds a {@link Specification} that constrains results to entities belonging
      * to any of the specified organizations using an {@code IN} clause. If {@code organizationIds}
      * is {@code null} or empty, returns a conjunction (matches all records).
-     * </p>
+     * 
      *
      * @param organizationIds set of organization IDs to filter by, or {@code null}/{@code empty} to match all
      * @return a {@link Specification} constraining results to the specified organizations
@@ -333,7 +333,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method builds a {@link Specification} that filters for a single entity with the
      * specified Long ID using exact equality comparison.
-     * </p>
+     * 
      *
      * @param id the entity ID to match
      * @return a {@link Specification} matching the entity with the specified ID
@@ -348,7 +348,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method builds a {@link Specification} using an {@code IN} clause to match entities
      * with IDs in the provided collection. If the collection is {@code null} or empty, returns
      * a disjunction (matches no records).
-     * </p>
+     * 
      *
      * @param ids collection of entity IDs to match, or {@code null}/{@code empty} for no matches
      * @return a {@link Specification} matching entities with IDs in the collection
@@ -366,7 +366,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method builds a {@link Specification} that filters entities where the specified
      * field equals the provided value. String values are automatically converted using
      * {@code toString()} for comparison.
-     * </p>
+     * 
      *
      * @param fieldName the entity field name to filter on
      * @param value the value to match (supports String conversion for non-String values)
@@ -385,11 +385,11 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method creates a security-aware {@link Specification} that delegates to
      * {@link HasSecurityRules#toSecurePredicate} to apply privilege constraints. All repository
      * queries should use this method to ensure data access complies with the security model.
-     * </p>
+     * 
      * <p>
      * The security predicate evaluates user privileges and organizational scope to determine
      * which records the current user can access.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param specification the base specification to wrap, or {@code null} for no additional filtering
@@ -416,7 +416,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method combines the base specification with {@link #organizationIdSpecification}
      * to enforce multi-tenant data isolation, then wraps the result with security checks.
      * It ensures users only access records within their authorized organization scope.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param specification the base specification to wrap, or {@code null} for no additional filtering
@@ -435,7 +435,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method combines the base specification with {@link #organizationIdSpecification(Set)}
      * to enforce multi-tenant data isolation across multiple organizations, then wraps the result
      * with security checks.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param specification the base specification to wrap, or {@code null} for no additional filtering
@@ -452,7 +452,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method builds a {@link #fieldSpecification} for the provided field name and value,
      * wraps it with {@link #secureSpecification}, and returns all matching entities.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param fieldName the entity field name to filter on
@@ -470,7 +470,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method wraps the provided specification with {@link #secureSpecification} and
      * returns all matching entities.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param specification the search specification to apply
@@ -486,7 +486,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method constrains results to entities belonging to the specified organization
      * and applies security checks via {@link #secureSpecification}.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param organizationId the organization ID to filter by
@@ -502,7 +502,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method combines the provided specification with organization constraints and
      * applies security checks via {@link #secureSpecification}.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param organizationId the organization ID to filter by
@@ -519,7 +519,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method returns a paginated result set with the specified page size, sorting field,
      * and sort direction. Security constraints are applied via {@link #secureSpecification}.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param page the page number (zero-based)
@@ -538,7 +538,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method combines the provided specification with security constraints and returns
      * a paginated result set with the specified sorting.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param specification the search specification to apply
@@ -558,7 +558,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method combines the specification with organization constraints, applies security
      * checks, and returns a paginated result set with the specified sorting.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param organizationId the organization ID to filter by
@@ -579,7 +579,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method uses {@link #searchSpecification} to build LIKE clauses on the
      * {@code indexString} field, applies security constraints, and returns a paginated result set.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param searchTerm the search term for free-text matching
@@ -599,7 +599,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method combines {@link #searchSpecification} with the provided specification,
      * applies security constraints, and returns a paginated result set.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param searchTerm the search term for free-text matching
@@ -620,7 +620,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method combines {@link #searchSpecification} with organization constraints,
      * applies security checks, and returns a paginated result set.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param searchTerm the search term for free-text matching
@@ -641,7 +641,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method combines {@link #searchSpecification}, custom specification, and organization
      * constraints, then returns a paginated result set using the provided {@link Pageable}.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param searchTerm the search term for free-text matching
@@ -661,7 +661,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This is the most feature-rich search method, combining {@link #searchSpecification},
      * custom specification, {@link #filterSpecification} for frontend filters, and organization
      * constraints. Returns a paginated result set.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param searchTerm the search term for free-text matching
@@ -683,7 +683,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method is similar to the single-organization variant but supports filtering across
      * multiple organization IDs. Combines {@link #searchSpecification}, custom specification,
      * {@link #filterSpecification}, and multi-organization constraints.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param searchTerm the search term for free-text matching
@@ -704,7 +704,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method combines {@link #searchSpecification}, custom specification,
      * {@link #filterSpecification}, and organization constraints, returning all matching
      * entities as a {@link List} rather than a paginated result.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param searchTerm the search term for free-text matching
@@ -722,7 +722,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * Finds a single entity by ID, entity reference, or specification with security constraints.
      * <p>
      * This polymorphic method accepts three types of input:
-     * </p>
+     * 
      * <ul>
      * <li>{@link Number} or {@link String}: Treated as entity ID</li>
      * <li>{@link LongIdEntity}: Entity reference (extracts ID)</li>
@@ -730,7 +730,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * </ul>
      * <p>
      * All lookups apply security constraints via {@link #secureSpecification}.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param idOrEntityOrSpecification the ID, entity, or specification to search by
@@ -751,7 +751,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * Extracts a Long ID from various input types.
      * <p>
      * This utility method supports extracting entity IDs from:
-     * </p>
+     * 
      * <ul>
      * <li>{@link Number}: Converts to {@code Long} via {@code longValue()}</li>
      * <li>{@link String}: Parses as {@code Long}</li>
@@ -779,7 +779,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method applies security constraints via {@link #secureSpecification} to return
      * only entities the current user is authorized to access.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @return list of all entities within authorized scope
@@ -795,7 +795,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method enforces privilege checks via {@link #hasWritePrivilegeForEntity} before
      * persisting the entity. If the current user lacks required write privileges, an
      * {@link AccessDeniedException} is thrown.
-     * </p>
+     * 
      *
      * @param <S> the entity type extending {@code T}
      * @param scope the security scope for privilege evaluation
@@ -817,7 +817,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method delegates to {@link AbstractEntityForm#populateToEntity} to transfer form
      * data to the entity, then calls {@link #saveOne} to persist with privilege validation.
-     * </p>
+     * 
      *
      * @param <S> the entity type extending {@code T}
      * @param scope the security scope for privilege evaluation
@@ -840,7 +840,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * for each entity via {@link #hasWritePrivilegeForEntity}, and persists all entities.
      * If any entity fails privilege validation, an {@link AccessDeniedException} is thrown
      * before any entities are saved.
-     * </p>
+     * 
      *
      * @param <S> the entity type extending {@code T}
      * @param scope the security scope for privilege evaluation
@@ -873,11 +873,11 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This {@code @Transactional} method extracts the entity ID via {@link #extractEntityId},
      * deletes using {@link #idSpecification}, and returns {@code true} if any records were deleted.
-     * </p>
+     * 
      * <p>
      * <b>Note</b>: Write privilege validation is currently not implemented (see TODO comment in code).
      * Future versions should enforce privilege checks before deletion.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation (not currently enforced)
      * @param idOrEntity the entity ID or entity reference to delete
@@ -902,7 +902,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * Deletes multiple entities by IDs, entity references, or specification.
      * <p>
      * This method accepts three types of input:
-     * </p>
+     * 
      * <ul>
      * <li>{@link Specification}: Deletes all entities matching the specification</li>
      * <li>Array or {@link Iterable} of IDs/entities: Converts to ID list via {@link #toIdList}
@@ -910,7 +910,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * </ul>
      * <p>
      * Security constraints are applied via {@link #secureSpecification} when using specifications.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param idsOrEntitiesCollectionOrSpecification IDs, entities, or specification to delete by
@@ -935,7 +935,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method extracts the entity ID via {@link #extractEntityId}, builds a specification
      * via {@link #idSpecification}, applies security constraints via {@link #secureSpecification},
      * and checks for existence within authorized scope.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param idOrEntity the entity ID or entity reference to check
@@ -953,7 +953,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * Checks whether any entities exist by IDs, entity references, or specification.
      * <p>
      * This method accepts two types of input:
-     * </p>
+     * 
      * <ul>
      * <li>{@link Specification}: Checks for entities matching the specification</li>
      * <li>Array or {@link Iterable} of IDs/entities: Converts to ID list via {@link #toIdList}
@@ -961,7 +961,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * </ul>
      * <p>
      * Security constraints are applied via {@link #secureSpecification}.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param idsOrEntitiesCollectionOrSpecification IDs, entities, or specification to check
@@ -984,7 +984,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * Converts a collection of IDs or entities to a list of Long IDs.
      * <p>
      * This utility method supports extracting IDs from:
-     * </p>
+     * 
      * <ul>
      * <li>Arrays: Converts to list and extracts IDs</li>
      * <li>{@link Iterable}: Iterates and extracts IDs via {@link #extractEntityId}</li>
@@ -1017,7 +1017,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method applies security constraints via {@link #secureSpecification} to count
      * only entities the current user is authorized to access.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @return the number of entities within authorized scope
@@ -1032,7 +1032,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method builds a {@link #fieldSpecification} for the provided field name and value,
      * applies security constraints, and returns the count of matching entities.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param fieldName the entity field name to filter on
@@ -1049,7 +1049,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method wraps the provided specification with {@link #secureSpecification} and
      * returns the count of matching entities.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param specification the search specification to apply
@@ -1065,7 +1065,7 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * <p>
      * This method combines the specification with organization constraints via
      * {@link #secureSpecification} and returns the count of matching entities.
-     * </p>
+     * 
      *
      * @param scope the security scope for privilege evaluation
      * @param organizationId the organization ID to filter by
@@ -1083,11 +1083,11 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This factory method uses reflection to instantiate the entity class retrieved from
      * {@link SearchableRepositoryMetadata}. The entity is initialized with the organization ID
      * from {@link TenantResolver#getTenantedResource}, ensuring proper multi-tenant isolation.
-     * </p>
+     * 
      * <p>
      * This method requires the entity class to have a constructor accepting a single {@code Long}
      * parameter for the organization ID.
-     * </p>
+     * 
      *
      * @return a new entity instance initialized with the current tenant's organization ID
      * @throws RuntimeException if reflection fails or required constructor is not found
@@ -1112,11 +1112,11 @@ public interface SearchableFunctionalRepositoryWithLongId<T extends SearchableEn
      * This method uses reflection to inspect the first interface implemented by this repository
      * and returns the {@link SearchableRepositoryMetadata} annotation if present. This metadata
      * contains information about the entity class, display name, and other repository characteristics.
-     * </p>
+     * 
      * <p>
      * This metadata is used by various framework components including {@link #getNew} for entity
      * instantiation and the global repository registry.
-     * </p>
+     * 
      *
      * @return the {@link SearchableRepositoryMetadata} annotation, or {@code null} if not found
      * @see SearchableRepositoryMetadata

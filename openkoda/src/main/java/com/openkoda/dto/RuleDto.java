@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * This DTO represents business rules and conditional workflows used by the rule editor UI.
  * It structures rule definitions using nested maps where the outer map is keyed by sequence
  * numbers (Long) and the inner map is keyed by {@link StatementKey} enum values.
- * </p>
+
  * <p>
  * The rule structure consists of three statement types:
  * <ul>
@@ -38,20 +38,20 @@ import java.util.stream.Collectors;
  *   <li><b>thenStatements</b> - Action statements executed when conditions are true</li>
  *   <li><b>elseStatements</b> - Action statements executed when conditions are false</li>
  * </ul>
- * </p>
+
  * <p>
  * Usage context: This DTO is used by rule services, form builders, and decision engines
  * to represent and transport rule configurations between layers of the application.
- * </p>
+
  * <p>
  * Implementation uses {@link TreeMap} to ensure ordered iteration by sequence key,
  * which is important for maintaining the logical order of rule statements.
- * </p>
+
  * <p>
  * Note: Contains TODO comments regarding Rule 5.5 design principle that DTOs should
  * not contain logic code. The {@link #allValues()} and {@link #splitValues(Map)} methods
  * may need to be refactored to a separate service class in future versions.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -65,7 +65,7 @@ public class RuleDto {
      * Initializes all three statement maps (if, then, else) with a default entry
      * at sequence key 0L containing an empty inner map. This ensures that the rule
      * structure is ready for immediate use without null pointer exceptions.
-     * </p>
+
      */
     public RuleDto() {
         ifStatements.computeIfAbsent(0L, k -> new TreeMap<>());
@@ -84,7 +84,7 @@ public class RuleDto {
      *   <li><b>Operator</b> - Comparison operator (equals, greater than, less than, etc.)</li>
      *   <li><b>Value</b> - Comparison value(s) used in the condition or action</li>
      * </ul>
-     * </p>
+
      */
     public enum  StatementKey {
         LogicalOperator, Field, Operator, Value
@@ -95,10 +95,10 @@ public class RuleDto {
      * <p>
      * Outer map key: Long sequence number for ordering statements.
      * Inner map: Statement component map keyed by {@link StatementKey}.
-     * </p>
+
      * <p>
      * Default inner map at key 0L is created by the constructor.
-     * </p>
+
      */
     public Map<Long, Map<StatementKey, Object>> ifStatements = new TreeMap<>();
     
@@ -108,10 +108,10 @@ public class RuleDto {
      * These statements are executed when the if-conditions evaluate to true.
      * Outer map key: Long sequence number for ordering statements.
      * Inner map: Statement component map keyed by {@link StatementKey}.
-     * </p>
+
      * <p>
      * Default inner map at key 0L is created by the constructor.
-     * </p>
+
      */
     public Map<Long, Map<StatementKey, Object>> thenStatements = new TreeMap<>();
     
@@ -121,10 +121,10 @@ public class RuleDto {
      * These statements are executed when the if-conditions evaluate to false.
      * Outer map key: Long sequence number for ordering statements.
      * Inner map: Statement component map keyed by {@link StatementKey}.
-     * </p>
+
      * <p>
      * Default inner map at key 0L is created by the constructor.
-     * </p>
+
      */
     public Map<Long, Map<StatementKey, Object>> elseStatements = new TreeMap<>();
 
@@ -187,12 +187,12 @@ public class RuleDto {
      * <p>
      * This utility method extracts and combines all values from if, then, and else
      * statement maps. Comma-separated values are split into individual strings.
-     * </p>
+
      * <p>
      * Note: This method contains logic code which violates Rule 5.5 design principle
      * that DTOs should not contain business logic. Consider refactoring to a separate
      * service class in future versions.
-     * </p>
+
      *
      * @return set of unique value strings extracted from all statements
      */
@@ -211,12 +211,12 @@ public class RuleDto {
      * This helper method processes a statement map to extract all Value components,
      * splits comma-separated value strings, and returns them as individual strings.
      * Null values are filtered out during processing.
-     * </p>
+
      * <p>
      * Note: This method contains logic code which violates Rule 5.5 design principle
      * that DTOs should not contain business logic. Consider refactoring to a separate
      * service class in future versions.
-     * </p>
+
      *
      * @param statements the statement map to extract values from
      * @return set of individual value strings (comma-separated values are split)

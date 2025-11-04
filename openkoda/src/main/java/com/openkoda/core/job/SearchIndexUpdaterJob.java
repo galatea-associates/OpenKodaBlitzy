@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
  * (initialDelay=10000ms, fixedDelay=10000ms), running every 10 seconds to ensure search indexes
  * remain current. It updates the search_index column for all searchable tables to enable
  * full-text search functionality across the application.
- * </p>
  * <p>
  * The job executes in two passes:
  * <ol>
@@ -43,11 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <li>Updates search indexes for dynamic entities (runtime-generated entities)</li>
  * </ol>
  * Each pass executes native SQL UPDATE statements provided by {@link SearchableRepositories}.
- * </p>
  * <p>
  * This class implements {@link LoggingComponentWithRequestId} to enable request-id-aware tracing
  * for debugging and audit purposes.
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -65,7 +62,7 @@ public class SearchIndexUpdaterJob implements LoggingComponentWithRequestId {
      * This EntityManager is injected by Spring via the {@link PersistenceContext} annotation
      * and provides the database operations needed to update search indexes using
      * database-specific full-text search features.
-     * </p>
+     * 
      */
     @PersistenceContext
     EntityManager entityManager;
@@ -75,10 +72,10 @@ public class SearchIndexUpdaterJob implements LoggingComponentWithRequestId {
      * <p>
      * This method runs within a single transaction (via {@link Transactional} annotation),
      * ensuring that all SQL updates either succeed together or roll back together.
-     * </p>
+     * 
      * <p>
      * The update process follows two phases:
-     * </p>
+     * 
      * <ol>
      * <li><b>Static Entity Updates</b>: Iterates through SQL statements from
      * {@link SearchableRepositories#getSearchIndexUpdates()} to update search indexes
@@ -91,15 +88,15 @@ public class SearchIndexUpdaterJob implements LoggingComponentWithRequestId {
      * Native SQL is used because search index updates rely on database-specific full-text
      * search features (e.g., {@code to_tsvector} in PostgreSQL). Each SQL statement is
      * executed via {@code entityManager.createNativeQuery(sql).executeUpdate()}.
-     * </p>
+     * 
      * <p>
      * <b>Transaction Behavior</b>: If any update fails, the entire transaction rolls back
      * and no indexes are updated. This ensures consistency across all searchable tables.
-     * </p>
+     * 
      * <p>
      * This method is stateless and relies on {@link SearchableRepositories} to provide
      * the appropriate SQL statements for the current database schema.
-     * </p>
+     * 
      *
      * @see SearchableRepositories#getSearchIndexUpdates()
      * @see SearchableRepositories#getSearchIndexUpdatesForDynamicEntities()

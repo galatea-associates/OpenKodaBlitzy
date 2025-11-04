@@ -49,25 +49,21 @@ import java.util.Map;
  * This helper class offers static methods for converting Java objects to JSON and vice versa.
  * It includes custom serialization support for {@link PageModelMap} that encodes value class names
  * into field keys for type preservation during deserialization.
- * </p>
  * <p>
  * The class uses two JSON libraries:
  * <ul>
  *   <li>Jackson ObjectMapper - configured for indented output and Java Time support</li>
  *   <li>Gson - configured to use {@code @Expose} annotation filtering</li>
  * </ul>
- * </p>
  * <p>
  * Example usage:
  * <pre>
  * String json = JsonHelper.toDebugJson(pageModel);
  * PageModelMap restored = JsonHelper.fromDebugJson(json);
  * </pre>
- * </p>
  * <p>
  * Thread-safety: The shared static ObjectMapper and Gson instances are thread-safe for read operations
  * and safe for concurrent use across multiple threads.
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -89,10 +85,10 @@ public class JsonHelper implements LoggingComponentWithRequestId {
      * This serializer encodes the class name of each value directly into the JSON field key
      * by appending "{@code @ClassName}" to the field name. This allows the corresponding
      * deserializer to reconstruct the original typed values.
-     * </p>
+     * 
      * <p>
      * Example output: {@code {"userName@java.lang.String": "admin"}}
-     * </p>
+     * 
      *
      * @see KeyWithClassDeserializer
      */
@@ -123,10 +119,10 @@ public class JsonHelper implements LoggingComponentWithRequestId {
      * This deserializer parses JSON field names containing "{@code @ClassName}" suffixes and uses
      * the class information to deserialize values with their correct types. If a class cannot be found,
      * a ClassNotFoundException is logged and the field is deserialized as a generic Object.
-     * </p>
+     * 
      * <p>
      * Example input: {@code {"userName@java.lang.String": "admin"}} becomes PageModelMap with String value.
-     * </p>
+     * 
      *
      * @see KeyWithClassSerializer
      */
@@ -176,7 +172,7 @@ public class JsonHelper implements LoggingComponentWithRequestId {
      *   <li>JavaTimeModule - adds support for Java 8 date/time types</li>
      *   <li>Custom module - registers KeyWithClassSerializer and KeyWithClassDeserializer for PageModelMap</li>
      * </ul>
-     * </p>
+     * 
      */
     static {
         om.enable(SerializationFeature.INDENT_OUTPUT);
@@ -203,7 +199,7 @@ public class JsonHelper implements LoggingComponentWithRequestId {
      * <p>
      * This method uses the Gson library configured with {@code @Expose} annotation filtering.
      * Only fields annotated with {@code @Expose} in the target class are populated.
-     * </p>
+     * 
      *
      * @param <T> the type of the object to deserialize
      * @param jsonString the JSON string to deserialize
@@ -219,7 +215,7 @@ public class JsonHelper implements LoggingComponentWithRequestId {
      * <p>
      * This method uses the Gson library configured with {@code @Expose} annotation filtering.
      * Only fields annotated with {@code @Expose} are included in the JSON output.
-     * </p>
+     * 
      *
      * @param <T> the type of the object to serialize
      * @param object the object to serialize
@@ -234,7 +230,7 @@ public class JsonHelper implements LoggingComponentWithRequestId {
      * <p>
      * This method checks if the trimmed input starts with '{' and ends with '}' to identify
      * potential JSON objects. It does not validate the complete JSON syntax or structure.
-     * </p>
+     * 
      *
      * @param jsonInput the string to check for JSON object format
      * @return true if the input looks like a JSON object (starts with '{' and ends with '}'), false otherwise
@@ -255,7 +251,7 @@ public class JsonHelper implements LoggingComponentWithRequestId {
      * from JSON field names that contain class information. If the input is blank, returns an empty
      * PageModelMap. The deserializer handles type reconstruction by parsing class names from
      * field key suffixes.
-     * </p>
+     * 
      *
      * @param jsonInput the JSON string to deserialize, may be null or blank
      * @return a PageModelMap with typed values reconstructed from the JSON, or empty map if input is blank
@@ -279,7 +275,7 @@ public class JsonHelper implements LoggingComponentWithRequestId {
      * {@link PageAttr} values and removes circular references such as modelAndView. The resulting
      * PageModelMap is serialized using the custom {@link KeyWithClassSerializer} to preserve type
      * information. If serialization fails, returns an error message.
-     * </p>
+     * 
      *
      * @param model the map to serialize, typically a Spring MVC model
      * @return a JSON string representation of the filtered model, or an error message if serialization fails
@@ -312,7 +308,7 @@ public class JsonHelper implements LoggingComponentWithRequestId {
      * This method manually constructs a JSON string from map entries, escaping double quotes
      * and removing "dto." prefixes from keys. It uses simple string concatenation and is suitable
      * for form data serialization.
-     * </p>
+     * 
      *
      * @param map the map to convert, with string keys and values
      * @return a JSON string representation of the map
@@ -331,7 +327,7 @@ public class JsonHelper implements LoggingComponentWithRequestId {
      * <p>
      * This method uses Jackson's convertValue to populate a form object from map data.
      * The map keys should match the form object's field names.
-     * </p>
+     * 
      *
      * @param <T> the type of the form object
      * @param map the source data map with field names as keys

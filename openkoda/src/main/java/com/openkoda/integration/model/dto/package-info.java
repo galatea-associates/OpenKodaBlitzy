@@ -26,27 +26,27 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Jackson serialization, and controller/service layer data transfer. Each DTO represents
  * configuration data for third-party service integrations including Basecamp, GitHub,
  * Jira, Microsoft Teams, Slack, and Trello.
- * </p>
+
  *
- * <h2>JavaBean Pattern</h2>
+ * <b>JavaBean Pattern</b>
  * <p>
  * All DTOs in this package follow the JavaBean pattern with public fields, getters/setters,
  * and implicit no-argument constructors. This design enables automatic property binding in
  * Spring MVC controllers and seamless JSON serialization via Jackson ObjectMapper.
- * </p>
+
  *
- * <h2>Thread-Safety Considerations</h2>
+ * <b>Thread-Safety Considerations</b>
  * <p>
  * DTOs are mutable and not thread-safe by design. They are intended for single-threaded
  * request processing within controller and service methods. Callers must enforce concurrency
  * control if DTOs are shared across threads or stored in shared caches.
- * </p>
+
  *
- * <h2>Sensitive Field Handling</h2>
+ * <b>Sensitive Field Handling</b>
  * <p>
  * DTOs contain sensitive credentials including webhook URLs, API keys, and authentication
  * tokens. Follow these security practices:
- * </p>
+
  * <ul>
  *   <li>Store credentials in secure secret management systems (Vault, AWS Secrets Manager)</li>
  *   <li>Avoid logging DTO contents in plaintext</li>
@@ -55,10 +55,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Apply role-based access control to configuration endpoints</li>
  * </ul>
  *
- * <h2>Usage Patterns</h2>
+ * <b>Usage Patterns</b>
  * <p>
  * DTOs serve three primary purposes in the integration layer:
- * </p>
+
  * <ul>
  *   <li><b>Form Binding:</b> Capture user input from Spring MVC controllers via @ModelAttribute</li>
  *   <li><b>JSON Serialization:</b> Convert between Java objects and JSON via Jackson for REST APIs</li>
@@ -70,7 +70,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * GitHubIntegrationDto dto = new GitHubIntegrationDto();
  * dto.setApiKey(secretsManager.getGitHubKey());
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1

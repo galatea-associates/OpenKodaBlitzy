@@ -32,12 +32,10 @@ import java.util.HashSet;
  * allows removal operations ({@code remove}, {@code clear}, {@code iterator().remove()},
  * {@code removeAll}, {@code retainAll}) to remain functional while preventing any additions
  * via {@code add} or {@code addAll} methods.
- * </p>
  * <p>
  * The {@code add} and {@code addAll} operations throw {@link UnsupportedOperationException}
  * to enforce the no-addition policy. All removal-related APIs inherited from {@link HashSet}
  * remain operative and will successfully delete elements from the set.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -45,11 +43,9 @@ import java.util.HashSet;
  * UnmodifiableSetWithRemove<String> set = new UnmodifiableSetWithRemove<>(original);
  * set.remove("a"); // succeeds
  * }</pre>
- * </p>
  * <p>
  * Thread-safety: This class is not thread-safe. It inherits the non-synchronized behavior
  * from {@link HashSet}. External synchronization is required for concurrent access.
- * </p>
  *
  * @param <E> the type of elements maintained by this set
  * @author OpenKoda Team
@@ -65,7 +61,7 @@ public class UnmodifiableSetWithRemove<E> extends HashSet<E> {
      * <p>
      * This method prevents any additions to the set by immediately throwing
      * {@link UnsupportedOperationException}. The element parameter is ignored.
-     * </p>
+     * 
      *
      * @param e the element to add (ignored, operation always fails)
      * @return {@code false} (never reached due to exception)
@@ -79,7 +75,7 @@ public class UnmodifiableSetWithRemove<E> extends HashSet<E> {
      * <p>
      * This method prevents any bulk additions to the set by immediately throwing
      * {@link UnsupportedOperationException}. The collection parameter is ignored.
-     * </p>
+     * 
      *
      * @param c the collection of elements to add (ignored, operation always fails)
      * @return {@code false} (never reached due to exception)
@@ -95,7 +91,7 @@ public class UnmodifiableSetWithRemove<E> extends HashSet<E> {
      * capacity based on the source collection size for efficiency. It populates the set
      * by iterating through the source collection and calling {@code super.add()} to bypass
      * the overridden {@code add} method that throws exceptions.
-     * </p>
+     * 
      *
      * @param c the source collection to copy elements from (must not be null)
      * @throws NullPointerException if the specified collection is null

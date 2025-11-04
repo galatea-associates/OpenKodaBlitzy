@@ -32,16 +32,16 @@ import org.apache.commons.lang3.StringUtils;
  * information such as HTTP cookies for analytics and registration source tracking.
  * It is used throughout registration workflows, user onboarding processes, and
  * tracking systems to carry user information between layers.
- * </p>
+ * 
  * <p>
  * Implements {@link CanonicalObject} to provide standardized notification message
  * formatting for registration events and user onboarding notifications.
- * </p>
+ * 
  * <p>
  * Note: This class contains TODO comments regarding field naming conventions
  * (websiteUrl preferred over project-specific names) and design rule compliance
  * for complex types in DTOs (Cookie[] array for tracking).
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -74,7 +74,7 @@ public class RegisteredUserDto implements CanonicalObject {
      * <p>
      * TODO: Field naming - 'websiteUrl' is preferred as more generic for projects
      * where users register with a website URL rather than project-specific names.
-     * </p>
+     * 
      */
     //TODO: change to 'websiteUrl' - it is more generic for projects where users register with a website url.
     public String websiteUrl;
@@ -103,7 +103,7 @@ public class RegisteredUserDto implements CanonicalObject {
      * TODO Rule 5.1: All fields in a DTO must be either a simple field (String, numbers,
      * boolean, enum) or other DTO or collection of these. As cookies allow us to track
      * registration sources, they are an optional part of the DTO despite being a complex type.
-     * </p>
+     * 
      */
     //TODO Rule 5.1 All fields in a DTO must be either a simple field (String, numbers, boolean, enum) or other DTO or collection of these
     //as cookies allows us to track registartion sources, they are an optional part of the DTO
@@ -114,7 +114,7 @@ public class RegisteredUserDto implements CanonicalObject {
      * <p>
      * This mapping constructor extracts registration data from the form and combines it with
      * the newly assigned user ID, organization ID, and tracking cookies.
-     * </p>
+     * 
      *
      * @param registerUserForm the registration form containing user-submitted data
      * @param userId the newly created user identifier
@@ -137,7 +137,7 @@ public class RegisteredUserDto implements CanonicalObject {
      * <p>
      * This full constructor allows direct instantiation with all registration data,
      * user identifiers, and tracking information.
-     * </p>
+     * 
      *
      * @param login user login/username for authentication
      * @param firstName user first name (may be null)
@@ -308,7 +308,7 @@ public class RegisteredUserDto implements CanonicalObject {
      * <p>
      * The message format is: "Registered User [firstName lastName,] login [URL: websiteUrl] [Nickname: nickname]"
      * where firstName/lastName, websiteUrl, and nickname are conditionally included only if they are not empty.
-     * </p>
+     * 
      *
      * @return formatted notification message describing the registered user
      */

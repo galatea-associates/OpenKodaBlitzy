@@ -31,15 +31,15 @@ import java.util.Objects;
  * This class maintains a static registry (HashMap) of all event descriptors keyed by eventName for event lookup
  * and discovery across the application. Subclasses (such as ApplicationEvent) declare canonical application-wide
  * event types (USER_CREATED, ORGANIZATION_UPDATED, etc.) as static final instances.
- * </p>
+
  * <p>
  * Event descriptors are effectively immutable after construction, with all fields being final. The static registry
  * is populated during class initialization and should not be modified at runtime.
- * </p>
+
  * <p>
  * <b>Thread-Safety Warning:</b> The static eventList HashMap is NOT synchronized. Registration occurs during
  * class initialization and should not be modified concurrently at runtime.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -50,7 +50,7 @@ import java.util.Objects;
  * public static final ApplicationEvent<User> USER_CREATED = 
  *     new ApplicationEvent<>(User.class, "user.created");
  * }</pre>
- * </p>
+
  *
  * @param <T> Payload type that event consumers will receive when this event is published (e.g., User, Organization, SchedulerDto)
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
@@ -75,7 +75,7 @@ public class AbstractApplicationEvent<T> {
      * Static global registry mapping event names to event descriptor instances.
      * <p>
      * Populated during static initialization. NOT thread-safe for concurrent modifications.
-     * </p>
+
      */
     private final static Map<String, AbstractApplicationEvent> eventList = new HashMap<>();
 
@@ -85,7 +85,7 @@ public class AbstractApplicationEvent<T> {
      * <p>
      * Registers this event descriptor in the static eventList HashMap as a side effect. The constructor is NOT
      * thread-safe and should only be called during class initialization to avoid concurrent modification issues.
-     * </p>
+
      *
      * @param eventClass Runtime Class representing payload type for type-safe event handling
      * @param eventName Unique canonical event name used as registry key and configuration identifier; must not collide with existing events
@@ -100,7 +100,7 @@ public class AbstractApplicationEvent<T> {
      * Compares this event descriptor with another object for equality based on eventClass and eventName.
      * <p>
      * Two objects of this class are considered equal if they have the same eventClass and eventName fields.
-     * </p>
+
      *
      * @param o Object to compare for equality based on eventClass and eventName
      * @return true if both objects have equal eventClass and eventName fields, false otherwise
@@ -121,7 +121,7 @@ public class AbstractApplicationEvent<T> {
      * will be based on the values of its eventClass and eventName fields.
      * This ensures that two objects that are equal according to their equals() method will also have the same hash code.
      * This is important for correctness when using hash-based data structures such as HashMap and HashSet.
-     * </p>
+
      *
      * @return Hash code computed from eventClass and eventName for use in hash-based collections
      */
@@ -134,7 +134,7 @@ public class AbstractApplicationEvent<T> {
      * Retrieves an event descriptor from the static registry by its unique event name.
      * <p>
      * Returns null for unregistered event names; callers should check for null before using the returned value.
-     * </p>
+
      *
      * @param eventName Unique event identifier to look up in registry
      * @return AbstractApplicationEvent descriptor matching eventName, or null if no matching event registered

@@ -29,19 +29,16 @@ package com.openkoda.core.form;
  * column type for dynamic entity generation. Field types are categorized into groups
  * including text inputs, date/time pickers, boolean controls, code editors, foreign key
  * references, dropdown selectors, visual dividers, file handlers, and specialized components.
- * </p>
  * <p>
  * Fields are rendered in HTML templates using the field type name. Each type specifies
  * whether it stores a value in the database and defines the corresponding database column
  * type when applicable. UI-only fields such as dividers and buttons do not store values.
- * </p>
  * <p>
  * Example usage in form field definition:
  * <pre>{@code
  * builder.text("username").label("Username")
  * builder.dropdown("status").label("Status")
  * }</pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -218,7 +215,7 @@ public enum FieldType {
      * Fields that store values map to database columns during dynamic entity generation.
      * UI-only fields such as dividers, buttons, and sections return false and do not
      * create corresponding database columns.
-     * </p>
+     * 
      *
      * @return true if field stores a database value, false for UI-only elements
      */
@@ -230,7 +227,7 @@ public enum FieldType {
      * <p>
      * The name corresponds to the enum constant identifier and is used in HTML templates
      * to determine the appropriate rendering logic for each field type.
-     * </p>
+     * 
      *
      * @return the field type name (e.g., "text", "dropdown", "checkbox")
      */
@@ -244,7 +241,7 @@ public enum FieldType {
      * The database type determines the SQL column type created when this field is used
      * in a dynamic entity definition. Returns null for UI-only fields that do not store
      * database values.
-     * </p>
+     * 
      *
      * @return the database column type, or null if field does not store a value
      * @see FieldDbType

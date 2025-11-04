@@ -33,12 +33,12 @@ import org.springframework.validation.BindingResult;
  * flag and language preferences during user editing operations. It handles the lifecycle
  * of mapping User entity data to an {@link EditUserDto} for presentation, validating user
  * input, and mapping the validated data back to the User entity.
- * </p>
+
  * <p>
  * The form delegates basic field validation (email, first name, last name) to
- * {@link BasicUserForm#validate(Object, BindingResult)} while extending the data mapping
+ * {@link BasicUserForm#validate} while extending the data mapping
  * in {@link #populateFrom(User)} to include enabled status and language preference fields.
- * </p>
+
  * <p>
  * Usage example:
  * <pre>{@code
@@ -46,16 +46,16 @@ import org.springframework.validation.BindingResult;
  * form.validate(bindingResult);
  * form.populateTo(existingUser);
  * }</pre>
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 2019-01-23
- * @see BasicUserForm
- * @see EditUserDto
- * @see User
- * @see AbstractEntityForm
+ * See {@code BasicUserForm}
+ * See {@code EditUserDto}
+ * See {@code User}
+ * See {@code AbstractEntityForm}
  */
 public class EditUserForm extends AbstractEntityForm<EditUserDto, User> {
 
@@ -66,9 +66,9 @@ public class EditUserForm extends AbstractEntityForm<EditUserDto, User> {
      * Initializes the form using the predefined frontend mapping definition for user editing.
      * This constructor is typically used when creating a form without an existing User entity,
      * such as in scenarios where the entity will be loaded later.
-     * </p>
+
      *
-     * @see FrontendMappingDefinitions#editUserForm
+     * See {@code FrontendMappingDefinitions#editUserForm}
      */
     public EditUserForm() {
         super(FrontendMappingDefinitions.editUserForm);
@@ -80,11 +80,11 @@ public class EditUserForm extends AbstractEntityForm<EditUserDto, User> {
      * This constructor creates a new {@link EditUserDto}, associates it with the provided
      * User entity, and configures the form using the predefined frontend mapping definition.
      * The form is ready for immediate use after construction.
-     * </p>
+
      *
      * @param entity the User entity to edit; must not be {@code null}
-     * @see FrontendMappingDefinitions#editUserForm
-     * @see EditUserDto
+     * See {@code FrontendMappingDefinitions#editUserForm}
+     * See {@code EditUserDto}
      */
     public EditUserForm(User entity) {
         super(new EditUserDto(), entity, FrontendMappingDefinitions.editUserForm);
@@ -94,14 +94,14 @@ public class EditUserForm extends AbstractEntityForm<EditUserDto, User> {
      * Validates the form data by delegating to BasicUserForm validation logic.
      * <p>
      * This method performs validation on the underlying {@link EditUserDto} by invoking
-     * {@link BasicUserForm#validate(Object, BindingResult)}, which checks email format,
+     * {@link BasicUserForm#validate}, which checks email format,
      * required fields (first name, last name), and other basic user field constraints.
      * Validation errors are recorded in the provided {@link BindingResult}.
-     * </p>
+
      *
      * @param br the BindingResult object to record validation errors; must not be {@code null}
      * @return this EditUserForm instance for method chaining
-     * @see BasicUserForm#validate(Object, BindingResult)
+     * @see BasicUserForm#validate
      */
     @Override
     public EditUserForm validate(BindingResult br) {
@@ -112,11 +112,11 @@ public class EditUserForm extends AbstractEntityForm<EditUserDto, User> {
     /**
      * Populates the form DTO with data from the provided User entity.
      * <p>
-     * This method extends {@link BasicUserForm#populateFromEntity(Object, User)} by additionally
+     * This method extends {@link BasicUserForm#populateFromEntity} by additionally
      * mapping the enabled flag, language preference, and global role name from the User entity
      * to the {@link EditUserDto}. This ensures all user attributes relevant to the edit form
      * are available for display and modification.
-     * </p>
+
      * <p>
      * Fields populated:
      * <ul>
@@ -125,12 +125,12 @@ public class EditUserForm extends AbstractEntityForm<EditUserDto, User> {
      *   <li>Language preference</li>
      *   <li>Global role name</li>
      * </ul>
-     * </p>
+
      *
      * @param entity the User entity to populate from; must not be {@code null}
      * @return this EditUserForm instance for method chaining
-     * @see BasicUserForm#populateFromEntity(Object, User)
-     * @see EditUserDto
+     * @see BasicUserForm#populateFromEntity
+     * See {@code EditUserDto}
      */
     @Override
     public EditUserForm populateFrom(User entity) {
@@ -147,7 +147,7 @@ public class EditUserForm extends AbstractEntityForm<EditUserDto, User> {
      * This method transfers user data from the {@link EditUserDto} back to the User entity
      * using safe value accessors that handle null values and provide fallback defaults.
      * The method uses {@link #getSafeValue} to ensure data integrity during the mapping process.
-     * </p>
+
      * <p>
      * Fields updated in the entity:
      * <ul>
@@ -157,15 +157,15 @@ public class EditUserForm extends AbstractEntityForm<EditUserDto, User> {
      *   <li>Enabled status flag</li>
      *   <li>Language preference</li>
      * </ul>
-     * </p>
+
      * <p>
      * Note: This method does NOT update role assignments. Role management is typically
      * handled separately through dedicated role assignment workflows.
-     * </p>
+
      *
      * @param entity the User entity to populate; must not be {@code null}
      * @return the updated User entity
-     * @see AbstractEntityForm#getSafeValue
+     * See {@code AbstractEntityForm#getSafeValue}
      */
     @Override
     protected User populateTo(User entity) {

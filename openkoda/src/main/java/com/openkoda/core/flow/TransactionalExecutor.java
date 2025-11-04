@@ -29,19 +29,16 @@ import java.util.function.Supplier;
  * Provides transaction demarcation for Flow steps, ensuring atomicity of operations and automatic
  * rollback on exceptions. Implementations delegate to Spring's transaction infrastructure to
  * provide consistent transactional behavior across Flow pipeline executions.
- * </p>
  * <p>
  * This interface serves as an abstraction over Spring's transaction management, allowing Flow
  * pipelines to execute within managed transactions without direct coupling to Spring's
  * transaction APIs. The interface uses raw types for flexibility with Flow's internal generic handling.
- * </p>
  * <p>
  * Example usage within Flow pipeline:
  * <pre>{@code
  * TransactionalExecutor executor = ...;
  * Object result = executor.executeInTransaction(() -> performDatabaseOperations());
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -57,12 +54,12 @@ public interface TransactionalExecutor {
      * Wraps the supplier execution in a Spring-managed transaction, providing automatic commit
      * on successful completion and rollback on any exception. Transaction semantics such as
      * propagation, isolation level, and timeout are determined by the concrete implementation.
-     * </p>
+     * 
      * <p>
      * Implementations typically delegate to Spring's TransactionTemplate or use @Transactional
      * proxy mechanisms to provide transaction boundaries. The raw Supplier type allows flexibility
      * in handling Flow's internal generic types without type parameter constraints.
-     * </p>
+     * 
      *
      * @param f the supplier function to execute within transaction boundaries, must not be null
      * @return the result returned by the supplier function, may be null depending on supplier implementation

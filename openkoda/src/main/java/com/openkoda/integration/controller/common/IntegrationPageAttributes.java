@@ -32,18 +32,18 @@ import com.openkoda.integration.form.*;
  * This interface follows the interface-as-constants pattern where each constant is a typed
  * descriptor initialized at class load time with a stable attribute key matching the descriptor name.
  * All descriptors are implicitly public static final as defined by Java interface semantics.
- * </p>
+
  * <p>
  * The PageAttr descriptors provide compile-time type safety for model binding and extraction,
  * reducing reliance on brittle string-key access patterns. Controllers use these descriptors
  * to add form models to page contexts, and views reference them for rendering.
- * </p>
+
  * <p>
  * Example usage in Flow pipeline:
  * <pre>
  * Flow.init(integrationGitHubForm, form).thenSet(...)
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1

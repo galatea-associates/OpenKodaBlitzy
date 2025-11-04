@@ -36,21 +36,21 @@ import java.util.Map;
  * This converter transforms {@link ServerJsConversionDto} objects into {@link ServerJs} entities and persists them
  * to the database. The converter is auto-discovered via the {@code @YamlToEntityParentConverter} annotation which
  * binds it to the ServerJsConversionDto class, enabling seamless YAML import workflows.
- * </p>
+ * 
  * <p>
  * The conversion process follows lookup-or-create semantics: it searches for an existing ServerJs entity by name,
  * and creates a new instance if not found. ServerJs represents server-side JavaScript code that is executed by the
  * GraalVM JS engine, enabling dynamic scripting capabilities within the OpenKoda platform.
- * </p>
+ * 
  * <p>
  * This converter depends on {@link ComponentProvider} to access both secure and unsecure repository beans
  * (repositories.secure.serverJs and repositories.unsecure.serverJs). The secure repository enforces privilege
  * checks during save operations, while the unsecure repository is used for read-only lookups during import.
- * </p>
+ * 
  * <p>
  * Thread-Safety: This is a stateless Spring {@code @Component} that is safe for concurrent use by multiple threads.
  * All state is passed through method parameters, and repository operations are transactional.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -75,7 +75,7 @@ public class ServerJsYamlToEntityConverter extends ComponentProvider implements 
      *   <li>Sets the loaded code on the ServerJs entity</li>
      *   <li>Saves the entity using {@code repositories.secure.serverJs.saveOne()}</li>
      * </ol>
-     * </p>
+     * 
      *
      * @param dto the ServerJsConversionDto containing server-side script metadata including name, arguments,
      *            model identifier, module name, organization ID, and code file path (must not be null)
@@ -106,7 +106,7 @@ public class ServerJsYamlToEntityConverter extends ComponentProvider implements 
      *   <li>Saves the entity using {@code repositories.secure.serverJs.saveOne()}</li>
      * </ol>
      * This method is typically used during batch imports where all resources are preloaded into memory.
-     * </p>
+     * 
      *
      * @param dto the ServerJsConversionDto containing server-side script metadata including name, arguments,
      *            model identifier, module name, organization ID, and code resource key (must not be null)
@@ -132,7 +132,7 @@ public class ServerJsYamlToEntityConverter extends ComponentProvider implements 
      * This method implements idempotent import behavior by performing a lookup query using
      * {@code repositories.unsecure.serverJs.findByName(dto.getName())}. If an existing entity is found,
      * it is reused and its fields are updated. If not found, a new ServerJs instance is created.
-     * </p>
+     * 
      * <p>
      * The following field mappings are applied from DTO to entity:
      * <ul>
@@ -142,11 +142,11 @@ public class ServerJsYamlToEntityConverter extends ComponentProvider implements 
      *   <li><b>moduleName</b> - Module name for organizational grouping (from dto.getModule())</li>
      *   <li><b>organizationId</b> - Tenant scope for multi-tenancy isolation</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Note: The {@code code} field is NOT set by this method. The caller is responsible for setting the JavaScript
      * code content, either from filesystem I/O or from an in-memory resources Map.
-     * </p>
+     * 
      *
      * @param dto the ServerJsConversionDto containing script metadata (must not be null)
      * @return existing ServerJs entity if found by name, or a new instance with fields populated from DTO

@@ -12,7 +12,7 @@ import static com.openkoda.core.lifecycle.BaseDatabaseInitializer.CORE_MODULE;
  * to be organized and scoped to specific {@link OpenkodaModule} instances. This base class is designed for
  * entities representing platform components such as forms, workflows, UI components, frontend resources,
  * and other module-specific artifacts.
- * </p>
+
  * <p>
  * Inherits from OpenkodaEntity:
  * <ul>
@@ -22,18 +22,18 @@ import static com.openkoda.core.lifecycle.BaseDatabaseInitializer.CORE_MODULE;
  *   <li>Search indexString for full-text search capabilities</li>
  *   <li>Computed referenceString for entity identification</li>
  * </ul>
- * </p>
+
  * <p>
  * JPA Inheritance Strategy: This class uses {@code @MappedSuperclass} with {@code TABLE_PER_CLASS}
  * inheritance (inherited from OpenkodaEntity). Each concrete subclass will have its own database table
  * containing all fields from the inheritance hierarchy.
- * </p>
+
  * <p>
  * Dual-Field Module Association Pattern: ComponentEntity maintains both a navigable {@code module}
  * relationship (lazy-loaded ManyToOne to OpenkodaModule) and a persisted {@code moduleName} column
  * storing the module identifier string. The {@code module} field is read-only (non-insertable,
  * non-updatable) to ensure the persisted {@code moduleName} remains the source of truth.
- * </p>
+
  * <p>
  * Usage Pattern:
  * <pre>
@@ -43,11 +43,11 @@ import static com.openkoda.core.lifecycle.BaseDatabaseInitializer.CORE_MODULE;
  *     // Can override to associate with custom modules
  * }
  * </pre>
- * </p>
+
  * <p>
  * Thread Safety: Entity instances are not thread-safe per JPA specification. Entities should not be
  * shared across threads without external synchronization.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -66,7 +66,7 @@ public abstract class ComponentEntity extends OpenkodaEntity {
      * non-insertable and non-updatable (read-only) to ensure the persisted {@link #moduleName}
      * column remains the authoritative source. The relationship is joined via the module's
      * {@code name} column, which serves as the natural key.
-     * </p>
+
      * <p>
      * JPA Configuration:
      * <ul>
@@ -75,7 +75,7 @@ public abstract class ComponentEntity extends OpenkodaEntity {
      *   <li>{@code @JoinColumn}: References OpenkodaModule.name column</li>
      *   <li>{@code insertable = false, updatable = false}: Read-only navigation property</li>
      * </ul>
-     * </p>
+
      *
      * @see OpenkodaModule
      * @see #moduleName
@@ -91,7 +91,7 @@ public abstract class ComponentEntity extends OpenkodaEntity {
      * {@link com.openkoda.core.lifecycle.BaseDatabaseInitializer#CORE_MODULE}. The moduleName
      * serves as the foreign key value for the {@link #module} relationship and is the
      * authoritative source for the module association.
-     * </p>
+
      * <p>
      * Column Configuration:
      * <ul>
@@ -99,14 +99,14 @@ public abstract class ComponentEntity extends OpenkodaEntity {
      *   <li>{@code nullable = false}: Module association is required for all component entities</li>
      *   <li>Default value: {@code CORE_MODULE} (the platform's built-in module identifier)</li>
      * </ul>
-     * </p>
+
      * <p>
      * Typical Values:
      * <ul>
      *   <li>{@code "CORE"}: Platform core module (default)</li>
      *   <li>Custom module names: e.g., {@code "CustomReporting"}, {@code "AdvancedWorkflow"}</li>
      * </ul>
-     * </p>
+
      *
      * @see com.openkoda.core.lifecycle.BaseDatabaseInitializer#CORE_MODULE
      * @see OpenkodaModule
@@ -121,7 +121,7 @@ public abstract class ComponentEntity extends OpenkodaEntity {
      * This constructor initializes the entity with the provided organization ID for multi-tenancy
      * isolation and sets the moduleName to {@link com.openkoda.core.lifecycle.BaseDatabaseInitializer#CORE_MODULE}
      * by default. The organization ID establishes the tenant scope for this component entity.
-     * </p>
+
      *
      * @param organizationId the organization ID for tenant isolation, may be null for global entities
      * @see OpenkodaEntity#OpenkodaEntity(Long)
@@ -136,7 +136,7 @@ public abstract class ComponentEntity extends OpenkodaEntity {
      * This constructor creates a ComponentEntity with organizationId set to null and moduleName
      * defaulted to {@link com.openkoda.core.lifecycle.BaseDatabaseInitializer#CORE_MODULE}.
      * The organization ID should be set explicitly after instantiation for tenant-scoped entities.
-     * </p>
+
      *
      * @see OpenkodaEntity#OpenkodaEntity(Long)
      */
@@ -150,7 +150,7 @@ public abstract class ComponentEntity extends OpenkodaEntity {
      * This method provides navigable access to the module entity. Note that accessing this field
      * may trigger a database query if the module has not been previously loaded (lazy fetch).
      * The returned module is the entity referenced by the {@link #moduleName} natural key.
-     * </p>
+
      *
      * @return the associated OpenkodaModule entity, never null for persisted entities
      * @see OpenkodaModule
@@ -166,7 +166,7 @@ public abstract class ComponentEntity extends OpenkodaEntity {
      * This method returns the module name value stored in the database, which serves as the
      * natural key for the {@link #module} relationship. The module name identifies which
      * OpenKoda module this component belongs to.
-     * </p>
+
      *
      * @return the module identifier string, typically {@link com.openkoda.core.lifecycle.BaseDatabaseInitializer#CORE_MODULE}
      *         or a custom module name, never null
@@ -183,13 +183,13 @@ public abstract class ComponentEntity extends OpenkodaEntity {
      * This method updates the persisted moduleName column, which determines the module association
      * for this component. The module name must correspond to an existing {@link OpenkodaModule}
      * entity's name field.
-     * </p>
+
      * <p>
      * Typical usage:
      * <pre>
      * componentEntity.setModuleName("CustomReportingModule");
      * </pre>
-     * </p>
+
      *
      * @param moduleName the module identifier string, must not be null and should reference an existing module
      * @see #moduleName

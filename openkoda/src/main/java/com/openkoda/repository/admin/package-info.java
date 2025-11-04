@@ -25,35 +25,35 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This package provides Spring Data JPA repository interfaces for managing audit trail data
  * in the OpenKoda application. The repositories support secure access to audit records with
  * organization-scoped filtering and comprehensive search capabilities.
- * </p>
  * 
- * <h2>Key Components</h2>
+ * 
+ * <b>Key Components</b>
  * <ul>
  *   <li>{@link com.openkoda.repository.admin.AuditRepository} - Main repository for audit record CRUD operations and queries</li>
  *   <li>{@link com.openkoda.repository.admin.SecureAuditRepository} - Secure repository wrapper with privilege enforcement</li>
  * </ul>
  * 
- * <h2>Integration Points</h2>
+ * <b>Integration Points</b>
  * <p>
  * The audit repositories integrate with:
- * </p>
+ * 
  * <ul>
  *   <li>{@link com.openkoda.core.audit.AuditInterceptor} - Hibernate interceptor for capturing entity changes</li>
  *   <li>{@link com.openkoda.core.audit.PropertyChangeInterceptor} - Session-scoped property change tracking</li>
  *   <li>{@link com.openkoda.model.common.Audit} - JPA entity representing audit records</li>
  * </ul>
  * 
- * <h2>Usage Example</h2>
+ * <b>Usage Example</b>
  * <pre>
  * // Query audit records for an organization
  * Page&lt;Audit&gt; audits = auditRepository.findAllByOrganizationId(orgId, "user", pageable);
  * </pre>
  * 
- * <h2>Security and Compliance</h2>
+ * <b>Security and Compliance</b>
  * <p>
  * All repository operations enforce privilege checks through Spring Security's {@code @PreAuthorize}
  * annotations. Audit records are immutable after creation and support compliance reporting requirements.
- * </p>
+ * 
  * 
  * @since 1.7.1
  * @see com.openkoda.model.common.Audit

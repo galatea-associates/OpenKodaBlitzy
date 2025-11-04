@@ -37,7 +37,7 @@ import java.util.List;
  * to provide repository operations for OrganizationRole entities. OrganizationRole represents
  * tenant-scoped roles that apply only within specific organizations (e.g., ROLE_ORG_ADMIN,
  * ROLE_ORG_USER) in the single-table Role inheritance hierarchy.
- * </p>
+
  * <p>
  * Key features:
  * <ul>
@@ -46,11 +46,11 @@ import java.util.List;
  *   <li>Override {@link #save(OrganizationRole)} for explicit type safety in role persistence</li>
  *   <li>Used by organization management, tenant-specific user assignment, and role administration</li>
  * </ul>
- * </p>
+
  * <p>
  * Persists to 'roles' table (single-table inheritance) with type discriminator 'OrganizationRole'.
  * Shares table with {@link com.openkoda.model.GlobalRole} and {@link com.openkoda.model.GlobalOrganizationRole}.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -70,7 +70,7 @@ public interface OrganizationRoleRepository extends FunctionalRepositoryWithLong
      * <p>
      * Overrides generic save method from {@link FunctionalRepositoryWithLongId} to provide
      * typed return signature. Delegates to standard JPA persist/merge operations.
-     * </p>
+
      *
      * @param organizationRole OrganizationRole entity to save (insert or update), must not be null
      * @return Saved OrganizationRole with generated ID if new, or merged instance if existing
@@ -84,7 +84,7 @@ public interface OrganizationRoleRepository extends FunctionalRepositoryWithLong
      * Uses Spring Data query derivation to generate query with single-table inheritance filtering:
      * {@code SELECT * FROM roles WHERE name = ? AND dtype = 'OrganizationRole'}
      * Name comparison is case-sensitive.
-     * </p>
+
      *
      * @param name Unique organization role name to search for (e.g., 'ROLE_ORG_ADMIN'), must not be null
      * @return OrganizationRole with matching name, null if not found
@@ -96,15 +96,15 @@ public interface OrganizationRoleRepository extends FunctionalRepositoryWithLong
      * <p>
      * Executes JPQL constructor expression:
      * {@code SELECT new Tuple(name, 'label.role.' || name) FROM OrganizationRole ORDER BY name}
-     * </p>
+
      * <p>
      * Returns Tuple instances with role name and i18n label key (e.g., 'label.role.ROLE_ORG_ADMIN').
      * Ordered alphabetically by name for consistent UI display.
-     * </p>
+
      * <p>
      * Usage: Populate role dropdowns in organization user management UI with localized labels.
      * Label key should resolve via MessageSource to display name.
-     * </p>
+
      *
      * @return List of Tuple(name, labelKey) for all OrganizationRoles, empty list if none exist
      */

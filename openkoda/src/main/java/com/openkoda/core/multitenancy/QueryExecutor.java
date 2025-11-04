@@ -38,7 +38,6 @@ import java.util.function.Function;
  * It creates EntityManager instances, configures them, executes operations, and ensures proper cleanup.
  * The component supports both transactional and non-transactional execution modes, integrates with
  * TenantResolver for tenant-aware operations, and provides automatic resource loading from classpath.
- * </p>
  * <p>
  * Key capabilities include:
  * <ul>
@@ -49,22 +48,18 @@ import java.util.function.Function;
  * <li>Schema introspection via getSchemas() for discovering tenant schemas</li>
  * <li>Comprehensive error handling with logging and transaction rollback</li>
  * </ul>
- * </p>
  * <p>
  * Thread-safety: This component uses a stateless design with no instance state beyond the injected
  * EntityManagerFactory. Each method invocation creates an isolated EntityManager, making it safe for
  * concurrent use by multiple threads in the service layer.
- * </p>
  * <p>
  * Transaction management: Transactional methods use JPA EntityTransaction (not Spring @Transactional).
  * Transactions are automatically rolled back on any exception. Auto-commit mode is used for
  * non-transactional operations.
- * </p>
  * <p>
  * Tenant-aware execution: TenantResolver.getTenantedResource() provides tenant context, and
  * SchemaSupportingConnectionProvider automatically sets the PostgreSQL search_path to execute
  * queries against tenant-specific schemas (org_&lt;organizationId&gt;).
- * </p>
  * <p>
  * Usage patterns:
  * <pre>{@code
@@ -76,7 +71,6 @@ import java.util.function.Function;
  *     return em.find(Organization.class, orgId);
  * });
  * }</pre>
- * </p>
  *
  * @see TenantResolver#getTenantedResource()
  * @see MultitenancyService
@@ -95,11 +89,11 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * Injected by Spring container via @PersistenceUnit annotation. The factory is thread-safe
      * and used to create isolated EntityManager instances for each database operation. The factory
      * lifecycle is managed by Spring and closed on application shutdown.
-     * </p>
+     * 
      * <p>
      * Note: While EntityManagerFactory is thread-safe, EntityManager instances created from it
      * are not thread-safe and should not be shared between threads.
-     * </p>
+     * 
      */
     @PersistenceUnit
     private EntityManagerFactory entityManagerFactory;
@@ -110,18 +104,18 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * This method loads resource files such as SQL initialization scripts from the classpath
      * and returns their content as a String. It uses try-with-resources to ensure automatic
      * closure of the InputStream, preventing resource leaks.
-     * </p>
+     * 
      * <p>
      * Error handling: If the resource is not found or an IOException occurs during reading,
      * the error is logged via LoggingComponentWithRequestId and the method returns null.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
      * String sql = readResource("/sql/init-tenant.sql");
      * String schema = readResource("/multitenancy/create-schema.sql");
      * }</pre>
-     * </p>
+     * 
      *
      * @param path Classpath resource path (e.g., "/sql/init-tenant.sql")
      * @return Resource content as String, or null if resource not found or IO error occurs
@@ -141,16 +135,16 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * This method queries the database to discover all schemas with the 'org_' prefix, which
      * represent tenant-specific schemas in the multi-tenancy architecture. Each tenant schema
      * is named following the pattern org_&lt;organizationId&gt; (e.g., "org_1", "org_2", "org_3").
-     * </p>
+     * 
      * <p>
      * The method executes a native SQL query against the PostgreSQL information_schema.schemata
      * system catalog to find matching schemas. Only org_* schemas are returned; public and
      * system schemas are excluded.
-     * </p>
+     * 
      * <p>
      * Used by: MultitenancyService for enumerating active tenants and performing operations
      * across all tenant schemas.
-     * </p>
+     * 
      *
      * @param em Active EntityManager for executing the native query
      * @return List of schema names starting with 'org_' prefix (e.g., ["org_1", "org_2", "org_3"])
@@ -165,16 +159,16 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * This method loads an SQL script from the specified classpath location using readResource()
      * and executes it within a transaction. The transaction is automatically rolled back if any
      * error occurs during execution.
-     * </p>
+     * 
      * <p>
      * Use case: Executing DDL (CREATE TABLE, ALTER TABLE) or DML (INSERT, UPDATE, DELETE)
      * scripts that require atomicity. If the script contains multiple statements, either all
      * succeed or all are rolled back together.
-     * </p>
+     * 
      * <p>
      * Error handling: Errors are logged via LoggingComponentWithRequestId and the transaction
      * is rolled back automatically.
-     * </p>
+     * 
      *
      * @param classpathResource Classpath path to SQL script file (e.g., "/sql/init-tenant.sql")
      */
@@ -189,12 +183,12 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * This method loads an SQL script from the specified classpath location using readResource()
      * and executes it without wrapping it in a transaction. Each SQL statement within the script
      * is auto-committed by the database.
-     * </p>
+     * 
      * <p>
      * Use case: Executing scripts where transaction control is handled externally, or for
      * operations that should not be grouped together atomically. This mode is also useful for
      * DDL statements that implicitly commit in some database systems.
-     * </p>
+     * 
      *
      * @param classpathResource Classpath path to SQL script file (e.g., "/sql/query.sql")
      */
@@ -209,11 +203,11 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * This method wraps all provided queries in a single transaction, ensuring atomicity.
      * Either all queries execute successfully and the transaction is committed, or if any
      * query fails, the entire transaction is rolled back.
-     * </p>
+     * 
      * <p>
      * Atomicity guarantee: All queries succeed together or all are rolled back together.
      * This ensures database consistency even when multiple related operations are performed.
-     * </p>
+     * 
      *
      * @param queries Variable number of SQL query strings to execute sequentially
      * @return true if all queries executed successfully, false otherwise
@@ -227,11 +221,11 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * <p>
      * This method executes the provided queries sequentially without wrapping them in a
      * transaction. Each query is auto-committed by the database immediately after execution.
-     * </p>
+     * 
      * <p>
      * Use case: Executing independent queries that do not need to be grouped atomically,
      * or when transaction control is managed externally.
-     * </p>
+     * 
      *
      * @param queries Variable number of SQL query strings to execute sequentially
      * @return true if queries executed successfully, false otherwise
@@ -246,16 +240,16 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * This is the primary internal method for executing SQL queries with configurable
      * transaction behavior and performance logging. It measures execution time using
      * System.nanoTime() and reports the duration in microseconds at debug level.
-     * </p>
+     * 
      * <p>
      * Transaction control: If transactional is true, all queries are wrapped in a single
      * transaction with automatic commit on success or rollback on error. If false, each
      * query is auto-committed individually.
-     * </p>
+     * 
      * <p>
      * Performance logging: Execution time is always measured and logged at debug level
      * in microseconds via LoggingComponentWithRequestId, regardless of the logTime parameter.
-     * </p>
+     * 
      *
      * @param transactional If true, wraps execution in transaction; if false, uses auto-commit
      * @param logTime If true, logs execution time in microseconds at debug level (currently unused)
@@ -280,14 +274,14 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * This convenience method executes a read-only or auto-commit operation using an
      * EntityManager. The operation is not wrapped in a transaction, so changes are
      * auto-committed by the database.
-     * </p>
+     * 
      * <p>
      * Use case: Read-only operations such as queries that do not require transaction
      * protection, or single write operations where auto-commit is acceptable.
-     * </p>
+     * 
      * <p>
      * Delegates to: runEntityManagerOperationForOrg(null, false, ...)
-     * </p>
+     * 
      *
      * @param query Function accepting EntityManager and returning result
      * @param <T> Result type
@@ -303,10 +297,10 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * This method provides explicit control over transaction behavior. If transactional is true,
      * the operation is wrapped in a transaction with automatic commit on success or rollback
      * on error. If false, auto-commit mode is used.
-     * </p>
+     * 
      * <p>
      * Delegates to: runEntityManagerOperationForOrg(null, transactional, ...)
-     * </p>
+     * 
      *
      * @param transactional If true, wraps in transaction; if false, no transaction
      * @param query Function accepting EntityManager and returning result
@@ -323,14 +317,14 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * This convenience method ensures the operation is wrapped in a transaction with automatic
      * commit on success or rollback on error. It is the recommended approach for write
      * operations that require atomicity.
-     * </p>
+     * 
      * <p>
      * Use case: Write operations such as persist(), merge(), or remove() that require
      * transactional protection to ensure data consistency.
-     * </p>
+     * 
      * <p>
      * Delegates to: runEntityManagerOperationForOrg(null, true, ...)
-     * </p>
+     * 
      *
      * @param query Function accepting EntityManager and returning result
      * @param <T> Result type
@@ -347,7 +341,7 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * control over tenant context and transaction behavior. It provides comprehensive
      * lifecycle management including creation, configuration, execution, error handling,
      * and guaranteed cleanup.
-     * </p>
+     * 
      * <p>
      * Implementation details:
      * <ul>
@@ -361,30 +355,30 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * <li>Rolls back transaction on exception if transactional</li>
      * <li>Always closes EntityManager in finally block</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Error handling: Catches all exceptions, logs them via LoggingComponentWithRequestId,
      * rolls back the transaction if active, and returns null. The EntityManager is guaranteed
      * to be closed via the finally block even if an exception occurs.
-     * </p>
+     * 
      * <p>
      * Resource management: EntityManager lifecycle is strictly controlled with creation at
      * method entry and guaranteed closure in finally block, preventing resource leaks.
-     * </p>
+     * 
      * <p>
      * Tenant awareness: The method integrates with TenantResolver to log tenant context
      * information and with SchemaSupportingConnectionProvider which automatically sets
      * the PostgreSQL search_path based on the organization ID, ensuring queries execute
      * against the correct tenant-specific schema (org_&lt;organizationId&gt;).
-     * </p>
+     * 
      * <p>
      * Thread-safety: This method is safe for concurrent use as it creates an isolated
      * EntityManager instance per invocation. EntityManagers are not shared between threads.
-     * </p>
+     * 
      * <p>
      * Logging: Debug-level logging includes search_path, tenant context (TenantedResource),
      * organization ID, and transaction mode for troubleshooting tenant-specific issues.
-     * </p>
+     * 
      *
      * @param orgId Organization ID for tenant context (can be null for non-tenant operations)
      * @param transactional If true, wraps in transaction with commit/rollback; if false, auto-commit
@@ -435,21 +429,21 @@ public class QueryExecutor implements LoggingComponentWithRequestId {
      * This method iterates through the provided queries and executes each one using
      * EntityManager.createNativeQuery().executeUpdate(). Each query and its numeric
      * result (rows affected) are logged at debug level via LoggingComponentWithRequestId.
-     * </p>
+     * 
      * <p>
      * Implementation: Uses em.createNativeQuery().executeUpdate() for each query, which
      * is appropriate for DDL (CREATE, ALTER, DROP) and DML (INSERT, UPDATE, DELETE)
      * statements.
-     * </p>
+     * 
      * <p>
      * Transaction control: This method does not manage transactions. The caller is
      * responsible for transaction control (begin, commit, rollback). Typically called
      * from runQueries() or runEntityManagerOperationForOrg() which handle transactions.
-     * </p>
+     * 
      * <p>
      * Logging: Debug-level logging of each query string before execution and the numeric
      * result (number of rows affected) after execution.
-     * </p>
+     * 
      *
      * @param em Active EntityManager for query execution
      * @param queries Array of SQL query strings to execute sequentially

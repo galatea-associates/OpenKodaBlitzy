@@ -31,7 +31,7 @@ import com.openkoda.dto.OrganizationRelatedObject;
  * contracts to represent payment plan data within a multi-tenant context. The DTO contains
  * minimal fields for organization identification and plan name, suitable for data transfer
  * across application layers.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -122,7 +122,7 @@ public class PlanDto  implements CanonicalObject, OrganizationRelatedObject {
      * <p>
      * Generates a human-readable string containing the plan name and organization identifier
      * for use in notifications and audit logs.
-     * </p>
+     * 
      *
      * @return formatted summary string with planName and organizationId
      */

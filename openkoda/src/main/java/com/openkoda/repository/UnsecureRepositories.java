@@ -41,13 +41,13 @@ import org.springframework.stereotype.Component;
  * This component aggregates unsecured repository instances without privilege validation,
  * bypassing SecureRepository privilege checks for system-level operations. It is designed
  * for use in internal processing contexts where access control has been pre-validated externally.
- * </p>
+
  * <p>
  * This class is annotated with {@code @Component} for Spring bean registration and uses field
  * injection to aggregate 25+ repository instances for organization, user, role, file, and other
  * domain entities. Access is typically performed via the {@code Repositories.unsecure} field
  * for convenience in system operations, background jobs, and batch processing.
- * </p>
+
  * <p>
  * <b>SECURITY WARNING:</b> Only use unsecure repository operations for:
  * <ul>
@@ -58,13 +58,13 @@ import org.springframework.stereotype.Component;
  * </ul>
  * Never expose unsecure repository operations directly to user requests. For user-facing
  * operations, always use {@link SecureRepositories} which enforces privilege-based access control.
- * </p>
+
  * <p>
  * Usage example (system context only):
  * <pre>
  * Organization org = repositories.unsecure.organization.findById(id).orElse(null);
  * </pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -81,7 +81,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system operations such as user migrations,
      * batch user provisioning, or background synchronization tasks.
-     * </p>
+
      */
     @Inject public UserRepository user;
     
@@ -90,7 +90,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system role assignments, bulk role updates,
      * or administrative role reconciliation operations.
-     * </p>
+
      */
     @Inject public UserRoleRepository userRole;
     
@@ -98,7 +98,7 @@ public class UnsecureRepositories {
      * Direct access to Facebook user integration repository bypassing privilege enforcement.
      * <p>
      * <b>UNSECURED</b> - Use only for OAuth callback processing or external user synchronization.
-     * </p>
+
      */
     @Inject public FacebookUserRepository facebookUser;
     
@@ -106,7 +106,7 @@ public class UnsecureRepositories {
      * Direct access to Google user integration repository bypassing privilege enforcement.
      * <p>
      * <b>UNSECURED</b> - Use only for OAuth callback processing or external user synchronization.
-     * </p>
+
      */
     @Inject public GoogleUserRepository googleUser;
     
@@ -114,7 +114,7 @@ public class UnsecureRepositories {
      * Direct access to LDAP user integration repository bypassing privilege enforcement.
      * <p>
      * <b>UNSECURED</b> - Use only for LDAP synchronization or directory service integration tasks.
-     * </p>
+
      */
     @Inject public LDAPUserRepository ldapUser;
     
@@ -122,7 +122,7 @@ public class UnsecureRepositories {
      * Direct access to Salesforce user integration repository bypassing privilege enforcement.
      * <p>
      * <b>UNSECURED</b> - Use only for Salesforce OAuth processing or external CRM synchronization.
-     * </p>
+
      */
     @Inject public SalesforceUserRepository salesforceUser;
     
@@ -130,7 +130,7 @@ public class UnsecureRepositories {
      * Direct access to LinkedIn user integration repository bypassing privilege enforcement.
      * <p>
      * <b>UNSECURED</b> - Use only for OAuth callback processing or professional network synchronization.
-     * </p>
+
      */
     @Inject public LinkedinUserRepository linkedinUser;
     
@@ -138,7 +138,7 @@ public class UnsecureRepositories {
      * Direct access to API key repository bypassing privilege enforcement.
      * <p>
      * <b>UNSECURED</b> - Use only for system API key generation, rotation, or cleanup operations.
-     * </p>
+
      */
     @Inject public ApiKeyRepository apiKey;
     
@@ -147,7 +147,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for authentication processing, password reset operations,
      * or credential migration tasks.
-     * </p>
+
      */
     @Inject public LoginAndPasswordRepository loginAndPassword;
 
@@ -157,7 +157,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system role management, role migrations,
      * or administrative role provisioning operations.
-     * </p>
+
      */
     @Inject public RoleRepository role;
     
@@ -166,7 +166,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system privilege creation, privilege synchronization,
      * or administrative access control configuration.
-     * </p>
+
      */
     @Inject public DynamicPrivilegeRepository privilege;
     
@@ -174,7 +174,7 @@ public class UnsecureRepositories {
      * Direct access to global role repository bypassing privilege enforcement.
      * <p>
      * <b>UNSECURED</b> - Use only for system-wide role management or global role initialization.
-     * </p>
+
      */
     @Inject public GlobalRoleRepository globalRole;
     
@@ -182,7 +182,7 @@ public class UnsecureRepositories {
      * Direct access to organization-scoped role repository bypassing privilege enforcement.
      * <p>
      * <b>UNSECURED</b> - Use only for tenant role provisioning or organization-level role migrations.
-     * </p>
+
      */
     @Inject public OrganizationRoleRepository organizationRole;
     
@@ -190,7 +190,7 @@ public class UnsecureRepositories {
      * Direct access to global organization role repository bypassing privilege enforcement.
      * <p>
      * <b>UNSECURED</b> - Use only for cross-organization role management or global tenant role operations.
-     * </p>
+
      */
     @Inject public GlobalOrganizationRoleRepository globalOrganizationRole;
 
@@ -200,7 +200,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for background email processing, scheduled email tasks,
      * or system notification operations.
-     * </p>
+
      */
     @Inject public EmailRepository email;
     
@@ -209,7 +209,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for background HTTP task processing, webhook execution,
      * or scheduled external API calls.
-     * </p>
+
      */
     @Inject public HttpRequestTaskRepository httpRequest;
 
@@ -219,7 +219,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system scheduler management, scheduled job configuration,
      * or background task orchestration operations.
-     * </p>
+
      */
     @Inject public SchedulerRepository scheduler;
     
@@ -228,7 +228,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system event listener registration, event processing,
      * or internal event-driven architecture operations.
-     * </p>
+
      */
     @Inject public EventListenerRepository eventListener;
 
@@ -238,7 +238,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system notification cleanup, read status migrations,
      * or administrative notification tracking operations.
-     * </p>
+
      */
     @Inject
     public ReadNotificationRepository readNotification;
@@ -248,7 +248,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system notification generation, bulk notification processing,
      * or background notification delivery operations.
-     * </p>
+
      */
     @Inject
     public NotificationRepository notification;
@@ -259,7 +259,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system organization provisioning, tenant migrations,
      * or administrative multi-tenancy operations.
-     * </p>
+
      */
     @Inject public OrganizationRepository organization;
     
@@ -268,7 +268,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system audit log processing, compliance reporting,
      * or administrative audit trail analysis.
-     * </p>
+
      */
     @Inject public AuditRepository audit;
     
@@ -277,7 +277,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system frontend resource deployment, UI component migrations,
      * or administrative resource management operations.
-     * </p>
+
      */
     @Inject public FrontendResourceRepository frontendResource;
     
@@ -286,7 +286,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system endpoint registration, API route discovery,
      * or administrative endpoint configuration operations.
-     * </p>
+
      */
     @Inject public ControllerEndpointRepository controllerEndpoint;
     
@@ -295,7 +295,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system script deployment, JavaScript code migrations,
      * or administrative GraalVM script management.
-     * </p>
+
      */
     @Inject public ServerJsRepository serverJs;
     
@@ -304,7 +304,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system token generation, token cleanup operations,
      * or administrative authentication token management.
-     * </p>
+
      */
     @Inject public TokenRepository token;
     
@@ -313,7 +313,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system search index rebuilding, search migrations,
      * or administrative full-text search operations.
-     * </p>
+
      */
     @Inject public GlobalSearchRepository search;
     
@@ -322,7 +322,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system geospatial data processing, map entity migrations,
      * or administrative geographic information operations.
-     * </p>
+
      */
     @Inject public MapEntityRepository mapEntity;
     
@@ -331,7 +331,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system file storage operations, file migrations,
      * or administrative file cleanup and management tasks.
-     * </p>
+
      */
     @Inject public FileRepository file;
     
@@ -340,7 +340,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system integration provisioning, third-party service setup,
      * or administrative integration configuration operations.
-     * </p>
+
      */
     @Inject public IntegrationRepository integration;
     
@@ -349,7 +349,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system form deployment, form migrations,
      * or administrative dynamic form management operations.
-     * </p>
+
      */
     @Inject public FormRepository form;
     
@@ -358,7 +358,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system database operations, data migrations,
      * or administrative SQL execution tasks requiring direct database access.
-     * </p>
+
      */
     @Inject public NativeQueries nativeQueries;
 
@@ -367,7 +367,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system module registration, module initialization,
      * or administrative module configuration operations.
-     * </p>
+
      */
     @Inject public OpenkodaModuleRepository openkodaModule;
     
@@ -376,7 +376,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system email setup, SMTP configuration migrations,
      * or administrative email service management operations.
-     * </p>
+
      */
     @Inject public EmailConfigRepository emailConfig;
     
@@ -385,7 +385,7 @@ public class UnsecureRepositories {
      * <p>
      * <b>UNSECURED</b> - Use only for system dynamic entity registration, runtime entity migrations,
      * or administrative Byte Buddy entity generation operations.
-     * </p>
+
      */
     @Inject public DynamicEntityRepository dynamicEntity;
 }

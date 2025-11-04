@@ -16,11 +16,11 @@ import static java.util.regex.Pattern.compile;
  * Parses JavaScript source code to identify exported function declarations. Supports three function 
  * declaration patterns: standard function declarations, assignment with function keyword, and arrow functions.
  * Extracts function names and parameter lists, returning normalized signatures in 'name(args)' format.
- * </p>
+
  * <p>
  * Uses precompiled regex patterns for performance. Not a full JavaScript AST parser - suitable for 
  * simple signature discovery in well-formatted code.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
@@ -28,7 +28,7 @@ import static java.util.regex.Pattern.compile;
  * List&lt;String&gt; signatures = parser.getFunctions("export function test(a, b) {}");
  * // Returns: ["test(a,b)"]
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -45,14 +45,14 @@ public class JsParser {
      * applies each pattern's regex to the code, and collects all matches. Each match is normalized:
      * function name extracted from nameGroup, parameters extracted from argsGroup with spaces removed.
      * Returns accumulated list of all discovered exported functions.
-     * </p>
+
      * <p>
      * Example:
      * <pre>
      * Input: "export function test(a, b) {}" returns ["test(a,b)"]
      * Input: "export const fn = (x) =&gt; x" returns ["fn(x)"]
      * </pre>
-     * </p>
+
      *
      * @param code JavaScript source code to parse
      * @return List of function signatures in 'name(args)' format (e.g., ['myFunc(a,b)', 'otherFunc()'])
@@ -72,7 +72,7 @@ public class JsParser {
      * For each match, extracts function name from matcher.group(nameGroup) and parameters from 
      * matcher.group(argsGroup), trims whitespace, removes spaces from parameter list, constructs 
      * 'name(args)' format, and adds to functions list.
-     * </p>
+
      *
      * @param jsPattern Pattern to apply (function_standard, function_equals, or function_lambda)
      * @param code JavaScript source code to search
@@ -89,7 +89,7 @@ public class JsParser {
      * Enum of precompiled regex patterns for JavaScript exported function declarations.
      * <p>
      * Defines three patterns for different function declaration styles:
-     * </p>
+
      * <ul>
      * <li>function_standard: Matches 'export function name(params)' style</li>
      * <li>function_equals: Matches 'export const/var/let name = function(params)' style</li>
@@ -98,7 +98,7 @@ public class JsParser {
      * <p>
      * Each pattern captures function name in one regex group and parameters in another.
      * Groups are accessed via nameGroup and argsGroup indices.
-     * </p>
+
      */
     private enum JsPattern {
         /**
@@ -107,7 +107,7 @@ public class JsParser {
          * Pattern: "export\\s+function\\s+([^)]*)\\s*\\(([^)]*)"<br>
          * Name group: 1 (function name)<br>
          * Args group: 2 (parameter list)
-         * </p>
+
          */
         function_standard(compile("export\\s+function\\s+([^)]*)\\s*\\(([^)]*)"), 1 ,2),
         
@@ -117,7 +117,7 @@ public class JsParser {
          * Pattern: "export\\s+(const|var|let)\\s+([^=]*)\\s*=\\s*function\\s*\\(([^)]*)\\)"<br>
          * Name group: 2 (function name, group 1 is const/var/let)<br>
          * Args group: 3 (parameter list)
-         * </p>
+
          */
         function_equals(compile("export\\s+(const|var|let)\\s+([^=]*)\\s*=\\s*function\\s*\\(([^)]*)\\)"), 2 ,3),
         
@@ -127,7 +127,7 @@ public class JsParser {
          * Pattern: "export\\s+(const|var|let)\\s+([^=]*)\\s*=\\s*\\(*([^)]*)\\)*\\s*=&gt;"<br>
          * Name group: 2 (function name, group 1 is const/var/let)<br>
          * Args group: 3 (parameter list)
-         * </p>
+
          */
         function_lambda(compile("export\\s+(const|var|let)\\s+([^=]*)\\s*=\\s*\\(*([^)]*)\\)*\\s*=>"), 2 ,3);
 

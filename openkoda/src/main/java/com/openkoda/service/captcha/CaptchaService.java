@@ -46,10 +46,10 @@ import static com.openkoda.service.captcha.ValidationLevel.*;
  * This service integrates with Google reCAPTCHA to prevent automated bot submissions on user-facing
  * forms and public APIs. It supports both reCAPTCHA v2 (checkbox/invisible) and v3 (score-based)
  * verification workflows with configurable enforcement levels.
- * </p>
+ * 
  * <p>
  * <b>Verification Workflow:</b>
- * </p>
+ * 
  * <ol>
  *   <li>Frontend generates reCAPTCHA token via widget interaction</li>
  *   <li>Token submitted to backend in request parameter 'RECAPTCHA_TOKEN'</li>
@@ -60,7 +60,7 @@ import static com.openkoda.service.captcha.ValidationLevel.*;
  * </ol>
  * <p>
  * <b>reCAPTCHA Versions:</b>
- * </p>
+ * 
  * <ul>
  *   <li><b>v2 Checkbox:</b> User clicks "I'm not a robot" checkbox</li>
  *   <li><b>v2 Invisible:</b> Challenge triggered automatically on form submit</li>
@@ -68,7 +68,7 @@ import static com.openkoda.service.captcha.ValidationLevel.*;
  * </ul>
  * <p>
  * <b>ValidationLevel Configuration:</b>
- * </p>
+ * 
  * <ul>
  *   <li><b>strict:</b> Requires successful Google API verification (production recommended)</li>
  *   <li><b>normal:</b> Allows verification when Google servers are unreachable (graceful degradation)</li>
@@ -76,7 +76,7 @@ import static com.openkoda.service.captcha.ValidationLevel.*;
  * </ul>
  * <p>
  * <b>Common Use Cases:</b>
- * </p>
+ * 
  * <ul>
  *   <li>Login forms (prevent credential stuffing attacks)</li>
  *   <li>Registration forms (prevent fake account creation)</li>
@@ -86,7 +86,7 @@ import static com.openkoda.service.captcha.ValidationLevel.*;
  * </ul>
  * <p>
  * <b>Configuration Properties:</b>
- * </p>
+ * 
  * <ul>
  *   <li>captcha.site.key: Public site key embedded in HTML forms</li>
  *   <li>captcha.secret.key: Secret key for server-side API verification</li>
@@ -96,7 +96,7 @@ import static com.openkoda.service.captcha.ValidationLevel.*;
  * </ul>
  * <p>
  * <b>Usage Example:</b>
- * </p>
+ * 
  * <pre>{@code
  * @PostMapping("/register")
  * public Result register(@ModelAttribute RegistrationForm form, HttpServletRequest request) {
@@ -110,14 +110,14 @@ import static com.openkoda.service.captcha.ValidationLevel.*;
  * <p>
  * <b>Thread Safety:</b> This service is stateless and thread-safe. RestTemplate instances
  * are thread-safe for concurrent use across multiple requests.
- * </p>
+ * 
  * <p>
  * <b>Rate Limiting:</b> Google reCAPTCHA API has rate limits (1M requests/month on free tier).
  * Consider caching verification results for repeated requests from the same session.
- * </p>
+ * 
  * <p>
  * <b>Google API Error Codes:</b>
- * </p>
+ * 
  * <ul>
  *   <li>missing-input-secret: Secret key parameter is missing</li>
  *   <li>invalid-input-secret: Secret key is invalid or malformed</li>
@@ -142,7 +142,7 @@ public class CaptchaService extends ComponentProvider {
      * <p>
      * Configuration properties are loaded from application.properties with keys:
      * captcha.secret.key, captcha.site.key, captcha.validation.level, captcha.version.
-     * </p>
+     * 
      */
     @Autowired
     ReCaptchaConfiguration configuration;
@@ -151,7 +151,7 @@ public class CaptchaService extends ComponentProvider {
      * <p>
      * IP address is included in Google API verification calls for anti-abuse measures
      * and helps Google detect patterns of fraudulent activity from specific IPs.
-     * </p>
+     * 
      */
     @Autowired
     IpService ipService;
@@ -162,7 +162,7 @@ public class CaptchaService extends ComponentProvider {
      * Tokens must contain only alphanumeric characters, underscores, and hyphens.
      * This validation prevents unnecessary API calls for malformed tokens.
      * Thread-safe immutable Pattern instance compiled once at class load time.
-     * </p>
+     * 
      */
     private static Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
 
@@ -171,7 +171,7 @@ public class CaptchaService extends ComponentProvider {
      * <p>
      * Initialized in {@link #init()} method after bean construction via @PostConstruct.
      * Thread-safe for concurrent use across multiple verification requests.
-     * </p>
+     * 
      */
     private RestTemplate restTemplate;
 
@@ -181,10 +181,10 @@ public class CaptchaService extends ComponentProvider {
      * Post-construction initialization method that creates the RestTemplate used for
      * Google API calls. Called automatically by Spring container after all dependencies
      * are injected via @PostConstruct lifecycle callback.
-     * </p>
+     * 
      * <p>
      * RestTemplate is thread-safe and reused for all verification requests.
-     * </p>
+     * 
      */
     @PostConstruct
     private void init() {
@@ -197,10 +197,10 @@ public class CaptchaService extends ComponentProvider {
      * Primary entry point for reCAPTCHA verification. Extracts token from request
      * parameter 'RECAPTCHA_TOKEN', applies configured validation level, calls Google
      * verification API, and stores result in request attributes as 'CAPTCHA_VERIFIED'.
-     * </p>
+     * 
      * <p>
      * <b>Workflow Steps:</b>
-     * </p>
+     * 
      * <ol>
      *   <li>Read validation level from configuration</li>
      *   <li>Extract captchaToken from request parameter RECAPTCHA_TOKEN</li>
@@ -212,10 +212,10 @@ public class CaptchaService extends ComponentProvider {
      * <p>
      * Request attribute CAPTCHA_VERIFIED is set with scope 0 (request scope) for access
      * by downstream controllers and filters.
-     * </p>
+     * 
      * <p>
      * <b>Usage Example:</b>
-     * </p>
+     * 
      * <pre>{@code
      * captchaService.handleCaptcha(request);
      * boolean verified = (Boolean)request.getAttribute(CAPTCHA_VERIFIED);
@@ -243,16 +243,16 @@ public class CaptchaService extends ComponentProvider {
      * Validates token format via {@link #responseSanityCheck(String)}, builds verification
      * URI with secret key and client IP, calls Google siteverify endpoint, and handles
      * connectivity errors gracefully.
-     * </p>
+     * 
      * <p>
      * <b>Verification URI Format:</b>
-     * </p>
+     * 
      * <pre>
      * https://www.google.com/recaptcha/api/siteverify?secret={key}&response={token}&remoteip={ip}
      * </pre>
      * <p>
      * <b>Error Handling:</b>
-     * </p>
+     * 
      * <ul>
      *   <li>Token format validation fails: returns ValidationLevel.none</li>
      *   <li>Google servers unreachable (ResourceAccessException): returns ValidationLevel.normal (graceful degradation)</li>
@@ -261,7 +261,7 @@ public class CaptchaService extends ComponentProvider {
      * </ul>
      * <p>
      * <b>Google API Parameters:</b>
-     * </p>
+     * 
      * <ul>
      *   <li>secret: Secret key from configuration</li>
      *   <li>response: reCAPTCHA token from client-side widget</li>
@@ -306,11 +306,11 @@ public class CaptchaService extends ComponentProvider {
      * Performs quick validation of token format using regex pattern to avoid unnecessary
      * API calls for malformed tokens. Checks token is non-empty and matches allowed
      * character set [A-Za-z0-9_-]+.
-     * </p>
+     * 
      * <p>
      * This validation is a performance optimization that prevents API calls for obviously
      * invalid tokens, reducing latency and conserving API quota.
-     * </p>
+     * 
      *
      * @param response reCAPTCHA token to validate
      * @return true if token format is valid (non-empty and matches pattern), false otherwise

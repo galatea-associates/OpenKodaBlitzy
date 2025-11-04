@@ -30,20 +30,20 @@ import static com.openkoda.controller.common.URLConstants.NOTIFICATION;
 /**
  * Secure marker interface enforcing privilege checks on Notification entity access operations.
  * <p>
- * This interface extends {@link SecureRepository} to wrap notification repository operations
+ * This interface extends {@link com.openkoda.repository.SecureRepository} to wrap notification repository operations
  * with automatic privilege enforcement, ensuring that all database queries respect the current
  * user's role-based access control (RBAC) permissions. The security layer intercepts repository
  * methods to filter results based on organization membership and privilege grants.
- * </p>
+ * 
  * <p>
  * The interface is annotated with {@link SearchableRepositoryMetadata} to enable full-text search
  * across notification content. The {@code searchIndexFormula} concatenates message, type, reference
  * information, organization ID, and user ID into a lowercased searchable string for efficient
  * text-based queries.
- * </p>
+ * 
  * <p>
  * Search formula components:
- * </p>
+ * 
  * <ul>
  *   <li><b>message</b>: Notification message content</li>
  *   <li><b>type</b>: Notification type identifier</li>
@@ -56,10 +56,10 @@ import static com.openkoda.controller.common.URLConstants.NOTIFICATION;
  * {@code @SearchableRepositoryMetadata} annotation to build full-text search capabilities.
  * Modifying the {@code searchIndexFormula} affects indexing and search behavior across the
  * application, requiring reindexing of existing notification data.
- * </p>
+ * 
  * <p>
  * Example usage:
- * </p>
+ * 
  * <pre>
  * SecureNotificationRepository repo = ...;
  * Optional&lt;Notification&gt; notification = repo.findOne(notificationId);
@@ -68,10 +68,10 @@ import static com.openkoda.controller.common.URLConstants.NOTIFICATION;
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see SecureRepository
+ * @see com.openkoda.repository.SecureRepository
  * @see Notification
  * @see SearchableRepositoryMetadata
- * @see com.openkoda.repository.NotificationRepository
+ * @see com.openkoda.repository.notifications.NotificationRepository
  */
 // entityKey: URL constant (NOTIFICATION) identifying notification entity type in routing
 // entityClass: Notification.class for type-safe repository operations and metadata resolution

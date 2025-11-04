@@ -26,9 +26,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * user account creation, authentication token management, role-based access control (RBAC), API key
  * generation for programmatic access, and privilege evaluation. Services in this package coordinate
  * with Spring Security to provide secure authentication and fine-grained authorization.
- * </p>
+ * 
  *
- * <h2>Key Services</h2>
+ * <b>Key Services</b>
  * <ul>
  *   <li><b>UserService</b>: Core user management service providing CRUD operations, password management,
  *       and account status control. Handles user creation, updates, deletion, and password reset workflows.</li>
@@ -44,10 +44,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       and removals at both global and organization levels.</li>
  * </ul>
  *
- * <h2>Authentication Flows</h2>
+ * <b>Authentication Flows</b>
  * <p>
  * The package supports multiple authentication mechanisms:
- * </p>
+ * 
  * <ul>
  *   <li><b>Password Login</b>: UserService validates credentials against stored password hashes.
  *       Upon successful validation, TokenService generates a JWT for subsequent requests.</li>
@@ -57,10 +57,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       to OpenKoda accounts via Token entities for session management.</li>
  * </ul>
  *
- * <h2>Authorization Model</h2>
+ * <b>Authorization Model</b>
  * <p>
  * Authorization follows a role-based access control (RBAC) pattern with these components:
- * </p>
+ * 
  * <ul>
  *   <li><b>User to Role Mapping</b>: Users are assigned roles through UserRole junction entities.
  *       Roles can be global or organization-scoped.</li>
@@ -72,7 +72,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       ensuring users only access data within their organizational context.</li>
  * </ul>
  *
- * <h2>Usage Example</h2>
+ * <b>Usage Example</b>
  * <pre>
  * // Create user with role
  * User user = userService.createUser("john@example.com", "password123");

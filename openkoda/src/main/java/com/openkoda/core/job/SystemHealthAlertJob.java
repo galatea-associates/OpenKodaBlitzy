@@ -38,11 +38,9 @@ import java.util.Arrays;
  * The job monitors critical system resources including RAM usage, CPU usage, and disk space usage
  * against configurable threshold values. When any resource exceeds its configured threshold, the job
  * logs error-level messages to alert system administrators of potential capacity issues.
- * </p>
  * <p>
  * This class implements {@link LoggingComponentWithRequestId} to provide request-id-aware tracing
  * capabilities for correlation of health check executions across distributed logs.
- * </p>
  * <p>
  * Monitored metrics:
  * <ul>
@@ -50,7 +48,6 @@ import java.util.Arrays;
  *   <li>Disk Space: Aggregate disk usage across all mounted partitions</li>
  *   <li>CPU Usage: Total CPU utilization across all processes (requires sysstat)</li>
  * </ul>
- * </p>
  *
  * @see JobsScheduler
  * @see SystemHealthStatusService
@@ -78,7 +75,7 @@ public class SystemHealthAlertJob implements LoggingComponentWithRequestId {
      * When disk usage exceeds this threshold, an error-level log message is generated during
      * the scheduled health check. This value represents aggregate usage across all mounted
      * partitions monitored by the system.
-     * </p>
+     * 
      *
      * @see #checkSystem()
      */
@@ -92,7 +89,7 @@ public class SystemHealthAlertJob implements LoggingComponentWithRequestId {
      * When JVM heap memory usage exceeds this threshold, an error-level log message is generated
      * during the scheduled health check. This value is calculated as
      * {@code (totalHeapMemory / maxHeapMemory) * 100}.
-     * </p>
+     * 
      *
      * @see #checkSystem()
      */
@@ -106,7 +103,7 @@ public class SystemHealthAlertJob implements LoggingComponentWithRequestId {
      * When aggregate CPU usage across all processes exceeds this threshold, an error-level log
      * message is generated during the scheduled health check. CPU monitoring requires the
      * {@code sysstat} tool to be installed and enabled on the system.
-     * </p>
+     * 
      *
      * @see #checkSystem()
      * @see #getCpuUsage(SystemHealthStatus)
@@ -121,7 +118,7 @@ public class SystemHealthAlertJob implements LoggingComponentWithRequestId {
      * and evaluates RAM usage, disk space usage, and CPU usage against their respective maximum
      * allowed thresholds. Any resource exceeding its threshold triggers an error-level log entry
      * with the current usage percentage.
-     * </p>
+     * 
      * <p>
      * Execution flow:
      * <ol>
@@ -137,11 +134,11 @@ public class SystemHealthAlertJob implements LoggingComponentWithRequestId {
      *       Delegates to {@link #getCpuUsage(SystemHealthStatus)} to calculate aggregate
      *       CPU usage. Logs error if threshold exceeded.</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * All threshold violations produce error-level logs via {@code error()} method from
      * {@link LoggingComponentWithRequestId}, including current usage values for diagnostic purposes.
-     * </p>
+     * 
      *
      * @see SystemHealthStatusService#statusNow()
      * @see SystemHealthStatus
@@ -190,12 +187,12 @@ public class SystemHealthAlertJob implements LoggingComponentWithRequestId {
      * The implementation locates the {@code %CPU} column index within the pidstat header,
      * then sums the CPU percentage values across all process data rows to produce a
      * total system CPU utilization metric.
-     * </p>
+     * 
      * <p>
      * The method relies on the external {@code sysstat} tool (specifically the {@code pidstat}
      * command) being installed and available on the system. If pidstat data is unavailable
      * or malformed, the method returns {@code -1.0} as a sentinel value.
-     * </p>
+     * 
      *
      * @param systemHealthStatus the {@link SystemHealthStatus} object containing pidstat header
      *                           and data rows retrieved from the system

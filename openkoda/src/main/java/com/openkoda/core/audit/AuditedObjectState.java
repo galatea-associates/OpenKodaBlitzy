@@ -35,14 +35,14 @@ import java.util.Map.Entry;
  * (3) optional large content field for payloads. Constructed by PersistanceInterceptor.computeChanges 
  * during entity lifecycle events (onSave, onFlushDirty, onDelete). Maps are assigned by reference 
  * without defensive copies for performance.
- * </p>
+ * 
  * <p>
  * Stored in session-scoped ConcurrentHashMap during transaction, converted to Audit entities in 
  * beforeTransactionCompletion by PropertyChangeListener.
- * </p>
+ * 
  * <p>
  * Thread-safety note: Immutable references but maps are mutable. Not thread-safe. Session-scoped lifecycle.
- * </p>
+ * 
  *
  * @see com.openkoda.core.audit.PersistanceInterceptor#computeChanges
  * @see com.openkoda.core.audit.PropertyChangeListener#prepareAuditLogs

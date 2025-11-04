@@ -52,10 +52,10 @@ import java.util.Optional;
  * caching to improve performance. It should be used instead of direct {@link DynamicPrivilegeRepository}
  * access to leverage the caching mechanism. The service uses Spring's {@code @Cacheable}, {@code @CachePut},
  * and {@code @CacheEvict} annotations to manage three separate caches for optimized lookups.
- * </p>
+
  * <p>
  * Cache Strategy:
- * </p>
+
  * <ul>
  *   <li>{@link #DYNAMIC_PRIVILEGES_ALL_CACHE} - Caches aggregate queries (findAll operations)</li>
  *   <li>{@link #DYNAMIC_PRIVILEGES_NAME_CACHE} - Caches lookups by privilege name</li>
@@ -65,19 +65,19 @@ import java.util.Optional;
  * Self-Proxy Pattern: This service uses a self-reference ({@code self}) to enable internal method calls
  * to route through the Spring proxy, activating AOP annotations like {@code @Cacheable}. Internal calls
  * should use {@code self.methodName()} to ensure cache behavior is applied.
- * </p>
+
  * <p>
  * Profile Configuration: This service is excluded from the development profile ({@code @Profile("!development")})
  * to allow different behavior during development.
- * </p>
+
  * <p>
  * Event Publishing: The service publishes {@link PrivilegeChangeEvent} when privileges are modified,
  * allowing other components to react to privilege changes.
- * </p>
+
  * <p>
  * Extension Design: Many methods throw {@link NotImplementedException} with message "no implementation in core Openkoda".
  * These are intended extension points for custom implementations in derived projects.
- * </p>
+
  *
  * @author mboronski
  * @author OpenKoda Team
@@ -139,7 +139,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * Listener components can subscribe to this event to react to privilege changes,
      * such as refreshing caches, updating security configurations, or auditing changes.
      * The event is published via {@link ApplicationEventPublisher} after privilege modifications.
-     * </p>
+
      * <p>
      * Usage example:
      * <pre>
@@ -148,7 +148,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      *     // React to privilege changes
      * }
      * </pre>
-     * </p>
+
      *
      * @see ApplicationEvent
      * @see ApplicationEventPublisher
@@ -174,7 +174,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * <p>
      * Extension point for custom implementations. Core OpenKoda does not provide
      * an implementation for this method signature.
-     * </p>
+
      *
      * @param id the privilege ID for updates, or null for new privileges
      * @param name the unique privilege name (must follow naming conventions)
@@ -196,7 +196,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * Extension point for custom implementations. Core OpenKoda does not provide
      * an implementation for this method. Use {@link #createOrUpdateDynamicPrivilege(DynamicPrivilege)}
      * for the implemented variant.
-     * </p>
+
      *
      * @param name the unique privilege name (e.g., "canReadReports")
      * @param label the human-readable privilege label displayed in UI
@@ -217,15 +217,15 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * if a privilege with the given name exists using {@link #findByName(String)} (cache-aware).
      * If found, it updates the existing privilege; otherwise, it creates a new one. After saving,
      * a {@link PrivilegeChangeEvent} is published to notify listeners of the change.
-     * </p>
+
      * <p>
      * Security: Requires {@code CHECK_CAN_MANAGE_ROLES} permission via {@code @PreAuthorize}.
-     * </p>
+
      * <p>
      * Cache Behavior: Uses {@code self.findByName()} and {@code self.save()} to ensure caching
      * annotations are activated. The save operation updates both ID and name caches and evicts
      * the aggregate cache.
-     * </p>
+
      *
      * @param privilege the privilege entity containing the data (name must be unique)
      * @return the created or updated {@link DynamicPrivilege} with database-assigned ID
@@ -260,7 +260,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * Extension point for custom implementations. Typically used in form validation
      * to prevent duplicate privilege names. If a duplicate is found, validation errors
      * should be added to the provided {@link BindingResult}.
-     * </p>
+
      *
      * @param name the privilege name to check for uniqueness
      * @param br the {@link BindingResult} to add validation errors if duplicate exists
@@ -279,7 +279,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * are modified through means other than the standard service methods. Listeners can subscribe
      * to {@link PrivilegeChangeEvent} to react to privilege changes by refreshing caches or
      * updating security configurations.
-     * </p>
+
      *
      * @return {@code null} (return value not used, method may be invoked in Flow pipelines)
      * @see PrivilegeChangeEvent
@@ -294,7 +294,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * Saves a dynamic privilege entity to the database with cache updates.
      * <p>
      * Cache Behavior: This method uses {@code @Caching} with multiple operations:
-     * </p>
+
      * <ul>
      *   <li>{@code @CachePut} to {@link #DYNAMIC_PRIVILEGES_CACHE} using the entity ID as key</li>
      *   <li>{@code @CachePut} to {@link #DYNAMIC_PRIVILEGES_NAME_CACHE} using the entity name as key</li>
@@ -303,11 +303,11 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * <p>
      * This ensures that both ID-based and name-based lookups return the latest data, while aggregate
      * queries are invalidated and will be recomputed on next access.
-     * </p>
+
      * <p>
      * Note: This method should be called via the self-proxy ({@code self.save()}) from other methods
      * in this class to activate cache behavior.
-     * </p>
+
      *
      * @param <S> the type extending {@link DynamicPrivilege}
      * @param entity the privilege entity to save (may be new or existing)
@@ -328,7 +328,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * <p>
      * Extension point for custom implementations. Implementations should evict relevant caches
      * and publish a {@link PrivilegeChangeEvent} after deletion.
-     * </p>
+
      *
      * @param privilegeId the ID of the privilege to delete
      * @return the deleted {@link DynamicPrivilege} entity
@@ -344,7 +344,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * <p>
      * Extension point for custom implementations. Implementations should load the privilege,
      * update its fields, save using {@link #save(DynamicPrivilege)}, and return the result.
-     * </p>
+
      *
      * @param privilegeId the ID of the privilege to update
      * @param name the new privilege name
@@ -364,7 +364,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * <p>
      * Extension point for custom implementations. Implementations should evict relevant caches
      * using {@code @CacheEvict} annotations and publish a {@link PrivilegeChangeEvent}.
-     * </p>
+
      *
      * @param <S> the type extending {@link DynamicPrivilege}
      * @param entity the privilege entity to delete
@@ -381,7 +381,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * Extension point for custom implementations. Implementations should iterate and save
      * each entity using {@link #save(DynamicPrivilege)} to ensure cache updates, or use
      * repository batch save with manual cache eviction.
-     * </p>
+
      *
      * @param <S> the type extending {@link DynamicPrivilege}
      * @param entities the collection of privilege entities to save
@@ -398,7 +398,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * <p>
      * Extension point for custom implementations. Similar to {@link #save(DynamicPrivilege)}
      * but forces immediate persistence without waiting for transaction commit.
-     * </p>
+
      *
      * @param <S> the type extending {@link DynamicPrivilege}
      * @param entity the privilege entity to save and flush
@@ -414,7 +414,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * Saves multiple dynamic privilege entities and immediately flushes changes to the database.
      * <p>
      * Extension point for custom implementations. Combines batch save with immediate flush.
-     * </p>
+
      *
      * @param <S> the type extending {@link DynamicPrivilege}
      * @param entities the collection of privilege entities to save and flush
@@ -430,7 +430,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * Deletes a dynamic privilege by its ID and returns the count of deleted records.
      * <p>
      * Extension point for custom implementations. Typically returns 1 if deleted, 0 if not found.
-     * </p>
+
      *
      * @param aLong the ID of the privilege to delete
      * @return the number of privileges deleted (0 or 1)
@@ -445,7 +445,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * <p>
      * Cache Behavior: Results are cached in {@link #DYNAMIC_PRIVILEGES_ALL_CACHE} unless the
      * result is {@code null}. The cache is evicted when any privilege is saved via {@link #save(DynamicPrivilege)}.
-     * </p>
+
      *
      * @param sort the {@link Sort} specification defining sort order (e.g., by name, by ID)
      * @return a list of all {@link DynamicPrivilege} entities in the specified order
@@ -461,7 +461,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * <p>
      * Cache Behavior: Results are cached in {@link #DYNAMIC_PRIVILEGES_ALL_CACHE} unless the
      * result is {@code null}. Useful for paginated UI displays of privileges.
-     * </p>
+
      *
      * @param pageable the {@link Pageable} specification (page number, size, sort)
      * @return a {@link Page} containing the requested slice of {@link DynamicPrivilege} entities
@@ -478,11 +478,11 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * Cache Behavior: Results are cached in {@link #DYNAMIC_PRIVILEGES_NAME_CACHE} using the
      * name as the key (SpEL expression {@code #p0}). Returns {@code null} if not found, and
      * {@code null} results are not cached ({@code unless = "#result == null"}).
-     * </p>
+
      * <p>
      * This method is frequently used for privilege lookups by name and benefits significantly
      * from caching. Updated automatically via {@code @CachePut} when privileges are saved.
-     * </p>
+
      *
      * @param name the unique privilege name to search for
      * @return the {@link DynamicPrivilege} with the specified name, or {@code null} if not found
@@ -499,7 +499,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * Cache Behavior: Results are cached in {@link #DYNAMIC_PRIVILEGES_ALL_CACHE}. Unlike the
      * sorted variant, this method caches even {@code null} results. The cache is evicted when
      * any privilege is saved.
-     * </p>
+
      *
      * @return a list of all {@link DynamicPrivilege} entities in database order
      * @see DynamicPrivilegeRepository#findAll()
@@ -514,7 +514,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * <p>
      * Note: This method is NOT cached. For cached individual lookups, use {@link #findById(Long)}
      * in a loop. This method is useful for batch retrieval when cache benefits are minimal.
-     * </p>
+
      *
      * @param ids the collection of privilege IDs to retrieve
      * @return a list of {@link DynamicPrivilege} entities matching the provided IDs (may be fewer if some IDs not found)
@@ -530,7 +530,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * Cache Behavior: Results are cached in {@link #DYNAMIC_PRIVILEGES_CACHE} using the ID
      * as the key (SpEL expression {@code #p0}). Empty {@link Optional} results are not cached
      * ({@code unless = "#result == null"}). Cache is updated via {@code @CachePut} when privileges are saved.
-     * </p>
+
      *
      * @param id the privilege ID to search for
      * @return an {@link Optional} containing the {@link DynamicPrivilege} if found, or empty if not found
@@ -546,7 +546,7 @@ public class BasicPrivilegeService extends ComponentProvider implements HasSecur
      * <p>
      * Cache Behavior: The count is cached in {@link #DYNAMIC_PRIVILEGES_ALL_CACHE}. The cache
      * is evicted when any privilege is saved, ensuring the count remains accurate.
-     * </p>
+
      *
      * @return the total count of {@link DynamicPrivilege} entities
      * @see DynamicPrivilegeRepository#count()

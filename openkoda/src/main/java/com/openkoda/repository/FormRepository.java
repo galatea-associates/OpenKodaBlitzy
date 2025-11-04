@@ -41,13 +41,13 @@ import static java.util.stream.Collectors.toMap;
  * Forms serve as metadata templates for runtime JPA entity generation via Byte Buddy class synthesis.
  * The DynamicEntityRegistrationService uses Form definitions to create database tables and corresponding
  * JPA entity classes at runtime, enabling the dynamic entity generation pipeline.
- * </p>
+ * 
  * <p>
  * Extends UnsecuredFunctionalRepositoryWithLongId for functional repository operations,
  * HasSecurityRules for privilege-based access control integration, and ComponentEntityRepository
  * for module-scoped persistence semantics. Provides standard CRUD operations plus custom finders
  * for form retrieval by name, table name mapping queries, and module-scoped bulk deletions.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -65,7 +65,7 @@ public interface FormRepository extends UnsecuredFunctionalRepositoryWithLongId<
      * <p>
      * Uses Spring Data query derivation to locate forms by the name field.
      * Returns null if no form with the specified name exists.
-     * </p>
+     * 
      *
      * @param name the unique form name to search for, must not be null
      * @return the Form entity with the specified name, or null if not found
@@ -78,7 +78,7 @@ public interface FormRepository extends UnsecuredFunctionalRepositoryWithLongId<
      * This default method converts the JPQL query results from getNameAndTableName() into
      * a convenient Map structure for quick name-to-table lookups. The stream processing
      * collects Object array pairs into a Map where form names are keys and table names are values.
-     * </p>
+     * 
      *
      * @return Map with form names as keys and table names as values, empty map if no forms exist
      */
@@ -92,7 +92,7 @@ public interface FormRepository extends UnsecuredFunctionalRepositoryWithLongId<
      * Returns a list of Object arrays where each array contains two elements:
      * index 0 = form name (String), index 1 = table name (String).
      * Used by getNameAndTableNameAsMap() to build lookup maps for dynamic entity registration.
-     * </p>
+     * 
      *
      * @return List of Object arrays containing [name, tableName] pairs for all forms
      */
@@ -105,11 +105,11 @@ public interface FormRepository extends UnsecuredFunctionalRepositoryWithLongId<
      * Executes a JPQL bulk delete operation to remove all forms associated with the given module.
      * This method is used during module uninstallation or cleanup operations to remove module-specific
      * form definitions. The @Modifying annotation indicates this is a write operation requiring a transaction.
-     * </p>
+     * 
      * <p>
      * <b>Warning:</b> Bulk delete operations bypass JPA lifecycle callbacks and cascade rules.
      * Ensure related entities (dynamic tables, entity metadata) are cleaned up separately if needed.
-     * </p>
+     * 
      *
      * @param module the OpenkodaModule whose forms should be deleted, must not be null
      */

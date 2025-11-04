@@ -34,12 +34,12 @@ import org.springframework.stereotype.Repository;
  * lookups for integration settings including API credentials, webhook URLs, and consumer keys.
  * Used by integration services and OAuth callback controllers for third-party authentication and
  * data synchronization.
- * </p>
+ * 
  * <p>
  * This repository extends {@link UnsecuredFunctionalRepositoryWithLongId} to provide standard CRUD
  * operations without automatic privilege enforcement, as integration configurations are typically
  * accessed in system-level contexts during OAuth flows and scheduled synchronization tasks.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -56,7 +56,7 @@ public interface IntegrationRepository extends UnsecuredFunctionalRepositoryWith
      * Retrieves the per-organization integration settings including API credentials, OAuth tokens,
      * webhook endpoints, and consumer keys for third-party services. Returns null if no integration
      * configuration exists for the specified organization.
-     * </p>
+     * 
      *
      * @param organizationId the unique identifier of the organization, must not be null
      * @return the integration configuration for the organization, or null if not found

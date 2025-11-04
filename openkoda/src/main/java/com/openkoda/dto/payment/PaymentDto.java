@@ -32,19 +32,19 @@ import java.math.BigDecimal;
  * This mutable POJO implements {@link CanonicalObject} and {@link OrganizationRelatedObject}
  * contracts to provide canonical object identification and multi-tenant organization scoping.
  * Uses {@link BigDecimal} for monetary precision in totalAmount, netAmount, and taxAmount fields.
- * </p>
+
  * <p>
  * Contains nested enums for payment provider ({@link PaymentProvider}), payment classification
  * ({@link PaymentType}), and lifecycle state ({@link PaymentStatus}). Supports product line items
  * as an array of {@link PaymentProductDto} objects.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * PaymentDto payment = new PaymentDto(new BigDecimal("99.99"), "Premium Plan", PaymentType.SUBSCRIPTION, "/success");
  * payment.setProvider(PaymentProvider.stripe);
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -59,7 +59,7 @@ public class PaymentDto implements CanonicalObject, OrganizationRelatedObject {
      * Payment gateway provider enumeration.
      * <p>
      * Defines the payment processor used for transaction processing.
-     * </p>
+
      *
      * @since 1.7.1
      */
@@ -78,7 +78,7 @@ public class PaymentDto implements CanonicalObject, OrganizationRelatedObject {
      * Payment classification enumeration.
      * <p>
      * Categorizes the payment based on billing model and recurring nature.
-     * </p>
+
      *
      * @since 1.7.1
      */
@@ -95,7 +95,7 @@ public class PaymentDto implements CanonicalObject, OrganizationRelatedObject {
      * Payment lifecycle state enumeration.
      * <p>
      * Tracks the payment transaction status from creation through completion or failure.
-     * </p>
+
      *
      * @since 1.7.1
      */
@@ -161,7 +161,7 @@ public class PaymentDto implements CanonicalObject, OrganizationRelatedObject {
      * Default no-argument constructor.
      * <p>
      * Creates an empty PaymentDto instance with all fields uninitialized.
-     * </p>
+
      */
     public PaymentDto() {
     }
@@ -170,7 +170,7 @@ public class PaymentDto implements CanonicalObject, OrganizationRelatedObject {
      * Convenience constructor for basic payment creation.
      * <p>
      * Initializes a payment with essential transaction details.
-     * </p>
+
      *
      * @param totalAmount total payment amount including tax (must not be null)
      * @param description human-readable payment description
@@ -188,7 +188,7 @@ public class PaymentDto implements CanonicalObject, OrganizationRelatedObject {
      * Full constructor with complete payment details.
      * <p>
      * Initializes a payment with all core transaction and user context information.
-     * </p>
+
      *
      * @param id payment record unique identifier
      * @param totalAmount total payment amount including tax
@@ -214,7 +214,7 @@ public class PaymentDto implements CanonicalObject, OrganizationRelatedObject {
      * Alternative constructor with detailed amount breakdown and plan information.
      * <p>
      * Initializes a payment with separated tax calculation and subscription plan details.
-     * </p>
+
      *
      * @param totalAmount total payment amount including tax
      * @param netAmount net payment amount before tax
@@ -458,7 +458,7 @@ public class PaymentDto implements CanonicalObject, OrganizationRelatedObject {
      * Gets the multi-tenant organization identifier.
      * <p>
      * Implements {@link OrganizationRelatedObject#getOrganizationId()} for organization-scoped operations.
-     * </p>
+
      *
      * @return organization identifier for multi-tenant scoping
      */
@@ -517,7 +517,7 @@ public class PaymentDto implements CanonicalObject, OrganizationRelatedObject {
      * <p>
      * Implements {@link CanonicalObject#notificationMessage()} to provide a human-readable
      * payment summary including organization ID, total amount, currency, and plan name.
-     * </p>
+
      *
      * @return formatted notification message: "Org {orgId}: payment {amount} {currency} for plan {planName}"
      */

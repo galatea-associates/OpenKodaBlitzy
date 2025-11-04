@@ -28,10 +28,10 @@ package com.openkoda.controller.common;
  * parameter templates with regex constraints, and validation regexes. Controllers reference these in
  * {@code @RequestMapping} annotations to prevent typos and enable easy refactoring. Security configuration
  * uses Ant expressions for permit/deny rules. All constants are compile-time literals enabling inline optimization.
- * </p>
+ * 
  * <p>
  * This interface organizes constants into ten logical categories:
- * </p>
+ * 
  * <ol>
  * <li><b>Regex Patterns:</b> Path variable constraints and validation patterns (NUMBERREGEX, URL_REGEX, etc.)</li>
  * <li><b>Base Path Fragments:</b> Root-level navigation paths with underscore prefix (_HOME, _ADMIN, _API, etc.)</li>
@@ -46,7 +46,7 @@ package com.openkoda.controller.common;
  * </ol>
  * <p>
  * <b>Usage Examples:</b>
- * </p>
+ * 
  * <pre>
  * // Controller mapping
  * {@code @RequestMapping(URLConstants._ADMIN + URLConstants._LOGS)}
@@ -59,7 +59,7 @@ package com.openkoda.controller.common;
  * </pre>
  * <p>
  * <b>Naming Conventions:</b>
- * </p>
+ * 
  * <ul>
  * <li>Underscore prefix (_HOME) indicates slash-prefixed fragment ("/home")</li>
  * <li>No underscore prefix (HOME) indicates raw identifier without slash</li>
@@ -68,7 +68,7 @@ package com.openkoda.controller.common;
  * </ul>
  * <p>
  * <b>Thread-Safety:</b> All constants are compile-time immutable strings, safe for concurrent access.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1

@@ -73,26 +73,24 @@ import java.util.function.Function;
  * This interface provides compile-time validated constants for accessing model attributes in Spring MVC
  * controllers and Thymeleaf templates. By using {@link PageAttr} typed constants instead of string keys,
  * the framework ensures type safety when populating {@link PageModelMap} and accessing data in views.
- * </p>
+
  * <p>
  * The PageAttr pattern prevents common runtime errors such as typos in attribute names, incorrect type
  * casting, and missing model attributes. Each constant encapsulates both the attribute name and its
  * expected type, enabling IDE autocomplete and refactoring support.
- * </p>
+
  * <p>
  * <b>Usage in Controllers:</b>
  * <pre>{@code
  * pageModel.put(PageAttributes.organizationEntity, organization);
  * pageModel.put(PageAttributes.userPage, userRepository.findAll(pageable));
  * }</pre>
- * </p>
  * <p>
  * <b>Usage in Thymeleaf Templates:</b>
  * <pre>{@code
  * <div th:text="${organizationEntity.name}">Organization Name</div>
  * <table th:each="user : ${userPage.content}">...</table>
  * }</pre>
- * </p>
  * <p>
  * Constants are grouped by type:
  * <ul>
@@ -105,7 +103,6 @@ import java.util.function.Function;
  *   <li><b>Request attributes</b> - Request-scoped data (requestId, clientToken)</li>
  *   <li><b>View attributes</b> - UI rendering data (modelAndView, defaultLayout)</li>
  * </ul>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -628,14 +625,14 @@ public interface PageAttributes extends BasePageAttributes, ReadableCode {
      * This utility method transforms Spring Data {@link Page} objects by applying an element
      * converter function to each item in the page content. The pagination metadata (page number,
      * size, total elements) is preserved while converting the content elements.
-     * </p>
+
      * <p>
      * Common use case is converting entity pages to DTO pages for view rendering:
      * <pre>{@code
      * Page<Organization> entityPage = organizationRepository.findAll(pageable);
      * Page<OrganizationDto> dtoPage = entityPage.map(OrganizationDto::new);
      * }</pre>
-     * </p>
+
      *
      * @param <S> source element type in the original page
      * @param <T> target element type in the converted page

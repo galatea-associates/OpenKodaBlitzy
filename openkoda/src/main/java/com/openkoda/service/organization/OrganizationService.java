@@ -50,24 +50,24 @@ import java.util.stream.Collectors;
  * including organization creation, tenant provisioning, schema management, cascade deletion, role 
  * synchronization, and event emission. Organizations represent isolated data tenants with their own
  * database schemas, roles, and privileges.
- * </p>
+
  * <p>
  * Multi-tenancy implementation uses organization_id foreign key pattern throughout the data model,
  * with dynamic entities registered per tenant and secure repository enforcement at the data access layer.
  * Tenant resolution occurs via subdomain mapping or authenticated user context.
- * </p>
+
  * <p>
  * Organization lifecycle workflow:
  * <pre>
  * createOrganization → provision admin → create roles → assign privileges → 
  * initialize properties → create tenant tables → emit events
  * </pre>
- * </p>
+
  * <p>
  * Service methods are stateless and thread-safe via Spring transactional isolation. Multi-tenancy
  * behavior is controlled via configuration properties: multitenancy.enabled and 
  * multitenancy.schema.strategy.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -86,7 +86,7 @@ public class OrganizationService extends ComponentProvider {
      * <p>
      * Used for direct database operations such as invoking the remove_organizations_by_id
      * stored procedure for cascade deletion of tenant data.
-     * </p>
+
      */
     @Autowired
     private DataSource dataSource;
@@ -96,7 +96,7 @@ public class OrganizationService extends ComponentProvider {
      * <p>
      * Handles tenant schema creation, deletion, constraint management, and schema marking
      * operations across multiple datasources in multi-tenant deployments.
-     * </p>
+
      *
      * @see MultitenancyService
      */
@@ -109,19 +109,19 @@ public class OrganizationService extends ComponentProvider {
      * This method persists a new Organization entity, creates the tenant schema via MultitenancyService,
      * and emits an ORGANIZATION_CREATED event for downstream listeners to complete provisioning
      * (admin user creation, role initialization, privilege assignment).
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * Organization org = organizationService.createOrganization("acmecorp", 1);
      * }</pre>
-     * </p>
+
      *
      * @param organizationName unique name for the organization, used for subdomain and identification
      * @param assignedDatasource datasource ID for tenant schema placement in multi-datasource deployments
      * @return persisted Organization entity with generated ID and tenant infrastructure
      * @throws RuntimeException if tenant schema creation fails or organization name is not unique
-     * @see MultitenancyService#createTenant(Long)
+     * @see MultitenancyService#createTenant(long)
      */
     public Organization createOrganization(String organizationName, Integer assignedDatasource) {
         debug("[createOrganization] {}", organizationName);
@@ -137,13 +137,13 @@ public class OrganizationService extends ComponentProvider {
      * This overloaded method persists a new Organization entity using the default datasource
      * and emits an ORGANIZATION_CREATED event with the trial flag. Event listeners use this
      * flag to provision trial-specific features, limitations, or expiration policies.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * Organization trial = organizationService.createOrganization("trial-org", true);
      * }</pre>
-     * </p>
+
      *
      * @param organizationName unique name for the organization
      * @param setupTrial if true, provision organization with trial features and limitations
@@ -164,11 +164,11 @@ public class OrganizationService extends ComponentProvider {
      * cascade delete all tenant-scoped data including users, roles, privileges, dynamic entities,
      * files, events, and schema objects. This operation is irreversible and requires the
      * ORGANIZATION_DELETE privilege.
-     * </p>
+
      * <p>
      * Uses explicit JDBC connection management to execute the stored procedure with organization
      * ID array parameter. Connection is properly released in finally block to prevent leaks.
-     * </p>
+
      *
      * @param orgId the organization ID to delete
      * @return true if deletion succeeded, false otherwise
@@ -198,7 +198,7 @@ public class OrganizationService extends ComponentProvider {
      * This method delegates to MultitenancyService to mark the organization's schema for
      * deferred deletion, allowing graceful shutdown of tenant operations before physical
      * schema removal. Useful for multi-phase organization deletion workflows.
-     * </p>
+
      *
      * @param orgId the organization ID whose schema should be marked
      * @param assignedDatasource datasource ID where the tenant schema resides
@@ -216,7 +216,7 @@ public class OrganizationService extends ComponentProvider {
      * This method delegates to MultitenancyService to remove schema-level constraints,
      * enabling subsequent schema drop operations without constraint violation errors.
      * Typically used as a pre-deletion step in organization removal workflows.
-     * </p>
+
      *
      * @param orgId the organization ID whose schema constraints should be dropped
      * @param schemaName the name of the tenant schema
@@ -236,11 +236,11 @@ public class OrganizationService extends ComponentProvider {
      * missing role associations and deleting obsolete ones. Compares the desired state 
      * (dtoGlobalOrgRoles) with existing state (existingGlobalOrgRolesInOrganization) and
      * applies necessary create/delete operations to achieve consistency.
-     * </p>
+
      * <p>
      * Used during organization configuration updates to ensure proper role provisioning
      * when global roles are enabled or disabled for a tenant.
-     * </p>
+
      *
      * @param organizationId the organization ID to update roles for
      * @param allGlobalOrgRoles complete list of available GlobalOrganizationRole entities
@@ -271,7 +271,7 @@ public class OrganizationService extends ComponentProvider {
      * <p>
      * Helper method that performs null-safe comparison of role IDs to determine if
      * a specific global organization role is already assigned within the organization.
-     * </p>
+
      *
      * @param existingGlobalOrgRolesInOrganization list of current UserRole assignments
      * @param gor the GlobalOrganizationRole to search for
@@ -291,7 +291,7 @@ public class OrganizationService extends ComponentProvider {
      * <p>
      * Helper method that performs null-safe search for a UserRole by comparing role IDs.
      * Returns the first matching UserRole or null if no match is found.
-     * </p>
+
      *
      * @param existingGlobalOrgRolesInOrganization list of current UserRole assignments
      * @param gor the GlobalOrganizationRole to find
@@ -311,7 +311,7 @@ public class OrganizationService extends ComponentProvider {
      * <p>
      * This method queries UserRole records for the given organization and extracts role names,
      * providing a list of active global organization role names for display or validation purposes.
-     * </p>
+
      *
      * @param organizationId the organization ID to query roles for
      * @return list of role names (strings) assigned to the organization, may be empty if no roles assigned

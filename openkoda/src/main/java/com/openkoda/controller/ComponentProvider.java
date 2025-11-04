@@ -43,7 +43,7 @@ import java.util.function.Supplier;
  * beans in static resources map after Spring initialization. Subclassed by DefaultComponentProvider as
  * concrete {@code @Component} for Spring DI. Used throughout controllers to access platform services
  * without multiple {@code @Autowired} fields.
- * </p>
+ * 
  * <p>
  * Example usage:
  * <pre>{@code
@@ -54,7 +54,6 @@ import java.util.function.Supplier;
  *     }
  * }
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -101,7 +100,7 @@ public class ComponentProvider implements PageAttributes, LoggingComponentWithRe
      * Static map of platform resources (services, repositories) registered after bean initialization.
      * <p>
      * Populated once during startup, read-only afterward. Safe for concurrent access.
-     * </p>
+     * 
      */
     public final static Map<String, Object> resources = new HashMap<>();
     private static boolean initialized = false;
@@ -111,10 +110,10 @@ public class ComponentProvider implements PageAttributes, LoggingComponentWithRe
      * <p>
      * Invoked after all properties set. Iterates Services fields, registers each service bean in
      * resources map. Repeats for Repositories. Enables reflection-based service and repository discovery.
-     * </p>
+     * 
      * <p>
      * Note: Executes once per application startup.
-     * </p>
+     * 
      *
      * @throws Exception if resource registration fails
      */

@@ -34,11 +34,11 @@ import org.springframework.stereotype.Repository;
  * (major, minor, build, revision) and execution timestamps. The primary use case is schema
  * upgrade orchestration where the {@link #findCurrentDbVersion()} method returns the latest
  * successfully applied migration.
- * </p>
+ * 
  * <p>
  * Used by DbVersionService to check current schema state before applying new upgrades.
  * Version ordering is computed via the expression: (major * 1000 + minor * 100 + build * 10 + revision).
- * </p>
+ * 
  *
  * @author mboronski
  * @author OpenKoda Team
@@ -57,11 +57,11 @@ public interface DbVersionRepository extends JpaRepository<DbVersion, Long> {
      * and orders results by a computed numeric expression combining version components:
      * {@code (major * 1000 + minor * 100 + build * 10 + revision)}. This ordering ensures
      * that version 2.1.0.0 is correctly identified as newer than 1.9.8.5.
-     * </p>
+     * 
      * <p>
      * Usage: DbVersionService calls this method to determine the current schema state
      * before applying new migrations. If no migrations have been applied, returns null.
-     * </p>
+     * 
      *
      * @return the latest {@link DbVersion} entity based on computed numeric ordering,
      *         or null if no completed migrations exist in the database

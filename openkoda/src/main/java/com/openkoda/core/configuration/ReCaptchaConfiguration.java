@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
  * Annotated with {@code @Configuration} to enable Spring bean registration and {@code @PostConstruct} lifecycle
  * for initialization. The site key is distributed to {@link FrontendMappingDefinition} and {@link RegisterUserForm}
  * for client-side reCAPTCHA widget rendering.
- * </p>
+ * 
  * <p>
  * Binds from properties:
  * <ul>
@@ -44,11 +44,10 @@ import org.springframework.context.annotation.Configuration;
  * <li>{@code recaptcha.secret-key}: Private key for server validation</li>
  * <li>{@code recaptcha.validation}: Strictness level (normal or strict)</li>
  * </ul>
- * </p>
  * <p>
  * The {@link #init()} method executes after bean construction to propagate the site key to static fields
  * in form infrastructure.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -66,11 +65,11 @@ public class ReCaptchaConfiguration {
      * <p>
      * Injected from application property {@code recaptcha.site-key}. Used in HTML forms to initialize
      * the reCAPTCHA challenge widget. Empty string default allows application startup without reCAPTCHA configured.
-     * </p>
+     * 
      * <p>
      * Propagated to {@link FrontendMappingDefinition#siteKey} and {@link RegisterUserForm#siteKey}
      * in the {@link #init()} method.
-     * </p>
+     * 
      */
     @Value("${recaptcha.site-key:}")
     public String siteKey;
@@ -81,7 +80,7 @@ public class ReCaptchaConfiguration {
      * Injected from application property {@code recaptcha.secret-key}. Used by CaptchaService to verify
      * user responses against the Google reCAPTCHA API. Should be kept confidential. Empty string default
      * allows application startup without reCAPTCHA configured.
-     * </p>
+     * 
      */
     @Value("${recaptcha.secret-key:}")
     public String secretKey;
@@ -92,7 +91,7 @@ public class ReCaptchaConfiguration {
      * Injected from application property {@code recaptcha.validation} with default {@code normal}.
      * Controls how strictly reCAPTCHA responses are validated. {@code ValidationLevel.NORMAL} accepts
      * standard responses, {@code ValidationLevel.STRICT} may enforce additional checks.
-     * </p>
+     * 
      *
      * @see ValidationLevel
      */
@@ -106,11 +105,11 @@ public class ReCaptchaConfiguration {
      * Propagates the site key to static fields in {@link FrontendMappingDefinition} and
      * {@link RegisterUserForm} so forms can render reCAPTCHA widgets. Required because forms
      * use static fields for site key access across the application.
-     * </p>
+     * 
      * <p>
      * Executes automatically during Spring bean initialization phase, after {@code @Value}
      * properties are injected but before the bean is fully available.
-     * </p>
+     * 
      *
      * @see FrontendMappingDefinition
      * @see RegisterUserForm

@@ -34,19 +34,19 @@ import java.time.LocalDateTime;
  * billing cycle timestamps, pricing details, and plan information. Implements both
  * {@link CanonicalObject} for notification message generation and
  * {@link OrganizationRelatedObject} for multi-tenant organization association.
- * </p>
+
  * <p>
  * Uses {@link BigDecimal} for monetary amounts (nextAmount, price) to ensure precision
  * in financial calculations. Uses {@link LocalDateTime} for billing timestamps which are
  * timezone-less and represent local billing cycle boundaries.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * SubscriptionDto dto = new SubscriptionDto(orgId, "premium", "active");
  * dto.setPrice(new BigDecimal("99.99"));
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -384,7 +384,7 @@ public class SubscriptionDto implements CanonicalObject, OrganizationRelatedObje
      * <p>
      * The message includes the plan name, current billing end date, subscription status,
      * and price. This implementation satisfies the {@link CanonicalObject} contract.
-     * </p>
+
      *
      * @return formatted summary string with plan name, billing end date, status, and price
      */

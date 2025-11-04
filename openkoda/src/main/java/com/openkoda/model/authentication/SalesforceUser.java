@@ -32,28 +32,28 @@ import org.hibernate.annotations.DynamicUpdate;
  * This entity stores user profile data retrieved during Salesforce OAuth 2.0 authentication flow
  * and enables enterprise login via Salesforce Identity. It links a Salesforce identity to an
  * OpenKoda {@link User} account through a shared primary key relationship.
- * </p>
+
  * <p>
  * The entity is persisted to the 'salesforce_users' table with a one-to-one relationship to the
  * User entity using {@code @MapsId} annotation for shared primary key pattern. This ensures that
  * each Salesforce user profile maps directly to exactly one OpenKoda user account.
- * </p>
+
  * <p>
  * Profile fields are automatically synchronized from Salesforce Identity API responses during
  * OAuth authentication. The {@code @DynamicUpdate} annotation optimizes database operations by
  * updating only modified columns rather than all entity fields.
- * </p>
+
  * <p>
  * The organizationId field tracks the Salesforce organization (org) where the user is registered,
  * supporting multi-org Salesforce deployments.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * SalesforceUser sfUser = new SalesforceUser(salesforceId, firstName, lastName, ...);
  * sfUser.setUser(openkodaUser);
  * }</pre>
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
@@ -61,7 +61,7 @@ import org.hibernate.annotations.DynamicUpdate;
  * @since 2019-07-17
  * @see User
  * @see LoggedUser
- * @see com.openkoda.integration.controller.SalesforceController
+ * // SalesforceController
  */
 @Entity
 @DynamicUpdate
@@ -73,7 +73,7 @@ public class SalesforceUser extends LoggedUser {
      * This field uses the {@code @MapsId} annotation to share the primary key value with the
      * {@link User} entity, implementing a one-to-one relationship with shared primary key pattern.
      * The value is automatically populated from the associated User's id field.
-     * </p>
+
      */
     @Id
     private Long id;
@@ -84,7 +84,7 @@ public class SalesforceUser extends LoggedUser {
      * This is the Salesforce User ID retrieved from the OAuth provider during authentication.
      * It uniquely identifies the user within their Salesforce organization and is used to
      * correlate OpenKoda user accounts with Salesforce identities.
-     * </p>
+
      */
     private String salesforceId;
 
@@ -92,7 +92,7 @@ public class SalesforceUser extends LoggedUser {
      * User's first name from Salesforce profile.
      * <p>
      * Retrieved from the Salesforce Identity API response during OAuth authentication flow.
-     * </p>
+
      */
     private String firstName;
     
@@ -100,7 +100,7 @@ public class SalesforceUser extends LoggedUser {
      * User's last name from Salesforce profile.
      * <p>
      * Retrieved from the Salesforce Identity API response during OAuth authentication flow.
-     * </p>
+
      */
     private String lastName;
     
@@ -109,7 +109,7 @@ public class SalesforceUser extends LoggedUser {
      * <p>
      * Typically formatted as "FirstName LastName" and used for display purposes throughout
      * the application. Retrieved from the Salesforce Identity API response.
-     * </p>
+
      */
     private String name;
     
@@ -118,7 +118,7 @@ public class SalesforceUser extends LoggedUser {
      * <p>
      * Primary contact email address retrieved from Salesforce Identity API. This email
      * may be used for application notifications and user identification.
-     * </p>
+
      */
     private String email;
     
@@ -127,7 +127,7 @@ public class SalesforceUser extends LoggedUser {
      * <p>
      * External URL pointing to the user's profile photo hosted by Salesforce. Can be used
      * to display the user's avatar in the application interface.
-     * </p>
+
      */
     private String picture;
     
@@ -137,7 +137,7 @@ public class SalesforceUser extends LoggedUser {
      * Identifies the specific Salesforce organization instance where this user's account
      * exists. Supports multi-org Salesforce deployments where users may belong to
      * different Salesforce organizations.
-     * </p>
+
      */
     private String organizationId;
     
@@ -146,7 +146,7 @@ public class SalesforceUser extends LoggedUser {
      * <p>
      * The username preference specified in the user's Salesforce profile, which may
      * differ from their email address. Retrieved from Salesforce Identity API.
-     * </p>
+
      */
     private String preferredUsername;
     
@@ -155,7 +155,7 @@ public class SalesforceUser extends LoggedUser {
      * <p>
      * Optional informal name or alias for the user, retrieved from their Salesforce
      * profile information.
-     * </p>
+
      */
     private String nickname;
 
@@ -165,11 +165,11 @@ public class SalesforceUser extends LoggedUser {
      * Uses {@code @MapsId} annotation to share the primary key with the User entity, creating
      * a one-to-one relationship where the SalesforceUser.id is identical to User.id.
      * The {@code @JoinColumn} specifies "user_id" as the foreign key column name.
-     * </p>
+
      * <p>
      * Annotated with {@code @JsonIgnore} to prevent circular serialization when converting
      * this entity to JSON format.
-     * </p>
+
      */
     @MapsId
     @OneToOne
@@ -182,7 +182,7 @@ public class SalesforceUser extends LoggedUser {
      * <p>
      * Required by JPA specification for entity creation through reflection. Applications
      * should prefer using the parameterized constructor for creating new instances.
-     * </p>
+
      */
     public SalesforceUser() {
 
@@ -194,7 +194,7 @@ public class SalesforceUser extends LoggedUser {
      * Convenience constructor for creating a SalesforceUser entity from OAuth authentication
      * response data. Initializes all profile fields retrieved from Salesforce Identity API.
      * The User relationship must be set separately using {@link #setUser(User)}.
-     * </p>
+
      *
      * @param salesforceId Salesforce unique identifier (Salesforce User ID)
      * @param firstName user's first name from Salesforce profile
@@ -229,9 +229,9 @@ public class SalesforceUser extends LoggedUser {
     /**
      * Returns the primary key shared with the associated User entity.
      * <p>
-     * This ID value is identical to the associated {@link User#getId()} due to the
+     * This ID value is identical to the associated {@link User#getId} due to the
      * {@code @MapsId} shared primary key pattern.
-     * </p>
+
      *
      * @return the shared primary key, or null if not yet persisted
      */
@@ -246,7 +246,7 @@ public class SalesforceUser extends LoggedUser {
      * Typically populated automatically through the {@code @MapsId} relationship when
      * the User entity is associated. Manual setting should be avoided in favor of
      * letting JPA manage the shared primary key.
-     * </p>
+
      *
      * @param id the primary key value to set
      */
@@ -421,7 +421,7 @@ public class SalesforceUser extends LoggedUser {
      * <p>
      * This one-to-one relationship links the Salesforce authentication profile to the
      * corresponding OpenKoda user account.
-     * </p>
+
      *
      * @return the associated User entity, or null if not set
      */
@@ -434,7 +434,7 @@ public class SalesforceUser extends LoggedUser {
      * <p>
      * Establishes the one-to-one relationship between this Salesforce profile and an
      * OpenKoda user account. The primary key will be shared via {@code @MapsId} annotation.
-     * </p>
+
      *
      * @param user the User entity to associate with this Salesforce profile
      */
@@ -447,7 +447,7 @@ public class SalesforceUser extends LoggedUser {
      * <p>
      * Combines the user's full name and email address in a human-readable format
      * for audit and logging purposes. Format: "Name email@example.com"
-     * </p>
+
      *
      * @return formatted string containing name and email, suitable for audit logs
      */

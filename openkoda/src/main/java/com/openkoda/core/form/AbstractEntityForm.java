@@ -34,7 +34,6 @@ import reactor.util.function.Tuples;
  * This form class manages the complete lifecycle of mapping between a DTO and a persistent JPA entity 
  * (extending {@link LongIdEntity}). It evaluates per-field read/write privileges using {@link PrivilegeHelper}
  * and provides a safe population method that enforces privilege checks before copying DTO values to entity fields.
- * </p>
  * <p>
  * The form lifecycle consists of:
  * <ol>
@@ -45,12 +44,10 @@ import reactor.util.function.Tuples;
  *   <li>Population - {@link #populateToEntity(LongIdEntity)} combines privilege evaluation with 
  *       {@link #populateTo(LongIdEntity)} to safely copy DTO values to entity</li>
  * </ol>
- * </p>
  * <p>
  * Subclasses must implement {@link #populateFrom(LongIdEntity)} to copy entity fields to DTO, and 
- * {@link #populateTo(LongIdEntity)} to copy DTO fields back to entity using {@link #getSafeValue(Object, FrontendMappingFieldDefinition)}
+ * {@link #populateTo(LongIdEntity)} to copy DTO fields back to entity using getSafeValue methods
  * for privilege enforcement.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -66,7 +63,6 @@ import reactor.util.function.Tuples;
  *     userRepository.save(user);
  * }
  * }</pre>
- * </p>
  *
  * @param <D> the DTO type for form binding
  * @param <E> the entity type extending {@link LongIdEntity} for persistence
@@ -74,7 +70,7 @@ import reactor.util.function.Tuples;
  * @see AbstractForm
  * @see AbstractOrganizationRelatedEntityForm
  * @see ReflectionBasedEntityForm
- * @see PrivilegeHelper
+ * @see com.openkoda.core.helper.PrivilegeHelper
  * @since 1.7.1
  */
 public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends AbstractForm<D> implements TemplateFormFieldNames {
@@ -86,7 +82,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * this field is null. When editing an existing entity, this field holds the loaded entity instance.
      * Subclasses use this field in {@link #populateFrom(LongIdEntity)} and {@link #populateTo(LongIdEntity)}
      * to perform bidirectional mapping between entity and DTO.
-     * </p>
+
      */
     final public E entity;
 
@@ -94,9 +90,9 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * Cached primary key of the entity, null for new entities.
      * <p>
      * Stores the entity's ID at form construction time. This field is null when creating a new entity
-     * (before persistence), and populated with {@link LongIdEntity#getId()} when editing an existing entity.
+     * (before persistence), and populated with {@link LongIdEntity#getId} when editing an existing entity.
      * Used for UI rendering and determining whether the form represents a new or existing entity.
-     * </p>
+
      */
     public final Long id;
 
@@ -107,7 +103,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * set by Spring MVC's {@link org.springframework.web.bind.WebDataBinder} after binding request parameters
      * to the form's DTO. Controllers access this via {@link #getBindingResult()} to check validation status
      * and render error messages in the UI.
-     * </p>
+
      */
     @JsonIgnore
     private BindingResult bindingResult;
@@ -118,7 +114,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * This constructor is used when creating a form for a new entity before HTTP parameter binding.
      * The entity and DTO fields are initialized to null, and {@link #id} is null indicating a new entity.
      * After construction, Spring MVC's data binder will populate the DTO from request parameters.
-     * </p>
+
      *
      * @param frontendMappingDefinition the form field definitions and validation rules
      */
@@ -137,7 +133,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      *   <li>Calls {@link #populateFrom(LongIdEntity)} to copy entity values to the DTO</li>
      * </ol>
      * When creating a new entity, pass null for both dto and entity parameters.
-     * </p>
+
      *
      * @param dto the DTO instance for form binding (may be null)
      * @param entity the persistent entity instance (null for new entities)
@@ -162,12 +158,12 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * <ol>
      *   <li>Calls {@link #prepareFieldsReadWritePrivileges(LongIdEntity)} to evaluate global read/write privileges
      *       for every field using {@link PrivilegeHelper}</li>
-     *   <li>Delegates to {@link #populateTo(LongIdEntity)} which uses {@link #getSafeValue(Object, FrontendMappingFieldDefinition)}
+     *   <li>Delegates to {@link #populateTo(LongIdEntity)} which uses getSafeValue methods
      *       to enforce write privilege checks before setting each field value</li>
      * </ol>
      * This ensures that users cannot modify fields they lack write privileges for, even if they tamper with
      * HTTP request parameters.
-     * </p>
+
      *
      * @param entity the persistent entity to populate with DTO values
      * @return the populated entity (same instance passed as parameter)
@@ -180,16 +176,16 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
     /**
      * Evaluates field-level privileges for global (non-organization-scoped) access control.
      * <p>
-     * Overrides {@link AbstractForm#process()} to perform privilege evaluation using global privilege checks
-     * via {@link PrivilegeHelper#canReadField(FrontendMappingFieldDefinition, Object)} and
-     * {@link PrivilegeHelper#canWriteField(FrontendMappingFieldDefinition, Object)}. The evaluated privileges
+     * Overrides {@link AbstractForm#process} to perform privilege evaluation using global privilege checks
+     * via {@link PrivilegeHelper#canReadField} and
+     * {@link PrivilegeHelper#canWriteField}. The evaluated privileges
      * are stored in {@link #readWriteForField} map for use during UI rendering and field population.
-     * </p>
+
      * <p>
      * For organization-scoped privilege evaluation, see {@link AbstractOrganizationRelatedEntityForm}
      * which overrides {@link #prepareFieldsReadWritePrivileges(LongIdEntity)} to use
      * organization-aware privilege checks.
-     * </p>
+
      */
     @Override
     public final void process() {
@@ -203,7 +199,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * when the form represents a new entity (not yet persisted), and contains the entity's database ID
      * when editing an existing entity. Controllers use this to determine whether to perform INSERT or
      * UPDATE operations.
-     * </p>
+
      *
      * @return the entity ID, or null if this is a new entity form
      */
@@ -218,7 +214,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * eviction, but is no longer used. The commented-out code shows the original intent to reassign
      * {@code this.entity}, but this would violate the final field constraint. Modern code should manage
      * entity lifecycle externally rather than relying on this method.
-     * </p>
+
      *
      * @param entity the entity to "recover"
      * @return the same entity instance passed as parameter (no-op)
@@ -237,7 +233,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * the current user has read and write privileges for each field. Uses {@link PrivilegeHelper} singleton
      * to perform global privilege checks (not organization-scoped). Results are stored in the
      * {@link #readWriteForField} map as {@link reactor.util.function.Tuple2} of (canRead, canWrite) booleans.
-     * </p>
+
      * <p>
      * The privilege checks consider:
      * <ul>
@@ -247,11 +243,11 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      *       {@link FrontendMappingFieldDefinition#canWriteCheck}</li>
      *   <li>Current user's global role assignments and privileges</li>
      * </ul>
-     * </p>
+
      * <p>
      * Subclasses like {@link AbstractOrganizationRelatedEntityForm} override this method to use
      * organization-scoped privilege evaluation instead of global checks.
-     * </p>
+
      *
      * @param entity the entity context for privilege evaluation (may be null for new entities)
      */
@@ -271,7 +267,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * Subclasses must implement this method to copy entity field values to the DTO representation.
      * This method is called automatically during form construction when an existing entity is provided,
      * enabling the form to display current entity values in the UI.
-     * </p>
+
      * <p>
      * Implementation approaches:
      * <ul>
@@ -282,7 +278,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * </ul>
      * Implementations should handle null entity fields gracefully and apply any necessary type conversions
      * using field-specific {@link FrontendMappingFieldDefinition#entityToDtoValueConverter} if configured.
-     * </p>
+
      *
      * @param entity the persistent entity to read values from
      * @param <F> the concrete form type for fluent chaining
@@ -298,7 +294,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * the user has write privileges for are modified. Implementations must use
      * {@link #getSafeValue(Object, FrontendMappingFieldDefinition)} to enforce write privilege checks
      * before setting each entity field.
-     * </p>
+
      * <p>
      * Implementation pattern:
      * <pre>{@code
@@ -312,12 +308,12 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * The {@link #getSafeValue(Object, FrontendMappingFieldDefinition)} method returns the new value if the user
      * has write privilege, or the entity's existing value if the user lacks privilege, preventing unauthorized
      * field modifications.
-     * </p>
+
      * <p>
      * Implementations should apply custom type conversions using field-specific
      * {@link FrontendMappingFieldDefinition#dtoToEntityValueConverter} if configured, and handle null DTO
      * values according to field constraints.
-     * </p>
+
      *
      * @param entity the persistent entity to update with DTO values
      * @return the updated entity (same instance passed as parameter)
@@ -331,7 +327,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * {@link org.springframework.web.bind.WebDataBinder} during HTTP parameter binding and validation.
      * Controllers check this result to determine whether form submission was valid before persisting
      * the entity. The binding result contains field errors, global errors, and rejected values.
-     * </p>
+
      *
      * @return the validation errors from form binding, or null if not yet bound
      */
@@ -347,7 +343,7 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
      * {@link MapFormArgumentResolver} to attach validation errors to the form instance. This allows
      * the form to carry its validation state through the controller method and into the view layer
      * for error message rendering.
-     * </p>
+
      *
      * @param bindingResult the validation errors from form binding
      */
@@ -358,10 +354,10 @@ public abstract class AbstractEntityForm<D, E extends LongIdEntity> extends Abst
     /**
      * Returns the persistent entity associated with this form.
      * <p>
-     * Implements {@link DtoAndEntity#getEntity()} to provide access to the JPA entity for use in
+     * Implements {@link DtoAndEntity#getEntity} to provide access to the JPA entity for use in
      * datalist suppliers and field converters that need both DTO and entity representations. This method
      * returns null when the form represents a new entity (not yet constructed).
-     * </p>
+
      *
      * @return the persistent entity instance, or null for new entity forms
      */

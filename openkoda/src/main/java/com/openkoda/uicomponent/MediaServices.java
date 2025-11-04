@@ -34,16 +34,16 @@ import java.util.Map;
  * PDF generation uses Thymeleaf templates with variable substitution.
  * File creation handles storage, content-type detection, and database persistence.
  * All operations are tenant-aware (organization-scoped).
- * </p>
+ * 
  * <p>
  * Implementation: LiveMediaServices
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see com.openkoda.core.helper.PdfConstructor
- * @see com.openkoda.service.file.FileService
+ * // PdfConstructor
+ * @see com.openkoda.core.service.FileService
  * @see com.openkoda.model.file.File
  */
 public interface MediaServices {
@@ -55,15 +55,15 @@ public interface MediaServices {
      * <p>
      * Delegates to PdfConstructor.writePdfToByteArray. Each model Map in models varargs produces separate PDF page.
      * Template variables accessed as ${key} in Thymeleaf. If models is null/empty, generates single page with empty model.
-     * </p>
+     * 
      * <p>
      * Example: {@code writePdfToByteArray("invoice", Map.of("total", 100, "customer", "Acme"))} generates single-page PDF
-     * </p>
+     * 
      *
      * @param templateName Thymeleaf template name (path relative to template directory, e.g., 'reports/invoice.html')
      * @param models Varargs array of model Maps for template variable substitution, each Map generates one PDF page
      * @return PDF document as byte array (ready for download, attachment, or storage)
-     * @see com.openkoda.core.helper.PdfConstructor
+     * // PdfConstructor
      */
     @Autocomplete
     byte[] writePdfToByteArray(String templateName, Map<String, Object> ... models);
@@ -75,18 +75,18 @@ public interface MediaServices {
      * <p>
      * Similar to writePdfToByteArray but returns InputStream for streaming scenarios. Suitable for large PDFs or
      * direct HTTP response streaming. Caller responsible for closing stream.
-     * </p>
+     * 
      * <p>
      * Example: {@code writePdfToStream("report", modelMap1, modelMap2)} generates two-page PDF as stream
-     * </p>
+     * 
      * <p>
      * Note: InputStream backed by ByteArrayInputStream - entire PDF in memory, not true streaming
-     * </p>
+     * 
      *
      * @param templateName Thymeleaf template name for PDF generation
      * @param models Varargs array of model Maps, each Map generates one PDF page
      * @return InputStream containing PDF document bytes (stream-friendly for large PDFs)
-     * @see com.openkoda.core.helper.PdfConstructor
+     * // PdfConstructor
      */
     @Autocomplete
     InputStream writePdfToStream(String templateName, Map<String, Object> ... models);
@@ -99,19 +99,19 @@ public interface MediaServices {
      * Resolves organizationId via TenantResolver, detects contentType from fileName extension (Apache Tika),
      * reads inputStream bytes, calls fileService.saveAndPrepareFileEntity, persists via fileRepository.save.
      * File stored according to STORAGE_TYPE configuration (filesystem or database BLOB).
-     * </p>
+     * 
      * <p>
      * Example: {@code createFileFromStream(inputStream, 1024, "doc.pdf")} creates File entity with contentType='application/pdf'
-     * </p>
+     * 
      * <p>
      * Note: Throws RuntimeException if organizationId unavailable or stream read fails
-     * </p>
+     * 
      *
      * @param inputStream Source stream containing file bytes (caller must close stream)
      * @param totalFileSize Total file size in bytes (used for storage validation and progress tracking)
      * @param fileName Original filename with extension (used for content-type detection and display)
      * @return Persisted File entity with generated ID, organizationId, contentType, and storage reference
-     * @see com.openkoda.service.file.FileService
+     * @see com.openkoda.core.service.FileService
      * @see com.openkoda.model.file.File
      */
     @Autocomplete
@@ -124,18 +124,18 @@ public interface MediaServices {
      * Similar to createFileFromStream but accepts byte array directly. Detects contentType from fileName,
      * resolves organizationId, calls fileService.saveAndPrepareFileEntity, persists. More convenient than
      * stream variant when bytes already in memory.
-     * </p>
+     * 
      * <p>
      * Example: {@code createFileFromByteArray(pdfBytes, "report.pdf")} creates File with detected contentType
-     * </p>
+     * 
      * <p>
      * Note: Entire byte array held in memory - use createFileFromStream for large files
-     * </p>
+     * 
      *
      * @param input File content as byte array
      * @param fileName Original filename with extension for content-type detection
      * @return Persisted File entity with generated ID, organizationId, contentType, and storage reference
-     * @see com.openkoda.service.file.FileService
+     * @see com.openkoda.core.service.FileService
      * @see com.openkoda.model.file.File
      */
     @Autocomplete

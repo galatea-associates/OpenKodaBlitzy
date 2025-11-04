@@ -26,12 +26,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * application bootstrap orchestration, server-side JavaScript execution via GraalVM, and custom
  * Hibernate SQL function integration. It defines the extension API surface and implements the
  * coordinated startup sequence for the entire application.
- * </p>
+ * 
  *
- * <h2>Package Purpose</h2>
+ * <b>Package Purpose</b>
  * <p>
  * The customisation package provides four primary capabilities:
- * </p>
+ * 
  * <ul>
  * <li><b>Application Bootstrap Orchestration</b>: Coordinates deterministic startup sequence including
  * repository discovery, initial data loading, event consumer registration, and extension point activation</li>
@@ -43,9 +43,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * for array operations and string aggregation</li>
  * </ul>
  *
- * <h2>Key Classes and Responsibilities</h2>
+ * <b>Key Classes and Responsibilities</b>
  *
- * <h3>Core Bootstrap and Extension API</h3>
+ * <b>Core Bootstrap and Extension API</b>
  * <ul>
  * <li>{@link com.openkoda.core.customisation.BasicCustomisationService} - Central Spring @Service
  * orchestration hub extending ComponentProvider. Implements deterministic {@code onApplicationStart}
@@ -65,7 +65,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Used for typed event listeners requiring post-bootstrap initialization.</li>
  * </ul>
  *
- * <h3>GraalVM JavaScript Execution</h3>
+ * <b>GraalVM JavaScript Execution</b>
  * <ul>
  * <li>{@link com.openkoda.core.customisation.ServerJSRunner} - Spring @Service managing GraalVM
  * polyglot context for server-side JavaScript execution. Configures {@code Context.Builder} with
@@ -79,12 +79,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * on Windows vs Linux. Thread interruption and lifecycle management.</li>
  * </ul>
  *
- * <h3>Hibernate Custom Functions and ID Generation</h3>
+ * <b>Hibernate Custom Functions and ID Generation</b>
  * <ul>
  * <li>{@link com.openkoda.core.customisation.CustomFunctionContributor} - Hibernate FunctionContributor
  * registered at bootstrap. Adds custom SQL functions to HQL/SQM registry: {@code string_agg} (StandardSQLFunction),
  * {@code arrays_suffix} (unnests array, concatenates suffix to elements, re-aggregates), {@code arrays_overlap}
- * (renders typed PostgreSQL array literals with overlap operator &&). Supports ArrayList&lt;String&gt; to
+ * (renders typed PostgreSQL array literals with overlap operator &amp;&amp;). Supports ArrayList&lt;String&gt; to
  * ::varchar[] and HashSet&lt;Long&gt; to ::bigint[] conversions. Assumes PostgreSQL dialect semantics.</li>
  * <li>{@link com.openkoda.core.customisation.UseIdOrGenerate} - Custom Hibernate ID generator extending
  * SequenceStyleGenerator. Implements hybrid ID generation: returns existing non-null id from entity
@@ -92,7 +92,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * IDs (e.g., canonical Role entities with predefined identifiers).</li>
  * </ul>
  *
- * <h3>Supporting Infrastructure</h3>
+ * <b>Supporting Infrastructure</b>
  * <ul>
  * <li>{@link com.openkoda.core.customisation.FrontendMapping} - Immutable record bundling
  * {@code FrontendMappingDefinition} metadata with {@code ScopedSecureRepository}. Atomic pairing
@@ -108,12 +108,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * from CharArrayWriter. Delegates all Future methods (cancel, isCancelled, isDone, get overloads).</li>
  * </ul>
  *
- * <h2>Framework Integration</h2>
+ * <b>Framework Integration</b>
  *
- * <h3>Spring Framework Integration</h3>
+ * <b>Spring Framework Integration</b>
  * <p>
  * Package leverages Spring's component model and lifecycle hooks:
- * </p>
+ * 
  * <ul>
  * <li><b>@Service Beans</b>: BasicCustomisationService, ServerJSRunner annotated for component scanning</li>
  * <li><b>ApplicationContext Lifecycle</b>: {@code @EventListener} on {@code ContextRefreshedEvent}
@@ -124,10 +124,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li><b>@Component Registry</b>: FrontendMappingMap as injectable singleton HashMap</li>
  * </ul>
  *
- * <h3>Hibernate Integration</h3>
+ * <b>Hibernate Integration</b>
  * <p>
  * Custom Hibernate extensions for PostgreSQL-specific functionality:
- * </p>
+ * 
  * <ul>
  * <li><b>FunctionContributor</b>: CustomFunctionContributor registered via service loader mechanism</li>
  * <li><b>Custom Functions</b>: string_agg, arrays_suffix, arrays_overlap available in HQL queries</li>
@@ -135,10 +135,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li><b>SQM API Usage</b>: SqlAppender, SqlAstTranslator for self-rendering functions</li>
  * </ul>
  *
- * <h3>GraalVM Polyglot Integration</h3>
+ * <b>GraalVM Polyglot Integration</b>
  * <p>
  * Server-side JavaScript execution with full host access:
- * </p>
+ * 
  * <ul>
  * <li><b>Context.Builder Configuration</b>: allowAllAccess(true), allowHostClassLookup(predicate)</li>
  * <li><b>Polyglot Bindings</b>: Inject model (deserialized JSON), process (ServerJSProcessRunner),
@@ -147,34 +147,34 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li><b>Command Execution</b>: OS-aware bash/WSL integration for external process invocation</li>
  * </ul>
  *
- * <h2>Usage Patterns</h2>
+ * <b>Usage Patterns</b>
  *
- * <h3>Module Registration Workflow</h3>
+ * <b>Module Registration Workflow</b>
  * <pre><code>
  * customisationService.registerModule("my-module");
  * customisationService.registerAuditableClass(MyEntity.class, "My Entity");
  * customisationService.registerEventListener(MyEvent.class, this::handleEvent);
  * </code></pre>
  *
- * <h3>Event Consumer Setup</h3>
+ * <b>Event Consumer Setup</b>
  * <pre><code>
  * customisationService.registerEventConsumer(new EventConsumer(
  *     MyEvent.class, params -&gt; processEvent(params)));
  * </code></pre>
  *
- * <h3>Frontend Mapping Registration</h3>
+ * <b>Frontend Mapping Registration</b>
  * <pre><code>
  * customisationService.registerFrontendMapping(
  *     definition, repository);
  * </code></pre>
  *
- * <h3>Server-Side JavaScript Execution</h3>
+ * <b>Server-Side JavaScript Execution</b>
  * <pre><code>
  * serverJSRunner.evaluateServerJsScript(
  *     "my-script", jsCode, model, args, String.class);
  * </code></pre>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <ul>
  * <li><b>Service Locator</b>: CustomisationService as central registry for extension points</li>
  * <li><b>Registry</b>: FrontendMappingMap for mapping lookups</li>
@@ -184,7 +184,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li><b>Event-Driven</b>: Spring ApplicationEvent publishing for bootstrap lifecycle</li>
  * </ul>
  *
- * <h2>Dependencies</h2>
+ * <b>Dependencies</b>
  * <ul>
  * <li><b>Spring Framework</b>: ApplicationContext, @Service, @Component, @EventListener, @Value</li>
  * <li><b>Hibernate ORM</b>: FunctionContributor, SequenceStyleGenerator, SQM APIs</li>
@@ -193,12 +193,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li><b>JDK</b>: Concurrent utilities (ExecutorService, Future, Callable), IO (Writer, CharArrayWriter)</li>
  * </ul>
  *
- * <h2>Related Packages</h2>
+ * <b>Related Packages</b>
  * <ul>
  * <li>{@link com.openkoda.core.audit} - Audit interceptor and property change tracking</li>
  * <li>{@link com.openkoda.core.lifecycle} - Application lifecycle management</li>
  * <li>{@link com.openkoda.core.service.event} - Event consumer infrastructure</li>
- * <li>{@link com.openkoda.service.module} - Module definition and management</li>
+ * <li>{@link com.openkoda.core.service.module.ModuleService} - Module definition and management</li>
  * </ul>
  *
  * @author OpenKoda Team

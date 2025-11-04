@@ -29,56 +29,56 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * attribute keys ({@link SessionData}), and application URL path constants ({@link URLConstants}). These 
  * shared contracts prevent magic strings, reduce typos, and simplify refactoring across the entire 
  * controller layer.
- * </p>
+
  * 
- * <h2>Key Classes and Their Roles</h2>
+ * <b>Key Classes and Their Roles</b>
  * 
- * <h3>PageAttributes</h3>
+ * <b>PageAttributes</b>
  * <p>
  * Authoritative registry of MVC model attribute names with compile-time type checking via PageAttr&lt;T&gt; 
  * descriptors. Used by controllers to populate PageModelMap and by Thymeleaf templates to access view data. 
  * Includes {@code pageConverter} utility for entity to DTO page transformations.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * pageModel.put(PageAttributes.organizationDto, dto);
  * }</pre>
- * </p>
+
  * 
- * <h3>SessionData</h3>
+ * <b>SessionData</b>
  * <p>
  * HTTP session attribute key constants for user authentication state (SPOOFING_USER), locale preferences 
  * (LOCALE), and multi-tenant organization selection (CURRENT_ORGANIZATION_ID). Accessed via 
  * {@code @SessionAttribute} or HttpSession by controllers, filters, and services.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * @SessionAttribute(SessionData.CURRENT_ORGANIZATION_ID) Long orgId
  * }</pre>
- * </p>
+
  * 
- * <h3>URLConstants</h3>
+ * <b>URLConstants</b>
  * <p>
  * Centralized URL path fragments, composed templates, API version prefixes (_API_V1, _API_V2), Ant-style 
  * security patterns, parameter templates with regex constraints (_ID, _ORGANIZATIONID), and validation 
  * regexes. Referenced in {@code @RequestMapping} annotations and Spring Security configuration.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * @RequestMapping(URLConstants._ADMIN + URLConstants._SETTINGS)
  * }</pre>
- * </p>
+
  * 
- * <h2>Usage Guidance</h2>
+ * <b>Usage Guidance</b>
  * <p>
  * Import constants to avoid string literals in controller code. This approach enables IDE autocomplete, 
  * provides compile-time validation, and prevents runtime string typos.
- * </p>
+
  * 
- * <h2>Relationships with Other Packages</h2>
+ * <b>Relationships with Other Packages</b>
  * <ul>
  * <li><b>Used by:</b> All controller subpackages (admin, api, organization, user, etc.), security 
  *     configuration, view builders, filters</li>
@@ -87,18 +87,18 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     expressions, templates access attribute keys</li>
  * </ul>
  * 
- * <h2>Design Rationale</h2>
+ * <b>Design Rationale</b>
  * <p>
  * Centralizing constants enforces consistency, enables IDE autocomplete, provides compile-time validation, 
  * and prevents runtime string typos. Changes to URLs or attribute names require only updates here and 
  * coordinated recompilation, detected at build time rather than runtime.
- * </p>
+
  * 
- * <h2>Common Pitfalls</h2>
+ * <b>Common Pitfalls</b>
  * <p>
  * Changing constant values impacts many consumers. Run full regression test suite when modifying. Constants 
  * are inlined by Java compiler, requiring clean rebuild after changes.
- * </p>
+
  * 
  * <p><b>Should I put a class into this package?</b></p>
  * <p>If something is shared across all controllers, then the package is for you.</p>

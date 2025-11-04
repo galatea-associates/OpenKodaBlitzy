@@ -51,18 +51,18 @@ import java.util.*;
  * MDC cron job context (via {@link RequestIdHolder}), automatically prepending correlation IDs to all 
  * log messages. Provides centralized logger management with per-class SLF4J logger caching, runtime 
  * debug mode toggles per logger class, and in-memory debug stack for log retention.
- * </p>
+
  * <p>
  * Integrates with {@link ApplicationEventService} for error event emission and {@link AuditService} for 
  * error audit trails. Thread-safe storage uses {@code ThreadLocal} MDC for correlation IDs and 
  * {@code ThreadLocal} {@link #isInLoggingLoop} for recursion prevention.
- * </p>
+
  * <p>
  * <b>WARNING</b>: Shared static collections ({@link #loggers}, {@link #availableLoggers}, 
  * {@link #debugLoggers}) are mutated process-wide without explicit synchronization - concurrency safety 
  * depends on concrete collection types. The {@link #loggers} HashMap may lose entries during concurrent 
  * class registration. Consider using {@code ConcurrentHashMap} for production use.
- * </p>
+
  * <p>
  * Usage pattern - extend this interface to automatically gain request-correlated logging:
  * <pre>{@code
@@ -72,12 +72,12 @@ import java.util.*;
  *     }
  * }
  * }</pre>
- * </p>
+
  * <p>
  * Distributed tracing integration: Correlation IDs propagate through entire request or job execution, 
  * enabling trace correlation across controllers, services, and repositories. IDs appear in all log 
  * messages for filtering and grouping.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -96,12 +96,12 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Populated lazily on first {@link #getLogger()} call per class. Each class implementing this 
      * interface gets its own Logger instance cached here for reuse across all method calls.
-     * </p>
+
      * <p>
      * <b>WARNING</b>: Uses unsynchronized {@code HashMap} - concurrent class registration from multiple 
      * threads may lose entries or corrupt map structure. Consider {@code ConcurrentHashMap} for 
      * production use.
-     * </p>
+
      */
     static final Map<Class, Logger> loggers = new HashMap<Class, Logger>();
     
@@ -111,11 +111,11 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * Updated when new logger created via {@link #getLogger()}. Used by 
      * {@code DebugLogsDecoratorWithRequestId} to enumerate available logger classes for management 
      * interfaces.
-     * </p>
+
      * <p>
      * <b>WARNING</b>: Unsynchronized {@code ArrayList} - concurrent modifications may cause 
      * {@code ConcurrentModificationException} or inconsistent state.
-     * </p>
+
      */
     static final List<Class> availableLoggers = new ArrayList<>();
     
@@ -124,11 +124,11 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Classes in this set have debug and trace messages logged to {@link #debugStack}. Modified by 
      * {@code DebugLogsDecoratorWithRequestId} toggle methods to enable or disable debug mode at runtime.
-     * </p>
+
      * <p>
      * <b>WARNING</b>: Unsynchronized {@code HashSet} - concurrent adds or removes may cause inconsistent 
      * debug mode state across threads.
-     * </p>
+
      */
     static final Set<Class> debugLoggers = new HashSet<>();
     
@@ -138,10 +138,10 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * Logger name: {@code "jmxDebug"}. Used by {@link #logToDebugStack(Throwable, String, boolean, Object...)} 
      * to write formatted messages. Configure log level independently in logging configuration (logback.xml 
      * or log4j2.xml).
-     * </p>
+
      * <p>
      * Immutable and thread-safe after initialization.
-     * </p>
+
      */
     static final Logger debugLogger = LoggerFactory.getLogger( "jmxDebug" );
     
@@ -151,11 +151,11 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * Stores request-keyed debug messages for runtime inspection via JMX or management interfaces. 
      * Entries formatted as {@code "ClassName - message"}. Capacity configurable via 
      * {@code DebugLogsDecoratorWithRequestId.setMaxEntries()}.
-     * </p>
+
      * <p>
      * Thread-safety depends on {@link LoggingEntriesStack} implementation. Used by {@link #getDebugEntries()} 
      * to retrieve captured debug logs.
-     * </p>
+
      */
     static final LoggingEntriesStack<String> debugStack = new LoggingEntriesStack<>(500);
     
@@ -166,7 +166,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * execution. If error occurs during event emission or audit creation, recursion is detected and 
      * prevented. Thread-safe via {@code ThreadLocal} isolation. Initialized to {@code false} for each 
      * thread.
-     * </p>
+
      */
     ThreadLocal<Boolean> isInLoggingLoop =  ThreadLocal.withInitial( () -> false);
 
@@ -177,11 +177,11 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * {@code createIfNotExists} is {@code true}, creates new Logger via 
      * {@link LoggerFactory#getLogger(Class)}, caches it in {@link #loggers}, and adds class to 
      * {@link #availableLoggers} list.
-     * </p>
+
      * <p>
      * <b>WARNING</b>: Uses unsynchronized {@code HashMap} - concurrent creates from multiple threads 
      * may lose cache entries or corrupt map structure.
-     * </p>
+
      *
      * @param createIfNotExists {@code true} to create and cache logger if not exists, {@code false} 
      *                          to return {@code null} if not cached
@@ -204,10 +204,10 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Convenience method that delegates to {@link #getLogger(boolean)} with {@code true}. Always returns 
      * a logger, creating and caching if needed.
-     * </p>
+
      * <p>
      * Excluded from JSON serialization via {@link JsonIgnore} to avoid exposing internal logger instances.
-     * </p>
+
      *
      * @return SLF4J Logger for implementing class, never {@code null}
      */
@@ -222,7 +222,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Delegates to {@link #appendRequestId(String, boolean)} with {@code false}. Retrieves correlation 
      * ID via {@link RequestIdHolder#getId()} and prepends it to message.
-     * </p>
+
      *
      * @param message original log message
      * @return message prefixed with correlation ID in format {@code "correlationId: message"}
@@ -237,11 +237,11 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * If {@code appendAuditUrl} is {@code true}, formats message as 
      * {@code "{baseUrl}/html/audit/all?audit_search={correlationId}: {message}"} for clickable audit 
      * trail access. If {@code false}, formats as {@code "{correlationId}: {message}"}.
-     * </p>
+
      * <p>
      * Uses {@link UrlHelper#getBaseUrlOrEmpty()} for base URL and {@link RequestIdHolder#getId()} for 
      * correlation ID.
-     * </p>
+
      *
      * @param message original log message
      * @param appendAuditurl {@code true} to build clickable audit UI link with correlation ID, 
@@ -260,7 +260,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * Logs to {@link #debugStack} if debug mode enabled for class (via {@link #isDebugLogger()}), then 
      * logs to SLF4J logger at debug level with correlation ID prepended. Debug stack entry includes 
      * class name and formatted message.
-     * </p>
+
      *
      * @param format SLF4J format string with {@code {}} placeholders (e.g., {@code "User id: {}"})
      * @param arguments values to fill placeholders
@@ -277,7 +277,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Uses {@link MessageFormatter#arrayFormat(String, Object[])} to substitute arguments into format 
      * string. Handles throwables in argument array per SLF4J conventions.
-     * </p>
+
      *
      * @param format format string with {@code {}} placeholders
      * @param arguments values to fill placeholders
@@ -296,11 +296,11 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * {@link ResizableByteArrayOutputStream}, appends to message. Logs to {@link #debugLogger} at debug 
      * level and stores in {@link #debugStack} with correlation ID key and {@code "ClassName - message"} 
      * format.
-     * </p>
+
      * <p>
      * Used by {@link #debug(String, Object...)}, {@link #trace(String, Object...)}, 
      * {@link #warn(String, Object...)}, and {@link #error(String, Object...)} methods.
-     * </p>
+
      *
      * @param t throwable to capture stack trace from, or {@code null}
      * @param message message format string
@@ -337,7 +337,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Logs to {@link #debugStack} if debug mode enabled, then logs to SLF4J logger at trace level with 
      * correlation ID prepended.
-     * </p>
+
      *
      * @param format SLF4J format string with {@code {}} placeholders
      * @param arguments values to fill placeholders
@@ -355,10 +355,10 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * Returns {@code true} if class is in {@link #debugLoggers} set (debug messages logged to 
      * {@link #debugStack}), {@code false} otherwise. Debug mode can be enabled or disabled via 
      * {@code DebugLogsDecoratorWithRequestId} toggle methods.
-     * </p>
+
      * <p>
      * Excluded from JSON serialization via {@link JsonIgnore}.
-     * </p>
+
      *
      * @return {@code true} if class is in debugLoggers set, {@code false} otherwise
      */
@@ -371,7 +371,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * Logs info-level message with correlation ID.
      * <p>
      * Logs to SLF4J logger at info level with correlation ID prepended. Does not log to debug stack.
-     * </p>
+
      *
      * @param format SLF4J format string with {@code {}} placeholders (e.g., {@code "User id: {}"})
      * @param arguments values to fill placeholders
@@ -386,7 +386,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Always logs to {@link #debugStack} (regardless of debug mode), then logs to SLF4J logger at warn 
      * level with correlation ID prepended.
-     * </p>
+
      *
      * @param format SLF4J format string with {@code {}} placeholders (e.g., {@code "User id: {}"})
      * @param arguments values to fill placeholders
@@ -402,7 +402,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Logs message and exception to {@link #debugStack} with full stack trace captured, then logs to 
      * SLF4J logger at warn level with correlation ID prepended.
-     * </p>
+
      *
      * @param message warning message
      * @param throwable exception to log with stack trace
@@ -419,7 +419,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * Logs to {@link #debugStack}, logs to SLF4J logger at error level with audit UI link appended, 
      * emits {@code APPLICATION_ERROR} event to {@link ApplicationEventService} for notification system 
      * integration. Prevents recursion via {@link #isInLoggingLoop} ThreadLocal.
-     * </p>
+
      *
      * @param format SLF4J format string with {@code {}} placeholders (e.g., {@code "User id: {}"})
      * @param arguments values to fill placeholders
@@ -439,7 +439,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * Logs message and exception to {@link #debugStack} with full stack trace, logs to SLF4J logger at 
      * error level with audit UI link, emits error event, creates error audit via 
      * {@link AuditService#createErrorAuditForException(Throwable, String)}.
-     * </p>
+
      *
      * @param throwable exception to log with stack trace
      * @param format SLF4J format string with {@code {}} placeholders
@@ -457,7 +457,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Logs message and exception to {@link #debugStack}, logs to SLF4J logger at error level with audit 
      * UI link, emits error event to {@link ApplicationEventService}.
-     * </p>
+
      *
      * @param message error message
      * @param throwable exception to log with stack trace
@@ -474,10 +474,10 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Returns {@link #debugStack} for runtime inspection of captured debug messages. Used by management 
      * interfaces (JMX or MBean) to view recent debug logs.
-     * </p>
+
      * <p>
      * Excluded from JSON serialization via {@link JsonIgnore} to avoid exposing large debug history.
-     * </p>
+
      *
      * @return map of correlation ID to debug messages from debugStack
      */
@@ -489,8 +489,8 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
     /**
      * Validates object is not null.
      * <p>
-     * Delegates to {@link Assert#notNull(Object)}. Convenience assertion method.
-     * </p>
+     * Delegates to Assert.notNull(Object). Convenience assertion method.
+
      *
      * @param o object to validate
      * @throws IllegalArgumentException if object is {@code null}
@@ -502,8 +502,8 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
     /**
      * Validates boolean is true.
      * <p>
-     * Delegates to {@link Assert#isTrue(boolean)}. Convenience assertion method.
-     * </p>
+     * Delegates to Assert.isTrue(boolean). Convenience assertion method.
+
      *
      * @param b Boolean to validate
      * @throws IllegalArgumentException if boolean is {@code false} or {@code null}
@@ -517,10 +517,10 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Returns {@link #availableLoggers} list. Used by {@code DebugLogsDecoratorWithRequestId.collectLoggerNames()} 
      * to enumerate logger classes for management interfaces.
-     * </p>
+
      * <p>
      * Excluded from JSON serialization via {@link JsonIgnore}.
-     * </p>
+
      *
      * @return list of Class objects that have called {@link #getLogger()}
      */
@@ -534,10 +534,10 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * <p>
      * Returns {@link #debugLoggers} set. Used by management interfaces to inspect which classes have 
      * debug mode enabled.
-     * </p>
+
      * <p>
      * Excluded from JSON serialization via {@link JsonIgnore}.
-     * </p>
+
      *
      * @return set of Class objects in debug mode (logging to {@link #debugStack})
      */
@@ -553,16 +553,16 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * sets flag, emits {@code APPLICATION_ERROR} event with {@link NotificationDto}, creates error audit 
      * via {@link AuditService#createErrorAuditForException(Throwable, String)}, then clears flag. If in 
      * loop, logs error about recursion and returns.
-     * </p>
+
      * <p>
      * Integrates logging with notification and audit subsystems. Recursion prevention critical for errors 
      * during event emission or audit creation.
-     * </p>
+
      *
      * @param throwable exception to include in audit, or {@code null}
      * @param format error message format string
      * @param arguments format string arguments
-     * @see ApplicationEventService#emitEvent(String, Object)
+     * // ApplicationEventService
      * @see AuditService#createErrorAuditForException(Throwable, String)
      */
     default void emitErrorLogNotificationEvent(Throwable throwable, String format, Object... arguments){

@@ -35,17 +35,14 @@ import java.util.ArrayList;
  * <b>WARNING:</b> This provider provides NO security - it accepts any username/password combination without validation
  * and creates an authenticated token with empty authorities. This implementation performs no password verification,
  * no UserDetailsService lookup, no database queries, and no password hashing checks.
- * </p>
  * <p>
  * This is a stateless operation that simply extracts credentials from the authentication request and returns
  * a new authenticated token. The provider is registered via Spring Security @Component auto-detection and added
  * to the AuthenticationManager provider chain.
- * </p>
  * <p>
  * <b>Potential Removal:</b> This class is flagged for review as it bypasses authentication security. It may be
  * legacy from development or testing phases. In production environments, prefer
  * {@link LoginByPasswordOrTokenAuthenticationProvider} which provides proper credential validation.
- * </p>
  * <p>
  * <b>Usage Example (NOT recommended for production):</b>
  * <pre>
@@ -55,7 +52,6 @@ import java.util.ArrayList;
  * Authentication result = simpleAuthProvider.authenticate(auth);
  * // result.isAuthenticated() returns true without any validation
  * </pre>
- * </p>
  *
  * @see LoginByPasswordOrTokenAuthenticationProvider
  * @see org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -74,7 +70,7 @@ public class SimpleAuthenticationProvider implements AuthenticationProvider {
      * <b>Security Risk:</b> This method accepts any username and password combination without validation.
      * It extracts the username and password from the input authentication token and creates a new authenticated
      * token with empty authorities, bypassing all security checks.
-     * </p>
+     * 
      * <p>
      * Method behavior:
      * <ol>
@@ -86,12 +82,12 @@ public class SimpleAuthenticationProvider implements AuthenticationProvider {
      * <li>NO UserDetailsService lookup performed</li>
      * <li>NO privilege loading performed</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * <b>Warning:</b> This allows authentication bypass if this provider is processed before secure providers
      * in the AuthenticationManager chain. The returned token has empty authorities, meaning the authenticated
      * user has no GrantedAuthority instances and no privileges.
-     * </p>
+     * 
      *
      * @param authentication Input Authentication instance, typically an unauthenticated UsernamePasswordAuthenticationToken
      *                      from a filter
@@ -114,12 +110,12 @@ public class SimpleAuthenticationProvider implements AuthenticationProvider {
      * Spring Security calls this method to determine which AuthenticationProvider should handle
      * each Authentication type. This provider declares that it can process UsernamePasswordAuthenticationToken
      * instances.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This provider competes with {@link LoginByPasswordOrTokenAuthenticationProvider} for
      * UsernamePasswordAuthenticationToken processing. Provider order in the AuthenticationManager chain
      * determines which provider handles the authentication request first.
-     * </p>
+     * 
      *
      * @param authentication Class type of Authentication being checked
      * @return true if authentication equals UsernamePasswordAuthenticationToken.class, false otherwise

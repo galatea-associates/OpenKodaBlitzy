@@ -29,18 +29,18 @@ import static com.openkoda.repository.specifications.ServerJsSpecification.getBy
  * to ServerJs code stored in the database by creating {@link SeekableInMemoryByteChannel} instances from 
  * {@link ServerJs#getCode()} bytes. Used by {@link JsFlowRunner} to enable JavaScript import statements for 
  * database-stored scripts.
- * </p>
+ * 
  * <p>
  * The virtual filesystem mapping resolves path strings to ServerJs entities by name. When JavaScript code 
  * imports a module, GraalVM uses this FileSystem to resolve the import path to actual code content.
- * </p>
+ * 
  * <p>
  * Security: This implementation provides read-only access. No write or delete operations are permitted.
  * ServerJs entities must be created and managed through the repository layer.
- * </p>
+ * 
  * <p>
  * Thread-safety: Stateless except for injected {@code serverJsRepository} which is thread-safe.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -56,7 +56,7 @@ public class FileSystemImpl implements FileSystem {
      * Repository for querying ServerJs entities by name to retrieve JavaScript code.
      * <p>
      * Injected via {@code @Inject}, used by {@link #newByteChannel} to resolve import paths to code content.
-     * </p>
+     * 
      */
     @Inject
     ServerJsRepository serverJsRepository;
@@ -65,7 +65,7 @@ public class FileSystemImpl implements FileSystem {
      * Parses URI to Path - currently unimplemented stub.
      * <p>
      * This method is not used in the current GraalVM integration and is reserved for future URI-based imports.
-     * </p>
+     * 
      *
      * @param uri URI to parse
      * @return Always returns null (not implemented)
@@ -80,7 +80,7 @@ public class FileSystemImpl implements FileSystem {
      * <p>
      * Used by GraalVM to resolve JavaScript import paths to Path objects. The path string 
      * (e.g., 'serverjs/myScript.js') is converted to a Path using standard Java NIO.
-     * </p>
+     * 
      *
      * @param path Path string (e.g., 'serverjs/myScript.js')
      * @return Path instance for the given string
@@ -95,7 +95,7 @@ public class FileSystemImpl implements FileSystem {
      * <p>
      * Always succeeds without performing any validation. Actual access control is enforced at 
      * the ServerJs repository level.
-     * </p>
+     * 
      *
      * @param path Path to check
      * @param modes Access modes to verify (READ, WRITE, EXECUTE)
@@ -111,7 +111,7 @@ public class FileSystemImpl implements FileSystem {
      * Directory creation stub - no-op, virtual filesystem is read-only.
      * <p>
      * ServerJs entities are created via the repository, not through filesystem operations.
-     * </p>
+     * 
      *
      * @param dir Directory path to create
      * @param attrs File attributes for new directory
@@ -126,7 +126,7 @@ public class FileSystemImpl implements FileSystem {
      * File deletion stub - no-op, virtual filesystem is read-only.
      * <p>
      * ServerJs entities are deleted via the repository, not through filesystem operations.
-     * </p>
+     * 
      *
      * @param path Path to delete
      * @throws IOException Never thrown in current implementation
@@ -142,13 +142,13 @@ public class FileSystemImpl implements FileSystem {
      * Queries {@code serverJsRepository.findOne(ServerJsSpecification.getByName(path.toString()))} to locate 
      * the ServerJs entity by name, then returns an in-memory channel from {@link ServerJs#getCode()}.getBytes() 
      * using platform default charset. The path string is used as the ServerJs entity name lookup key.
-     * </p>
+     * 
      * <p>
      * Example: path 'lib/utils.js' resolves to ServerJs entity with name='lib/utils.js'.
-     * </p>
+     * 
      * <p>
      * Note: Uses platform default charset - consider explicit UTF-8 for portability.
-     * </p>
+     * 
      *
      * @param path Path string used as ServerJs entity name lookup key
      * @param options Open options (ignored, always read-only)
@@ -170,7 +170,7 @@ public class FileSystemImpl implements FileSystem {
      * Directory stream stub - returns null, directory listing not supported.
      * <p>
      * JavaScript code cannot enumerate available ServerJs modules; it must know import paths explicitly.
-     * </p>
+     * 
      *
      * @param dir Directory path to list
      * @param filter Filter for directory entries
@@ -186,7 +186,7 @@ public class FileSystemImpl implements FileSystem {
      * Converts path to absolute path using Path.toAbsolutePath().
      * <p>
      * Delegates to Java NIO Path.toAbsolutePath() semantics.
-     * </p>
+     * 
      *
      * @param path Path to convert
      * @return Absolute path representation
@@ -200,7 +200,7 @@ public class FileSystemImpl implements FileSystem {
      * Resolves path to real path - returns input path unchanged.
      * <p>
      * Virtual filesystem has no symbolic links or relative paths to resolve.
-     * </p>
+     * 
      *
      * @param path Path to resolve
      * @param linkOptions Symbolic link options (ignored)
@@ -216,7 +216,7 @@ public class FileSystemImpl implements FileSystem {
      * Reads file attributes stub - returns null, attributes not supported.
      * <p>
      * ServerJs entities have database metadata (createdOn, updatedOn) not exposed as filesystem attributes.
-     * </p>
+     * 
      *
      * @param path Path to read attributes from
      * @param attributes Attribute names to read (e.g., 'basic:size,lastModifiedTime')

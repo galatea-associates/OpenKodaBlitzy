@@ -29,12 +29,12 @@ import jakarta.validation.constraints.NotBlank;
  * This form provides a lightweight DTO for password change requests, using Jakarta Bean Validation
  * for declarative constraint enforcement. The form binds the target user identifier and new password
  * for validation before applying password changes to the user entity.
- * </p>
+
  * <p>
  * The form uses the {@code @NotBlank} constraint on the password field to ensure that password
  * changes always provide a non-empty value. The userId field identifies the target user whose
  * password is being changed.
- * </p>
+
  * <p>
  * Usage example:
  * <pre>
@@ -42,7 +42,7 @@ import jakarta.validation.constraints.NotBlank;
  * form.setPassword("newPassword123");
  * // Validate using Spring's BindingResult and apply changes
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -56,7 +56,7 @@ public class PasswordChangeForm {
      * <p>
      * This field holds the primary key of the User entity. It is populated either
      * through the parameterized constructor or via setter method before validation.
-     * </p>
+
      */
     private long userId;
     
@@ -67,7 +67,7 @@ public class PasswordChangeForm {
      * which ensures the password is not null, empty, or whitespace-only. The validation
      * message "Password must not be blank" will be recorded in the BindingResult if
      * validation fails.
-     * </p>
+
      *
      * @see jakarta.validation.constraints.NotBlank
      */
@@ -79,7 +79,7 @@ public class PasswordChangeForm {
      * <p>
      * Creates a new instance with default field values (userId=0, password=null).
      * The userId and password must be set via setter methods before validation.
-     * </p>
+
      */
     public PasswordChangeForm() {
     }
@@ -90,7 +90,7 @@ public class PasswordChangeForm {
      * Creates a new instance pre-populated with the userId of the target user
      * whose password will be changed. The password field must still be set via
      * setter method before validation.
-     * </p>
+
      *
      * @param userId the identifier of the target user whose password is being changed
      */
@@ -121,7 +121,7 @@ public class PasswordChangeForm {
      * <p>
      * This value is validated by the {@code @NotBlank} constraint to ensure
      * it is not null, empty, or whitespace-only before applying the password change.
-     * </p>
+
      *
      * @return the new password, or null if not yet set
      */
@@ -135,7 +135,7 @@ public class PasswordChangeForm {
      * The provided password will be validated using Jakarta Bean Validation's
      * {@code @NotBlank} constraint when the form is validated. The password
      * must be non-null, non-empty, and contain at least one non-whitespace character.
-     * </p>
+
      *
      * @param password the new password to set for the target user
      */

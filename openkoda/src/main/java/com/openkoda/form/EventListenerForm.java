@@ -36,7 +36,7 @@ import org.springframework.validation.BindingResult;
  * This form validates static parameter counts and type compatibility using reflection with {@code Class.forName}
  * and the {@link #isPerfectMatch(String, String)} helper method. It extends {@link AbstractOrganizationRelatedEntityForm}
  * to provide organization-scoped form handling for {@link EventListenerEntry} entities.
- * </p>
+
  * <p>
  * The form parses comma-delimited strings containing consumer and event information:
  * <ul>
@@ -45,10 +45,10 @@ import org.springframework.validation.BindingResult;
  * </ul>
  * Reflection-based validation ensures that the event object type is compatible with the consumer parameter type.
  * Static data parameters (staticData1-4) are validated against the consumer's expected parameter count.
- * </p>
+
  * <p>
  * Reflection failures are logged using {@link LoggingComponentWithRequestId} and rethrown as {@link RuntimeException}.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -64,7 +64,7 @@ public class EventListenerForm extends AbstractOrganizationRelatedEntityForm<Eve
      * <p>
      * This constructor initializes the form with the predefined frontend mapping definition
      * from {@code FrontendMappingDefinitions.eventListenerForm}.
-     * </p>
+
      */
     public EventListenerForm() {
         super(FrontendMappingDefinitions.eventListenerForm);
@@ -75,7 +75,7 @@ public class EventListenerForm extends AbstractOrganizationRelatedEntityForm<Eve
      * <p>
      * This constructor prepares the form for editing an existing {@link EventListenerEntry}
      * by associating it with an organization and initializing the DTO.
-     * </p>
+
      *
      * @param organizationId the ID of the organization this event listener belongs to
      * @param entity the existing {@link EventListenerEntry} entity to populate the form from
@@ -91,11 +91,10 @@ public class EventListenerForm extends AbstractOrganizationRelatedEntityForm<Eve
      * including comma-delimited consumer and event descriptor strings, static data parameters
      * (staticData1-4), and the organization ID. The consumer and event strings contain class names,
      * method/event names, and parameter types in comma-separated format.
-     * </p>
+
      *
      * @param entity the {@link EventListenerEntry} entity to populate from
      * @return this form instance for method chaining
-     * @Override
      */
     @Override
     public EventListenerForm populateFrom(EventListenerEntry entity) {
@@ -114,7 +113,7 @@ public class EventListenerForm extends AbstractOrganizationRelatedEntityForm<Eve
      * <p>
      * This helper method splits the parameter string by commas and returns the value
      * at the specified index position. It asserts that the index is within bounds.
-     * </p>
+
      *
      * @param allParams the comma-delimited string containing all parameters
      * @param n the zero-based index of the parameter to extract
@@ -135,7 +134,7 @@ public class EventListenerForm extends AbstractOrganizationRelatedEntityForm<Eve
      * on the {@link EventListenerEntry} entity. The consumer descriptor is split into className,
      * methodName, and parameterClassName. The event descriptor is split into className, eventName,
      * and objectType. Static data parameters and organization ID are also transferred.
-     * </p>
+
      *
      * @param entity the {@link EventListenerEntry} entity to populate with DTO values
      * @return the populated entity instance
@@ -161,7 +160,7 @@ public class EventListenerForm extends AbstractOrganizationRelatedEntityForm<Eve
      * Validates the event listener configuration by parsing consumer and event descriptor strings.
      * <p>
      * This method performs comprehensive validation including:
-     * </p>
+
      * <ul>
      *   <li>Parsing consumer and event strings into {@link Consumer} and {@link Event} objects</li>
      *   <li>Performing reflection-based type checking using {@link #isPerfectMatch(String, String)}</li>
@@ -174,11 +173,10 @@ public class EventListenerForm extends AbstractOrganizationRelatedEntityForm<Eve
      * {@code Class.isAssignableFrom} to verify that the event object type can be passed
      * to the consumer method. Validation failures are recorded in the {@link BindingResult}
      * with error codes: "not.empty", "not.valid", or "incompatible.consumer".
-     * </p>
+
      *
      * @param br the {@link BindingResult} to record validation errors
      * @return this form instance for method chaining
-     * @Override
      */
     @Override
     public EventListenerForm validate(BindingResult br) {
@@ -241,11 +239,11 @@ public class EventListenerForm extends AbstractOrganizationRelatedEntityForm<Eve
      * then checks whether the consumer parameter type can accept instances of the event type using
      * {@code Class.isAssignableFrom}. This ensures that the event object can be passed to the consumer
      * method without type errors at runtime.
-     * </p>
+
      * <p>
      * If reflection fails (e.g., class not found or security restrictions), the error is logged
      * using {@link LoggingComponentWithRequestId} and rethrown as a {@link RuntimeException}.
-     * </p>
+
      *
      * @param eventClassName the fully qualified class name of the event object type
      * @param consumerClassName the fully qualified class name of the consumer parameter type

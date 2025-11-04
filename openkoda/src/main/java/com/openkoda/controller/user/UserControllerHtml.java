@@ -45,16 +45,16 @@ import static com.openkoda.core.security.HasSecurityRules.*;
  * Provides HTML-based user CRUD interface with Thymeleaf templates including user list with search and filter
  * capabilities, profile viewing with additional settings, profile editing with validation, user impersonation
  * (spoofing) for administrators, and API key management. All routes are under /html/user base path.
- * </p>
+ * 
  * <p>
  * Uses Spring Security {@code @PreAuthorize} annotations with HasSecurityRules constants for fine-grained
  * access control. Extends {@link AbstractUserController} to delegate business logic via Flow pipelines while
  * handling HTTP bindings, request parameters, and view rendering.
- * </p>
+ * 
  * <p>
  * General contract: resolve HTTP bindings, delegate to AbstractUserController flows, and return ModelAndView
  * with Thymeleaf template.
- * </p>
+ * 
  * <p>
  * Thymeleaf template conventions:
  * <ul>
@@ -63,7 +63,6 @@ import static com.openkoda.core.security.HasSecurityRules.*;
  * <li>Success/error fragments: Dual view pattern with '::fragment-success' and '::fragment-error'</li>
  * <li>Navigation fragments: 'generic-forms::go-to(url=...)' for client-side redirects</li>
  * </ul>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -84,7 +83,7 @@ public class UserControllerHtml extends AbstractUserController {
      * {@code /html/organization/all}. Used as fallback redirect target when
      * exiting user impersonation (spoof mode) if no organization-specific
      * dashboard is available.
-     * </p>
+     * 
      */
     @Value("${page.after.auth:/html/organization/all}")
     private String pageAfterAuth;
@@ -92,24 +91,24 @@ public class UserControllerHtml extends AbstractUserController {
     /**
      * Lists all users with pagination and search filtering.
      * <p>
-     * Delegates to {@code findUsers} with {@link UserSpecifications#searchSpecification(String)} for filtering.
+     * Delegates to {@code findUsers} with {@link UserSpecifications#searchSpecification(Long)} for filtering.
      * Returns Thymeleaf view with user list table, pagination controls, and search form.
-     * </p>
+     * 
      * <p>
      * URL: {@code GET /html/user/all?user_search={term}&page={page}&size={size}}
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>
-     * GET /html/user/all?user_search=john&page=0&size=20
+     * GET /html/user/all?user_search=john&amp;page=0&amp;size=20
      * </pre>
-     * </p>
+     * 
      *
      * @param userPageable Pagination parameters qualified with 'user' (page number, size, sort order)
      * @param search Search term for filtering users by name or email (default: empty string)
      * @param request HTTP request for context
      * @return ModelAndView with 'user-all' template containing paginated user list
-     * @see UserSpecifications#searchSpecification(String)
+     * @see UserSpecifications#searchSpecification(Long)
      */
     @PreAuthorize(CHECK_CAN_READ_USER_DATA)
     @GetMapping(_ALL)
@@ -128,10 +127,10 @@ public class UserControllerHtml extends AbstractUserController {
      * Delegates to {@code getUsersProfile} which loads user entity, creates {@link EditUserForm},
      * and prepares additionalSettingsForms from customisationService. Returns profile page with
      * user info, modules list, and pluggable settings sections.
-     * </p>
+     * 
      * <p>
      * URL: {@code GET /html/user/{userId}/profile?module_search={term}}
-     * </p>
+     * 
      *
      * @param userId ID of user whose profile to display
      * @param modulePageable Pagination for user's modules (qualified with 'module')
@@ -153,10 +152,10 @@ public class UserControllerHtml extends AbstractUserController {
      * <p>
      * Delegates to {@code getUsersProfile} to load user and settings forms. Returns Thymeleaf
      * fragment for settings editing with form fields.
-     * </p>
+     * 
      * <p>
      * URL: {@code GET /html/user/{userId}/settings}
-     * </p>
+     * 
      *
      * @param userId ID of user whose settings to edit
      * @return ModelAndView with 'user-settings' template containing {@link EditUserForm}
@@ -176,14 +175,14 @@ public class UserControllerHtml extends AbstractUserController {
      * 'entity-forms::user-settings-form-success' fragment on success or
      * 'entity-forms::user-settings-form-error' on validation failure.
      * Success triggers USER_MODIFIED event.
-     * </p>
+     * 
      * <p>
      * URL: {@code POST /html/user/{userId}/settings}
-     * </p>
+     * 
      * <p>
      * Flow: Validates form → Updates user entity → Changes global role if specified →
      * Emits event → Returns fragment
-     * </p>
+     * 
      *
      * @param userId ID of user to update
      * @param userFormData Form containing updated user details (validated with {@code @Valid})
@@ -206,14 +205,14 @@ public class UserControllerHtml extends AbstractUserController {
      * security context via {@code services.runAs.startRunAsUser}, and returns
      * 'generic-forms::go-to' fragment with redirect URL. Redirects to user's organization
      * dashboard if available, otherwise to {@code pageAfterAuth}.
-     * </p>
+     * 
      * <p>
      * URL: {@code GET /html/user/{userId}/spoof}
-     * </p>
+     * 
      * <p>
      * Use case: Allows administrators to troubleshoot issues by viewing system as specific
      * user would see it.
-     * </p>
+     * 
      *
      * @param userId ID of user to impersonate
      * @param session HTTP session for storing original admin user ID
@@ -238,10 +237,10 @@ public class UserControllerHtml extends AbstractUserController {
      * Delegates to {@code stopSpoofingUser} to restore admin security context via
      * {@code services.runAs.exitRunAsUser}. Returns 'generic-forms::go-to' fragment
      * redirecting to admin dashboard.
-     * </p>
+     * 
      * <p>
      * URL: {@code GET /html/user/spoof/exit}
-     * </p>
+     * 
      *
      * @param session HTTP session containing SPOOFING_USER attribute with admin ID
      * @param request HTTP request for authentication context restoration
@@ -262,14 +261,14 @@ public class UserControllerHtml extends AbstractUserController {
      * Delegates to {@code doResetApiKey} which generates new API key via
      * {@code services.apiKey.resetApiKey}, persists updated entities, and returns
      * Thymeleaf fragment with plainApiKeyString for one-time display.
-     * </p>
+     * 
      * <p>
      * Security: User can only reset their own API key. New API key is displayed only
      * once; user must save it immediately.
-     * </p>
+     * 
      * <p>
      * URL: {@code POST /html/user/{userId}/settings/apikey}
-     * </p>
+     * 
      *
      * @param userId ID of user whose API key to reset (must match current user)
      * @return ModelAndView with 'snippets::apiKey' fragment displaying new plain API key

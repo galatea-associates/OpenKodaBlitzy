@@ -47,12 +47,10 @@ import static com.openkoda.core.form.FrontendMappingFieldDefinition.createNonDto
  * Provides methods to create text inputs, dropdowns, checkboxes, file uploads, code editors,
  * and other form field types. Each method returns a FormFieldDefinitionBuilder for further
  * configuration chaining, enabling a fluent API for form construction.
- * </p>
  * <p>
  * This builder accumulates field definitions in a list, along with field-level and form-level
  * validators. Field definitions specify both database schema (column type, constraints) and
  * presentation layer rendering (input type, validation rules).
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -61,7 +59,6 @@ import static com.openkoda.core.form.FrontendMappingFieldDefinition.createNonDto
  *        .dropdown("role", "rolesList")
  *        .checkbox("active");
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -131,7 +128,7 @@ public class FormFieldDefinitionBuilderStart {
      * The default privileges are applied to all fields created by this builder unless
      * explicitly overridden at the field level. This allows centralized privilege
      * management for forms where most fields share the same access control requirements.
-     * </p>
+     * 
      *
      * @param formName the form identifier used for i18n lookups and field name prefixing
      * @param defaultReadPrivilege the default privilege required to view field values (can be null)
@@ -150,7 +147,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Datalists store key-value pairs that can be referenced by multiple dropdown fields. The supplier
      * function is invoked at form rendering time with access to the current entity and repository.
-     * </p>
+     * 
      *
      * @param datalistId unique identifier for this datalist, referenced by dropdown fields
      * @param datalistSupplier function that returns a map of values, accepting current DTO/entity and repository
@@ -178,7 +175,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Simplified variant that accepts a supplier function with access only to the repository,
      * without the current DTO/entity context.
-     * </p>
+     * 
      *
      * @param datalistId unique identifier for this datalist, referenced by dropdown fields
      * @param datalistSupplier function that returns a map of values from repository queries
@@ -206,7 +203,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a VARCHAR database column and renders as an HTML text input element.
      * The field value can be optionally computed via SQL formula instead of stored directly.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (validation, display options, SQL formulas)
@@ -231,7 +228,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a TEXT or VARCHAR database column and renders as an HTML textarea element
      * for multi-line text input.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (rows, max length, validation)
@@ -252,7 +249,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a BOOLEAN database column and renders as an HTML checkbox element.
      * The field value can be optionally computed via SQL formula returning boolean.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (default value, SQL formula)
@@ -277,7 +274,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a TIMESTAMP database column and renders as a datetime picker widget
      * for selecting both date and time values.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (date format, time zone, validation)
@@ -302,7 +299,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a DATE database column and renders as a date picker widget
      * for selecting date values without time component.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (date format, min/max dates, validation)
@@ -327,7 +324,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a NUMERIC or INTEGER database column and renders as an HTML number input
      * element with validation for numeric values only.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (min/max values, decimal places, validation)
@@ -352,7 +349,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a VARCHAR database column with NOT NULL constraint and renders as an HTML
      * select element populated from the specified datalist. Value selection is required.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @param datalistId identifier of the datalist containing available options
@@ -429,7 +426,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Renders as a list of checkboxes populated from the datalist supplier function.
      * Multiple options can be selected. Selected values are stored as comma-separated string.
-     * </p>
+     * 
      *
      * @param fieldName the form field identifier
      * @param datalistSupplier function providing checkbox options with labels and values
@@ -460,7 +457,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a VARCHAR database column storing comma-separated selected values and renders
      * as a multiselect dropdown allowing multiple option selection from the datalist.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @param datalistId identifier of the datalist containing available options
@@ -481,7 +478,7 @@ public class FormFieldDefinitionBuilderStart {
      * Generates a BIGINT database column for storing entity IDs and renders as a dropdown
      * populated with records from the referenced entity table. Establishes a many-to-one
      * relationship between the current entity and the referenced entity.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @param referencedEntityKey the entity key identifying the referenced entity type
@@ -501,7 +498,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a BIGINT database column and renders as a dropdown populated with all
      * available organizations. Establishes a reference to the Organization entity.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration
@@ -518,7 +515,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a BIGINT database column and renders as a dropdown populated with all
      * available OpenKoda modules. Establishes a reference to the OpenkodaModule entity.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration
@@ -535,7 +532,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Renders as a list of radio buttons populated from the specified datalist.
      * Only one option can be selected at a time.
-     * </p>
+     * 
      *
      * @param fieldName the form field identifier
      * @param datalistId identifier of the datalist containing radio button options
@@ -575,7 +572,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a TEXT database column and renders as a code editor with CSS syntax
      * highlighting and validation.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (editor theme, validation)
@@ -590,7 +587,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a TEXT database column and renders as a code editor with HTML syntax
      * highlighting and validation.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (editor theme, validation)
@@ -605,7 +602,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a TEXT database column and renders as a code editor with JavaScript syntax
      * highlighting and validation.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (editor theme, validation)
@@ -620,7 +617,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a TEXT database column and renders as a code editor with intelligent
      * autocomplete suggestions for WebEndpoint API references.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (editor theme, validation)
@@ -635,7 +632,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a TEXT database column and renders as a code editor with intelligent
      * autocomplete suggestions for form field references.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (editor theme, validation)
@@ -650,7 +647,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a VARCHAR database column and renders as an HTML hidden input element
      * that stores values without displaying them to the user.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration
@@ -702,7 +699,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a VARCHAR database column and renders as an HTML password input element
      * with masked character display for secure entry.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (min length, strength validation)
@@ -738,7 +735,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a VARCHAR database column storing comma-separated file IDs and renders
      * as a file gallery with upload functionality filtered by MIME type.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @param datalistSupplier function providing existing files for display
@@ -755,7 +752,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Renders as a single image upload/selection widget accepting PNG and JPEG formats.
      * The selected image ID is stored but no database column is created automatically.
-     * </p>
+     * 
      *
      * @param fieldName the form field identifier
      * @return builder for further configuration (image dimensions, cropping)
@@ -775,7 +772,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a VARCHAR database column storing color hex values and renders as a
      * color picker widget for visual color selection.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (default color, color format)
@@ -790,7 +787,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Generates a TIMESTAMP WITH TIME ZONE database column and renders as a time picker
      * widget for selecting time values with timezone awareness.
-     * </p>
+     * 
      *
      * @param fieldName the database column name and form field identifier
      * @return builder for further configuration (time format, timezone, validation)
@@ -810,7 +807,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Renders as a Google ReCaptcha widget for bot detection and spam prevention.
      * No database column is created; validation occurs server-side during form submission.
-     * </p>
+     * 
      *
      * @return builder for further configuration (ReCaptcha version, theme)
      */
@@ -824,7 +821,7 @@ public class FormFieldDefinitionBuilderStart {
      * <p>
      * Renders as an HTML div element for layout structuring and visual organization.
      * No database column is created; used purely for presentation purposes.
-     * </p>
+     * 
      *
      * @param fieldName the element identifier for CSS styling and JavaScript access
      * @return builder for further configuration (CSS classes, inline styles)
@@ -844,7 +841,7 @@ public class FormFieldDefinitionBuilderStart {
      * <li>String array of IDs → list of parsed Long values</li>
      * </ul>
      * Used internally by file and image field types to normalize uploaded file references.
-     * </p>
+     * 
      */
     //TODO: move to some better place
     Function filesConverter = new Function() {

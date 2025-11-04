@@ -39,10 +39,10 @@ import java.util.List;
  * This class extends {@link Task} and uses single-table inheritance with discriminator value "email"
  * to store email-specific information in the tasks table. Email entities are created when the application
  * needs to send email notifications, and are subsequently processed by the EmailSenderJob scheduler.
- * </p>
+
  * <p>
  * <strong>Email Workflow:</strong>
- * </p>
+
  * <ol>
  *   <li>Email entity created with recipient, subject, content, and optional attachments</li>
  *   <li>Entity persisted to database with pending status</li>
@@ -52,7 +52,7 @@ import java.util.List;
  * </ol>
  * <p>
  * <strong>Key Features:</strong>
- * </p>
+
  * <ul>
  *   <li>SMTP and Mailgun integration support for email dispatch</li>
  *   <li>HTML content rendering via content field (up to 65535 characters)</li>
@@ -63,7 +63,7 @@ import java.util.List;
  * </ul>
  * <p>
  * <strong>Persistence Details:</strong>
- * </p>
+
  * <ul>
  *   <li>Table: tasks (shared with Task hierarchy via @DiscriminatorValue)</li>
  *   <li>File attachments: Stored in file_reference join table with organization_related_entity_id and file_id columns</li>
@@ -76,7 +76,7 @@ import java.util.List;
  * email.setOrganizationId(orgId);
  * emailRepository.save(email);
  * }</pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -138,11 +138,11 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * ManyToOne relationship to {@link Organization} entity providing tenant scope for this email.
      * Mapped to organization_id column in tasks table. Read-only association (insertable=false, updatable=false).
-     * </p>
+
      * <p>
      * Note: TODO Rule 4.4 indicates this should use FetchType.LAZY for performance optimization.
      * Currently uses default EAGER fetching which may impact performance with large result sets.
-     * </p>
+
      *
      * @see #organizationId
      */
@@ -157,7 +157,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Primary field for setting organization association when creating/updating emails.
      * Mapped to organization_id column in tasks table. Nullable to support system-wide emails.
-     * </p>
+
      *
      * @see #organization
      */
@@ -169,7 +169,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Provides alternative attachment mechanism via URL instead of database-stored files.
      * Can reference cloud storage, CDN, or external document repositories.
-     * </p>
+
      */
     private String attachmentURL;
 
@@ -177,7 +177,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * Lazy-loaded collection of {@link File} attachments for this email.
      * <p>
      * ManyToMany relationship via file_reference join table with columns:
-     * </p>
+
      * <ul>
      *   <li>organization_related_entity_id: References this email's ID (read-only)</li>
      *   <li>file_id: References attached File entity ID</li>
@@ -187,7 +187,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * Foreign key constraint disabled (NO_CONSTRAINT) for flexibility.
      * Files are fetched lazily to optimize performance when email metadata is queried.
      * Use {@link #filesId} for write operations and file association management.
-     * </p>
+
      *
      * @see #filesId
      */
@@ -206,7 +206,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * Collection of file IDs representing email attachments.
      * <p>
      * ElementCollection stored in file_reference table with columns:
-     * </p>
+
      * <ul>
      *   <li>organization_related_entity_id: References this email's ID</li>
      *   <li>file_id: File identifier value</li>
@@ -217,7 +217,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * scalar ID access for efficient file association without loading full File entities.
      * Foreign key constraint disabled (NO_CONSTRAINT) for operational flexibility.
      * Initialized to empty ArrayList for immediate use.
-     * </p>
+
      *
      * @see #files
      */
@@ -233,7 +233,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * When specified, overrides the default system sender configured in application properties.
      * Persisted to 'sender' column in tasks table. Nullable to use system default sender
      * when not explicitly set. Useful for organization-specific or branded email sending.
-     * </p>
+
      */
     @Column(name = "sender", nullable = true)
     protected String sender = null;
@@ -244,7 +244,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * Required by JPA for entity instantiation during database queries.
      * Creates an empty Email with all fields uninitialized except filesId (empty list).
      * Use setter methods or parameterized constructor to populate email data.
-     * </p>
+
      */
     public Email() {
     }
@@ -255,7 +255,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * Convenience constructor for quick email creation with essential data.
      * Additional fields like organizationId, attachments, and sender must be
      * set separately via setter methods after construction.
-     * </p>
+
      *
      * @param nameFrom sender display name for email "From" header
      * @param emailTo recipient email address (required)
@@ -276,7 +276,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Combines sender display name with email address in RFC 5322 format: "Name &lt;email&gt;".
      * Used by EmailSenderJob when constructing email message headers for delivery.
-     * </p>
+
      *
      * @param emailFrom sender email address to combine with nameFrom display name
      * @return formatted sender string as "Name &lt;email&gt;" for email headers
@@ -291,7 +291,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Combines recipient display name with email address in RFC 5322 format: "Name &lt;email&gt;".
      * Used by EmailSenderJob when constructing email message headers for delivery.
-     * </p>
+
      *
      * @return formatted recipient string as "Name &lt;email&gt;" for email headers
      * @see #getEmailTo()
@@ -399,7 +399,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Provides human-readable string representation for audit logs and change tracking.
      * Format: "ID: {emailId}" where emailId is the primary key value.
-     * </p>
+
      *
      * @return audit trail string containing email ID
      */
@@ -414,7 +414,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * Identifies which entity fields should be included in full-text search indexing.
      * For Email entities, returns collection containing "content" field to enable
      * searching email body text.
-     * </p>
+
      *
      * @return collection of property names for content indexing, containing "content"
      */
@@ -438,7 +438,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Note: This is a read-only association (insertable=false, updatable=false).
      * Use {@link #setOrganizationId(Long)} for write operations.
-     * </p>
+
      *
      * @param organization organization entity to associate with this email
      * @see #setOrganizationId(Long)
@@ -464,7 +464,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * Generated via @Formula using REFERENCE_FORMULA inherited from
      * {@link AuditableEntityOrganizationRelated}. Provides standardized
      * reference format for organization-related entities.
-     * </p>
+
      */
     @Formula(REFERENCE_FORMULA)
     private String referenceString;
@@ -485,7 +485,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Primary method for associating email with organization when creating or updating.
      * Set to null for system-wide emails not scoped to specific tenant.
-     * </p>
+
      *
      * @param organizationId organization primary key, or null for system-wide
      * @see #setOrganization(Organization)
@@ -499,7 +499,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Provides alternative to database-stored file attachments by referencing
      * external resources via URL (cloud storage, CDN, document repositories).
-     * </p>
+
      *
      * @param attachmentURL external URL for attachment reference, or null for none
      */
@@ -521,7 +521,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Format: "{id}, {emailTo}, attempts:{attempts}" for logging and debugging.
      * Includes email ID, recipient address, and delivery attempt counter.
-     * </p>
+
      *
      * @return string representation with ID, recipient, and attempts count
      */
@@ -536,7 +536,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * Returns list of {@link File} entities attached to this email.
      * Collection is loaded lazily from database when first accessed.
      * For write operations, use {@link #getFilesId()} to manage associations.
-     * </p>
+
      *
      * @return list of attached File entities, or null if not initialized
      * @see #getFilesId()
@@ -550,7 +550,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Note: For managing file associations, prefer using {@link #setFilesId(List)}
      * with file IDs to avoid unnecessary entity loading.
-     * </p>
+
      *
      * @param files list of File entities to attach to this email
      * @see #setFilesId(List)
@@ -564,7 +564,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Returns list of file primary keys without loading full File entities.
      * Preferred for efficient file association management and queries.
-     * </p>
+
      *
      * @return list of file IDs, initialized to empty ArrayList
      * @see #getFiles()
@@ -578,7 +578,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * <p>
      * Primary method for managing file attachments without loading full entities.
      * Updates file_reference table associations with provided file IDs.
-     * </p>
+
      *
      * @param filesId list of file primary keys to attach to this email
      * @see #setFiles(List)
@@ -602,7 +602,7 @@ public class Email extends Task implements AuditableEntityOrganizationRelated {
      * When set, overrides system-configured default sender for this email.
      * Useful for organization-specific or branded email sending.
      * Set to null to use application default sender configuration.
-     * </p>
+
      *
      * @param sender sender email address override, or null for system default
      */

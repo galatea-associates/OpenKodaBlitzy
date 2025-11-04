@@ -32,17 +32,17 @@ import org.hibernate.annotations.DynamicUpdate;
  * This entity enables enterprise Single Sign-On (SSO) authentication by linking LDAP
  * directory identities to OpenKoda User accounts. It stores standard LDAP schema
  * attributes synchronized from directory server responses during authentication.
- * </p>
+
  * <p>
  * The entity uses a shared primary key relationship with the {@link User} entity via
  * the {@code @MapsId} annotation, ensuring each LDAP user corresponds to exactly one
  * OpenKoda user account. The {@code @DynamicUpdate} annotation optimizes database
  * operations by updating only modified columns rather than all fields.
- * </p>
+
  * <p>
  * Persisted to the {@code ldap_users} table with one-to-one relationship to the
  * {@code users} table through the {@code user_id} foreign key.
- * </p>
+
  * <p>
  * Common LDAP attributes stored include:
  * <ul>
@@ -52,7 +52,7 @@ import org.hibernate.annotations.DynamicUpdate;
  *   <li>{@code sn} - surname (last name)</li>
  *   <li>{@code uid} - unique username/login identifier</li>
  * </ul>
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
@@ -115,7 +115,7 @@ public class LDAPUser extends LoggedUser {
      * {@code @JoinColumn} specifies the foreign key column {@code user_id} in the
      * {@code ldap_users} table. The {@code @JsonIgnore} annotation prevents
      * circular serialization issues during JSON conversion.
-     * </p>
+
      */
     @MapsId
     @OneToOne
@@ -135,7 +135,7 @@ public class LDAPUser extends LoggedUser {
      * <p>
      * This constructor is typically used during LDAP authentication when creating
      * a new user record from directory server response data.
-     * </p>
+
      *
      * @param cn        the Common Name (full name) from LDAP directory
      * @param email     the email address from LDAP mail attribute
@@ -246,7 +246,7 @@ public class LDAPUser extends LoggedUser {
      * <p>
      * Combines the common name (full name) and email address to provide
      * human-readable identification in audit logs and system tracking.
-     * </p>
+
      *
      * @return formatted string containing cn and email (e.g., "John Doe john.doe@example.com")
      */
@@ -260,7 +260,7 @@ public class LDAPUser extends LoggedUser {
      * <p>
      * This ID is automatically populated from the User entity via the {@code @MapsId}
      * annotation and should not be set manually.
-     * </p>
+
      *
      * @return the shared primary key ID, or {@code null} if not yet persisted
      */
@@ -274,7 +274,7 @@ public class LDAPUser extends LoggedUser {
      * <p>
      * Note: This value is typically managed automatically by JPA through the
      * {@code @MapsId} relationship and should rarely be set directly.
-     * </p>
+
      *
      * @param id the primary key identifier to set
      */
@@ -287,7 +287,7 @@ public class LDAPUser extends LoggedUser {
      * <p>
      * This represents the one-to-one relationship between LDAP authentication
      * data and the OpenKoda user account.
-     * </p>
+
      *
      * @return the associated User entity, or {@code null} if not set
      */
@@ -300,7 +300,7 @@ public class LDAPUser extends LoggedUser {
      * <p>
      * Establishing this relationship automatically populates the ID field via
      * the {@code @MapsId} annotation, ensuring proper shared primary key mapping.
-     * </p>
+
      *
      * @param user the User entity to associate with this LDAP user
      */

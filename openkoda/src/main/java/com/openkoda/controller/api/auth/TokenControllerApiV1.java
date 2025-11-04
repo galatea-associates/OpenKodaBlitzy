@@ -39,7 +39,7 @@ import static com.openkoda.controller.common.URLConstants._API_AUTH;
  * to inherited protected methods from {@link AbstractTokenControllerApiV1}. Each endpoint converts the
  * {@link com.openkoda.core.flow.PageModelMap} result to {@link ResponseEntity} via the {@code mav()} method
  * with success and error mappers.
- * </p>
+ * 
  * <p>
  * <b>Endpoints:</b>
  * <ul>
@@ -47,17 +47,16 @@ import static com.openkoda.controller.common.URLConstants._API_AUTH;
  *   <li>POST /api/v1/auth/token/refresh - Exchanges refresh token for new access token</li>
  *   <li>POST /api/v1/auth/tokenrefresher/user - Authenticates with credentials and issues refresh token</li>
  * </ul>
- * </p>
  * <p>
  * <b>Security Note:</b> Currently no {@code @PreAuthorize} annotations are present (marked with TODO).
  * Endpoints are publicly accessible for authentication purposes. Credentials and tokens are sensitive -
  * enforce TLS and avoid logging raw values.
- * </p>
+ * 
  * <p>
  * <b>Response Format:</b><br>
  * Success: {@code {"apiToken": "jwt...", "userId": 123, "expiresOn": "2024-01-15T10:30:00"}}<br>
  * Error: {@code {"message": "Invalid credentials", "status": 404}}
- * </p>
+ * 
  *
  * @see AbstractTokenControllerApiV1
  * @see TokenResponse
@@ -72,10 +71,10 @@ public class TokenControllerApiV1 extends AbstractTokenControllerApiV1 {
      * Issues JWT access token for authenticated user with API key verification.
      * <p>
      * HTTP Endpoint: {@code POST /api/v1/auth/token/user/{userId}}
-     * </p>
+     * 
      * <p>
      * Flow: Load user → Verify API key → Create token → Return TokenResponse
-     * </p>
+     * 
      *
      * @param userId the user ID for token issuance (path variable)
      * @param aTokenRequest the token request DTO containing apiKey field for verification
@@ -100,10 +99,10 @@ public class TokenControllerApiV1 extends AbstractTokenControllerApiV1 {
      * Exchanges refresh token for new JWT access token.
      * <p>
      * HTTP Endpoint: {@code POST /api/v1/auth/token/refresh}
-     * </p>
+     * 
      * <p>
      * Flow: Verify refresh token → Create new access token → Return TokenResponse
-     * </p>
+     * 
      *
      * @param aTokenRequest the refresh token request DTO containing tokenRefresher field
      * @return {@link ResponseEntity} with HTTP 200 and new {@link TokenResponse} on success,
@@ -126,10 +125,10 @@ public class TokenControllerApiV1 extends AbstractTokenControllerApiV1 {
      * Authenticates user with credentials and issues refresh token.
      * <p>
      * HTTP Endpoint: {@code POST /api/v1/auth/tokenrefresher/user}
-     * </p>
+     * 
      * <p>
      * Flow: Find user by login → Verify password → Create refresh token → Return TokenResponse
-     * </p>
+     * 
      *
      * @param aRefresherTokenRequest the refresher token request DTO containing login and password credentials
      * @return {@link ResponseEntity} with HTTP 200 and refresh {@link TokenResponse} on success,

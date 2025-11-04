@@ -34,13 +34,13 @@ import static com.openkoda.model.common.ModelConstants.DEFAULT_ORGANIZATION_RELA
  * Extends SecureRepository to provide privilege-enforced data access operations for UI frontend resources.
  * This interface enables dynamic repository discovery through SearchableRepositoryMetadata annotation,
  * facilitating frontend component indexing and search functionality across the application.
- * </p>
+ * 
  * <p>
  * The repository automatically enforces security privileges for all CRUD operations on FrontendResource
  * entities, ensuring that only authorized users can access, create, modify, or delete frontend resources.
  * Search indexing includes resource name, type, and organization-related reference fields for
  * comprehensive discoverability.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

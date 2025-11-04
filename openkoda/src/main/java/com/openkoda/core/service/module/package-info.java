@@ -25,11 +25,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This package provides centralized module registry, module metadata management, and event-driven configuration
  * creation for modules across users, organizations, and roles. The core abstraction is the Module entity, which
  * represents pluggable application modules with name, ordinal for ordering, version, dependencies, and lifecycle hooks.
- * </p>
+ * 
  *
- * <h2>Key Components</h2>
+ * <b>Key Components</b>
  *
- * <h3>ModuleService</h3>
+ * <b>ModuleService</b>
  * <p>
  * Central in-memory module registry maintaining a {@code TreeSet<Module>} sorted by ordinal and
  * {@code HashMap<String, Module>} for name lookups. Provides synchronized {@code registerModule()} for thread-safe
@@ -40,17 +40,17 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * {@code createConfigurationsForOrganization} which persists IntegrationModuleOrganizationConfiguration.
  * Supports privilege assignment via {@code addModulePrivilegesToRole} delegation to RoleService.
  * Extends ComponentProvider for repositories and services access, implements PageAttributes for debug logging.
- * </p>
+ * 
  *
- * <h3>ApplicationArea</h3>
+ * <b>ApplicationArea</b>
  * <p>
  * Type-safe enum defining seven UI insertion points: {@code CONTENT_TOP}, {@code CONTENT_BOTTOM}, {@code BODY_TOP},
  * {@code BODY_BOTTOM}, {@code SIDEBAR_TOP}, {@code SIDEBAR_BOTTOM}, {@code NAVBAR_PROFILE} for positioning dynamic
  * module content in page layouts. {@code STANDARD_AREAS} constant provides ordered canonical array of all areas.
  * Enum constants are breaking API changes requiring coordinated updates.
- * </p>
+ * 
  *
- * <h2>Module Registration Workflow</h2>
+ * <b>Module Registration Workflow</b>
  * <ol>
  *   <li>Module instance created with name, ordinal (ordering), version, dependencies</li>
  *   <li>{@code ModuleService.registerModule()} called to insert into registry (synchronized for thread-safety)</li>
@@ -59,7 +59,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Modules can register privileges via {@code addModulePrivilegesToRole} during initialization</li>
  * </ol>
  *
- * <h2>Integration with Platform</h2>
+ * <b>Integration with Platform</b>
  * <ul>
  *   <li><b>CustomisationService</b>: Module registration integrates with customization and extension registration (indirect reference, actual integration in parent service package)</li>
  *   <li><b>OpenkodaModule entity</b>: Database persistence of module metadata including name, version, enabled status, initialization state (note: ModuleService maintains in-memory registry, not JPA repository)</li>
@@ -68,10 +68,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>IntegrationModuleOrganizationConfiguration</b>: Per-organization integration configuration entity created by ModuleService for new organizations</li>
  * </ul>
  *
- * <h2>Event-Driven Architecture</h2>
+ * <b>Event-Driven Architecture</b>
  * <p>
  * {@code ModuleService.init()} {@code @PostConstruct} wires six event handlers:
- * </p>
+ * 
  * <ul>
  *   <li>{@code USER_CREATED} → {@code createConfigurationsForUser} (placeholder, logs only)</li>
  *   <li>{@code USER_DELETED} → {@code deleteConfigurationsForUser} (placeholder)</li>
@@ -82,9 +82,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ul>
  * <p>
  * Handlers return boolean (always true in current implementation).
- * </p>
+ * 
  *
- * <h2>Thread-Safety Considerations</h2>
+ * <b>Thread-Safety Considerations</b>
  * <ul>
  *   <li>{@code ModuleService.registerModule()} synchronized for safe concurrent registration</li>
  *   <li>modules TreeSet and modulesByName HashMap reads not synchronized - caller responsibility</li>
@@ -93,21 +93,21 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>ApplicationArea enum constants inherently thread-safe and immutable</li>
  * </ul>
  *
- * <h2>Concurrency Notes</h2>
+ * <b>Concurrency Notes</b>
  * <ul>
  *   <li>Event handlers executed sequentially by single ApplicationEventService thread</li>
  *   <li>Module registration typically happens during application startup before concurrent access</li>
  *   <li>Post-startup lookups are read-only and safe if no concurrent {@code registerModule()}</li>
  * </ul>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <ul>
  *   <li><b>Registry pattern</b>: ModuleService maintains central module registry with name-based and ordered access</li>
  *   <li><b>Event listener pattern</b>: ModuleService subscribes to entity lifecycle events for configuration creation</li>
  *   <li><b>Enum constant pattern</b>: ApplicationArea provides type-safe vocabulary for UI placement</li>
  * </ul>
  *
- * <h2>Usage Examples</h2>
+ * <b>Usage Examples</b>
  * <pre>
  * // Module registration (typically in @PostConstruct)
  * Module myModule = new Module("integration-module", 100);
@@ -130,7 +130,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * module.registerWidgetForArea(ApplicationArea.SIDEBAR_TOP, widgetRenderer);
  * </pre>
  *
- * <h2>Related Packages</h2>
+ * <b>Related Packages</b>
  * <ul>
  *   <li>{@code com.openkoda.model.module}: Module entity definition with name, ordinal, version fields</li>
  *   <li>{@code com.openkoda.core.service.event}: ApplicationEventService, ApplicationEvent enum tokens</li>
@@ -139,7 +139,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code com.openkoda.controller}: ComponentProvider base class</li>
  * </ul>
  *
- * <h2>Best Practices</h2>
+ * <b>Best Practices</b>
  * <ul>
  *   <li>Register modules during application startup ({@code @PostConstruct} initialization)</li>
  *   <li>Use ordinal values with gaps (e.g., 100, 200, 300) to allow insertion of future modules</li>
@@ -148,7 +148,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Use {@code getModulesForNames()} with Set parameter for large batch lookups</li>
  * </ul>
  *
- * <h2>Known Limitations</h2>
+ * <b>Known Limitations</b>
  * <ul>
  *   <li>Module registry is in-memory only - not persisted across restarts</li>
  *   <li>No unregister or deregister operation - modules remain in registry for application lifetime</li>

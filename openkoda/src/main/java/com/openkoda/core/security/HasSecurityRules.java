@@ -51,7 +51,7 @@ import static com.openkoda.model.PrivilegeNames.*;
  * <p>
  * This interface integrates with Spring Security SpEL evaluation, method-level security annotations,
  * and SecureRepository privilege enforcement. It provides three types of security rules:
- * </p>
+ * 
  * <ul>
  *   <li><b>PreAuthorize strings</b>: SpEL expressions for method-level security annotations</li>
  *   <li><b>JPQL query fragments</b>: Security predicates for {@code @Query} repository methods</li>
@@ -61,14 +61,14 @@ import static com.openkoda.model.PrivilegeNames.*;
  * Security rules are evaluated against the {@link OrganizationUser} principal stored in Spring Security's
  * SecurityContext. Privilege checks support both global privileges (across all organizations) and
  * organization-specific privileges for multi-tenant authorization.
- * </p>
+ * 
  * <p>
  * <b>Thread-safety</b>: SecurityContext-based privilege resolution is thread-safe via ThreadLocal storage.
  * Multiple threads can safely evaluate security rules concurrently.
- * </p>
+ * 
  * <p>
  * Example usage with {@code @PreAuthorize} annotation:
- * </p>
+ * 
  * <pre>
  * {@code @PreAuthorize}(CHECK_CAN_READ_ORG_DATA)
  * public Organization getOrganization(Long organizationId) { ... }
@@ -1064,7 +1064,7 @@ public interface HasSecurityRules extends LoggingComponentWithRequestId {
      * Defines different levels of data filtering based on organization context and user privileges.
      * <p>
      * Example usage in repository:
-     * </p>
+     * 
      * <pre>
      * toSecurePredicate(specification, Privilege.readOrgData, root, query, cb, SecurityScope.USER_IN_ORGANIZATION);
      * </pre>
@@ -1137,7 +1137,7 @@ public interface HasSecurityRules extends LoggingComponentWithRequestId {
      * This method is the primary entry point for SecureRepository query construction.
      * <p>
      * Processing flow:
-     * </p>
+     * 
      * <ol>
      *   <li>Apply base specification predicate</li>
      *   <li>Filter by SecurityScope (ALL, GLOBAL, ORGANIZATION, USER, USER_IN_ORGANIZATION)</li>
@@ -1298,7 +1298,7 @@ public interface HasSecurityRules extends LoggingComponentWithRequestId {
      * rather than stored in entity field.
      * <p>
      * Logic:
-     * </p>
+     * 
      * <ul>
      *   <li>If user has global privilege: returns original search unchanged (all entities accessible)</li>
      *   <li>If user lacks global privilege:

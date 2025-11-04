@@ -44,12 +44,12 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * The {@link #populateTo(Role)} method applies validated form data back to the entity,
  * using {@link PrivilegeHelper#valueOfString(String)} to transform List&lt;String&gt; to
  * Set&lt;PrivilegeBase&gt;, defaulting to an empty HashSet if null.
- * </p>
+ * 
  * <p>
  * This form extends {@link AbstractEntityForm} with generic types RoleDto and Role,
  * implementing {@link TemplateFormFieldNames} for consistent field name constants.
  * Request-scoped lifecycle follows the standard populateFrom → validate → populateTo pattern.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -68,7 +68,7 @@ public class RoleForm extends AbstractEntityForm<RoleDto, Role> implements Templ
      * This constructor initializes the form with all required components for role entity
      * management, allowing custom frontend mapping definitions beyond the default
      * {@link FrontendMappingDefinitions#roleForm}.
-     * </p>
+     * 
      *
      * @param dto the RoleDto instance containing form data
      * @param entity the Role entity instance to be populated
@@ -85,7 +85,7 @@ public class RoleForm extends AbstractEntityForm<RoleDto, Role> implements Templ
      * {@link FrontendMappingDefinitions#roleForm} mapping definition. Typically used
      * when editing an existing role where form data will be populated via
      * {@link #populateFrom(Role)}.
-     * </p>
+     * 
      *
      * @param entity the Role entity to be managed by this form
      */
@@ -100,7 +100,7 @@ public class RoleForm extends AbstractEntityForm<RoleDto, Role> implements Templ
      * using the default {@link FrontendMappingDefinitions#roleForm} mapping definition.
      * Typically used for new role creation forms where both DTO and entity will be
      * instantiated during form processing.
-     * </p>
+     * 
      */
     public RoleForm() {
         super(null, null, FrontendMappingDefinitions.roleForm);
@@ -114,7 +114,7 @@ public class RoleForm extends AbstractEntityForm<RoleDto, Role> implements Templ
      * List&lt;String&gt; using stream mapping with {@link PrivilegeBase#name()}.
      * This transformation enables frontend rendering of privilege selections as
      * simple string identifiers.
-     * </p>
+     * 
      *
      * @param entity the Role entity containing source data
      * @return this RoleForm instance for fluent method chaining
@@ -138,11 +138,11 @@ public class RoleForm extends AbstractEntityForm<RoleDto, Role> implements Templ
      * from List&lt;String&gt; to Set&lt;PrivilegeBase&gt; using
      * {@link PrivilegeHelper#valueOfString(String)} for each privilege name,
      * defaulting to an empty HashSet if the privilege list is null.
-     * </p>
+     * 
      * <p>
      * The getSafeValue method ensures that only non-null DTO values trigger entity
      * updates, preserving existing entity state when form fields are not provided.
-     * </p>
+     * 
      *
      * @param entity the Role entity to be updated with validated form data
      * @return the updated Role entity
@@ -167,11 +167,11 @@ public class RoleForm extends AbstractEntityForm<RoleDto, Role> implements Templ
      * the form with error code 'not.empty' if either field is blank. Validation uses
      * {@link org.apache.commons.lang3.StringUtils#isBlank(CharSequence)} to check for
      * null, empty, or whitespace-only values.
-     * </p>
+     * 
      * <p>
      * Validation errors are recorded in the provided {@link BindingResult}, which can
      * be inspected by controllers to determine form processing success or failure.
-     * </p>
+     * 
      *
      * @param br the BindingResult for collecting validation errors
      * @return this RoleForm instance for fluent method chaining

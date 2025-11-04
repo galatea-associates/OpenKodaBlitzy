@@ -37,23 +37,19 @@ import org.springframework.stereotype.Service;
  * method to parse the authentication token from the request URI path prefix. It enables embedding authentication tokens
  * directly in URL paths for resources accessed without session cookies, such as public links to protected downloads
  * or embedded images in emails requiring authentication.
- * </p>
  * <p>
  * The request matcher {@link #checkRequestSupport(HttpServletRequest)} verifies that the HTTP method is GET and
  * the URI starts with the {@code "/__t_/"} prefix defined in {@link URLConstants#__T_}. This GET-only restriction
  * prevents CSRF attacks via token-in-URL for state-changing operations, consistent with the
  * {@link RequestParameterTokenAuthenticationFilter} security model.
- * </p>
  * <p>
  * Token extraction parses the substring between the {@code "/__t_/"} prefix and the next {@code "/"} delimiter
  * from the request URI. For example, the URI {@code /__t_/abc123/download/report.pdf} extracts token {@code "abc123"}.
- * </p>
  * <p>
  * The authentication success handler forwards the request to the target URI with the token prefix removed.
  * For example, {@code /__t_/abc123/download/report.pdf} forwards to {@code /download/report.pdf} after successful
  * authentication. This preserves the request method, headers, parameters, and body while continuing the Spring Security
  * filter chain with the authenticated {@link org.springframework.security.core.context.SecurityContext}.
- * </p>
  * <p>
  * Usage examples:
  * <pre>
@@ -67,7 +63,6 @@ import org.springframework.stereotype.Service;
  * → extracts token "abc123"
  * → forwards to /images/logo.png
  * </pre>
- * </p>
  *
  * @see AbstractTokenAuthenticationFilter
  * @see URLConstants#__T_
@@ -85,7 +80,7 @@ public class TokenPathPrefixAuthenticationFilter extends AbstractTokenAuthentica
      * <p>
      * The constructor passes the static method {@link #checkRequestSupport(HttpServletRequest)} as a RequestMatcher
      * to the superclass via {@code super(TokenPathPrefixAuthenticationFilter::checkRequestSupport)}.
-     * </p>
+     * 
      * <p>
      * The authentication success handler extracts the target URI by finding the second "/" delimiter (after the
      * {@code "/__t_/token"} prefix) and forwards the authenticated request to that URI:
@@ -97,7 +92,7 @@ public class TokenPathPrefixAuthenticationFilter extends AbstractTokenAuthentica
      * </pre>
      * The forward preserves the request method, headers, parameters, and body while continuing the Spring Security
      * filter chain with the authenticated SecurityContext.
-     * </p>
+     * 
      */
     public TokenPathPrefixAuthenticationFilter() {
         super( TokenPathPrefixAuthenticationFilter::checkRequestSupport );
@@ -113,7 +108,7 @@ public class TokenPathPrefixAuthenticationFilter extends AbstractTokenAuthentica
      * <p>
      * Returns {@code true} if the request method equals "GET" AND the request URI starts with the {@code "/__t_/"}
      * prefix defined in {@link URLConstants#__T_}.
-     * </p>
+     * 
      * <p>
      * The dual condition enforces:
      * <ol>
@@ -122,7 +117,7 @@ public class TokenPathPrefixAuthenticationFilter extends AbstractTokenAuthentica
      *   <li>URI starts with {@code "/__t_/"} - Verified using {@link StringUtils#startsWith(CharSequence, CharSequence)}
      *       to check the {@link URLConstants#__T_} constant.</li>
      * </ol>
-     * </p>
+     * 
      *
      * @param request the HttpServletRequest to check for GET method and {@code "/__t_/"} URI prefix
      * @return {@code true} if request is GET and URI starts with {@code "/__t_/"}, {@code false} otherwise
@@ -142,11 +137,11 @@ public class TokenPathPrefixAuthenticationFilter extends AbstractTokenAuthentica
      * request.requestURI.indexOf("/", 1) = 13 (index of "/" after token, search starts at index 1 to skip leading "/")
      * request.requestURI.substring(6, 13) = "abc123" (extracted token)
      * </pre>
-     * </p>
+     * 
      * <p>
      * Edge case: If no "/" appears after the token (e.g., {@code "/__t_/abc123"}), the {@code substring} method
      * throws {@link IndexOutOfBoundsException}. The filter should reject such malformed URIs.
-     * </p>
+     * 
      *
      * @param request the HttpServletRequest with URI format {@code /__t_/{token}/targetPath}
      * @return the token value parsed from the URI path, substring between {@code __T_.length()} and {@code indexOf("/", 1)}
@@ -162,7 +157,7 @@ public class TokenPathPrefixAuthenticationFilter extends AbstractTokenAuthentica
      * Delegates to {@code authenticationDetailsSource.buildDetails(request)} to create
      * {@link org.springframework.security.web.authentication.WebAuthenticationDetails} containing the remote IP address
      * and session ID. These details are used for audit logging and authentication event tracking.
-     * </p>
+     * 
      *
      * @param request the HttpServletRequest for extracting authentication details (IP address, session ID)
      * @param authRequest the UsernamePasswordAuthenticationToken to populate with WebAuthenticationDetails
@@ -178,11 +173,11 @@ public class TokenPathPrefixAuthenticationFilter extends AbstractTokenAuthentica
      * Delegates to {@code super.setAuthenticationManager(authenticationManager)} to connect this filter to the
      * authentication provider chain. The AuthenticationManager contains {@link LoginByPasswordOrTokenAuthenticationProvider}
      * for processing {@link RequestTokenAuthenticationToken} instances created by this filter.
-     * </p>
+     * 
      * <p>
      * The {@code @Lazy} annotation breaks the circular dependency that occurs when the SecurityConfiguration creates
      * both this filter bean and the AuthenticationManager bean that references the filter.
-     * </p>
+     * 
      *
      * @param authenticationManager the AuthenticationManager containing LoginByPasswordOrTokenAuthenticationProvider
      */

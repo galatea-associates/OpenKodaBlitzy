@@ -9,12 +9,12 @@ import org.springframework.stereotype.Controller;
  * it contains no endpoint implementations. Actual dashboard features are implemented in
  * {@link PageBuilderController} for dynamic dashboard rendering from FrontendResource
  * configurations.
- * </p>
+ * 
  * <p>
  * This class serves as a placeholder to maintain the controller package structure and
  * reserve the namespace for dashboard-specific endpoints that may be added in future
  * versions.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

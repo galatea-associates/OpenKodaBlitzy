@@ -25,9 +25,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This module enables multi-tenant applications to connect with external collaboration and project management platforms.
  * Each organization can configure its own integration settings, OAuth credentials, and notification forwarding rules.
  * The module handles the complete integration lifecycle from OAuth authorization to API interaction and token management.
- * </p>
+ * 
  *
- * <h2>Core Capabilities</h2>
+ * <b>Core Capabilities</b>
  * <ul>
  *   <li><b>OAuth 2.0 Authentication</b>: Implements complete OAuth 2.0 authorization code flow for supported providers.
  *       Controllers handle callback endpoints, exchange authorization codes for access tokens, and persist tokens securely.</li>
@@ -41,7 +41,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       Notifications are filtered by organization scope and propagation rules before delivery.</li>
  * </ul>
  *
- * <h2>Module Structure</h2>
+ * <b>Module Structure</b>
  * <ul>
  *   <li><b>consumer/</b>: API client implementations for each third-party provider. Classes convert internal notification
  *       DTOs to provider-specific API calls (Trello cards, GitHub issues, Jira tickets, Basecamp todos, Teams messages, Slack posts).</li>
@@ -55,10 +55,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       performs OAuth token exchanges, manages token refresh, constructs callback URLs, and handles API errors.</li>
  * </ul>
  *
- * <h2>Architecture Pattern</h2>
+ * <b>Architecture Pattern</b>
  * <p>
  * The module follows a <b>per-organization configuration with OAuth token management</b> pattern:
- * </p>
+ * 
  * <ol>
  *   <li>Global configuration defines OAuth client credentials via Spring properties ({@code module.integration.github.client.id}, etc.)</li>
  *   <li>Organization administrators authorize the application through OAuth provider consent screens</li>
@@ -68,10 +68,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Error handling delegates to central service methods for consistent retry and logging behavior</li>
  * </ol>
  *
- * <h2>Usage Example</h2>
+ * <b>Usage Example</b>
  * <p>
  * To enable GitHub integration for an organization:
- * </p>
+ * 
  * <pre>
  * // 1. Register OAuth app with GitHub, obtain client ID and secret
  * // 2. Configure in application.properties:
@@ -85,7 +85,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * // GitHub issue created via GitHubConsumer if organization has valid config
  * </pre>
  *
- * <h2>Common Pitfalls</h2>
+ * <b>Common Pitfalls</b>
  * <ul>
  *   <li><b>Callback URL Mismatch</b>: OAuth callback URLs must match the OAuth app registration exactly, including protocol,
  *       domain, port, and path. Mismatches cause authorization failures. Verify {@code base.url} property matches your deployment.</li>

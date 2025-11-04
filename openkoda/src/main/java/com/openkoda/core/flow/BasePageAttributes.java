@@ -32,12 +32,10 @@ import java.util.List;
  * This interface provides standardized {@link PageAttr} constants that avoid ad-hoc string keys
  * when passing data between controllers, Flow pipelines, and view templates. Each constant
  * represents a commonly-used page attribute with strong typing for type-safe data access.
- * </p>
  * <p>
  * These attributes are used in Flow pipelines to set error states, messages, and validation
  * results that are rendered in Thymeleaf templates. Using these typed constants prevents
  * typos and enables IDE auto-completion.
- * </p>
  * <p>
  * Example usage in a Flow pipeline:
  * <pre>{@code
@@ -45,7 +43,6 @@ import java.util.List;
  *     .thenSet(isError, a -> true)
  *     .thenSet(message, a -> "Operation completed successfully");
  * }</pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -62,7 +59,7 @@ public interface BasePageAttributes {
      * <p>
      * Set to {@code true} when an error condition is detected in a Flow pipeline or controller.
      * View templates can check this attribute to display error banners or styling.
-     * </p>
+     * 
      */
     PageAttr<Boolean> isError = new PageAttr<>("isError");
     
@@ -71,7 +68,7 @@ public interface BasePageAttributes {
      * <p>
      * Used for success messages, informational text, or general feedback to users.
      * This attribute is rendered in view templates to communicate operation results.
-     * </p>
+     * 
      */
     PageAttr<String> message = new PageAttr<>("message");
     
@@ -80,7 +77,7 @@ public interface BasePageAttributes {
      * <p>
      * Used when an error occurs to provide specific details to the user. View templates
      * display this message in error notification areas. Typically set alongside {@link #isError}.
-     * </p>
+     * 
      */
     PageAttr<String> error = new PageAttr<>("error");
     
@@ -90,7 +87,7 @@ public interface BasePageAttributes {
      * Captures the full exception when errors occur during request processing. Useful for
      * logging, debugging, and displaying technical error details in development environments.
      * In production, expose exception details carefully to avoid security risks.
-     * </p>
+     * 
      */
     PageAttr<Exception> exception = new PageAttr<>("exception");
     
@@ -100,7 +97,7 @@ public interface BasePageAttributes {
      * Contains validation errors detected when binding request parameters to form objects.
      * View templates access this attribute to display field-specific error messages next
      * to form inputs. Set automatically by Spring MVC during form validation.
-     * </p>
+     * 
      *
      * @see org.springframework.validation.BindingResult
      */
@@ -112,7 +109,7 @@ public interface BasePageAttributes {
      * Provides a simplified view of all validation errors from {@link BindingResult} for
      * display in summary error sections. Use this attribute when showing all errors together
      * rather than per-field error messages.
-     * </p>
+     * 
      *
      * @see org.springframework.validation.ObjectError
      * @see #bindingResult

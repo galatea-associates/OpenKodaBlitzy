@@ -36,7 +36,7 @@ import com.openkoda.model.EmailConfig;
  * fields are also present. When Mailgun is used, only the API key is required.
  * The form merges entity data using EMAIL_* field name constants via getSafeValue()
  * from the parent AbstractOrganizationRelatedEntityForm.
- * </p>
+
  * <p>
  * Validation Rules:
  * <ul>
@@ -44,7 +44,7 @@ import com.openkoda.model.EmailConfig;
  *   <li>If SMTP host is provided: username, password, and from are required</li>
  *   <li>If Mailgun API key is provided: no additional fields required</li>
  * </ul>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -61,7 +61,7 @@ public class EmailConfigForm extends AbstractEntityForm<EmailConfigDto, EmailCon
      * This constructor initializes the form with both the data transfer object containing
      * form field values and the persistent entity to be updated. The form uses the
      * emailConfigForm frontend mapping definition for field bindings and validation.
-     * </p>
+
      *
      * @param emailDto the {@link EmailConfigDto} containing form field values for email configuration
      * @param entity the {@link EmailConfig} entity to be populated with validated form data
@@ -76,7 +76,7 @@ public class EmailConfigForm extends AbstractEntityForm<EmailConfigDto, EmailCon
      * This no-argument constructor initializes the form with default values,
      * suitable for binding new email configuration data from user input.
      * The form uses the emailConfigForm frontend mapping definition.
-     * </p>
+
      */
     public EmailConfigForm() {  
         super(FrontendMappingDefinitions.emailConfigForm);
@@ -93,7 +93,7 @@ public class EmailConfigForm extends AbstractEntityForm<EmailConfigDto, EmailCon
      * </ul>
      * Validation failures are registered with the binding result using "not.empty" error codes
      * and default error messages.
-     * </p>
+
      *
      * @param br the {@link BindingResult} to register validation errors
      * @return this form instance for method chaining
@@ -117,7 +117,7 @@ public class EmailConfigForm extends AbstractEntityForm<EmailConfigDto, EmailCon
      * This method populates the form DTO with values from the persistent entity, including:
      * SMTP configuration (host, port, username, password, protocol, from, ssl, smtpAuth, starttls),
      * reply-to address, and Mailgun API key. All fields are transferred directly without transformation.
-     * </p>
+
      *
      * @param entity the {@link EmailConfig} entity containing persisted email configuration
      * @return this form instance for method chaining
@@ -146,7 +146,7 @@ public class EmailConfigForm extends AbstractEntityForm<EmailConfigDto, EmailCon
      * EMAIL_REPLY_TO, EMAIL_SMTP_AUTH, EMAIL_SSL, EMAIL_STARTTLS, and EMAIL_MAILGUN_API_KEY
      * constants for safe field resolution. The getSafeValue method handles null values
      * and provides fallback behavior when form fields are not provided.
-     * </p>
+
      *
      * @param entity the {@link EmailConfig} entity to be updated with validated form data
      * @return the updated entity instance

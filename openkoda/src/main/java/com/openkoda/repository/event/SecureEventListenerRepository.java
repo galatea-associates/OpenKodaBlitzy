@@ -31,14 +31,14 @@ import static com.openkoda.controller.common.URLConstants.EVENTLISTENER;
 /**
  * Secure repository interface for managing {@link EventListenerEntry} entities with privilege-based access control.
  * <p>
- * This repository extends the {@link SecureRepository} pattern to enforce privilege checks on all operations
+ * This repository extends the {@link com.openkoda.repository.SecureRepository} pattern to enforce privilege checks on all operations
  * involving event listener registrations. It provides a secure facade for accessing event listener entries
  * used in the dynamic event-driven workflow management system.
- * </p>
+ * 
  * <p>
  * The repository is annotated with {@link SearchableRepositoryMetadata} to enable full-text search capabilities
  * and custom display formatting for event listener entries. The metadata configuration includes:
- * </p>
+ * 
  * <ul>
  *   <li><b>descriptionFormula</b>: SQL formula for displaying event listener entries in the UI. The formula
  *       concatenates event details (name, object type), consumer information (class name, method name, parameter type),
@@ -54,10 +54,10 @@ import static com.openkoda.controller.common.URLConstants.EVENTLISTENER;
  * Event listeners are registered at runtime to respond to application events such as entity lifecycle events,
  * custom business events, or integration events. The secure repository pattern ensures that only users with
  * appropriate privileges can view, modify, or delete event listener configurations.
- * </p>
+ * 
  * <p>
  * For unsecured operations (e.g., internal system use without privilege checks), use {@link EventListenerRepository} instead.
- * </p>
+ * 
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-03-11

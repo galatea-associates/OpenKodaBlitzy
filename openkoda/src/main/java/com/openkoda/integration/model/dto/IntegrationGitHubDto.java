@@ -27,11 +27,11 @@ package com.openkoda.integration.model.dto;
  * Mutable JavaBean for GitHub repository and authentication settings. This DTO is used
  * in Spring MVC controllers for form binding and in services for GitHub API integration
  * configuration. Contains repository identification fields required for GitHub REST API calls.
- * </p>
+ * 
  * <p>
  * This class follows the JavaBean pattern with public fields and conventional getters/setters.
  * Instances are not thread-safe due to mutable fields; callers must enforce concurrency control.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -44,7 +44,7 @@ public class IntegrationGitHubDto {
      * <p>
      * The name of the repository without the owner prefix. For example, for the repository
      * at https://github.com/owner/repo-name, this field should contain "repo-name".
-     * </p>
+     * 
      */
     public String gitHubRepoName;
     
@@ -54,7 +54,7 @@ public class IntegrationGitHubDto {
      * The owner of the repository, which can be either a user account or an organization.
      * For example, for the repository at https://github.com/owner/repo-name, this field
      * should contain "owner".
-     * </p>
+     * 
      */
     public String gitHubRepoOwner;
 

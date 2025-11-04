@@ -25,9 +25,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This package contains Spring Data JPA repositories for managing external authentication provider
  * integrations. These repositories handle user mappings between OpenKoda User entities and external
  * identity providers including Facebook, Google, LinkedIn, LDAP/Active Directory, and Salesforce.
- * </p>
+ * 
  *
- * <h2>Supported Authentication Providers</h2>
+ * <b>Supported Authentication Providers</b>
  * <ul>
  *   <li><b>Facebook</b> - OAuth 2.0 authentication via Facebook Login</li>
  *   <li><b>Google</b> - OAuth 2.0 authentication via Google Sign-In</li>
@@ -36,10 +36,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>Salesforce</b> - OAuth 2.0 authentication via Salesforce Identity</li>
  * </ul>
  *
- * <h2>OAuth Authentication Flow</h2>
+ * <b>OAuth Authentication Flow</b>
  * <p>
  * The OAuth 2.0 authorization flow for external providers follows these steps:
- * </p>
+ * 
  * <ol>
  *   <li><b>External Provider Authentication</b> - User logs in with provider credentials (e.g., Facebook login screen)</li>
  *   <li><b>Authorization Callback</b> - Provider redirects to OpenKoda callback URL with authorization code</li>
@@ -48,10 +48,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>Account Linking</b> - System either links to existing User entity or creates new User</li>
  * </ol>
  *
- * <h2>LDAP Authentication Flow</h2>
+ * <b>LDAP Authentication Flow</b>
  * <p>
  * The LDAP authentication flow uses directory server credentials:
- * </p>
+ * 
  * <ol>
  *   <li><b>Directory Server Authentication</b> - User provides LDAP credentials (username/password)</li>
  *   <li><b>UID Lookup</b> - System retrieves user identifier (uid) from LDAP directory</li>
@@ -59,18 +59,18 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>User Creation/Linking</b> - System creates User entity or links to existing account</li>
  * </ol>
  *
- * <h2>Security Model</h2>
+ * <b>Security Model</b>
  * <p>
  * All repositories enforce privilege-based access control via Spring Security method-level security.
  * Each repository query requires appropriate CHECK_CAN_READ_* privileges defined via @PreAuthorize
  * annotations. This ensures external authentication operations respect OpenKoda's role-based
  * access control (RBAC) model.
- * </p>
+ * 
  *
- * <h2>Spring Data Integration</h2>
+ * <b>Spring Data Integration</b>
  * <p>
  * All repositories extend JpaRepository&lt;Entity, Long&gt; and HasSecurityRules interfaces, providing:
- * </p>
+ * 
  * <ul>
  *   <li>Standard CRUD operations (save, findById, delete)</li>
  *   <li>Pagination and sorting support</li>
@@ -79,17 +79,17 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Privilege enforcement via HasSecurityRules contract</li>
  * </ul>
  *
- * <h2>Usage Patterns</h2>
+ * <b>Usage Patterns</b>
  * <p>
  * These repositories are used by OAuth callback controllers in the
  * com.openkoda.integration.controller package. Controllers handle provider-specific
  * authentication callbacks and delegate user lookup/creation to these repositories.
- * </p>
+ * 
  *
- * <h2>Persistence</h2>
+ * <b>Persistence</b>
  * <p>
  * Each repository maps to a corresponding entity table:
- * </p>
+ * 
  * <ul>
  *   <li>FacebookUserRepository → facebook_user table</li>
  *   <li>GoogleUserRepository → google_user table</li>
@@ -98,7 +98,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>SalesforceUserRepository → salesforce_user table</li>
  * </ul>
  *
- * <h2>Key Repository Interfaces</h2>
+ * <b>Key Repository Interfaces</b>
  * <ul>
  *   <li><b>FacebookUserRepository</b> - Facebook OAuth user mappings with findByFacebookId</li>
  *   <li><b>GoogleUserRepository</b> - Google Sign-In user mappings with findByGoogleId</li>
@@ -107,10 +107,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>SalesforceUserRepository</b> - Salesforce OAuth user mappings with findBySalesforceId</li>
  * </ul>
  *
- * <h2>Dependencies</h2>
+ * <b>Dependencies</b>
  * <p>
  * This package requires:
- * </p>
+ * 
  * <ul>
  *   <li>Spring Data JPA for repository infrastructure</li>
  *   <li>Spring Security for method-level security annotations</li>
@@ -120,12 +120,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Datasource configuration for database connectivity</li>
  * </ul>
  *
- * <h2>Thread Safety</h2>
+ * <b>Thread Safety</b>
  * <p>
  * All repositories are thread-safe Spring-managed singleton beans. Repository methods can be
  * safely invoked from multiple threads concurrently. The underlying EntityManager is thread-safe
  * within transactional boundaries managed by Spring's transaction infrastructure.
- * </p>
+ * 
  *
  * @see com.openkoda.integration.controller OAuth callback controllers
  * @see com.openkoda.model.authentication External user entity classes

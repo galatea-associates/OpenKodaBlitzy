@@ -48,22 +48,22 @@ import java.util.stream.Collectors;
  * selective column updates. Stores user profile data (firstName, lastName, computed name via {@code @Formula}), authentication 
  * state (enabled, tokenExpired), notification preferences (emailNotificationsEnabled), and language settings. Uses 
  * GLOBAL_ID_GENERATOR sequence with initial value 10000, allocationSize 10.
- * </p>
+ * 
  * <p>
  * <b>Authentication:</b> Supports multiple authentication methods via one-to-one relationships: FacebookUser, GoogleUser, 
  * LinkedinUser, LDAPUser, SalesforceUser, and local LoginAndPassword.
- * </p>
+ * 
  * <p>
  * <b>Multi-tenancy:</b> Implements IsManyOrganizationsRelatedEntity for cross-organizational user access. UserRole entities 
  * link users to organizations with specific roles.
- * </p>
+ * 
  * <p>
  * <b>Computed fields:</b> {@code @Formula}-derived name (first_name || ' ' || last_name), requiredReadPrivilege, 
  * requiredWritePrivilege, indexString (database-generated).
- * </p>
+ * 
  * <p>
  * <b>Audit:</b> Extends TimestampedEntity for createdOn/updatedOn timestamps via Spring Data auditing.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

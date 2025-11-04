@@ -42,16 +42,16 @@ import java.util.Objects;
  * and modification information using Spring Data JPA auditing. Entities extending this class
  * automatically receive four audit fields that are populated by the framework without requiring
  * manual intervention.
- * </p>
+
  * <p>
  * The class uses {@code @MappedSuperclass} with {@code TABLE_PER_CLASS} inheritance strategy,
  * meaning that subclasses create their own database tables containing all inherited fields.
  * The {@code @EntityListeners(AuditingEntityListener.class)} annotation enables Spring Data JPA
  * auditing to automatically populate the audit fields during entity lifecycle events.
- * </p>
+
  * <p>
  * <b>Audit Fields:</b>
- * </p>
+
  * <ul>
  * <li>{@code createdBy} - Embeddable UID containing the user name/email and ID who created the entity.
  * Populated automatically via {@code @CreatedBy} annotation.</li>
@@ -68,11 +68,11 @@ import java.util.Objects;
  * timezone handling across different database instances. The database manages default timestamps
  * via {@code CURRENT_TIMESTAMP}, with columns configured as non-insertable to delegate timestamp
  * generation to the database layer.
- * </p>
+
  * <p>
  * Subclasses must implement the abstract {@code getId()} method to return their entity identifier,
  * which is used by the default {@code toString()} implementation.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -82,7 +82,7 @@ import java.util.Objects;
  *     public Long getId() { return id; }
  * }
  * }</pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -103,16 +103,16 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * audit information about who created or modified an entity. It is used by Spring Data
      * JPA auditing to automatically populate {@code createdBy} and {@code modifiedBy} fields
      * in {@link TimestampedEntity}.
-     * </p>
+
      * <p>
      * The class is marked as {@code @Embeddable}, allowing it to be embedded directly into
      * the parent entity's database table. When used with {@code @AttributeOverrides}, the
      * field names can be customized (e.g., mapping to modifiedBy/modifiedById columns).
-     * </p>
+
      * <p>
      * Default values are "UNKNOWN" for the user name and -1L for the user ID, representing
      * cases where the audit information is not available or not yet populated.
-     * </p>
+
      *
      * @see AuditingEntityListener
      * @see TimestampedEntity#createdBy
@@ -137,7 +137,7 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
          * <p>
          * Creates a UID with user name "UNKNOWN" and user ID -1L, representing
          * cases where audit information is not available.
-         * </p>
+
          */
         public UID() {
             this.createdBy = "UNKNOWN";
@@ -206,7 +206,7 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
          * <p>
          * Two UID objects are considered equal if both their {@code createdBy} and
          * {@code createdById} fields are equal.
-         * </p>
+
          *
          * @param o the object to compare with
          * @return true if the objects are equal, false otherwise
@@ -224,7 +224,7 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
          * Returns the hash code for this UID.
          * <p>
          * The hash code is computed based on both {@code createdBy} and {@code createdById} fields.
-         * </p>
+
          *
          * @return hash code value for this UID
          */
@@ -240,10 +240,10 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * This field is automatically populated by Spring Data JPA auditing via the {@code @CreatedBy}
      * annotation when the entity is first persisted. The UID embeddable contains both the user
      * name/email and user ID for complete audit tracking.
-     * </p>
+
      * <p>
      * Marked with {@code @JsonIgnore} to exclude from JSON serialization for security reasons.
-     * </p>
+
      *
      * @see UID
      * @see AuditingEntityListener
@@ -259,10 +259,10 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * annotation when the entity is first persisted. The database default value is CURRENT_TIMESTAMP,
      * and the field is configured as non-insertable and non-updatable to delegate timestamp generation
      * to the database layer.
-     * </p>
+
      * <p>
      * Uses {@code TIMESTAMP WITH TIME ZONE} column definition for proper timezone handling.
-     * </p>
+
      *
      * @see ModelConstants#CREATED_ON
      */
@@ -278,10 +278,10 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * This field is automatically populated by Spring Data JPA auditing via the {@code @LastModifiedBy}
      * annotation whenever the entity is updated. The {@code @AttributeOverrides} annotation maps the
      * UID embeddable fields to the database columns "modifiedBy" and "modifiedById".
-     * </p>
+
      * <p>
      * Marked with {@code @JsonIgnore} to exclude from JSON serialization for security reasons.
-     * </p>
+
      *
      * @see UID
      * @see AuditingEntityListener
@@ -300,12 +300,12 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * This field is automatically updated by Spring Data JPA auditing via the {@code @LastModifiedDate}
      * annotation whenever the entity is updated. Additionally, the {@code @PostUpdate} lifecycle callback
      * {@link #postUpdate()} refreshes this field to the current timestamp after each update operation.
-     * </p>
+
      * <p>
      * The database default value is CURRENT_TIMESTAMP. The field is configured as non-insertable but
      * updatable, allowing the application to update the timestamp while delegating initial value to the database.
      * Uses {@code TIMESTAMP WITH TIME ZONE} column definition for proper timezone handling.
-     * </p>
+
      *
      * @see ModelConstants#UPDATED_ON
      * @see #postUpdate()
@@ -322,7 +322,7 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * Subclasses must implement this method to return their primary key value,
      * which is used by the {@link #toString()} method to generate a meaningful
      * string representation of the entity.
-     * </p>
+
      *
      * @return the entity ID, never null for persisted entities
      */
@@ -334,7 +334,7 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * The implementation uses the simple class name of the concrete subclass and the
      * entity ID returned by {@link #getId()} to provide a concise, readable representation
      * suitable for logging and debugging purposes.
-     * </p>
+
      *
      * @return formatted string containing class name and entity ID
      */
@@ -350,11 +350,11 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * update operation via the {@code @PostUpdate} annotation. It sets {@code updatedOn} to
      * the current timestamp, ensuring the modification time is always accurate even if the
      * database trigger or Spring Data auditing does not update the field.
-     * </p>
+
      * <p>
      * This provides a dual mechanism for timestamp updates: Spring Data auditing via
      * {@code @LastModifiedDate} and explicit refresh via this lifecycle callback.
-     * </p>
+
      *
      * @see #updatedOn
      */
@@ -369,7 +369,7 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * The value is automatically populated by Spring Data JPA auditing when the entity
      * is first persisted. The timestamp reflects the database server time in the configured
      * timezone.
-     * </p>
+
      *
      * @return the creation timestamp, or null if not yet persisted
      */
@@ -383,7 +383,7 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * The value is automatically updated by Spring Data JPA auditing and the {@code @PostUpdate}
      * lifecycle callback whenever the entity is modified. For newly created entities that have
      * not been updated, this may be null or equal to {@code createdOn}.
-     * </p>
+
      *
      * @return the last modification timestamp, or null if not yet modified
      * @see #postUpdate()
@@ -397,7 +397,7 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * <p>
      * The UID contains both the user name/email and user ID, providing complete audit information.
      * The value is automatically populated by Spring Data JPA auditing.
-     * </p>
+
      *
      * @return the UID of the creator, or a UID with "UNKNOWN" values if not populated
      * @see UID
@@ -411,7 +411,7 @@ public abstract class TimestampedEntity implements ModelConstants, Serializable 
      * <p>
      * The UID contains both the user name/email and user ID, providing complete audit information.
      * The value is automatically populated by Spring Data JPA auditing whenever the entity is updated.
-     * </p>
+
      *
      * @return the UID of the last modifier, or a UID with "UNKNOWN" values if not yet modified
      * @see UID

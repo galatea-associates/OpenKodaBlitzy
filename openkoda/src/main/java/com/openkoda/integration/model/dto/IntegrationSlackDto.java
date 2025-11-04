@@ -27,11 +27,11 @@ package com.openkoda.integration.model.dto;
  * Mutable JavaBean for Slack webhook endpoint configuration. This DTO is used
  * to capture and transfer Slack webhook settings between the web layer and
  * service layer during integration setup and updates.
- * </p>
+ * 
  * <p>
  * The webhook URL is a sensitive endpoint that should be protected and stored
  * securely to prevent unauthorized access to Slack channels.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -44,7 +44,7 @@ public class IntegrationSlackDto {
      * <p>
      * This is a sensitive endpoint that should be protected. The webhook URL
      * allows the application to send messages to configured Slack channels.
-     * </p>
+     * 
      */
     public String webhookUrl;
 
@@ -53,7 +53,7 @@ public class IntegrationSlackDto {
      * <p>
      * Returns the configured webhook endpoint for sending messages to Slack.
      * This URL should be treated as sensitive configuration data.
-     * </p>
+     * 
      *
      * @return the Slack webhook URL, may be null if not configured
      */
@@ -67,7 +67,7 @@ public class IntegrationSlackDto {
      * Configures the webhook endpoint that will be used to send messages to
      * Slack channels. The URL should be obtained from Slack's incoming webhook
      * integration setup and kept secure.
-     * </p>
+     * 
      *
      * @param webhookUrl the Slack webhook URL to configure, may be null
      */

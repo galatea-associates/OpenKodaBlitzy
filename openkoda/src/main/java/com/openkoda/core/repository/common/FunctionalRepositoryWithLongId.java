@@ -33,7 +33,7 @@ import org.springframework.data.repository.NoRepositoryBean;
  * By extending {@link JpaRepository}{@code <T, Long>}, this interface provides standard repository operations
  * such as save, findById, findAll, delete, and pagination support. It also adds a convenience method
  * {@link #findOne(Integer)} for repositories that need to accept {@code Integer} IDs.
- * </p>
+ * 
  *
  * @param <T> the entity type managed by this repository
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
@@ -59,7 +59,7 @@ public interface FunctionalRepositoryWithLongId<T> extends JpaRepository<T, Long
      * <p>
      * This is useful for code that passes {@code Integer} IDs or prefers nullable
      * returns instead of {@code Optional}.
-     * </p>
+     * 
      *
      * @param aLong the Integer ID to convert to Long and search for
      * @return the entity with the given ID, or {@code null} if no entity exists with that ID

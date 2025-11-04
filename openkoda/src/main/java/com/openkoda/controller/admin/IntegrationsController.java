@@ -41,7 +41,7 @@ import com.openkoda.form.EmailConfigForm;
  * display ({@link #integrations()}) and email configuration persistence ({@link #emailConfig(EmailConfigForm, BindingResult)}). 
  * All endpoints require backend management privileges enforced via {@code @PreAuthorize}. Currently supports 
  * email/SMTP configuration (host, port, credentials), extensible for additional integration types.
- * </p>
+ * 
  * <p>
  * <b>Request mapping:</b> Base path "/html" ({@code URLConstants._HTML})<br>
  * <b>Security:</b> Implements {@link HasSecurityRules} for privilege enforcement. All endpoints require 
@@ -52,7 +52,7 @@ import com.openkoda.form.EmailConfigForm;
  * ({@code getIntegrations}, {@code saveEmailConfig})<br>
  * <b>Integration context:</b> Manages system-wide integration configurations (non-tenant-specific), currently email/SMTP only<br>
  * <b>Thread-safety:</b> Stateless, thread-safe
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -76,7 +76,7 @@ public class IntegrationsController extends AbstractIntegrationsController imple
      *   <li>"emailConfigForm" - bound form for editing</li>
      * </ul>
      * <b>Used by:</b> Admin dashboard integrations configuration tab
-     * </p>
+     * 
      *
      * @return Object resolving to {@code ModelAndView} with view name "integrations". 
      *         Model populated by {@code getIntegrations()}
@@ -102,7 +102,7 @@ public class IntegrationsController extends AbstractIntegrationsController imple
      * <b>Model updates:</b> Model updated by {@code saveEmailConfig(form, br)} with validation results and 
      * persisted {@code emailConfig} entity<br>
      * <b>Used by:</b> AJAX form submission from email configuration panel
-     * </p>
+     * 
      * <p>
      * <b>Email config fields:</b>
      * <ul>
@@ -112,7 +112,7 @@ public class IntegrationsController extends AbstractIntegrationsController imple
      *   <li>password: SMTP authentication password</li>
      *   <li>Additional flags: TLS/SSL enablement, authentication method</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param form submitted {@code EmailConfigForm} with SMTP settings (host, port, username, password, TLS/SSL flags)
      * @param br validation {@code BindingResult} for error tracking

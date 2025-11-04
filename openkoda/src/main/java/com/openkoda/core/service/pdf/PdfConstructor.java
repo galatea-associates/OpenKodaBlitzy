@@ -42,10 +42,10 @@ import java.util.Map;
  * This service orchestrates a complete PDF generation workflow:
  * Thymeleaf template rendering → HTML generation → Jsoup XHTML normalization → Flying Saucer PDF conversion.
  * Supports multi-page PDF generation by accepting multiple model objects as varargs parameters.
- * </p>
+
  * <p>
  * <b>Library Integration:</b>
- * </p>
+
  * <ul>
  * <li>Thymeleaf {@link TemplateEngine} for HTML rendering from templates</li>
  * <li>Jsoup for XHTML normalization (Flying Saucer requires well-formed XHTML)</li>
@@ -56,14 +56,14 @@ import java.util.Map;
  * <pre>{@code
  * byte[] pdf = pdfConstructor.writeDocumentToByteArray("invoice", modelMap);
  * }</pre>
- * </p>
+
  * <p>
  * <b>Thread Safety:</b> This service is thread-safe. Each PDF generation creates a new {@link ITextRenderer}
  * instance, promoting safe concurrent usage. The injected {@link TemplateEngine} is thread-safe.
- * </p>
+
  * <p>
  * Extends {@link LoggingComponentWithRequestId} for request-scoped tracing and correlation.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -78,7 +78,7 @@ public class PdfConstructor implements LoggingComponentWithRequestId {
      * This URL is automatically added to the template context as {@code baseUrl} variable,
      * enabling templates to construct absolute URLs for images, CSS, and other resources.
      * Sourced from {@code base.url} property with default {@code http://localhost:8080}.
-     * </p>
+
      */
     @Value("${base.url:http://localhost:8080}")
     private String baseUrl;
@@ -88,7 +88,7 @@ public class PdfConstructor implements LoggingComponentWithRequestId {
      * <p>
      * Sourced from {@code mail.from} property with default empty string.
      * Used in templates that generate email attachments or email-style documents.
-     * </p>
+
      */
     @Value("${mail.from:}")
     private String emailNameFrom;
@@ -99,7 +99,7 @@ public class PdfConstructor implements LoggingComponentWithRequestId {
      * Sourced from {@code font.path} property with default {@code /fonts/arialuni.ttf}.
      * Note: Font registration is currently commented out at line 114 in {@link #writeDocumentToOutputStream}.
      * Enabling font embedding may be required for full international character support.
-     * </p>
+
      */
     @Value("${font.path:/fonts/arialuni.ttf}")
     private String fontPath;
@@ -109,7 +109,7 @@ public class PdfConstructor implements LoggingComponentWithRequestId {
      * <p>
      * Injected thread-safe shared instance used throughout PDF generation.
      * Processes template files with variable substitution to produce HTML output.
-     * </p>
+
      */
     @Inject
     private TemplateEngine templateEngine;
@@ -120,7 +120,7 @@ public class PdfConstructor implements LoggingComponentWithRequestId {
      * Uses {@link LocaleContextHolder#getLocale()} to retrieve the current locale,
      * enabling internationalization support for templates. Returns a new {@link Context}
      * instance per call with debug logging for traceability.
-     * </p>
+
      *
      * @return new Thymeleaf {@link Context} initialized with current locale
      */
@@ -133,7 +133,7 @@ public class PdfConstructor implements LoggingComponentWithRequestId {
      * Renders a Thymeleaf template with the provided model to produce HTML content.
      * <p>
      * <b>Workflow:</b>
-     * </p>
+
      * <ol>
      * <li>Creates locale-aware {@link Context} via {@link #getContext()}</li>
      * <li>Injects {@code baseUrl} variable for absolute resource references</li>
@@ -162,17 +162,17 @@ public class PdfConstructor implements LoggingComponentWithRequestId {
      * <p>
      * When models is null or empty, the template is rendered with an empty model and generates a single-page PDF.
      * For multiple models, each model generates a separate page in the resulting PDF document.
-     * </p>
+
      * <p>
      * <b>Memory Usage Note:</b> The entire PDF is loaded into memory as a byte array.
      * For very large PDFs, consider using {@link #writeDocumentToStream} or {@link #writeDocumentToOutputStream}.
-     * </p>
+
      * <p>
      * Example:
      * <pre>{@code
      * byte[] pdf = pdfConstructor.writeDocumentToByteArray("invoice", invoiceModel);
      * }</pre>
-     * </p>
+
      *
      * @param templateName the Thymeleaf template name to render
      * @param models       varargs array of model maps, one per page (null or empty generates single page)
@@ -190,7 +190,7 @@ public class PdfConstructor implements LoggingComponentWithRequestId {
      * Convenience method that wraps {@link #writeDocumentToByteArray} result in a {@link ByteArrayInputStream}.
      * When models is null or empty, generates a single-page PDF with empty model.
      * Useful for streaming scenarios where an InputStream is required (e.g., HTTP response bodies).
-     * </p>
+
      *
      * @param templateName the Thymeleaf template name to render
      * @param models       varargs array of model maps, one per page (null or empty generates single page)
@@ -206,7 +206,7 @@ public class PdfConstructor implements LoggingComponentWithRequestId {
      * Generates a PDF document to an OutputStream with separate pages for each model provided.
      * <p>
      * <b>Multi-Page Generation Workflow:</b>
-     * </p>
+
      * <ol>
      * <li>Creates new {@link ITextRenderer} instance for this PDF generation</li>
      * <li>Renders first model (or empty map if models is null/empty) through {@link #prepareContent}</li>
@@ -219,15 +219,15 @@ public class PdfConstructor implements LoggingComponentWithRequestId {
      * <b>Error Handling Strategy:</b> All exceptions are caught and logged via {@link #error(Throwable, String, Object...)}.
      * The method always returns {@code true} even on errors. Callers must check logs for failure detection.
      * The {@link OutputStream} is closed in the finally block; IOExceptions during close are swallowed.
-     * </p>
+
      * <p>
      * <b>CSS Styling Considerations:</b> CSS must be XHTML-compatible for Flying Saucer renderer.
      * Complex CSS3 features may not be supported. Test templates thoroughly.
-     * </p>
+
      * <p>
      * <b>Font Embedding Note:</b> Unicode font embedding is commented out at line 114.
      * Enable {@code renderer.getFontResolver().addFont(fontPath, ...)} for full international character support.
-     * </p>
+
      *
      * @param templateName the Thymeleaf template name to render
      * @param os           the OutputStream to write PDF bytes (closed in finally block)

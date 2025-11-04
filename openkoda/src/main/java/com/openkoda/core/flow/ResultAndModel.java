@@ -31,12 +31,10 @@ import java.util.Map;
  * It packages the result value, the accumulated PageModelMap containing view data, service context,
  * and additional parameters into a single immutable carrier. Flow steps receive ResultAndModel
  * instances as input and produce new results through functional transformations.
- * </p>
  * <p>
  * The {@link #mav(ResultAndModelFunction, ResultAndModelFunction)} method dispatches to success
  * or error ResultAndModelFunction providers based on {@link BasePageAttributes#isError} flag,
  * enabling conditional result generation for successful vs failed executions.
- * </p>
  * <p>
  * Example usage in Flow pipeline:
  * <pre>{@code
@@ -45,7 +43,6 @@ import java.util.Map;
  *     .then(a -> new Result(a.result))
  *     .execute();
  * }</pre>
- * </p>
  *
  * @param <R> the result type carried by this instance
  * @param <CP> the context/services type (typically a services aggregator bean)
@@ -107,7 +104,7 @@ public class ResultAndModel<R, CP> {
      * which ResultAndModelFunction to invoke. If isError is true (validation or execution failed),
      * forValidationError is called. Otherwise, forSuccess is called. This enables conditional
      * result generation based on Flow execution outcome.
-     * </p>
+     * 
      *
      * @param <O> the output type to be produced
      * @param forSuccess result provider invoked when isError is false (execution succeeded)
@@ -126,7 +123,7 @@ public class ResultAndModel<R, CP> {
      * This convenience method invokes the provided ResultAndModelFunction whether isError is
      * true or false. Use this when the same result transformation applies to both successful
      * and failed executions.
-     * </p>
+     * 
      *
      * @param <O> the output type to be produced
      * @param forSuccessAndError result provider invoked regardless of isError flag
@@ -143,7 +140,7 @@ public class ResultAndModel<R, CP> {
      * This diagnostic counter helps monitor ResultAndModel allocation for memory leak detection
      * and performance analysis. The counter increments on every constructor invocation and is
      * never reset during JVM lifetime.
-     * </p>
+     * 
      *
      * @return the total count of ResultAndModel objects created
      */

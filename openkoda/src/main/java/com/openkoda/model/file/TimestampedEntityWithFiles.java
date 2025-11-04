@@ -38,7 +38,7 @@ import java.util.List;
  * a dual persistence strategy: full {@link File} entity objects and lightweight {@link Long} IDs.
  * Both representations are persisted to the shared {@code file_reference} join table with an
  * {@code organization_related_entity_id} foreign key and {@code file_id} column.
- * </p>
+
  * <p>
  * The dual persistence approach serves different use cases:
  * <ul>
@@ -49,22 +49,22 @@ import java.util.List;
  *       suitable for existence checks and lightweight persistence operations. Initialized to empty
  *       {@link ArrayList} to avoid null checks.</li>
  * </ul>
- * </p>
+
  * <p>
  * Both collections maintain attachment order via {@code @OrderColumn(name="sequence")}, ensuring
  * files are retrieved in the sequence they were attached. The {@code files} field uses
  * {@code cascade={}} to prevent unintended file deletions when the parent entity is removed.
- * </p>
+
  * <p>
  * <strong>Important persistence semantics:</strong>
  * The {@code files} field may be {@code null} outside JPA-managed contexts or when not yet loaded,
  * while {@code filesId} is always initialized to an empty list. The join column is marked
  * {@code insertable=false, updatable=false} indicating non-owning side semantics.
- * </p>
+
  * <p>
  * Concrete entities extending this class inherit auditing fields from {@link TimestampedEntity}
  * (createdOn, updatedOn) and file attachment capabilities from {@link EntityWithFiles}.
- * </p>
+
  * <p>
  * <strong>Example usage:</strong>
  * <pre>{@code
@@ -72,7 +72,7 @@ import java.util.List;
  *     // Document-specific fields
  * }
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -93,18 +93,18 @@ public abstract class TimestampedEntityWithFiles extends TimestampedEntity imple
      *   <li>{@code file_id} - Foreign key to {@link File} entity</li>
      *   <li>{@code sequence} - Order column maintaining attachment sequence</li>
      * </ul>
-     * </p>
+
      * <p>
      * Uses {@code fetch=LAZY} for performance optimization - files are not loaded until accessed.
      * Empty cascade configuration {@code cascade={}} prevents unintended file deletions when parent
      * entity is removed. Marked {@code @JsonIgnore} to prevent JSON serialization of potentially
      * large file metadata in REST responses.
-     * </p>
+
      * <p>
      * <strong>Null semantics:</strong> This field may be {@code null} outside JPA-managed contexts
      * or when not yet loaded. Prefer {@link #filesId} for lightweight existence checks and
      * {@link #getFilesId()} for avoiding lazy loading triggers.
-     * </p>
+
      *
      * @see #filesId
      * @see File
@@ -131,17 +131,17 @@ public abstract class TimestampedEntityWithFiles extends TimestampedEntity imple
      *   <li>{@code file_id} - The file ID value (stored in {@code @Column})</li>
      *   <li>{@code sequence} - Order column maintaining attachment sequence</li>
      * </ul>
-     * </p>
+
      * <p>
      * Initialized to empty {@link ArrayList} to avoid null checks in application code.
      * Uses {@code fetch=LAZY} to defer loading until accessed, though ID collections are
      * typically lighter weight than entity collections.
-     * </p>
+
      * <p>
      * <strong>Preferred for lightweight operations:</strong> Use this field for existence checks
      * via {@link #hasFiles()} and lightweight persistence operations that don't require full file
      * metadata. Avoids triggering lazy loading of {@link File} entity objects.
-     * </p>
+
      *
      * @see #files
      * @see #getFilesId()
@@ -159,12 +159,12 @@ public abstract class TimestampedEntityWithFiles extends TimestampedEntity imple
      * This method sets the ID collection used for lightweight persistence operations.
      * The provided list replaces the current {@link #filesId} collection and will be
      * persisted to the {@code file_reference} table on entity save/update.
-     * </p>
+
      * <p>
      * Note that setting {@code filesId} does not automatically populate or synchronize
      * the {@link #files} entity collection. Callers are responsible for maintaining
      * consistency between the two representations if both are used.
-     * </p>
+
      *
      * @param filesId the list of file IDs to associate with this entity, may be empty or null
      */
@@ -179,12 +179,12 @@ public abstract class TimestampedEntityWithFiles extends TimestampedEntity imple
      * and access to content streams via {@link File#getContentStream()}. This method may
      * trigger lazy loading if the files have not been previously loaded within the current
      * persistence context.
-     * </p>
+
      * <p>
      * <strong>Performance consideration:</strong> Prefer {@link #getFilesId()} for lightweight
      * operations such as existence checks or displaying file counts, as it avoids loading full
      * entity objects from the database.
-     * </p>
+
      *
      * @return the list of {@link File} entities, or {@code null} if not loaded or no files attached
      * @see #getFilesId()
@@ -200,7 +200,7 @@ public abstract class TimestampedEntityWithFiles extends TimestampedEntity imple
      * Provides a lightweight alternative to {@link #getFiles()} for operations that only
      * require file identifiers without full metadata. This method returns the initialized
      * {@link #filesId} collection which is never {@code null} (defaults to empty {@link ArrayList}).
-     * </p>
+
      * <p>
      * Use this method for:
      * <ul>
@@ -208,7 +208,7 @@ public abstract class TimestampedEntityWithFiles extends TimestampedEntity imple
      *   <li>Count operations - get number of attached files efficiently</li>
      *   <li>Reference storage - persist file associations by ID only</li>
      * </ul>
-     * </p>
+
      *
      * @return the list of file IDs, never {@code null} (initialized to empty list)
      * @see #getFiles()
@@ -225,18 +225,18 @@ public abstract class TimestampedEntityWithFiles extends TimestampedEntity imple
      * with an optimized version that checks the {@link #files} entity list directly rather
      * than the {@link #filesId} collection. This approach is more efficient when the files
      * collection is already loaded in the persistence context.
-     * </p>
+
      * <p>
      * <strong>Implementation difference:</strong> The interface default implementation checks
      * {@code getFilesId() != null && getFilesId().size() > 0}, which may call {@code getFilesId()}
      * twice. This override checks {@code files != null && files.size() > 0} directly, avoiding
      * duplicate method calls.
-     * </p>
+
      * <p>
      * Note that if {@link #files} is {@code null} (not yet loaded), this method returns {@code false}
      * even if the entity has file IDs in {@link #filesId}. This is acceptable for entities where
      * the files collection has not been initialized or loaded via JPA.
-     * </p>
+
      *
      * @return {@code true} if the files collection is non-null and contains at least one file,
      *         {@code false} otherwise

@@ -41,12 +41,12 @@ import java.util.Map;
  * This service integrates OpenKoda notifications with Trello by automatically creating cards in designated
  * boards and lists. It handles board and list resolution or creation before card creation, ensuring that
  * notifications are properly tracked in external Trello projects.
- * </p>
+
  * <p>
  * Authentication uses Trello API key and token (trelloApiKey, trelloApiToken) from per-organization
  * configuration. Trello uses query parameter authentication instead of header-based authentication,
  * with all endpoints under the /1/ API path.
- * </p>
+
  * <p>
  * The integration workflow follows these steps:
  * <ol>
@@ -57,12 +57,12 @@ import java.util.Map;
  *   <li>Resolve list ID within board or create new list if missing</li>
  *   <li>Create card via POST /1/cards with query params: key, token, idList, name, desc</li>
  * </ol>
- * </p>
+
  * <p>
  * <b>Trello API peculiarities:</b> Unlike most REST APIs, Trello uses query parameters for authentication
  * (key and token) instead of Authorization headers. All API endpoints are versioned under /1/ path.
  * No OAuth refresh is needed as Trello uses long-lived API tokens.
- * </p>
+
  * <p>
  * Example Trello configuration:
  * <pre>
@@ -71,7 +71,7 @@ import java.util.Map;
  * trelloBoardName=Project Notifications
  * trelloListName=Incoming Alerts
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -88,7 +88,7 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * Default: https://api.trello.com/1/members/me/boards
      * <p>
      * Query parameters: fields=name, key={apiKey}, token={apiToken}
-     * </p>
+
      */
     @Value("${api.trello.get.boards:https://api.trello.com/1/members/me/boards}")
     private String TRELLO_GET_BOARDS_API;
@@ -98,7 +98,7 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * Default: https://api.trello.com/1/boards/
      * <p>
      * Must be appended with board ID. Query parameters: lists=all, fields=lists, key={apiKey}, token={apiToken}
-     * </p>
+
      */
     @Value("${api.trello.get.lists:https://api.trello.com/1/boards/}")
     private String TRELLO_GET_LISTS_API;
@@ -108,7 +108,7 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * Default: https://api.trello.com/1/boards/
      * <p>
      * Query parameters: name={boardName}, defaultLists=false, key={apiKey}, token={apiToken}
-     * </p>
+
      */
     @Value("${api.trello.create.board:https://api.trello.com/1/boards/}")
     private String TRELLO_CREATE_BOARD_API;
@@ -118,7 +118,7 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * Default: https://api.trello.com/1/lists
      * <p>
      * Query parameters: name={listName}, idBoard={boardId}, key={apiKey}, token={apiToken}
-     * </p>
+
      */
     @Value("${api.trello.create.list:https://api.trello.com/1/lists}")
     private String TRELLO_CREATE_LIST_API;
@@ -128,7 +128,7 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * Default: https://api.trello.com/1/cards
      * <p>
      * Query parameters: idList={listId}, pos=0, name={cardTitle}, desc={cardDescription}, key={apiKey}, token={apiToken}
-     * </p>
+
      */
     @Value("${api.trello.create.card:https://api.trello.com/1/cards}")
     private String TRELLO_CREATE_CARD_API;
@@ -146,7 +146,7 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * It validates notification scope, loads organization-specific Trello configuration, ensures that the
      * target board and list exist (creating them if necessary), and finally creates the card with the
      * notification message as the card description.
-     * </p>
+
      * <p>
      * <b>Workflow steps:</b>
      * <ol>
@@ -158,12 +158,12 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>Resolve list ID within board by name, or create new list if not found</li>
      *   <li>Create card in the resolved list with notification message as description</li>
      * </ol>
-     * </p>
+
      * <p>
      * <b>Validation requirements:</b>
      * API key must be 32 characters hexadecimal, token must be 64 characters alphanumeric.
      * Board name and list name must be configured in IntegrationModuleOrganizationConfiguration.
-     * </p>
+
      * <p>
      * Example configuration:
      * <pre>
@@ -172,7 +172,7 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * trelloBoardName=Project Notifications
      * trelloListName=New Alerts
      * </pre>
-     * </p>
+
      *
      * @param notification the NotificationDto containing message to convert to Trello card.
      *                     Must be organization-scoped with propagate flag set to true.
@@ -226,10 +226,10 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * <p>
      * Performs a GET request to TRELLO_GET_BOARDS_API to retrieve all boards accessible to the authenticated
      * user, then searches for a board matching the name specified in the organization configuration.
-     * </p>
+
      * <p>
      * <b>API endpoint:</b> GET https://api.trello.com/1/members/me/boards
-     * </p>
+
      * <p>
      * <b>Query parameters:</b>
      * <ul>
@@ -237,11 +237,11 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>key={apiKey} - Trello API key from configuration</li>
      *   <li>token={apiToken} - Trello API token from configuration</li>
      * </ul>
-     * </p>
+
      * <p>
      * <b>Response format:</b> Array of board objects with id and name fields.
      * Filters by exact name match using trelloBoardName from configuration.
-     * </p>
+
      *
      * @param config the IntegrationModuleOrganizationConfiguration containing Trello API credentials
      *               (trelloApiKey, trelloApiToken) and target board name (trelloBoardName)
@@ -271,10 +271,10 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * <p>
      * Performs a GET request to retrieve all lists within the specified board, then searches for a list
      * matching the name specified in the organization configuration. Only considers lists that are not closed.
-     * </p>
+
      * <p>
      * <b>API endpoint:</b> GET https://api.trello.com/1/boards/{boardId}
-     * </p>
+
      * <p>
      * <b>Query parameters:</b>
      * <ul>
@@ -283,11 +283,11 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>key={apiKey} - Trello API key from configuration</li>
      *   <li>token={apiToken} - Trello API token from configuration</li>
      * </ul>
-     * </p>
+
      * <p>
      * <b>Filtering logic:</b> Searches for exact name match using trelloListName from configuration
      * and filters out closed lists (closed=true). Returns the first matching open list.
-     * </p>
+
      *
      * @param config the IntegrationModuleOrganizationConfiguration containing Trello API credentials
      *               and target list name (trelloListName)
@@ -320,10 +320,10 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * <p>
      * Performs a POST request to TRELLO_CREATE_BOARD_API to create a new board. The board is created
      * without default lists (defaultLists=false) to allow custom list configuration.
-     * </p>
+
      * <p>
      * <b>API endpoint:</b> POST https://api.trello.com/1/boards/
-     * </p>
+
      * <p>
      * <b>Query parameters:</b>
      * <ul>
@@ -332,10 +332,10 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>key={apiKey} - Trello API key from configuration</li>
      *   <li>token={apiToken} - Trello API token from configuration</li>
      * </ul>
-     * </p>
+
      * <p>
      * <b>Response:</b> JSON object containing the newly created board's details including id field.
-     * </p>
+
      *
      * @param config the IntegrationModuleOrganizationConfiguration containing Trello API credentials
      *               and board name (trelloBoardName)
@@ -361,10 +361,10 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * <p>
      * Performs a POST request to TRELLO_CREATE_LIST_API to create a new list with the name specified
      * in the organization configuration. The list is created within the board identified by boardId.
-     * </p>
+
      * <p>
      * <b>API endpoint:</b> POST https://api.trello.com/1/lists
-     * </p>
+
      * <p>
      * <b>Query parameters:</b>
      * <ul>
@@ -373,10 +373,10 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>key={apiKey} - Trello API key from configuration</li>
      *   <li>token={apiToken} - Trello API token from configuration</li>
      * </ul>
-     * </p>
+
      * <p>
      * <b>Response:</b> JSON object containing the newly created list's details including id field.
-     * </p>
+
      *
      * @param config the IntegrationModuleOrganizationConfiguration containing Trello API credentials
      *               and list name (trelloListName)
@@ -404,10 +404,10 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      * Performs a POST request to TRELLO_CREATE_CARD_API to create a new card with a fixed title
      * "New notification!" and the notification message as the card description. The card is positioned
      * at the top of the list (pos=0).
-     * </p>
+
      * <p>
      * <b>API endpoint:</b> POST https://api.trello.com/1/cards
-     * </p>
+
      * <p>
      * <b>Query parameters:</b>
      * <ul>
@@ -418,11 +418,11 @@ public class TrelloIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>key={apiKey} - Trello API key from configuration</li>
      *   <li>token={apiToken} - Trello API token from configuration</li>
      * </ul>
-     * </p>
+
      * <p>
      * <b>Card positioning:</b> pos=0 ensures that new notification cards always appear at the top
      * of the list, making recent notifications immediately visible.
-     * </p>
+
      *
      * @param config the IntegrationModuleOrganizationConfiguration containing Trello API credentials
      * @param listId the Trello list ID string where the card will be created

@@ -35,19 +35,19 @@ import java.util.List;
  * (server-side, form, scheduler, event), export destination paths for ZIP packaging (code, templates, config,
  * privileges, migration), base paths combining category and COMPONENTS_ prefix, and derived collections
  * (BASE_FILE_PATHS, SUBDIR_FILE_PATHS) for systematic folder scanning.
- * </p>
+ * 
  * <p>
  * <b>Usage pattern:</b> Import services scan BASE_FILE_PATHS × SUBDIR_FILE_PATHS cartesian product to discover
  * all component YAML files. Export services construct output paths using EXPORT_*_PATH_ prefixes to package
  * components into distributable ZIP archives.
- * </p>
+ * 
  * <p>
  * <b>Thread-safety:</b> All constants are immutable and safe for concurrent access across multiple threads.
- * </p>
+ * 
  * <p>
  * <b>Maintenance note:</b> All path fragments include trailing slashes for safe concatenation without additional
  * path separator logic.
- * </p>
+ * 
  *
  * @see ClasspathComponentImportService for usage in classpath scanning
  * @see ComponentExportService for usage in ZIP packaging
@@ -63,11 +63,11 @@ public class FolderPathConstants {
      * Root folder for classpath component YAML definitions.
      * <p>
      * Value: {@code "components/"}
-     * </p>
+     * 
      * <p>
      * All component YAML files are discovered relative to this base path. Import services append category-specific
      * subfolders (SERVER_SIDE_, FORM_, etc.) to create complete scan paths.
-     * </p>
+     * 
      */
     public static final String COMPONENTS_ = "components/";
 
@@ -75,11 +75,11 @@ public class FolderPathConstants {
      * Folder for supplemental static resources packaged in component exports.
      * <p>
      * Value: {@code "components-additional-files/"}
-     * </p>
+     * 
      * <p>
      * Contains non-YAML files such as application property templates, configuration examples, and documentation
      * that should be included in exported ZIP archives alongside YAML component definitions.
-     * </p>
+     * 
      */
     public static final String COMPONENTS_ADDITIONAL_FILES_ = "components-additional-files/";
 
@@ -87,10 +87,10 @@ public class FolderPathConstants {
      * Subfolder for server-side JavaScript component definitions.
      * <p>
      * Value: {@code "server-side/"}
-     * </p>
+     * 
      * <p>
      * Contains YAML files defining JavaScript functions executed on the server via GraalVM polyglot integration.
-     * </p>
+     * 
      */
     public static final String SERVER_SIDE_ = "server-side/";
 
@@ -98,11 +98,11 @@ public class FolderPathConstants {
      * Subfolder for dynamic form definitions.
      * <p>
      * Value: {@code "form/"}
-     * </p>
+     * 
      * <p>
      * Contains YAML files defining Form entities with field configurations, validation rules, and database mappings
      * for runtime form generation.
-     * </p>
+     * 
      */
     public static final String FORM_ = "form/";
 
@@ -110,10 +110,10 @@ public class FolderPathConstants {
      * Subfolder for scheduled job definitions.
      * <p>
      * Value: {@code "scheduler/"}
-     * </p>
+     * 
      * <p>
      * Contains YAML files defining Scheduler entities with cron expressions and execution logic for background tasks.
-     * </p>
+     * 
      */
     public static final String SCHEDULER_ = "scheduler/";
 
@@ -121,10 +121,10 @@ public class FolderPathConstants {
      * Subfolder for event listener definitions.
      * <p>
      * Value: {@code "event/"}
-     * </p>
+     * 
      * <p>
      * Contains YAML files defining EventListenerEntry entities that respond to application lifecycle and domain events.
-     * </p>
+     * 
      */
     public static final String EVENT_ = "event/";
 
@@ -132,10 +132,10 @@ public class FolderPathConstants {
      * Subfolder for custom event definitions.
      * <p>
      * Value: {@code "custom/"}
-     * </p>
+     * 
      * <p>
      * Contains YAML files for custom user-defined event handlers and triggers.
-     * </p>
+     * 
      */
     public static final String CUSTOM_EVENT_ = "custom/";
 
@@ -143,11 +143,11 @@ public class FolderPathConstants {
      * Subfolder for frontend resource and controller endpoint definitions.
      * <p>
      * Value: {@code "frontend-resource/"}
-     * </p>
+     * 
      * <p>
      * Contains YAML files defining FrontendResource entities including HTTP endpoints, Thymeleaf templates,
      * and JavaScript UI components.
-     * </p>
+     * 
      */
     public static final String FRONTEND_RESOURCE_ = "frontend-resource/";
 
@@ -155,10 +155,10 @@ public class FolderPathConstants {
      * Subfolder for UI component definitions.
      * <p>
      * Value: {@code "ui-component/"}
-     * </p>
+     * 
      * <p>
      * Contains YAML files defining reusable UI components and widget configurations.
-     * </p>
+     * 
      */
     public static final String UI_COMPONENT_ = "ui-component/";
 
@@ -168,10 +168,10 @@ public class FolderPathConstants {
      * Base Maven resources folder for component exports.
      * <p>
      * Value: {@code "src/main/resources/"}
-     * </p>
+     * 
      * <p>
      * All exported artifacts are placed under this directory following standard Maven project structure conventions.
-     * </p>
+     * 
      */
     public static final String EXPORT_PATH="src/main/resources/";
 
@@ -179,10 +179,10 @@ public class FolderPathConstants {
      * Destination folder for executable code files such as JavaScript and Groovy scripts.
      * <p>
      * Value: {@code "src/main/resources/code/"}
-     * </p>
+     * 
      * <p>
      * Server-side JavaScript files and other executable code resources are exported to this location for runtime execution.
-     * </p>
+     * 
      */
     public static final String EXPORT_CODE_PATH_ = EXPORT_PATH + "code/";
 
@@ -190,10 +190,10 @@ public class FolderPathConstants {
      * Destination folder for Thymeleaf templates and static web resources.
      * <p>
      * Value: {@code "src/main/resources/templates/"}
-     * </p>
+     * 
      * <p>
      * HTML templates, CSS files, and frontend resources referenced by FrontendResource entities are exported here.
-     * </p>
+     * 
      */
     public static final String EXPORT_RESOURCES_PATH_ = EXPORT_PATH + "templates/";
 
@@ -201,11 +201,11 @@ public class FolderPathConstants {
      * Destination folder for YAML component configuration files.
      * <p>
      * Value: {@code "src/main/resources/components/"}
-     * </p>
+     * 
      * <p>
      * Component YAML definitions (forms, schedulers, events, frontend resources) are exported to this location
      * maintaining the same category subfolder structure used during import.
-     * </p>
+     * 
      */
     public static final String EXPORT_CONFIG_PATH_ = EXPORT_PATH + "components/";
 
@@ -213,10 +213,10 @@ public class FolderPathConstants {
      * Destination folder for privilege definition YAML files.
      * <p>
      * Value: {@code "src/main/resources/privileges/"}
-     * </p>
+     * 
      * <p>
      * DynamicPrivilege entity definitions exported as YAML are placed in this directory for access control configuration.
-     * </p>
+     * 
      */
     public static final String EXPORT_PRIVILEGE_PATH_ = EXPORT_PATH + "privileges/";
 
@@ -224,11 +224,11 @@ public class FolderPathConstants {
      * Destination folder for SQL database migration scripts.
      * <p>
      * Value: {@code "src/main/resources/migration/"}
-     * </p>
+     * 
      * <p>
      * Generated upgrade.sql files containing ALTER TABLE, CREATE TABLE, and other DDL statements required by
      * exported components are written to this location for database schema versioning.
-     * </p>
+     * 
      */
     public static final String EXPORT_MIGRATION_PATH_ = EXPORT_PATH + "migration/";
 
@@ -236,13 +236,13 @@ public class FolderPathConstants {
      * Prefix for organization-scoped subfolders within component categories.
      * <p>
      * Value: {@code "org_"}
-     * </p>
+     * 
      * <p>
      * Multi-tenant deployments use this prefix to create tenant-specific component folders following the pattern:
      * {@code COMPONENTS_ + category + access_level + SUBDIR_ORGANIZATION_PREFIX + organizationId + "/"}.
      * For example: {@code "components/form/public/org_123/user-registration.yaml"} contains a form definition
      * scoped to organization with ID 123.
-     * </p>
+     * 
      *
      * @see ClasspathComponentImportService for organization-scoped resource loading
      */
@@ -254,10 +254,10 @@ public class FolderPathConstants {
      * Complete base path for server-side JavaScript component YAML files.
      * <p>
      * Value: {@code "components/server-side/"}
-     * </p>
+     * 
      * <p>
      * Pre-computed concatenation of {@link #COMPONENTS_} and {@link #SERVER_SIDE_} for convenient scanning.
-     * </p>
+     * 
      */
     public static final String SERVER_SIDE_BASE_FILES_PATH = COMPONENTS_ + SERVER_SIDE_;
 
@@ -265,10 +265,10 @@ public class FolderPathConstants {
      * Complete base path for form definition YAML files.
      * <p>
      * Value: {@code "components/form/"}
-     * </p>
+     * 
      * <p>
      * Pre-computed concatenation of {@link #COMPONENTS_} and {@link #FORM_} for convenient scanning.
-     * </p>
+     * 
      */
     public static final String FORM_BASE_FILES_PATH = COMPONENTS_ + FORM_;
 
@@ -276,10 +276,10 @@ public class FolderPathConstants {
      * Complete base path for scheduler definition YAML files.
      * <p>
      * Value: {@code "components/scheduler/"}
-     * </p>
+     * 
      * <p>
      * Pre-computed concatenation of {@link #COMPONENTS_} and {@link #SCHEDULER_} for convenient scanning.
-     * </p>
+     * 
      */
     public static final String SCHEDULER_BASE_FILES_PATH = COMPONENTS_ + SCHEDULER_;
 
@@ -287,10 +287,10 @@ public class FolderPathConstants {
      * Complete base path for event listener definition YAML files.
      * <p>
      * Value: {@code "components/event/"}
-     * </p>
+     * 
      * <p>
      * Pre-computed concatenation of {@link #COMPONENTS_} and {@link #EVENT_} for convenient scanning.
-     * </p>
+     * 
      */
     public static final String EVENT_BASE_FILES_PATH = COMPONENTS_ + EVENT_;
 
@@ -298,10 +298,10 @@ public class FolderPathConstants {
      * Complete base path for frontend resource definition YAML files.
      * <p>
      * Value: {@code "components/frontend-resource/"}
-     * </p>
+     * 
      * <p>
      * Pre-computed concatenation of {@link #COMPONENTS_} and {@link #FRONTEND_RESOURCE_} for convenient scanning.
-     * </p>
+     * 
      */
     public static final String FRONTEND_RESOURCE_BASE_FILES_PATH = COMPONENTS_ + FRONTEND_RESOURCE_;
 
@@ -309,10 +309,10 @@ public class FolderPathConstants {
      * Complete base path for UI component definition YAML files.
      * <p>
      * Value: {@code "components/ui-component/"}
-     * </p>
+     * 
      * <p>
      * Pre-computed concatenation of {@link #COMPONENTS_} and {@link #UI_COMPONENT_} for convenient scanning.
-     * </p>
+     * 
      */
     public static final String UI_COMPONENT_BASE_FILES_PATH = COMPONENTS_ + UI_COMPONENT_;
 
@@ -322,20 +322,20 @@ public class FolderPathConstants {
      * Contains: {@link #SERVER_SIDE_BASE_FILES_PATH}, {@link #FORM_BASE_FILES_PATH},
      * {@link #SCHEDULER_BASE_FILES_PATH}, {@link #EVENT_BASE_FILES_PATH},
      * {@link #FRONTEND_RESOURCE_BASE_FILES_PATH}, {@link #UI_COMPONENT_BASE_FILES_PATH}
-     * </p>
+     * 
      * <p>
      * <b>Usage:</b> Import services iterate this list to discover all component YAML files across different categories.
      * Each base path is combined with access-level subdirectories from {@link #SUBDIR_FILE_PATHS} to create the
      * complete scan path cartesian product.
-     * </p>
+     * 
      * <p>
      * <b>Modification:</b> When introducing new component categories, add corresponding base path entries to this list
      * to ensure automatic discovery during import operations.
-     * </p>
+     * 
      * <p>
      * <b>Type:</b> ArrayList (mutable but should be treated as effectively immutable at runtime to prevent
      * unexpected side effects in concurrent scanning operations).
-     * </p>
+     * 
      *
      * @see ClasspathComponentImportService#getAllYamlFiles() for usage in systematic scanning
      */
@@ -354,17 +354,17 @@ public class FolderPathConstants {
      * <p>
      * This list is dynamically computed by mapping {@code FrontendResource.AccessLevel.values()} through
      * the {@code getPath()} method, producing subdirectory names corresponding to each access level tier.
-     * </p>
+     * 
      * <p>
      * <b>Example values:</b> Typical access levels include {@code "public/"}, {@code "authenticated/"},
      * {@code "admin/"} (actual values depend on the AccessLevel enum definition).
-     * </p>
+     * 
      * <p>
      * <b>Usage:</b> Combined with {@link #BASE_FILE_PATHS} in a cartesian product to scan all folder combinations.
      * For each base path, import services iterate through subdirectory paths to discover YAML files organized
      * by access level. This enables access-controlled component loading where public components are separated
      * from authenticated-only or admin-only resources.
-     * </p>
+     * 
      * <p>
      * Example scan path construction:
      * <pre>{@code
@@ -374,7 +374,7 @@ public class FolderPathConstants {
      *     }
      * }
      * }</pre>
-     * </p>
+     * 
      *
      * @see com.openkoda.model.component.FrontendResource.AccessLevel for enum source
      * @see ClasspathComponentImportService for cartesian product usage

@@ -40,39 +40,38 @@ import static org.apache.commons.lang3.StringUtils.capitalize;
  * {@code /gpt/} directory and substituting placeholders with dynamically generated context information.
  * Template placeholders {@code ${CONTEXT_SPECIFICATION}} and {@code ${DATA_MODEL}} are replaced with
  * reflection-derived metadata from the OpenKoda domain model and service layer.
- * </p>
+
  * <p>
  * Context generation uses reflection to inspect {@link LiveComponentProvider} fields annotated with
  * {@link Autocomplete}, extracting method signatures to provide ChatGPT with available service APIs.
  * Data model introspection examines {@link SearchableEntity} classes to generate method signatures,
  * field hints from {@link AiHint} annotations, and JPA relationship descriptions.
- * </p>
+
  * <p>
  * Template syntax supports variable substitution with {@code ${VARIABLE_NAME}} placeholders.
  * The service performs deterministic placeholder replacement with null-safe string concatenation.
- * </p>
+
  * <p>
  * Configuration: Excluded fields can be configured via the {@code chat.gpt.promptFileName.excludedFields}
  * property to filter sensitive or irrelevant entity fields from AI context generation.
- * </p>
+
  * <p>
  * Architecture: Uses {@link ReflectionHelper} for type introspection, {@link SearchableRepositories}
  * for entity metadata, and Apache Commons IOUtils for template file loading. Generates deterministic
  * output suitable for AI prompt engineering with comprehensive domain context.
- * </p>
+
  * <p>
  * Thread-safety: Stateless service, thread-safe. All methods operate on method parameters without
  * shared mutable state.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * String prompt = chatGPTPromptService.getPromptFromFileForEntities("generate_code.txt", "user", "organization");
  * }</pre>
- * </p>
+
  *
  * @see ChatGPTService for prompt execution and conversation management
- * @see com.openkoda.model.Conversation entity for ChatGPT conversation persistence
  * @see Autocomplete annotation for service method exposure
  * @see AiHint annotation for entity field hints
  * @author OpenKoda Team
@@ -100,18 +99,18 @@ public class ChatGPTPromptService extends ComponentProvider {
      * file from the {@code /gpt/} directory in the classpath, replacing {@code ${CONTEXT_SPECIFICATION}}
      * with service method suggestions and {@code ${DATA_MODEL}} with entity metadata for the specified
      * repository keys. Falls back to {@code defaultPrompt} if the template file is not found.
-     * </p>
+
      * <p>
      * Template loading uses classpath resource resolution via {@link Class#getResourceAsStream(String)}.
      * Placeholder replacement uses simple string substitution with context and data model generators.
      * Null or empty entityKeys array results in empty data model content.
-     * </p>
+
      * <p>
      * Example with entity keys:
      * <pre>{@code
      * String prompt = getPromptFromFileForEntities("generate_code.txt", "user", "organization");
      * }</pre>
-     * </p>
+
      *
      * @param promptFileName template filename under {@code /gpt/} directory (e.g., "generate_code.txt"),
      *                       defaults to "promptFileName.txt" if null
@@ -149,10 +148,10 @@ public class ChatGPTPromptService extends ComponentProvider {
      * for methods annotated with {@link Autocomplete} to generate a sorted list of service method
      * suggestions in the format {@code context.services.fieldName.methodName(paramTypes)}.
      * This provides ChatGPT with awareness of available OpenKoda service APIs.
-     * </p>
+
      *
      * @return context specification string with service method suggestions, one per line, sorted alphabetically
-     * @see LiveComponentProvider for injected service fields
+     * // LiveComponentProvider for injected service fields
      * @see Autocomplete annotation for method exposure filtering
      */
     private String getContextSpecification(){
@@ -169,7 +168,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * <p>
      * Uses {@link ReflectionHelper} to get declared methods and filters for those marked with
      * {@link Autocomplete} annotation, indicating they should be exposed in AI context.
-     * </p>
+
      *
      * @param className fully qualified class name to inspect for exposed methods
      * @return array of methods annotated with {@link Autocomplete}, empty array if none found
@@ -185,7 +184,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * <p>
      * Transforms methods into AI-readable suggestions formatted as
      * {@code context.services.variableName.methodName(paramTypes)}.
-     * </p>
+
      *
      * @param methods array of methods to format into suggestions
      * @param variableName variable name prefix for the service field (e.g., "dataServices")
@@ -203,7 +202,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * <p>
      * Uses {@link ReflectionHelper#getNameWithParamNamesAndTypes(Method)} to generate
      * method signature including parameter names and types.
-     * </p>
+
      *
      * @param variableName variable name to prepend to method signature, null for no prefix
      * @param method method to format into suggestion string
@@ -220,7 +219,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * Processes each entity key through {@link #getDataModel(String)} and concatenates results
      * with newline separators. Each data model includes method signatures, manual entries for
      * {@link OpenkodaEntity} methods, AI hints, and relationship descriptions.
-     * </p>
+
      *
      * @param entityKeys varargs array of entity repository keys (e.g., "user", "organization")
      * @return concatenated data models for all entities, one per line, empty string if no keys provided
@@ -236,7 +235,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * <p>
      * Processes each entity key through {@link #getDataSchema(String)} to extract JPA table names
      * and column names from entity field mappings. Provides database-level schema information for AI context.
-     * </p>
+
      *
      * @param entityKeys varargs array of entity repository keys for schema generation
      * @return concatenated database schemas with table and column names, empty string if no keys provided
@@ -255,7 +254,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * manual {@link OpenkodaEntity} method entries (getProperty, setProperty, timestamps, organizationId),
      * all {@link AiHint} annotations, and JPA relationship descriptions. Provides complete entity API
      * surface for AI-assisted code generation.
-     * </p>
+
      *
      * @param entityKey single entity repository key to generate data model for (e.g., "user")
      * @return complete data model description with methods, hints, and relationships
@@ -279,7 +278,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * annotation not present), then maps eligible entity fields to database column names using
      * {@link com.openkoda.core.helper.NameHelper#toColumnName(String)}. Includes AI hints for
      * additional context. Provides database-level schema information for SQL generation.
-     * </p>
+
      *
      * @param entityKey single entity repository key for schema extraction
      * @return database schema string with table name and column names in parentheses (e.g., "users (id,name,email)")
@@ -301,7 +300,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * Detects eligible getter and setter methods via {@link #detectEligibleMethods(Class)} and formats
      * each with parameter types and return type using {@link ReflectionHelper}. Prefixes method signatures
      * with lowercased entity name for context.
-     * </p>
+
      *
      * @param entityClass entity class to extract method signatures from
      * @return formatted method signatures with entity prefix, one per line (e.g., "user.getName() : String")
@@ -322,7 +321,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * property bag accessors (getProperty, setProperty), auditing timestamps (getCreatedOn, getUpdatedOn),
      * and multi-tenancy identifier (getOrganizationId). These methods are not detected via reflection
      * on the entity class itself but are inherited from the base entity.
-     * </p>
+
      *
      * @param entityClass entity class to check for {@link OpenkodaEntity} inheritance
      * @return newline-separated manual method entries if entity extends {@link OpenkodaEntity}, empty string otherwise
@@ -348,7 +347,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * types (determined via {@link ReflectionHelper#isSimpleType(Field)}), also attempts to find setter
      * methods unless the field is annotated with {@link Formula} (indicating a computed field).
      * Complex types only include getters. Swallows {@link NoSuchMethodException} for missing accessors.
-     * </p>
+
      *
      * @param entityClass entity class to analyze for getter/setter methods
      * @return list of detected getter and setter methods for eligible fields
@@ -376,7 +375,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * <p>
      * Applies {@link #isEligible(Field)} predicate to filter declared fields, excluding static
      * fields and fields listed in the {@code excludedFields} configuration property.
-     * </p>
+
      *
      * @param entityClass entity class to extract fields from
      * @return filtered list of eligible instance fields for data model generation
@@ -394,7 +393,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * <p>
      * A field is eligible if it is not listed in the {@code excludedFields} configuration array
      * and is not a static field. Filters sensitive or framework-internal fields from AI context.
-     * </p>
+
      *
      * @param field field to check eligibility for
      * @return {@code true} if field is eligible for inclusion, {@code false} otherwise
@@ -410,7 +409,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * Constructs setter name as "set" + capitalized field name and attempts to resolve via
      * {@link Class#getMethod(String, Class[])}. Swallows {@link NoSuchMethodException} if setter
      * does not exist (e.g., for read-only fields or non-standard naming conventions).
-     * </p>
+
      *
      * @param field field to find setter for
      * @param entityClass entity class to search for setter method
@@ -432,7 +431,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * fields (determined via {@link ReflectionHelper#isBoolean(Field)}), then attempts to resolve
      * via {@link Class#getMethod(String, Class[])}. Swallows {@link NoSuchMethodException} if getter
      * does not exist.
-     * </p>
+
      *
      * @param field field to find getter for
      * @param entityClass entity class to search for getter method
@@ -454,7 +453,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * Extracts short name via {@link ReflectionHelper#getShortName(Class)}, converts to lowercase,
      * and removes timestamp suffix by splitting on underscore and taking the first token. This
      * produces consistent entity prefixes for data model generation (e.g., "User" → "user").
-     * </p>
+
      *
      * @param entityClass entity class to generate prefix from
      * @return lowercased short name without timestamp suffix (e.g., "user", "organization")
@@ -471,7 +470,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * Iterates through declared fields and collects {@link AiHint} annotation values, prefixing
      * each with "hint for [entityPrefix]: " to provide additional context guidance for AI prompt
      * generation. Hints can describe field semantics, validation rules, or business constraints.
-     * </p>
+
      *
      * @param entityClass entity class to extract AI hints from
      * @return concatenated hint strings with entity prefix, one per line, empty string if no hints present
@@ -497,7 +496,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * via {@link #getRelatedFields(Class)} and generates natural language descriptions formatted as
      * "Know that [entityPrefix] is assigned to object with repository name [fieldName]". Provides
      * relational context for AI understanding of entity associations.
-     * </p>
+
      *
      * @param entityClass entity class to extract relationship information from
      * @return newline-separated relationship descriptions, empty string if no relationships found
@@ -518,7 +517,7 @@ public class ChatGPTPromptService extends ComponentProvider {
      * Filters declared fields for those annotated with ManyToOne, ManyToMany, or OneToOne annotations
      * by checking if any declared annotation type name contains these strings. Uses string matching
      * rather than direct annotation type comparison for flexibility with JPA provider variations.
-     * </p>
+
      *
      * @param entityClass entity class to scan for relationship fields
      * @return list of fields representing JPA associations, empty list if no relationships found

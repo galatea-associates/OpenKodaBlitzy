@@ -66,7 +66,7 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  * Annotated with {@code @Configuration} to register Spring MVC customizations for the OpenKoda platform.
  * This class configures critical MVC infrastructure including view mappings, resource handlers, interceptors,
  * exception resolution, argument resolvers, and template resolvers for multi-tenant Thymeleaf rendering.
- * </p>
+ * 
  * <p>
  * Key configurations provided:
  * <ul>
@@ -81,11 +81,10 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  *   <li>Request-scoped getUserInOrganization bean (MutableUserInOrganization) for authenticated user context</li>
  *   <li>Multi-datasource configuration via datasources() bean bound to application properties</li>
  * </ul>
- * </p>
  * <p>
  * This configuration integrates Thymeleaf template resolution, custom argument resolvers for form handling,
  * comprehensive exception handling, and multi-datasource support for tenant isolation.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -136,7 +135,7 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * {@code default.pages.homeview} property. The view name is prefixed
      * with {@code frontendResourceTemplateNamePrefix} to enable tenant-aware
      * template resolution through the FrontendResourceOrClassLoaderTemplateResolver.
-     * </p>
+     * 
      *
      * @param registry ViewControllerRegistry for view controller mappings
      */
@@ -152,7 +151,7 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * with 7-day cache control headers. This enables efficient serving of JavaScript libraries,
      * CSS frameworks, and other static assets packaged in JARs (e.g., WebJars).
      * The public cache control allows both browser and CDN caching for optimal performance.
-     * </p>
+     * 
      *
      * @param registry ResourceHandlerRegistry for static resource mapping configuration
      */
@@ -172,7 +171,7 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * </ul>
      * These interceptors provide cross-cutting request handling functionality including
      * model enrichment, module lifecycle hooks, and URL consistency enforcement.
-     * </p>
+     * 
      *
      * @param registry InterceptorRegistry for interceptor registration and ordering
      */
@@ -191,7 +190,7 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * logging based on exception type and severity, and implements noise suppression for client-abort
      * scenarios. User agents matching the {@code user.agent.excluded.from.error.log} pattern are
      * excluded from error logging to reduce log noise from bots and scanners.
-     * </p>
+     * 
      *
      * @param exceptionResolvers List of HandlerExceptionResolver instances to be configured
      * @see ErrorLoggingExceptionResolver
@@ -209,7 +208,7 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * information and organization context. Controllers and services can inject this bean
      * to access the current user's identity and tenant association without passing
      * context explicitly through method parameters.
-     * </p>
+     * 
      *
      * @return request-scoped MutableUserInOrganization for current authenticated user context
      * @see MutableUserInOrganization
@@ -227,7 +226,7 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * for specific URL patterns to allow cross-origin requests from designated
      * origins. This is useful for enabling API access from frontend applications
      * hosted on different domains (e.g., separate Angular or React applications).
-     * </p>
+     * 
      *
      * @param registry CorsRegistry for CORS configuration
      */
@@ -248,7 +247,7 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * </ul>
      * The returned POJO provides structured access to multi-datasource configuration
      * for tenant isolation and data partitioning strategies.
-     * </p>
+     * 
      *
      * @return Datasources POJO bound to application properties for multi-datasource configuration
      * @see Datasources
@@ -268,12 +267,12 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * the prefix {@code frontend-resource#} and suffix {@code .html}, rendering in HTML5 mode.
      * Template caching is controlled by the {@code frontendresource.load.always.from.resources} flag.
      * Order 1 ensures this resolver is evaluated before the StringTemplateResolver (order 2).
-     * </p>
+     * 
      * <p>
      * This enables per-organization template customization where tenants can override default
      * templates with custom versions stored in the database while falling back to classpath
      * resources when customizations don't exist.
-     * </p>
+     * 
      *
      * @param queryExecutor QueryExecutor for database template queries
      * @param frontendResourceService FrontendResourceService for template loading logic
@@ -310,7 +309,7 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * alongside the database/classpath resolver). This resolver acts as a fallback
      * mechanism enabling runtime template generation from strings, useful for
      * dynamic content rendering scenarios where templates are constructed programmatically.
-     * </p>
+     * 
      *
      * @return configured ITemplateResolver for string-based template resolution
      */
@@ -347,11 +346,11 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * The resolver uses reflection-based mapping to convert form data to MapEntity instances,
      * leveraging htmlCrudControllerConfigurationMap for CRUD configuration, frontendMappingMap
      * for field mappings, and urlHelper for URL resolution.
-     * </p>
+     * 
      * <p>
      * This enables Spring MVC to resolve custom parameter types in controller methods,
      * simplifying form handling for dynamic entity types.
-     * </p>
+     * 
      *
      * @param argumentResolvers List of HandlerMethodArgumentResolver instances to be registered
      * @see MapFormArgumentResolver
@@ -369,7 +368,7 @@ public class MvcConfig implements URLConstants, WebMvcConfigurer  {
      * {@code SessionData.LOCALE}. This enables per-user locale preferences that
      * persist across requests within the same session, supporting internationalization
      * of the application UI.
-     * </p>
+     * 
      *
      * @return configured LocaleResolver for session-based locale management
      */

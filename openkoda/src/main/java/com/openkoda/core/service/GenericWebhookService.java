@@ -43,17 +43,17 @@ import java.util.Map;
  * access via {@code ${@beanName}} expressions within templates. Enqueues {@link HttpRequestTask} records via
  * unsecure repository for asynchronous HTTP POST delivery by background jobs, useful for third-party webhook
  * integrations.
- * </p>
+
  * <p>
  * Extends {@link ComponentProvider} for repositories/services access, providing convenient access to the platform's
  * data access and business logic layers.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * service.sendToUrlWithCanonical(entity, "https://api.example.com/webhook", "webhook-content", "webhook-headers");
  * </pre>
- * </p>
+
  *
  * @see HttpRequestTask
  * @see CanonicalObject
@@ -86,11 +86,11 @@ public class GenericWebhookService extends ComponentProvider {
      * content template, renders HTTP headers from the headers template, constructs an {@link HttpRequestTask} with
      * the URL, message, and headers, then persists via unsecure repository bypassing privilege checks (assumes
      * system-level webhook delivery).
-     * </p>
+
      * <p>
      * Returns {@code true} immediately - actual HTTP POST delivery happens asynchronously by background jobs.
      * Does not wait for HTTP response.
-     * </p>
+
      *
      * @param object the {@link CanonicalObject} entity to include in template context
      * @param url target webhook URL for HTTP POST delivery
@@ -120,11 +120,11 @@ public class GenericWebhookService extends ComponentProvider {
      * {@link ThymeleafEvaluationContext} as a special variable enabling {@code ${@serviceName.method()}} 
      * Spring bean access within templates, populates model entries as context variables, and processes 
      * the template to a string.
-     * </p>
+
      * <p>
      * The {@link ThymeleafEvaluationContext} enables templates to call Spring beans directly, for example:
      * {@code ${@emailService.formatAddress(user)}} style expressions.
-     * </p>
+
      *
      * @param templateName the name of the Thymeleaf template to process
      * @param model map of variable names to values for template context

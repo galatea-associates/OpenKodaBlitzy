@@ -37,11 +37,11 @@ import static jakarta.persistence.LockModeType.PESSIMISTIC_WRITE;
  * webhook delivery, external API integrations, and scheduled HTTP operations. It extends
  * TaskRepository to inherit standard task lifecycle operations while adding HTTP-specific
  * lookups by URL patterns, request methods, execution status, and retry counts.
- * </p>
+ * 
  * <p>
  * Key features include pessimistic locking support for distributed task execution and
  * URL pattern matching for administrative monitoring of webhook delivery pipelines.
- * </p>
+ * 
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-07-02
@@ -57,11 +57,11 @@ public interface HttpRequestTaskRepository extends TaskRepository<HttpRequestTas
      * This method is used for administrative inspection and webhook monitoring to locate
      * pending HTTP requests targeting specific endpoints. The URL pattern matching uses
      * database-specific LIKE semantics, so the pattern should include wildcards (%) as needed.
-     * </p>
+     * 
      * <p>
      * Typical use cases include debugging webhook deliveries, monitoring integration status,
      * and filtering tasks by destination service or API endpoint.
-     * </p>
+     * 
      *
      * @param requestUrlPart URL pattern fragment for LIKE search to filter HTTP requests by
      *                       target endpoint (use % wildcards for pattern matching)
@@ -76,11 +76,11 @@ public interface HttpRequestTaskRepository extends TaskRepository<HttpRequestTas
      * This method applies a PESSIMISTIC_WRITE lock to prevent concurrent task execution
      * across multiple application nodes or threads. The lock ensures that selected tasks
      * cannot be claimed by other processes until the current transaction completes.
-     * </p>
+     * 
      * <p>
      * <b>Transactional Requirements:</b> This method must be called within an active transaction
      * to maintain the pessimistic lock. The lock is released when the transaction commits or rolls back.
-     * </p>
+     * 
      * <p>
      * <b>Usage Example:</b>
      * <pre>
@@ -88,12 +88,12 @@ public interface HttpRequestTaskRepository extends TaskRepository<HttpRequestTas
      *     () -> httpRequestTaskRepository.findByCanBeStartedTrue(pageable)
      * );
      * </pre>
-     * </p>
+     * 
      * <p>
      * Tasks eligible for execution include newly created tasks and previously failed tasks
      * that have not exceeded their maximum retry count. The canBeStarted flag automatically
      * accounts for retry delays and failure backoff periods.
-     * </p>
+     * 
      *
      * @param pageable Pagination parameters specifying page size and sort order for task
      *                 selection (typically sorted by creation date or priority)

@@ -14,18 +14,18 @@ import java.util.List;
  * reusable, and composable via {@code and()}/{@code or()} operators to build complex filtering
  * conditions. Used by repositories for flexible search and filtering of server-side JavaScript
  * code entities.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * Specification<ServerJs> spec = ServerJsSpecification.getByName("emailValidator.js");
  * List<ServerJs> results = serverJsRepository.findAll(spec);
  * }</pre>
- * </p>
+
  * <p>
  * <b>Note:</b> Uses string-based attribute name ('name') which is fragile to entity refactoring.
  * Consider migrating to JPA metamodel for type safety.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -42,13 +42,13 @@ public class ServerJsSpecification {
      * Constructs a lambda-based specification that performs exact equality matching on the
      * name attribute using {@link jakarta.persistence.criteria.CriteriaBuilder#equal}.
      * The specification is stateless and can be safely reused across multiple queries.
-     * </p>
+
      * <p>
      * Usage example:
      * <pre>{@code
      * Specification<ServerJs> spec = getByName("emailValidator.js");
      * }</pre>
-     * </p>
+
      *
      * @param name The exact name of the ServerJs entity to search for. Case-sensitive
      *             equality matching is used

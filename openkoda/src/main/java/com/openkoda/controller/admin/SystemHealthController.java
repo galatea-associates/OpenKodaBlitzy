@@ -42,37 +42,37 @@ import static com.openkoda.controller.common.URLConstants._HTML;
  * GraalVM JS thread monitoring (threads), thread lifecycle control (threadInterrupt, threadRemove), 
  * admin dashboard landing page (adminDashboard), component registry (components), and application 
  * restart (restart). Endpoints require varying privilege levels from read (diagnostics) to manage (restart).
- * </p>
+ * 
  * <p>
  * Request mapping: Base path "/html" (URLConstants._HTML)
- * </p>
+ * 
  * <p>
  * Security: Implements {@link HasSecurityRules} for privilege enforcement. System health requires 
  * CHECK_CAN_READ_SUPPORT_DATA, thread/backend operations require CHECK_CAN_READ_BACKEND or 
  * CHECK_CAN_MANAGE_BACKEND.
- * </p>
+ * 
  * <p>
  * Response types: Returns HTML views via {@link ModelAndView} for UI display, HTMX fragments 
  * for AJAX updates, null for restart (application terminating).
- * </p>
+ * 
  * <p>
  * Inheritance: Extends {@link AbstractSystemHealthController} for Flow-based health monitoring 
  * and thread management helpers.
- * </p>
+ * 
  * <p>
  * System health context: Monitors JVM metrics, database schema compliance, server-side JavaScript 
  * execution threads.
- * </p>
+ * 
  * <p>
  * Thread-safety: Stateless, thread-safe. ServerJSProcessRunner operations synchronized internally.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see AbstractSystemHealthController
- * @see com.openkoda.service.system.SystemStatusService
- * @see com.openkoda.core.customisation.ServerJSProcessRunner
+ * See {@code AbstractSystemHealthController}
+ * See {@code SystemStatusService}
+ * See {@code com.openkoda.core.customisation.ServerJSProcessRunner}
  */
 @RestController
 @RequestMapping(_HTML)
@@ -82,14 +82,14 @@ public class SystemHealthController extends AbstractSystemHealthController imple
      * Displays system health dashboard with JVM and database metrics.
      * <p>
      * HTTP mapping: GET /html/system-health
-     * </p>
+     * 
      * <p>
      * Security: {@code @PreAuthorize(CHECK_CAN_READ_SUPPORT_DATA)} - requires support data read privilege.
-     * </p>
+     * 
      * <p>
      * Model populated by getSystemHealth() with key "systemHealthStatus" containing Map with JVM memory 
      * (heap, non-heap MB), thread counts (active, peak), database connection pool stats, cache hit rates.
-     * </p>
+     * 
      *
      * @return Object resolving to ModelAndView with view name "system-health". Used by admin dashboard 
      *         system health monitoring tab
@@ -106,15 +106,15 @@ public class SystemHealthController extends AbstractSystemHealthController imple
      * Generates database schema validation script via AJAX.
      * <p>
      * HTTP mapping: GET /html/system-health/validate
-     * </p>
+     * 
      * <p>
      * Security: {@code @PreAuthorize(CHECK_CAN_READ_SUPPORT_DATA)}
-     * </p>
+     * 
      * <p>
      * Model populated by validate() with key "databaseUpdateScript" containing SQL DDL statements to 
      * reconcile schema drift (JPA entities vs actual DB structure). Script is read-only (not executed), 
      * enables schema compliance diagnostics.
-     * </p>
+     * 
      *
      * @return Object resolving to HTMX fragment "system-health::database-validation". Used by AJAX 
      *         request from system health UI "Validate Database" button
@@ -131,14 +131,14 @@ public class SystemHealthController extends AbstractSystemHealthController imple
      * Displays server-side JavaScript thread monitoring UI.
      * <p>
      * HTTP mapping: GET /html/threads
-     * </p>
+     * 
      * <p>
      * Security: {@code @PreAuthorize(CHECK_CAN_READ_BACKEND)} - requires backend read privilege.
-     * </p>
+     * 
      * <p>
      * Model populated by getThreads() with key "serverJsThreads" containing List of GraalVM JS thread 
      * metadata (thread ID, script name, start timestamp, execution status).
-     * </p>
+     * 
      *
      * @return Object resolving to ModelAndView with view name "threads". Used by admin dashboard JS 
      *         thread monitoring tab for debugging long-running server-side scripts
@@ -155,17 +155,17 @@ public class SystemHealthController extends AbstractSystemHealthController imple
      * Interrupts running JavaScript execution thread.
      * <p>
      * HTTP mapping: POST /html/threads/{id}/interrupt
-     * </p>
+     * 
      * <p>
      * Path variable: {id} mapped to threadId Long parameter.
-     * </p>
+     * 
      * <p>
      * Security: {@code @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)} - requires backend management privilege.
-     * </p>
+     * 
      * <p>
      * Executes interruptThread(threadId) which sets interrupt flag via ServerJSProcessRunner.interruptThread(threadId). 
      * Thread terminates at next interruptible operation.
-     * </p>
+     * 
      *
      * @param threadId unique identifier of thread to interrupt (from serverJsThreads list)
      * @return Object resolving to ModelAndView with view name "threads", model refreshed after interrupt. 
@@ -183,17 +183,17 @@ public class SystemHealthController extends AbstractSystemHealthController imple
      * Removes JavaScript thread from monitoring registry.
      * <p>
      * HTTP mapping: POST /html/threads/{id}/remove
-     * </p>
+     * 
      * <p>
      * Path variable: {id} mapped to threadId Long parameter.
-     * </p>
+     * 
      * <p>
      * Security: {@code @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)}
-     * </p>
+     * 
      * <p>
      * Executes removeThread(threadId) which calls ServerJSProcessRunner.removeJsThread(threadId) to 
      * remove thread metadata. Only removes completed/interrupted threads (not active).
-     * </p>
+     * 
      *
      * @param threadId unique identifier of thread to remove (from serverJsThreads list)
      * @return Object resolving to ModelAndView with view name "threads", model refreshed after removal. 
@@ -211,13 +211,13 @@ public class SystemHealthController extends AbstractSystemHealthController imple
      * Displays admin dashboard landing page.
      * <p>
      * HTTP mapping: GET /html/dashboard
-     * </p>
+     * 
      * <p>
      * Security: {@code @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)}
-     * </p>
+     * 
      * <p>
      * Landing page contains links to logs, audit, system health, threads, integrations.
-     * </p>
+     * 
      *
      * @param pageable pagination parameters qualified as "obj" (currently unused)
      * @return ModelAndView with view name "admin-dashboard" (empty model). Used as main admin UI entry point
@@ -233,10 +233,10 @@ public class SystemHealthController extends AbstractSystemHealthController imple
      * Displays component registry UI (module/bean listing).
      * <p>
      * HTTP mapping: GET /html/components
-     * </p>
+     * 
      * <p>
      * Security: {@code @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)}
-     * </p>
+     * 
      *
      * @return Object resolving to ModelAndView with view name "components" (empty model via Flow.init().execute()). 
      *         Used by admin dashboard components tab for viewing registered Spring beans and modules
@@ -254,14 +254,14 @@ public class SystemHealthController extends AbstractSystemHealthController imple
      * Initiates graceful application shutdown.
      * <p>
      * HTTP mapping: GET /html/restart
-     * </p>
+     * 
      * <p>
      * Security: {@code @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)}
-     * </p>
+     * 
      * <p>
      * Executes App.shutdown() which triggers Spring context shutdown. Application must be managed by 
      * external process manager (systemd, Docker) for automatic restart.
-     * </p>
+     * 
      *
      * @return null (application terminating, no response sent). Used by admin UI "Restart Application" 
      *         button for applying configuration changes requiring restart

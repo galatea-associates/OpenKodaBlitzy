@@ -31,12 +31,12 @@ import com.openkoda.dto.OrganizationRelatedObject;
  * implementing {@link CanonicalObject} for identity tracking and {@link OrganizationRelatedObject}
  * for organization-scoped operations. All fields are public Long wrapper types to support nullable
  * identifiers during serialization and deserialization.
- * </p>
+ * 
  * <p>
  * The mutable design allows for flexible mapping between persistence entities and API representations.
  * Callers must ensure non-null field values before invoking {@link #notificationMessage()} to avoid
  * NullPointerException during string formatting.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -146,13 +146,13 @@ public class UserRoleDto implements CanonicalObject, OrganizationRelatedObject {
      * <p>
      * Generates a human-readable message in the format:
      * "User: %d was granted with role: %d, within organization %d."
-     * </p>
+     * 
      * <p>
      * <b>CRITICAL:</b> This method uses {@code %d} integer format specifiers with nullable Long wrapper
      * fields. If any of {@link #userId}, {@link #roleId}, or {@link #organizationId} are null, calling
      * this method will cause a NullPointerException or unexpected formatting behavior. Callers must ensure
      * all three identifiers are non-null before invoking this method.
-     * </p>
+     * 
      *
      * @return formatted notification message describing the user-role grant operation
      * @throws NullPointerException if userId, roleId, or organizationId are null during string formatting

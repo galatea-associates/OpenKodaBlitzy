@@ -22,10 +22,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Core application auditing subsystem capturing entity lifecycle changes via Hibernate interceptor SPI for persistent audit trail.
  *
- * <h2>AUDIT ARCHITECTURE OVERVIEW</h2>
+ * <b>AUDIT ARCHITECTURE OVERVIEW</b>
  * <p>
  * The audit system tracks entity changes through a six-stage pipeline:
- * </p>
+ * 
  * <ol>
  *   <li>Hibernate detects entity changes during session flush</li>
  *   <li>PropertyChangeInterceptor (session-scoped) hooks lifecycle events</li>
@@ -36,7 +36,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ol>
  * <p>
  * Key components and their responsibilities:
- * </p>
+ * 
  * <ul>
  *   <li><b>PropertyChangeInterceptor</b>: Session-scoped Hibernate hook managing per-session audit state</li>
  *   <li><b>AuditInterceptor</b>: Singleton change detector with entity registry</li>
@@ -47,22 +47,22 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>IpService</b>: Extracts client IP with proxy support</li>
  * </ul>
  *
- * <h2>CONFIGURATION REQUIREMENTS</h2>
+ * <b>CONFIGURATION REQUIREMENTS</b>
  * <p>
  * <b>CRITICAL:</b> Must configure in application.properties:
- * </p>
+ * 
  * <pre>
  * spring.jpa.properties.hibernate.ejb.interceptor.session_scoped=com.openkoda.core.audit.PropertyChangeInterceptor
  * </pre>
  * <p>
  * The session_scoped semantics ensure Hibernate creates one PropertyChangeInterceptor per session for thread isolation.
  * Each interceptor maintains its own auditMap ConcurrentHashMap to track changes within that session.
- * </p>
+ * 
  *
- * <h2>REGISTERED ENTITIES</h2>
+ * <b>REGISTERED ENTITIES</b>
  * <p>
  * The following 18 entities are audited by default (registered in AuditInterceptor constructor):
- * </p>
+ * 
  * <ul>
  *   <li>Task, Organization, UserRole, User, Role, Form, ServerJs</li>
  *   <li>OrganizationRole, GlobalRole, FrontendResource, ControllerEndpoint</li>
@@ -73,12 +73,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p>
  * To make additional entity classes auditable, implement {@link com.openkoda.model.common.AuditableEntityOrganizationRelated}
  * or {@link com.openkoda.model.common.AuditableEntity} and register via {@link com.openkoda.core.customisation.BasicCustomisationService}.
- * </p>
+ * 
  *
- * <h2>AUDIT TRAIL DATA MODEL</h2>
+ * <b>AUDIT TRAIL DATA MODEL</b>
  * <p>
  * <b>AuditedObjectState</b> captures entity snapshots with:
- * </p>
+ * 
  * <ul>
  *   <li><b>properties</b>: Map of HTML change descriptions</li>
  *   <li><b>changes</b>: Map of before/after value pairs</li>
@@ -87,7 +87,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ul>
  * <p>
  * <b>Audit</b> entity persists with:
- * </p>
+ * 
  * <ul>
  *   <li><b>entityName</b>, <b>entityId</b>: Identifies changed entity</li>
  *   <li><b>organizationId</b>: Multi-tenant isolation</li>
@@ -100,10 +100,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>timestamps</b>: createdOn, updatedOn</li>
  * </ul>
  *
- * <h2>CHANGE DETECTION ALGORITHM</h2>
+ * <b>CHANGE DETECTION ALGORITHM</b>
  * <p>
  * PersistanceInterceptor.computeChanges compares currentState vs previousState arrays:
- * </p>
+ * 
  * <ol>
  *   <li>Iterates through property arrays in parallel</li>
  *   <li>Reports changes when values differ via equals()</li>
@@ -114,27 +114,27 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p>
  * HTML formatting uses pattern: 'from <b>oldValue</b> to <b>newValue</b>' with human-readable labels via
  * StringUtils.splitByCharacterTypeCamelCase. Null values render as '[no value]'.
- * </p>
+ * 
  *
- * <h2>TRANSACTION SAFETY</h2>
+ * <b>TRANSACTION SAFETY</b>
  * <p>
  * <b>CRITICAL WARNING:</b> beforeTransactionCompletion executes inside the active Hibernate transaction.
  * Audit save errors can rollback the entire transaction including business changes. Ensure AuditRepository
  * operations succeed to prevent data loss.
- * </p>
+ * 
  * <p>
  * Flush timing: Audit entities are persisted before commit. Failures in audit persistence affect the
  * surrounding transaction, potentially rolling back both audit and business data changes.
- * </p>
+ * 
  *
- * <h2>THREAD SAFETY</h2>
+ * <b>THREAD SAFETY</b>
  * <ul>
  *   <li><b>PropertyChangeInterceptor</b>: Session-scoped, one instance per Hibernate session, naturally thread-isolated</li>
  *   <li><b>AuditInterceptor</b>: Singleton Spring @Service, mutable auditListeners registry modified only in constructor</li>
  *   <li><b>AuditedObjectState</b>: Immutable references but mutable maps, session-scoped lifecycle prevents sharing</li>
  * </ul>
  *
- * <h2>KEY CLASSES</h2>
+ * <b>KEY CLASSES</b>
  * <ul>
  *   <li><b>PropertyChangeInterceptor</b>: Session-scoped Hibernate Interceptor hook</li>
  *   <li><b>AuditInterceptor</b>: Singleton service with entity registry and lifecycle implementations</li>
@@ -148,16 +148,16 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>package-info.java</b>: Package documentation</li>
  * </ul>
  *
- * <h2>USAGE</h2>
+ * <b>USAGE</b>
  * <p><b>Should I put a class into this package?</b></p>
  * <p>
  * This package provides a closed audit trail implementation. Add classes here only if extending core audit
  * functionality (e.g., custom PropertyChangeListener subclasses, additional audit formatters, specialized
  * interceptor logic). For custom entity auditing, implement AuditableEntity and register via
  * BasicCustomisationService rather than adding code to this package.
- * </p>
+ * 
  *
- * <h2>RELATED PACKAGES</h2>
+ * <b>RELATED PACKAGES</b>
  * @see com.openkoda.model.common.Audit
  * @see com.openkoda.model.common.AuditableEntity
  * @see com.openkoda.repository.admin.AuditRepository

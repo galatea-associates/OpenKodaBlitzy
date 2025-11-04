@@ -10,7 +10,7 @@ import java.util.Map;
  * service method suggestions, model keys, import options, and ServerJs function lists.
  * The response is designed to help developers write endpoint code with context-aware
  * suggestions for available services, repositories, Flow operations, and code templates.
- * </p>
+
  * <p>
  * The response structure includes four main sections:
  * <ul>
@@ -19,24 +19,24 @@ import java.util.Map;
  *   <li>Import suggestions - Available ServerJs modules</li>
  *   <li>ServerJs suggestions - Function lists for each ServerJs module</li>
  * </ul>
- * </p>
+
  * <p>
  * This DTO is typically serialized to JSON for REST API responses and consumed by
  * the web endpoint code editor to provide intelligent autocomplete and code assistance.
  * All fields use direct references (mutable) and should be treated as request-scoped objects.
- * </p>
+
  * <p>
  * Example usage in endpoint code editor:
  * <pre>
  * WebendpointAutocompleteResponse response = autocompleteService.getResponse();
  * Map&lt;String,String&gt; services = response.getServicesSuggestions();
  * </pre>
- * </p>
+
  *
  * @see com.openkoda.service.autocomplete.WebendpointAutocompleteService
  * @see com.openkoda.service.Services
  * @see com.openkoda.uicomponent.live.LiveComponentProvider
- * @see com.openkoda.model.file.ServerJs
+ * @see com.openkoda.model.component.ServerJs
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
@@ -50,10 +50,10 @@ public class WebendpointAutocompleteResponse {
      * autocomplete options for service methods available in the endpoint context.
      * Keys are formatted method signatures with parameter names, and values are
      * documentation strings from the @Autocomplete annotation.
-     * </p>
+
      * <p>
      * Example entries: {@code "userService.findById(userId)" -> "Finds user by ID"}
-     * </p>
+
      */
     Map<String,String> servicesSuggestions;
     
@@ -63,10 +63,10 @@ public class WebendpointAutocompleteResponse {
      * Contains predefined keys that can be used in the PageModelMap for storing
      * and retrieving data in web endpoint flows. Common keys include entity IDs
      * (organizationEntityId, userEntityId), result objects, and flow parameters.
-     * </p>
+
      * <p>
      * Example values: {@code ["organizationEntityId", "userEntityId", "currentUser"]}
-     * </p>
+
      */
     String[] modelKeys;
     
@@ -76,10 +76,10 @@ public class WebendpointAutocompleteResponse {
      * Lists all ServerJs modules that can be imported in the web endpoint code editor.
      * These modules are retrieved from the ServerJs repository and represent reusable
      * JavaScript code libraries that extend endpoint functionality.
-     * </p>
+
      * <p>
      * Example values: {@code ["CommonUtils", "DataValidator", "EmailHelper"]}
-     * </p>
+
      */
     String[] importSuggestions;
     
@@ -90,10 +90,10 @@ public class WebendpointAutocompleteResponse {
      * are module names, and values are lists of function names extracted from the
      * module's JavaScript code using the JsParser service. This enables intelligent
      * autocomplete for imported ServerJs modules.
-     * </p>
+
      * <p>
      * Example structure: {@code {"CommonUtils" -> ["formatDate", "validateEmail"]}}
-     * </p>
+
      */
     Map<String, List<String>> serverJsSuggestions;
 
@@ -102,7 +102,7 @@ public class WebendpointAutocompleteResponse {
      * <p>
      * Returns a map containing service method signatures as keys and their
      * documentation as values. The map provides direct reference (mutable).
-     * </p>
+
      *
      * @return map of service method suggestions to documentation, may be null
      */
@@ -115,7 +115,7 @@ public class WebendpointAutocompleteResponse {
      * <p>
      * Stores the map containing service method signatures and their documentation.
      * The map is stored as a direct reference without defensive copying.
-     * </p>
+
      *
      * @param servicesSuggestions map of service method suggestions to documentation, may be null
      */
@@ -128,7 +128,7 @@ public class WebendpointAutocompleteResponse {
      * <p>
      * Returns an array containing predefined keys for data binding in web endpoint flows.
      * The array is returned as a direct reference (mutable).
-     * </p>
+
      *
      * @return array of model keys for PageModelMap, may be null
      */
@@ -141,7 +141,7 @@ public class WebendpointAutocompleteResponse {
      * <p>
      * Stores the array containing predefined keys for data binding in web endpoint flows.
      * The array is stored as a direct reference without defensive copying.
-     * </p>
+
      *
      * @param modelKeys array of model keys for PageModelMap, may be null
      */
@@ -154,7 +154,7 @@ public class WebendpointAutocompleteResponse {
      * <p>
      * Returns an array containing names of ServerJs modules that can be imported
      * in the web endpoint code editor. The array is returned as a direct reference (mutable).
-     * </p>
+
      *
      * @return array of ServerJs module names available for import, may be null
      */
@@ -168,7 +168,7 @@ public class WebendpointAutocompleteResponse {
      * Stores the array containing names of ServerJs modules that can be imported
      * in the web endpoint code editor. The array is stored as a direct reference
      * without defensive copying.
-     * </p>
+
      *
      * @param importSuggestions array of ServerJs module names available for import, may be null
      */
@@ -183,7 +183,7 @@ public class WebendpointAutocompleteResponse {
      * of function names available in each module. This enables method-level
      * autocomplete for imported ServerJs modules. The map is returned as a
      * direct reference (mutable).
-     * </p>
+
      *
      * @return map of ServerJs module names to function lists, may be null
      */
@@ -197,7 +197,7 @@ public class WebendpointAutocompleteResponse {
      * Stores a map where keys are ServerJs module names and values are lists
      * of function names available in each module. The map is stored as a direct
      * reference without defensive copying.
-     * </p>
+
      *
      * @param serverJsSuggestions map of ServerJs module names to function lists, may be null
      */

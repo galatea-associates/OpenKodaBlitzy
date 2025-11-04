@@ -47,7 +47,6 @@ import java.util.Set;
  * Implements intelligent routing: honors saved requests (intercepted unauthenticated URLs), redirects global admins to admin dashboard,
  * single-organization users to their organization home, and multi-organization users to organization selector page.
  * Also persists SecurityContext to configured repository for session management.
- * </p>
  * <p>
  * Redirect decision flow:
  * <ol>
@@ -56,15 +55,12 @@ import java.util.Set;
  *     <li>If user in single organization → organization home</li>
  *     <li>Else → organization selector</li>
  * </ol>
- * </p>
  * <p>
  * Uses {@link UserProvider#getFromContext()} to access authenticated {@link OrganizationUser}.
  * <b>WARNING:</b> Code uses {@link Optional#get()} without presence check which may throw NoSuchElementException
  * if security context is not properly initialized.
- * </p>
  * <p>
  * Registered in WebSecurityConfig via formLogin().successHandler(customAuthenticationSuccessHandler).
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -124,13 +120,13 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
      * delegates to parent class. Otherwise, analyzes user's organization membership and privileges to determine
      * redirect: global admins to admin dashboard, single-org users to organization home, multi-org users to
      * organization selector.
-     * </p>
+     * 
      * <p>
      * Uses {@link RequestCache} to retrieve saved request. Accesses {@link OrganizationUser} via
      * {@link UserProvider#getFromContext()}.get() which assumes security context is populated
      * (may throw NoSuchElementException if not). Uses String.format() for single-organization URL
      * with organization ID substitution.
-     * </p>
+     * 
      *
      * @param httpServletRequest the HTTP request that triggered authentication
      * @param httpServletResponse the HTTP response used for redirect

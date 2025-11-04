@@ -34,14 +34,14 @@ import org.springframework.stereotype.Service;
  * ADD (entity creation), EDIT (property updates), DELETE (entity removal). Uses StringUtils.splitByCharacterTypeCamelCase to generate
  * human-readable field labels from camel case property names. Returns composed HTML strings with bold labels and line breaks.
  * Does not render large content payloads (intentional design - only adds 'Content' label without payload body at line 119).
- * </p>
+ * 
  * <p>
  * Stateless service with no fields. Contains minor HTML fragment inconsistencies: uses '&lt;br/&gt;' (lines 70, 81, 106) and
  * '&lt;/br&gt;' (line 118) variants. Debug tracing via LoggingComponentWithRequestId mixin.
- * </p>
+ * 
  * <p>
  * Thread-safety: Stateless and thread-safe.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -58,7 +58,7 @@ public class AuditChangeFactory implements LoggingComponentWithRequestId {
      * <p>
      * Dispatches to operation-specific formatters: getAddChangeDescription for ADD, getEditChangeDescription for EDIT,
      * getDeleteChangeDescription for DELETE. Returns empty string for unknown operations (default case line 61).
-     * </p>
+     * 
      *
      * @param auditedObject   Entity being audited, must implement AuditableEntity.toAuditString() for EDIT/DELETE descriptions
      * @param aos             Immutable snapshot of entity state with properties, changes, operation type, and optional content
@@ -134,7 +134,7 @@ public class AuditChangeFactory implements LoggingComponentWithRequestId {
      * Appends HTML-formatted property changes to StringBuilder with bold labels.
      * <p>
      * Returns early if properties map is empty (line 101-102). Uses getDefaultFieldLabel for human-readable field names.
-     * </p>
+     * 
      *
      * @param aos    State snapshot with properties map (propertyName -&gt; HTML change description)
      * @param change StringBuilder to append formatted properties
@@ -155,7 +155,7 @@ public class AuditChangeFactory implements LoggingComponentWithRequestId {
      * <p>
      * Does not render aos.getContent() payload - only adds 'Content' label at line 119. Design decision to avoid bloating
      * audit descriptions with large payloads.
-     * </p>
+     * 
      *
      * @param aos    State snapshot with optional content field
      * @param change StringBuilder to append content indicator
@@ -174,7 +174,7 @@ public class AuditChangeFactory implements LoggingComponentWithRequestId {
      * <p>
      * The routine is to split fieldName by camel case and make words upper case.
      * Example: Input 'organizationName' produces output 'Organization Name'.
-     * </p>
+     * 
      *
      * @param fieldName Camel case field name (e.g., 'logoId', 'firstName')
      * @return Human-readable label with spaces and title case (e.g., 'Logo Id', 'First Name')

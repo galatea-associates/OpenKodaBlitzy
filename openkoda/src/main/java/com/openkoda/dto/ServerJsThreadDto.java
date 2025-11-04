@@ -28,7 +28,7 @@ package com.openkoda.dto;
  * particularly for tracking thread pool activity in GraalVM JS integration. It captures
  * point-in-time state from a live Thread instance, providing an immutable snapshot suitable
  * for logging, metrics collection, and thread pool management.
- * </p>
+
  * <p>
  * Example usage for thread monitoring:
  * <pre>
@@ -37,12 +37,12 @@ package com.openkoda.dto;
  * // snapshot.state contains current execution state
  * // snapshot.id contains unique thread identifier
  * </pre>
- * </p>
+
  * <p>
  * <strong>Note:</strong> This object represents an immutable snapshot of thread state at
  * the moment of construction. It does not maintain a live reference to the source Thread,
  * and the captured state may become outdated as the thread continues execution.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -57,7 +57,7 @@ public class ServerJsThreadDto {
      * <p>
      * Represents the current state of the thread using the standard Java {@link Thread.State} enum.
      * Possible values include:
-     * </p>
+
      * <ul>
      * <li>{@code NEW} - Thread has not yet started</li>
      * <li>{@code RUNNABLE} - Thread is executing or ready to execute</li>
@@ -75,7 +75,7 @@ public class ServerJsThreadDto {
      * This is the system-assigned thread ID obtained from {@link Thread#getId()}.
      * Thread IDs are unique within a single JVM execution but may be reused
      * across JVM restarts.
-     * </p>
+
      */
     public long id;
 
@@ -86,7 +86,7 @@ public class ServerJsThreadDto {
      * creating an immutable snapshot suitable for monitoring, debugging, and thread
      * pool management. The snapshot reflects the thread's state at the moment of
      * construction and does not track subsequent state changes.
-     * </p>
+
      *
      * @param thread the source Thread from which to capture state and ID; must not be null
      * @throws NullPointerException if thread parameter is null

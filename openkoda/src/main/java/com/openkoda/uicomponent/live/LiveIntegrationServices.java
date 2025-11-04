@@ -35,15 +35,15 @@ import java.util.Map;
  * This service acts as a facade for external integration operations including Slack messaging and REST API
  * client functionality. It delegates all operations to specialized services ({@link SlackService} and
  * {@link RestClientService}) while providing a unified interface for UI component access.
- * </p>
+ * 
  * <p>
  * The service supports multiple Slack messaging patterns including simple messages, channel-specific messages,
  * and JSON-formatted messages. REST operations support both GET and POST methods with configurable headers.
  * Methods return {@code false} or empty results on HTTP errors rather than throwing exceptions.
- * </p>
+ * 
  * <p>
  * This class is stateless and thread-safe as it delegates to thread-safe Spring-managed service beans.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -74,7 +74,7 @@ public class LiveIntegrationServices implements IntegrationServices {
      * <p>
      * This is a convenience method for basic Slack messaging without specifying channel or username.
      * The message is posted to the default channel configured in the webhook.
-     * </p>
+     * 
      *
      * @param message the text message to send to Slack
      * @param webHook the Slack webhook URL to post the message to
@@ -89,7 +89,7 @@ public class LiveIntegrationServices implements IntegrationServices {
      * <p>
      * This method allows posting messages to specific channels with a custom display username,
      * overriding the webhook's default settings.
-     * </p>
+     * 
      *
      * @param message the text message to send to Slack
      * @param webHook the Slack webhook URL to post the message to
@@ -107,7 +107,7 @@ public class LiveIntegrationServices implements IntegrationServices {
      * This method accepts a pre-formatted JSON message string allowing full control over the Slack
      * message structure including attachments, blocks, and formatting options. The JSON must conform
      * to Slack's message payload format.
-     * </p>
+     * 
      *
      * @param JSONMessage the JSON-formatted message string conforming to Slack's payload format
      * @param webHook the Slack webhook URL to post the message to
@@ -124,7 +124,7 @@ public class LiveIntegrationServices implements IntegrationServices {
      * <p>
      * This method performs a REST POST operation with configurable request body and HTTP headers.
      * Returns an empty map on HTTP errors rather than throwing exceptions.
-     * </p>
+     * 
      *
      * @param url the target endpoint URL for the POST request
      * @param body the request body as a map of key-value pairs
@@ -142,7 +142,7 @@ public class LiveIntegrationServices implements IntegrationServices {
      * <p>
      * This method performs a REST GET operation with configurable HTTP headers.
      * Returns an empty map on HTTP errors rather than throwing exceptions.
-     * </p>
+     * 
      *
      * @param url the target endpoint URL for the GET request
      * @param headers the HTTP headers as a map of header names to values

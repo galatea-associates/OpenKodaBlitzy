@@ -34,27 +34,27 @@ import java.util.Map;
  * This service exposes synchronous POST and GET methods with header customization for making
  * HTTP requests to external REST APIs. It provides a convenient abstraction over Spring's
  * RestTemplate for common use cases involving JSON payloads and custom headers.
- * </p>
+
  * <p>
  * Note: This service does not implement internal retry or timeout policies. Callers should
  * handle {@code RestClientException} for HTTP errors and implement their own retry logic
  * if needed.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * Map<String, String> headers = Map.of("Authorization", "Bearer token");
  * Map response = restClientService.get("https://api.example.com/data", headers);
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see HttpRequestTask
- * @see org.springframework.web.client.RestTemplate
- * @see com.openkoda.service.GenericWebhookService
- * @see com.openkoda.integration.service.SlackService
+ * See {@code HttpRequestTask}
+ * See {@code org.springframework.web.client.RestTemplate}
+ * See {@code com.openkoda.service.GenericWebhookService}
+ * See {@code com.openkoda.integration.service.SlackService}
  */
 @Service
 public class RestClientService {
@@ -65,7 +65,7 @@ public class RestClientService {
      * Note: This instance is not thread-safe across concurrent requests when state is modified.
      * The default RestTemplate instance provided by Spring uses SimpleClientHttpRequestFactory
      * which is thread-safe for read operations.
-     * </p>
+
      */
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -75,7 +75,7 @@ public class RestClientService {
      * This method delegates to the map-based overload {@link #prepareHttpHeaders(Map)}
      * after extracting the headers map from the task. Sets Content-Type to
      * APPLICATION_JSON_UTF8 by default.
-     * </p>
+
      *
      * @param task the HTTP request task containing headers in its headersMap
      * @return HttpHeaders instance with Content-Type set to JSON and custom headers from task
@@ -92,7 +92,7 @@ public class RestClientService {
      * This method creates a new HttpHeaders instance, sets the Content-Type to
      * APPLICATION_JSON_UTF8, and iterates through the provided map entries to set
      * custom headers. Each entry key-value pair is added as an HTTP header.
-     * </p>
+
      *
      * @param headers map of header names to header values to be added to the request
      * @return HttpHeaders instance configured with JSON content type and all provided custom headers
@@ -113,7 +113,7 @@ public class RestClientService {
      * This method sends a POST request to the specified URL with the provided body
      * serialized as JSON and custom headers. The response body is deserialized into
      * a Map and returned. No automatic retry is performed on failure.
-     * </p>
+
      *
      * @param url the target URL for the POST request
      * @param body the request body as a map to be serialized as JSON
@@ -134,7 +134,7 @@ public class RestClientService {
      * This method delegates to the generic overload {@link #get(String, Map, Class)}
      * with Map.class as the result type, providing a convenient way to retrieve
      * response data as a Map without specifying the type parameter.
-     * </p>
+
      *
      * @param url the target URL for the GET request
      * @param headers custom HTTP headers to include in the request
@@ -153,7 +153,7 @@ public class RestClientService {
      * for maximum flexibility. The response body is deserialized into the specified
      * result type, allowing for type-safe response handling. No automatic retry is
      * performed on failure.
-     * </p>
+
      *
      * @param <T> the type of the response body
      * @param url the target URL for the GET request

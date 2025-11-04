@@ -36,13 +36,13 @@ import java.util.Arrays;
  * Extracts client IP addresses from incoming HTTP requests, honoring X-Forwarded-For headers for proxied traffic.
  * Used by audit trail system to record client IPs in Audit entities. Provides IP allowlist validation for access control.
  * Handles both direct connections and reverse proxy scenarios.
- * </p>
+ * 
  * <p>
  * Implementation note: Contains redundant double-call to getAddressForProxiedRequest in getIpFromRequest method at line 79.
- * </p>
+ * 
  * <p>
  * Thread-safety: Stateless service, thread-safe.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -74,7 +74,7 @@ public class IpService implements LoggingComponentWithRequestId {
     * Validates whether the request's client IP is in the allowed IPs list.
     * <p>
     * Note: Tokens are not trimmed, CIDR ranges not supported.
-    * </p>
+    * 
     *
     * @param allowedIps Comma-separated list of allowed IP addresses, or blank to allow all.
     * @param request HTTP request containing client IP.
@@ -100,7 +100,7 @@ public class IpService implements LoggingComponentWithRequestId {
     * proxies.
     * <p>
     * Note: Calls getAddressForProxiedRequest twice (line 79) - optimization opportunity.
-    * </p>
+    * 
     * 
     * @param request HTTP request.
     * @return Client IP address from X-Forwarded-For header if proxied, otherwise from RemoteAddr.
@@ -116,7 +116,7 @@ public class IpService implements LoggingComponentWithRequestId {
     * Useful for requests behind reverse proxy.
     * <p>
     * Returns leftmost token from comma-separated list per standard proxy behavior.
-    * </p>
+    * 
     *
     * @param request HTTP request with potential X-Forwarded-For header.
     * @return Leftmost IP from X-Forwarded-For header, or null if header absent/empty.

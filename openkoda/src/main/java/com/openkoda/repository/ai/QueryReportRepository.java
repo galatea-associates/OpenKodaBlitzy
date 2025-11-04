@@ -13,27 +13,27 @@ import org.springframework.stereotype.Repository;
  * AI-generated report templates and execution history. It serves as the data access layer for the
  * AI-powered report generation pipeline, storing report definitions created by ChatGPT and other AI
  * services, as well as the execution history and results of those reports.
- * </p>
+
  * <p>
  * The interface extends {@link UnsecuredFunctionalRepositoryWithLongId} to inherit generic repository
  * operations including functional query patterns (findOne, count, exists) and entity CRUD methods.
  * It also implements {@link HasSecurityRules} to participate in the application's security contract,
  * though this repository variant is unsecured and does not enforce privilege checks on operations.
  * For privilege-enforced access to QueryReport entities, use {@link SecureQueryReportRepository}.
- * </p>
+
  * <p>
  * This repository defines no custom query methods; all functionality is inherited from the base
  * repository interfaces. The actual runtime implementation is provided by Spring Data's JPA
  * repository proxy mechanism backed by Hibernate ORM. Typical usage involves dependency injection
  * into services such as ChatGPTService for AI report generation workflows.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * QueryReportRepository repository = ...;
  * QueryReport report = repository.findOne(reportId);
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1

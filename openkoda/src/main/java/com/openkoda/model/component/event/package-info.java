@@ -27,9 +27,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * enabling decoupled communication between application components through registered listeners.
  * Events are persisted in the database and reloaded at application startup, supporting
  * multi-tenant isolation and runtime event dispatching.
- * </p>
+ * 
  *
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  * <ul>
  * <li>{@link com.openkoda.model.component.event.Event} - Lightweight POJO representing a 3-part
  *     event descriptor (eventClassName, eventName, eventObjectType). Parses comma-separated
@@ -45,7 +45,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     should be placed in this package.</li>
  * </ul>
  *
- * <h2>Event Lifecycle</h2>
+ * <b>Event Lifecycle</b>
  * <ol>
  * <li><b>Registration</b> - Event listeners are registered in the EventListenerEntry table,
  *     either programmatically or through administrative interfaces.</li>
@@ -59,10 +59,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     based on their configuration.</li>
  * </ol>
  *
- * <h2>Serialization Format</h2>
+ * <b>Serialization Format</b>
  * <p>
  * Event and Consumer objects use brittle comma-separated string formats for persistence:
- * </p>
+ * 
  * <ul>
  * <li><b>Event Format</b> - Comma-separated triple: {@code eventClassName,eventName,eventObjectType}</li>
  * <li><b>Consumer Format</b> - Comma-separated 4-tuple:
@@ -73,17 +73,17 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     or NumberFormatException. Silent failures occur with incorrect token counts.</li>
  * </ul>
  *
- * <h2>Multi-Tenancy Support</h2>
+ * <b>Multi-Tenancy Support</b>
  * <p>
  * EventListenerEntry extends ComponentEntity to provide organization-scoped operations:
- * </p>
+ * 
  * <ul>
  * <li>Each listener registration is scoped to a specific organization via organization_id.</li>
  * <li>Listeners are isolated per tenant, preventing cross-tenant event dispatch.</li>
  * <li>Administrative interfaces enforce tenant-aware access control.</li>
  * </ul>
  *
- * <h2>Thread Safety</h2>
+ * <b>Thread Safety</b>
  * <ul>
  * <li><b>Event and Consumer POJOs</b> - Mutable and not thread-safe. External synchronization
  *     required for concurrent access.</li>
@@ -91,7 +91,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     standard JPA/Hibernate concurrency patterns.</li>
  * </ul>
  *
- * <h2>Common Pitfalls</h2>
+ * <b>Common Pitfalls</b>
  * <ul>
  * <li><b>Malformed Strings</b> - Parsing failures from comma-separated input cause runtime
  *     exceptions (NPE, ArrayIndexOutOfBoundsException).</li>
@@ -105,7 +105,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     import/export and runtime discovery.</li>
  * </ul>
  *
- * <h2>Package Structure Guidelines</h2>
+ * <b>Package Structure Guidelines</b>
  * <p><b>Should I put a class into this package?</b></p>
  * <ul>
  * <li>Event-related JPA entities belong here.</li>

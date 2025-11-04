@@ -38,21 +38,21 @@ import org.springframework.transaction.annotation.Transactional;
  * initial delay of 10000ms and fixed delay of 5000ms between executions.
  * It implements an atomic task claiming pattern to safely process emails
  * in a concurrent environment.
- * </p>
+ * 
  * <p>
  * The job uses repository-based locking via {@link EmailRepository#findTasksAndSetStateDoing}
  * to claim up to 10 ready email tasks and atomically set their state to DOING.
  * This prevents multiple job instances from processing the same email.
- * </p>
+ * 
  * <p>
  * Each execution runs within a Spring transaction boundary (via {@code @Transactional}).
  * Successful email delivery updates the task state, while exceptions cause
  * transaction rollback and task state reversion for retry.
- * </p>
+ * 
  * <p>
  * This class implements {@link LoggingComponentWithRequestId} to enable
  * request-id-aware tracing for debugging and audit trail purposes.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -89,17 +89,17 @@ public class EmailSenderJob  implements LoggingComponentWithRequestId {
      * ready email tasks using an atomic claiming mechanism that prevents concurrent processing.
      * The {@code findTasksAndSetStateDoing} method wraps {@code findByCanBeStartedTrue(OLDEST_10)}
      * to atomically retrieve emails and set their state to DOING.
-     * </p>
+     * 
      * <p>
      * <b>Separate Transaction Pattern:</b> The claiming operation occurs in a separate
      * transaction, so each email must be re-read in the execution transaction to obtain
      * a managed entity instance. This ensures proper JPA entity lifecycle management.
-     * </p>
+     * 
      * <p>
      * <b>Error Handling:</b> If {@link EmailSender#sendMail} throws an exception,
      * the transaction rolls back and the task state reverts to ready, enabling retry
      * on the next job execution. Successfully sent emails are saved with updated state.
-     * </p>
+     * 
      * <p>
      * Processing steps:
      * <ol>
@@ -108,7 +108,7 @@ public class EmailSenderJob  implements LoggingComponentWithRequestId {
      *   <li>Send email via {@link EmailSender}</li>
      *   <li>Save updated email entity with new state</li>
      * </ol>
-     * </p>
+     * 
      *
      * @throws RuntimeException if email delivery fails, causing transaction rollback
      * @see EmailRepository#findTasksAndSetStateDoing

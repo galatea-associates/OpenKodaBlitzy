@@ -34,10 +34,10 @@ import jakarta.persistence.*;
  * This entity represents the read status tracking for notifications in a multi-tenant environment.
  * Each ReadNotification record indicates that a specific user has marked a specific notification as read.
  * The unique constraint on (user_id, notification_id) enforces idempotency, preventing duplicate read markers.
- * </p>
+
  * <p>
  * JPA Mapping Details:
- * </p>
+
  * <ul>
  *   <li>Table: {@code read_notification}</li>
  *   <li>Primary Key: {@code id} generated via ORGANIZATION_RELATED_ID_GENERATOR sequence</li>
@@ -48,20 +48,20 @@ import jakarta.persistence.*;
  * Extends {@link TimestampedEntity} to automatically track creation and update timestamps.
  * The entity enforces immutability on foreign key columns through {@code insertable=false} and
  * {@code updatable=false} mappings on association fields, with raw FK columns being authoritative.
- * </p>
+
  * <p>
  * Operational Usage:
  * Services create ReadNotification instances when users mark notifications as read. The unique constraint
  * ensures that multiple mark-as-read operations are idempotent. No setters exist for FK columns to
  * reinforce immutability and data integrity.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * ReadNotification readNotif = new ReadNotification(userId, notificationId);
  * readNotificationRepository.save(readNotif);
  * }</pre>
- * </p>
+
  *
  * @author Michał Nowak (mnowak@stratoflow.com)
  * @version 1.7.1
@@ -84,11 +84,11 @@ public class ReadNotification extends TimestampedEntity {
      * annotation prevents serialization to avoid circular references. The mapping uses
      * {@code insertable=false} and {@code updatable=false} because the raw {@code userId} column
      * is authoritative for persistence operations.
-     * </p>
+
      * <p>
      * Accessing this field may trigger a database query if the User entity is not already loaded
      * in the persistence context.
-     * </p>
+
      */
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -100,10 +100,10 @@ public class ReadNotification extends TimestampedEntity {
      * This column is the authoritative source for the user relationship during insert and update operations.
      * The {@code updatable=false} constraint enforces immutability after creation, ensuring data integrity.
      * No public setter exists for this field, reinforcing immutability at the API level.
-     * </p>
+
      * <p>
      * References: {@code users.id}
-     * </p>
+
      */
     @Column(nullable = false, updatable = false, name = "user_id")
     private Long userId;
@@ -115,10 +115,10 @@ public class ReadNotification extends TimestampedEntity {
      * notification details. The {@code @JsonIgnore} annotation prevents serialization to avoid
      * circular references. The mapping uses {@code insertable=false} and {@code updatable=false}
      * because the raw {@code notificationId} column is authoritative for persistence.
-     * </p>
+
      * <p>
      * May trigger a database query if the Notification entity is not already loaded.
-     * </p>
+
      */
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -130,10 +130,10 @@ public class ReadNotification extends TimestampedEntity {
      * This column is the authoritative source for the notification relationship during persistence operations.
      * The {@code updatable=false} constraint enforces immutability, ensuring that once a read marker is created,
      * it cannot be modified. No public setter exists to reinforce data integrity.
-     * </p>
+
      * <p>
      * References: {@code notification.id}
-     * </p>
+
      */
     @Column(nullable = false, updatable = false, name = "notification_id")
     private Long notificationId;
@@ -144,11 +144,11 @@ public class ReadNotification extends TimestampedEntity {
      * Generated using the ORGANIZATION_RELATED_ID_GENERATOR sequence with an allocation size of 10
      * for performance optimization under concurrent operations. The initial value is set from
      * {@link ModelConstants#INITIAL_ORGANIZATION_RELATED_VALUE}.
-     * </p>
+
      * <p>
      * This field is {@code null} before the entity is persisted and automatically assigned upon
      * successful database insertion.
-     * </p>
+
      */
     @Id
     @SequenceGenerator(name = ORGANIZATION_RELATED_ID_GENERATOR, sequenceName = ORGANIZATION_RELATED_ID_GENERATOR, initialValue = ModelConstants.INITIAL_ORGANIZATION_RELATED_VALUE, allocationSize = 10)
@@ -162,7 +162,7 @@ public class ReadNotification extends TimestampedEntity {
      * This constructor is used by Hibernate during entity loading from the database.
      * Application code should typically use the parameterized constructor to ensure
      * all required fields are initialized.
-     * </p>
+
      */
     public ReadNotification() {
     }
@@ -173,7 +173,7 @@ public class ReadNotification extends TimestampedEntity {
      * This constructor enforces immutability by accepting userId and notificationId at construction time.
      * The unique constraint on (user_id, notification_id) prevents duplicate read markers, ensuring
      * idempotent mark-as-read operations.
-     * </p>
+
      *
      * @param userId the ID of the user who read the notification (cannot be null)
      * @param notificationId the ID of the notification that was read (cannot be null)
@@ -189,7 +189,7 @@ public class ReadNotification extends TimestampedEntity {
      * Accessing this method may trigger a database query if the User entity is not already loaded
      * in the persistence context. Use {@link #getUserId()} for identifier-only access without
      * triggering proxy initialization.
-     * </p>
+
      *
      * @return the {@link User} entity who read the notification, or null if not yet loaded
      */
@@ -203,7 +203,7 @@ public class ReadNotification extends TimestampedEntity {
      * This method provides safe identifier-only access without triggering lazy-loading of the
      * User entity association. The value is always non-null for persisted entities and serves
      * as the authoritative foreign key to the users table.
-     * </p>
+
      *
      * @return the user ID (foreign key to users table), never null for persisted entities
      */
@@ -217,7 +217,7 @@ public class ReadNotification extends TimestampedEntity {
      * This method enables traversal to notification details. Accessing this method may trigger
      * a database query if the Notification entity is not already loaded. Use {@link #getNotificationId()}
      * for identifier-only access without proxy initialization.
-     * </p>
+
      *
      * @return the {@link Notification} entity that was marked as read, or null if not yet loaded
      */
@@ -231,7 +231,7 @@ public class ReadNotification extends TimestampedEntity {
      * This method provides the authoritative foreign key value without loading the full Notification
      * entity. Enables queries and operations using notification IDs without triggering lazy-loading.
      * The value is always non-null for persisted entities.
-     * </p>
+
      *
      * @return the notification ID (foreign key to notification table), never null for persisted entities
      */
@@ -245,7 +245,7 @@ public class ReadNotification extends TimestampedEntity {
      * Generated by the ORGANIZATION_RELATED_ID_GENERATOR sequence with allocation size of 10
      * for optimal performance under concurrent operations. This value is null before the entity
      * is persisted and automatically assigned upon successful database insertion.
-     * </p>
+
      *
      * @return the primary key ID, or null if entity not yet persisted
      */

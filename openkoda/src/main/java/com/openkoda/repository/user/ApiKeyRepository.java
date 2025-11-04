@@ -33,22 +33,22 @@ import org.springframework.stereotype.Repository;
  * relying on inherited CRUD operations (save, findById, findAll, delete) from the base interface.
  * ApiKey entities store authentication tokens for API clients enabling stateless authentication
  * without session management.
- * </p>
+ * 
  * <p>
  * Usage: API authentication filters lookup keys by value, validate expiration, and authenticate
  * requests. Keys are typically scoped to organizations for multi-tenant API access control.
- * </p>
+ * 
  * <p>
  * Persists to 'api_key' table with columns: id (PK), key_value (unique), user_id (FK), 
  * organization_id (FK), expiration_date, created_on.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
  * @since 1.7.1
  * @see ApiKey
  * @see FunctionalRepositoryWithLongId
- * @see com.openkoda.core.security.ApiKeyAuthenticationFilter
+ * // ApiKeyAuthenticationFilter
  */
 @Repository
 public interface ApiKeyRepository extends FunctionalRepositoryWithLongId<ApiKey> {

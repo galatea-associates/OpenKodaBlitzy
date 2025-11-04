@@ -32,17 +32,17 @@ import static com.openkoda.model.common.ModelConstants.DEFAULT_ORGANIZATION_RELA
 /**
  * Secure repository interface for File entities with privilege enforcement and search indexing metadata.
  * <p>
- * This interface serves as a marker combining security capabilities via {@link SecureRepository}
+ * This interface serves as a marker combining security capabilities via {@link com.openkoda.repository.SecureRepository}
  * and searchability configuration through {@link SearchableRepositoryMetadata} annotation.
  * It extends {@code SecureRepository<File>} which adds privilege checks to all repository operations,
  * preventing unauthorized file access. The interface body is intentionally empty, with all metadata
  * provided via declarative annotations.
- * </p>
+
  * <p>
  * Runtime implementations are supplied by Spring Data JPA framework proxy generation combined with
  * custom security abstraction layers. All CRUD operations automatically enforce privilege checks
  * before execution.
- * </p>
+
  * <p>
  * The {@code @SearchableRepositoryMetadata} annotation configures full-text search indexing:
  * <ul>
@@ -57,23 +57,23 @@ import static com.openkoda.model.common.ModelConstants.DEFAULT_ORGANIZATION_RELA
  *       fields via {@code DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA}</li>
  * </ul>
  * This enables searches by filename and organization-level references with case-insensitive matching.
- * </p>
+
  * <p>
  * <b>Warning</b>: Changing annotation formulas, referenced constants
  * ({@code AbstractFileController.fileUrl}, {@code ModelConstants}), or {@code File} entity schema
  * can desynchronize search indexes requiring manual index rebuilding.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * Optional<File> file = secureFileRepository.findOne(fileId);
  * }</pre>
- * </p>
+
  * <p>
  * <b>Design Notes</b>: This follows the marker interface pattern with declarative annotation metadata,
  * combining raw database operations (via {@code FileRepository}) with security enforcement and search
  * indexing. Spring Data JPA generates the implementation at runtime as a thread-safe proxy.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1

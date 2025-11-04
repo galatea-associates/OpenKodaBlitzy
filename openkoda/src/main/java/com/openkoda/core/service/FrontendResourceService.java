@@ -53,7 +53,7 @@ import static com.openkoda.service.export.FolderPathConstants.SUBDIR_ORGANIZATIO
  * This service manages the complete lifecycle of frontend resources including HTML validation,
  * draft/publish workflow, template loading, and URL generation. It validates HTML content using
  * Jsoup with a relaxed whitelist to ensure safe content while allowing common HTML tags.
- * </p>
+
  * <p>
  * Key responsibilities include:
  * <ul>
@@ -64,18 +64,18 @@ import static com.openkoda.service.export.FolderPathConstants.SUBDIR_ORGANIZATIO
  *   <li>Computing resource hashes via MD5 for cache-busting URLs</li>
  *   <li>Resolving resource URLs with baseUrl prefix</li>
  * </ul>
- * </p>
+
  * <p>
  * HTML validation uses custom OutputSettings with prettyPrint disabled, HTML syntax mode,
  * and base entity escaping. The relaxed whitelist allows common HTML tags but blocks scripts
  * and other potentially dangerous content.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * service.validateContent(htmlContent, bindingResult, "content");
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -159,7 +159,7 @@ public class FrontendResourceService extends ComponentProvider {
      *   <li>syntax = HTML: Uses HTML syntax mode</li>
      *   <li>escapeMode = base: Base entity escape mode for minimal escaping</li>
      * </ul>
-     * </p>
+
      * Used by {@link #validateContent(String, BindingResult, String)} for consistent HTML processing.
      *
      * @see Document.OutputSettings
@@ -176,18 +176,18 @@ public class FrontendResourceService extends ComponentProvider {
      * This method cleans the provided HTML content using Jsoup.clean with the baseUrl and
      * a relaxed whitelist that allows common HTML tags but blocks scripts and potentially
      * dangerous content. If the cleaned content differs from the original, validation fails.
-     * </p>
+
      * <p>
      * On validation failure:
      * <ul>
      *   <li>Rejects the specified BindingResult field with error code "not.valid"</li>
      *   <li>Throws FrontendResourceValidationException with cleaned content suggestion</li>
      * </ul>
-     * </p>
+
      * <p>
      * Note: Uses relaxed Whitelist allowing common HTML tags (&lt;b&gt;, &lt;i&gt;, &lt;p&gt;, &lt;div&gt;, etc.)
      * but not scripts or dangerous attributes.
-     * </p>
+
      *
      * @param content the HTML content to validate
      * @param br the BindingResult to add validation errors to (may be null)
@@ -215,10 +215,10 @@ public class FrontendResourceService extends ComponentProvider {
      * This method queries the unsecure repository (bypassing privilege checks) to find
      * an existing FrontendResource by name. If found, it rejects the BindingResult field
      * "dto.name" with error code "name.exists".
-     * </p>
+
      * <p>
      * Warning: Uses unsecure repository, bypassing privilege checks for name uniqueness validation.
-     * </p>
+
      *
      * @param name the FrontendResource name to check for existence
      * @param br the BindingResult to add validation errors to (may be null)
@@ -242,10 +242,10 @@ public class FrontendResourceService extends ComponentProvider {
      *   <li>Copies draftContent to content field</li>
      *   <li>Clears draftContent by setting to null</li>
      * </ul>
-     * </p>
+
      * <p>
      * Note: This method modifies the entity but does not persist it. Caller must save the returned entity.
-     * </p>
+
      *
      * @param frontendResource the FrontendResource to publish
      * @return the modified FrontendResource with published content (not persisted)
@@ -271,10 +271,10 @@ public class FrontendResourceService extends ComponentProvider {
      *   <li>Copies content to draftContent field</li>
      *   <li>Clears content by setting to null</li>
      * </ul>
-     * </p>
+
      * <p>
      * Note: This method modifies the entity but does not persist it. Caller must save the returned entity.
-     * </p>
+
      *
      * @param frontendResource the FrontendResource to clear/unpublish
      * @return the modified FrontendResource with content moved to draft (not persisted)
@@ -297,7 +297,7 @@ public class FrontendResourceService extends ComponentProvider {
      * This method iterates over the stream, publishes each FrontendResource, and persists
      * the changes using the unsecure repository. Each resource's draft content is promoted
      * to published state.
-     * </p>
+
      *
      * @param result the stream of FrontendResource entities to publish
      * @return the transformed stream of published resources
@@ -315,7 +315,7 @@ public class FrontendResourceService extends ComponentProvider {
      * This method iterates over the stream, clears each FrontendResource, and persists
      * the changes using the unsecure repository. Each resource's published content is moved
      * back to draft state.
-     * </p>
+
      *
      * @param result the stream of FrontendResource entities to clear
      * @return the transformed stream of cleared resources
@@ -338,10 +338,10 @@ public class FrontendResourceService extends ComponentProvider {
      *   <li>Organization-specific subdirectory if organizationId provided</li>
      *   <li>Resource name with type extension (.html, .js, etc.)</li>
      * </ul>
-     * </p>
+
      * <p>
      * Warning: Uses unsecure repository bypassing privilege checks. IOException silently returns empty string.
-     * </p>
+
      *
      * @param type the FrontendResource type (HTML, JS, CSS, etc.)
      * @param frontendResourceName the resource name without extension
@@ -379,7 +379,7 @@ public class FrontendResourceService extends ComponentProvider {
      *   <li>Organization-specific subdirectory if applicable</li>
      *   <li>Resource name with extension (.html for HTML type, empty otherwise)</li>
      * </ul>
-     * </p>
+
      *
      * @param frontendResource the FrontendResource entity
      * @return URL object for the classpath resource, or null if not found
@@ -405,7 +405,7 @@ public class FrontendResourceService extends ComponentProvider {
      * Checks if a classpath resource exists for the given FrontendResource.
      * <p>
      * This method delegates to {@link #resourceURL(FrontendResource)} and checks for null.
-     * </p>
+
      *
      * @param frontendResource the FrontendResource entity to check
      * @return true if the classpath resource exists, false otherwise
@@ -425,11 +425,11 @@ public class FrontendResourceService extends ComponentProvider {
      *   <li>Inserting the provided contentEditable</li>
      *   <li>Appending content after {@link #CONTENT_EDITABLE_END} marker</li>
      * </ul>
-     * </p>
+
      * <p>
      * If frontendResourceId is null, uses the default template specified by
      * {@link #defaultFrontendResourcePageTemplate}.
-     * </p>
+
      *
      * @param frontendResourceId the ID of the FrontendResource to edit (null for new resource)
      * @param contentEditable the editable content to splice between markers
@@ -450,7 +450,7 @@ public class FrontendResourceService extends ComponentProvider {
      * This is a variant of {@link #prepareFrontendResourcePage(Long, String)} that returns
      * the raw entity without splicing custom content between markers. If frontendResourceId
      * is null, creates a new FrontendResource and copies content from the default template.
-     * </p>
+
      *
      * @param frontendResourceId the ID of the FrontendResource (null for new resource with default template)
      * @return the FrontendResource entity with content
@@ -477,10 +477,10 @@ public class FrontendResourceService extends ComponentProvider {
      *   <li>Computes MD5 hash using {@link DigestUtils#md5Hex(String)}</li>
      *   <li>Truncates to {@link FrontendResource#HASH_TRUNCATED_LENGTH} characters</li>
      * </ul>
-     * </p>
+
      * <p>
      * The truncated hash is appended to resource URLs as a query parameter for cache invalidation.
-     * </p>
+
      *
      * @param frontendResource the FrontendResource to compute hash for
      * @return truncated MD5 hash string for cache-busting
@@ -499,7 +499,7 @@ public class FrontendResourceService extends ComponentProvider {
      * This method calls {@link #resourceURL(FrontendResource)} to get the classpath URL,
      * then converts it to a string. If the resource doesn't exist, returns empty string.
      * The URL typically includes a hash query parameter for cache invalidation.
-     * </p>
+
      *
      * @param frontendResource the FrontendResource entity
      * @return the public URL string, or empty string if resource not found

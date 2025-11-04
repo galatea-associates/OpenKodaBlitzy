@@ -36,11 +36,11 @@ import org.springframework.data.jpa.domain.Specification;
  * indicating the role applies to all users in an organization) and user-level roles (where userId is not null,
  * indicating specific user assignment). These specifications are stateless, thread-safe, and composable via
  * {@code and()}/{@code or()} operators for building complex role filtering queries.
- * </p>
+ * 
  * <p>
  * <b>Note:</b> Uses string-based attribute name ('userId') which is fragile to entity refactoring. Consider migrating
  * to JPA metamodel for type safety.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -57,13 +57,13 @@ public class UserRoleSpecification {
      * Constructs a specification that filters UserRole entities where the userId attribute is null, indicating
      * the role applies at the organization level rather than being assigned to a specific user. These roles
      * represent default or inherited role assignments within an organization.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
      * getUserRolesForOrganizations().and(hasOrganizationId(orgId))
      * }</pre>
-     * </p>
+     * 
      *
      * @return Specification for UserRole filtering where userId is null (organization-level roles)
      */
@@ -83,13 +83,13 @@ public class UserRoleSpecification {
      * Constructs a specification that filters UserRole entities where the userId attribute is not null, indicating
      * the role is explicitly assigned to a specific user rather than applying organization-wide. These roles
      * represent direct user-to-role assignments.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
      * getUserRolesForUsers().and(hasRoleId(roleId))
      * }</pre>
-     * </p>
+     * 
      *
      * @return Specification for UserRole filtering where userId is not null (user-specific role assignments)
      */

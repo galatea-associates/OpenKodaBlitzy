@@ -51,29 +51,24 @@ import static com.openkoda.core.helper.SpringProfilesHelper.TEST_PROFILE;
  * The initialization sequence follows this order:
  * <ol>
  * <li>Database connection establishment and schema verification</li>
- * <li>Authentication context setup via {@link UserProvider#setCronJobAuthentication()}</li>
+ * <li>Authentication context setup via {@link UserProvider#setCronJobAuthentication}</li>
  * <li>Core module registration via {@link #createCoreModule()}</li>
  * <li>Default role and privilege initialization via {@link #createInitialRoles()}</li>
  * <li>Registration form ServerJs entity creation via {@link #createRegistrationFormServerJs()}</li>
  * <li>Custom SQL initialization scripts execution via {@link #runInitializationScripts()}</li>
  * <li>OpenKoda component loading from classpath via {@link ClasspathComponentImportService}</li>
- * <li>Authentication context cleanup via {@link UserProvider#clearAuthentication()}</li>
+ * <li>Authentication context cleanup via {@link UserProvider#clearAuthentication}</li>
  * </ol>
- * </p>
  * <p>
  * This production routine of database setup is activated when Spring profile != "test" (via {@code @Profile("!" + TEST_PROFILE)}).
- * For test environment initialization, see {@link com.openkoda.common.TestDataLoader} which is activated when Spring profile == 'test'.
- * </p>
- * <p>
+ * * <p>
  * All initialization operations are executed within a single transaction (via {@code @Transactional} on {@link #loadInitialData(boolean)})
  * to ensure atomic bootstrap mutations. If any operation fails, the entire initialization is rolled back.
- * </p>
  * <p>
  * <b>Extension Pattern:</b> To extend or replace the scope of database initialization, implement another Spring component
  * that extends BaseDatabaseInitializer and is activated by {@link org.springframework.context.annotation.Primary} annotation
  * or specific profile. The overriding implementation should call {@code super.loadInitialData(proceed)} or implement
  * custom initialization logic while respecting the proceed parameter.
- * </p>
  *
  * @see SearchViewCreator
  * @see ClasspathComponentImportService
@@ -90,7 +85,7 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * Default global admin role created during application initialization.
      * This role has full system privileges and is assigned to the initial admin user.
      * Users with this role have unrestricted access to all application features across all organizations.
-     * Privilege set: {@link PrivilegeHelper#getAdminPrivilegeSet()}
+     * Privilege set: {@link PrivilegeHelper#getAdminPrivilegeSet}
      */
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
@@ -98,7 +93,7 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * Default global user role created during application initialization.
      * This role has standard user privileges applicable across all organizations.
      * Users with this role have basic access rights without administrative capabilities.
-     * Privilege set: {@link PrivilegeHelper#getUserPrivilegeSet()}
+     * Privilege set: {@link PrivilegeHelper#getUserPrivilegeSet}
      */
     public static final String ROLE_USER = "ROLE_USER";
 
@@ -106,7 +101,7 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * Default organization-level admin role created during application initialization.
      * This role has administrative privileges scoped to a specific organization (tenant).
      * Users with this role can manage organization-specific resources and users.
-     * Privilege set: {@link PrivilegeHelper#getOrgAdminPrivilegeSet()}
+     * Privilege set: {@link PrivilegeHelper#getOrgAdminPrivilegeSet}
      */
     public static final String ROLE_ORG_ADMIN = "ROLE_ORG_ADMIN";
 
@@ -114,7 +109,7 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * Default organization-level user role created during application initialization.
      * This role has standard user privileges scoped to a specific organization (tenant).
      * Users with this role can access organization-specific resources without administrative rights.
-     * Privilege set: {@link PrivilegeHelper#getOrgUserPrivilegeSet()}
+     * Privilege set: {@link PrivilegeHelper#getOrgUserPrivilegeSet}
      */
     public static final String ROLE_ORG_USER = "ROLE_ORG_USER";
 
@@ -224,7 +219,7 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * Initialization scripts are parsed by splitting the comma-separated list, trimming whitespace,
      * and collecting into an ordered list. External script content has double quotes unescaped to
      * support bash script insertion patterns commonly used in cloud deployments.
-     * </p>
+     * 
      *
      * @param queryExecutor executes SQL queries transactionally for database initialization operations
      *                      such as schema setup, data seeding, and migration scripts
@@ -262,28 +257,28 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * Main procedure for database initialization orchestrating the complete startup sequence.
      * Executes the following operations in order within a single transaction:
      * <ol>
-     * <li>Establishes authentication context via {@link UserProvider#setCronJobAuthentication()}</li>
+     * <li>Establishes authentication context via {@link UserProvider#setCronJobAuthentication}</li>
      * <li>Creates core module entity via {@link #createCoreModule()}</li>
      * <li>Creates default roles and admin user via {@link #createInitialRoles()}</li>
      * <li>Creates registration form ServerJs via {@link #createRegistrationFormServerJs()}</li>
      * <li>Executes custom SQL initialization scripts via {@link #runInitializationScripts()}</li>
-     * <li>Loads OpenKoda components from classpath via {@link ClasspathComponentImportService#loadAllComponents()}</li>
+     * <li>Loads OpenKoda components from classpath via {@link ClasspathComponentImportService#loadAllComponents}</li>
      * <li>Sets {@link #alreadySetup} flag to true</li>
      * </ol>
      * <p>
      * The authentication context is guaranteed to be cleared in a finally block regardless of
-     * success or failure, ensuring proper cleanup via {@link UserProvider#clearAuthentication()}.
-     * </p>
+     * success or failure, ensuring proper cleanup via {@link UserProvider#clearAuthentication}.
+     * 
      * <p>
      * This method can be invoked by customized inherited implementations of database initializers.
      * Any overriding implementation should respect the proceed parameter and run initialization
      * only when {@code proceed == true}. When {@code proceed == false}, the method returns immediately
      * without performing any operations.
-     * </p>
+     * 
      * <p>
      * The {@code @Transactional} annotation ensures all database operations are executed atomically.
      * If any operation fails, the entire initialization is rolled back.
-     * </p>
+     * 
      *
      * @param proceed flag indicating whether initialization should proceed. When {@code false},
      *                the method returns immediately without performing any operations. This parameter
@@ -317,17 +312,17 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * <ol>
      * <li>Classpath scripts from {@link #globalInitializationScripts} list are executed sequentially
      *     in the order they appear. Each script is loaded from classpath and executed within a transaction
-     *     via {@link QueryExecutor#runQueryFromResourceInTransaction(String)}.</li>
+     *     via {@link QueryExecutor#runQueryFromResourceInTransaction}.</li>
      * <li>External script content from {@link #initializationExternalScript} (if present) is executed
-     *     after all classpath scripts via {@link QueryExecutor#runQueriesInTransaction(String)}.</li>
+     *     after all classpath scripts via {@link QueryExecutor#runQueriesInTransaction}.</li>
      * </ol>
      * <p>
      * All scripts are executed transactionally. If any script fails, an exception propagates to the
      * caller ({@link #loadInitialData(boolean)}), causing the entire initialization transaction to roll back.
-     * </p>
+     * 
      * <p>
      * Script execution is logged at INFO level showing the script path being executed.
-     * </p>
+     * 
      */
     private void runInitializationScripts() {
         for(String s : globalInitializationScripts) {
@@ -351,16 +346,16 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * <li>model: JSON mapping {@code "registerForm@com.openkoda.form.RegisterUserForm" : {}}</li>
      * <li>name: "initRegisterForm"</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * The entity is saved via {@link com.openkoda.repository.unsecure.UnsecureServerJsRepository}
      * to bypass privilege checks during initialization when no authenticated user context exists.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method is marked for potential removal (TODO comment). The necessity of
      * creating this ServerJs entity during initialization should be reviewed as the registration
      * form model may be better defined through component imports or runtime configuration.
-     * </p>
+     * 
      */
     //TODO - check if can be removed
     private void createRegistrationFormServerJs() {
@@ -377,19 +372,19 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * <ul>
      * <li><b>ROLE_UNAUTHENTICATED:</b> Role for unauthenticated users with no privileges</li>
      * <li><b>ROLE_ADMIN:</b> Global administrator role with full system privileges from
-     *     {@link PrivilegeHelper#getAdminPrivilegeSet()}</li>
+     *     {@link PrivilegeHelper#getAdminPrivilegeSet}</li>
      * <li><b>ROLE_USER:</b> Global user role with standard privileges from
-     *     {@link PrivilegeHelper#getUserPrivilegeSet()}</li>
+     *     {@link PrivilegeHelper#getUserPrivilegeSet}</li>
      * <li><b>ROLE_ORG_ADMIN:</b> Organization-level administrator role with tenant-scoped
-     *     administrative privileges from {@link PrivilegeHelper#getOrgAdminPrivilegeSet()}</li>
+     *     administrative privileges from {@link PrivilegeHelper#getOrgAdminPrivilegeSet}</li>
      * <li><b>ROLE_ORG_USER:</b> Organization-level user role with tenant-scoped standard
-     *     privileges from {@link PrivilegeHelper#getOrgUserPrivilegeSet()}</li>
+     *     privileges from {@link PrivilegeHelper#getOrgUserPrivilegeSet}</li>
      * </ul>
      * <p>
      * Roles are created or updated via {@link com.openkoda.service.role.RoleService#createOrUpdateGlobalRole}
      * and {@link com.openkoda.service.role.RoleService#createOrUpdateOrgRole} with the removable flag
      * set to {@code false}, preventing accidental deletion of these foundational roles.
-     * </p>
+     * 
      * <p>
      * <b>Admin User Creation:</b> If the {@link #applicationAdminEmail} property is blank, the application
      * prints an error message and exits with status code 1, as the admin email is mandatory for initialization.
@@ -402,7 +397,7 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * <li>Global role: ROLE_ADMIN</li>
      * </ul>
      * The admin user and credentials are persisted via unsecure repositories to bypass privilege checks.
-     * </p>
+     * 
      */
     private void createInitialRoles() {
 
@@ -444,11 +439,11 @@ public class BaseDatabaseInitializer extends ComponentProvider {
      * The {@link OpenkodaModule} entity represents an installed module in the OpenKoda system
      * and is used for tracking module registration, dependencies, and component associations.
      * The core module is the foundational module that must exist before other modules can be registered.
-     * </p>
+     * 
      * <p>
      * The module is persisted via {@link com.openkoda.repository.unsecure.UnsecureOpenkodaModuleRepository}
      * to bypass privilege checks during initialization when no authenticated user context exists.
-     * </p>
+     * 
      */
     private void createCoreModule() {
         OpenkodaModule openkodaModule = new OpenkodaModule(CORE_MODULE);

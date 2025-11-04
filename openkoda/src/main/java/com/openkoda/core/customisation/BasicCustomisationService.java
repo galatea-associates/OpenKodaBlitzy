@@ -89,7 +89,6 @@ import static com.openkoda.core.helper.SpringProfilesHelper.isInitializationProf
  * coordination point for application initialization, module registration, event consumer setup, and custom extension
  * registration. It orchestrates a deterministic bootstrap sequence that initializes all core subsystems in the correct
  * order during application startup.
- * </p>
  * <p>
  * Key responsibilities:
  * <ul>
@@ -101,7 +100,6 @@ import static com.openkoda.core.helper.SpringProfilesHelper.isInitializationProf
  * <li>Manage frontend mapping definitions and CRUD controller registrations</li>
  * <li>Configure auditable entity tracking via {@link AuditInterceptor}</li>
  * </ul>
- * </p>
  * <p>
  * Bootstrap Sequence (executed in {@link #onApplicationStart()}):
  * <ol>
@@ -119,10 +117,8 @@ import static com.openkoda.core.helper.SpringProfilesHelper.isInitializationProf
  * <li>Execute custom {@code onApplicationStartListeners}</li>
  * <li>Emit APPLICATION_STARTED event</li>
  * </ol>
- * </p>
  * <p>
  * For initialization profiles (drop_and_init_database), the service prints admin credentials and exits after bootstrap.
- * </p>
  * <p>
  * Usage example for module registration:
  * <pre>
@@ -135,7 +131,6 @@ import static com.openkoda.core.helper.SpringProfilesHelper.isInitializationProf
  *     // Custom initialization logic
  * });
  * </pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -259,7 +254,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * <p>
      * Enables automatic tracking of field modifications for the specified entity type via {@link AuditInterceptor}.
      * Property changes are captured at the Hibernate session level and can be persisted to audit log tables.
-     * </p>
+     * 
      *
      * @param <T> entity type extending {@link AuditableEntity}
      * @param c the entity class to enable auditing for
@@ -301,10 +296,10 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * Listeners are invoked near the end of {@link #onApplicationStart()} sequence, after core initialization
      * completes but before the APPLICATION_STARTED event is emitted. This provides extension point for modules
      * to perform custom initialization logic with full access to initialized services.
-     * </p>
+     * 
      * <p>
      * Register listeners via {@link #registerOnApplicationStartListener(Consumer)}.
-     * </p>
+     * 
      */
     private List<Consumer<CustomisationService>> onApplicationStartListeners = new ArrayList<>();
 
@@ -313,7 +308,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * <p>
      * The listener is invoked with the event data when the specified event is emitted via
      * {@code services.applicationEvent.emitEvent()}.
-     * </p>
+     * 
      *
      * @param <T> type of event data object
      * @param event the application event type to listen for
@@ -331,7 +326,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * <p>
      * The BiConsumer listener receives both the event data object and concatenated static parameters,
      * enabling event handlers to be configured with additional context at registration time.
-     * </p>
+     * 
      *
      * @param <T> type of event data object
      * @param event the application event type to listen for
@@ -353,7 +348,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * <p>
      * Event consumers provide more structure than simple listeners, encapsulating event handling logic
      * in dedicated {@link EventConsumer} implementations with category metadata.
-     * </p>
+     * 
      *
      * @param <T> type of event class
      * @param eventClass the event class to consume
@@ -373,14 +368,14 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * Modules encapsulate reusable functionality bundles with their own entities, services, controllers,
      * and initialization logic. Registration makes the module available for lifecycle management and
      * enables module-specific configuration and extension points.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>
      * Module insuranceModule = new Module("insurance-module", "1.0.0");
      * customisationService.registerModule(insuranceModule);
      * </pre>
-     * </p>
+     * 
      *
      * @param module the module definition to register
      * @return the registered module instance (may be enriched with runtime metadata)
@@ -397,7 +392,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * This method is the central coordination point for OpenKoda startup, executing initialization steps in a
      * carefully ordered sequence to ensure dependencies are satisfied and services are available when needed.
      * All operations execute within a cron job authentication context to bypass security checks during bootstrap.
-     * </p>
+     * 
      * <p>
      * Bootstrap sequence:
      * <ol>
@@ -416,17 +411,17 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * <li><b>onApplicationStartListeners execution</b> - Execute custom module initialization hooks</li>
      * <li><b>emit APPLICATION_STARTED</b> - Broadcast application ready event to listeners</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * <b>Initialization Profile Behavior:</b> When running with initialization profile (drop_and_init_database),
      * the method prints admin credentials to console, then gracefully exits the application via
-     * {@link SpringApplication#exit(ApplicationContext, org.springframework.boot.ExitCodeGenerator)}. This allows
+     * SpringApplication.exit(). This allows
      * database initialization without starting the full application server.
-     * </p>
+     * 
      * <p>
      * <b>Thread Safety:</b> This method is invoked once during application lifecycle by Spring's
      * {@link ContextRefreshedEvent} handler. Not thread-safe for concurrent invocation.
-     * </p>
+     * 
      * <p>
      * Console output example for initialization profile:
      * <pre>
@@ -437,7 +432,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      *  Credentials (u/p): admin / admin123
      * *********************************************************************
      * </pre>
-     * </p>
+     * 
      *
      * @see UserProvider#setCronJobAuthentication()
      * @see SearchableRepositories#discoverSearchableRepositories()
@@ -484,7 +479,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * This private method is invoked during {@link #onApplicationStart()} to configure event-driven integrations
      * for messaging, backup, server-side code execution, role management, and webhook dispatching. Each consumer
      * is registered with its event type, target service class, method name, description, and static parameters.
-     * </p>
+     * 
      * <p>
      * Registered event consumers by category:
      * <ul>
@@ -532,11 +527,11 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      *   </ul>
      * </li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * All consumers are registered via {@code services.applicationEvent.registerEventConsumerWithMethod()}
      * with reflection-based method invocation for loose coupling.
-     * </p>
+     * 
      *
      * @see EmailService
      * @see BackupService
@@ -677,7 +672,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * Allows modules to define custom event types beyond built-in {@link ApplicationEvent} types.
      * Registered event classes can then have listeners and consumers attached via
      * {@link #registerEventListener} or {@link #registerEventConsumer}.
-     * </p>
+     * 
      *
      * @param <T> the event class type
      * @param eventClass the custom event class to register
@@ -694,10 +689,10 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * Each tuple contains: (ProfileSettingsRepository, form constructor Function, PageAttr for form placement,
      * Thymeleaf fragment file path, fragment name). These forms are dynamically rendered in settings pages
      * to allow modules to contribute custom configuration interfaces.
-     * </p>
+     * 
      * <p>
      * Register forms via {@link #registerSettingsForm(ProfileSettingsRepository, Function, PageAttr, String, String)}.
-     * </p>
+     * 
      */
     public final List<Tuple5<ProfileSettingsRepository, Function, PageAttr, String, String>> additionalSettingsForms = new ArrayList<>();
 
@@ -707,7 +702,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * This method allows modules to contribute custom configuration forms that appear in the settings pages.
      * The form is integrated into the settings UI via Thymeleaf fragment inclusion, with automatic data
      * binding through the provided repository and form constructor.
-     * </p>
+     * 
      *
      * @param <SE> searchable entity type stored in settings
      * @param <SF> form type for entity editing
@@ -735,7 +730,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * The provided consumer is invoked near the end of {@link #onApplicationStart()} after core initialization
      * completes, providing an extension point for modules to perform custom initialization with full access
      * to initialized services and repositories.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>
@@ -744,7 +739,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      *     service.registerModule(myModule);
      * });
      * </pre>
-     * </p>
+     * 
      *
      * @param c consumer function receiving this CustomisationService instance for initialization
      * @see #onApplicationStart()
@@ -760,11 +755,11 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * This method provides thread-safe access to the {@link FrontendMappingMap} for concurrent module registration
      * during application startup or runtime module loading. The mapping associates an entity's form definition with
      * its data access repository, enabling automatic CRUD UI and API generation.
-     * </p>
+     * 
      * <p>
      * Thread Safety: Synchronized to prevent race conditions when multiple modules register mappings concurrently.
      * The {@code frontendMappingMap} is not thread-safe by itself, requiring external synchronization.
-     * </p>
+     * 
      *
      * @param definition the frontend mapping definition containing entity metadata, form fields, and UI configuration
      * @param repository the scoped secure repository providing privilege-aware data access for the entity
@@ -795,7 +790,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * <p>
      * Creates a web UI controller at {@code /html/{entityName}} with standard CRUD operations (list, view, create,
      * edit, delete) using {@link ReflectionBasedEntityForm} for automatic form generation from entity metadata.
-     * </p>
+     * 
      *
      * @param definition frontend mapping definition describing entity structure and UI configuration
      * @param repository scoped secure repository for privilege-aware data access
@@ -838,7 +833,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * <p>
      * Creates REST API endpoints at {@code /api/{entityName}} with standard operations (GET, POST, PUT, DELETE)
      * using JSON request/response format with {@link ReflectionBasedEntityForm} for data binding.
-     * </p>
+     * 
      *
      * @param definition frontend mapping definition describing entity structure
      * @param repository scoped secure repository for data access
@@ -881,12 +876,12 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * {@link ContextRefreshedEvent} which is published when the ApplicationContext is initialized or refreshed.
      * It delegates to {@link #onApplicationStart()} to execute the full bootstrap sequence, then emits a
      * {@link CoreSettledEvent} to signal that core initialization has completed.
-     * </p>
+     * 
      * <p>
      * The class equality check {@code this.getClass().equals(BasicCustomisationService.class)} ensures that
      * bootstrap only executes for the base implementation, preventing duplicate initialization if subclasses
      * override this method.
-     * </p>
+     * 
      * <p>
      * Event Flow:
      * <ol>
@@ -896,7 +891,7 @@ public class BasicCustomisationService extends ComponentProvider implements Cust
      * <li>{@link #onApplicationStart()} executes full bootstrap</li>
      * <li>CoreSettledEvent returned to signal readiness</li>
      * </ol>
-     * </p>
+     * 
      *
      * @param event the Spring context refresh event triggering application bootstrap
      * @return CoreSettledEvent if bootstrap was executed, null if skipped due to subclass override

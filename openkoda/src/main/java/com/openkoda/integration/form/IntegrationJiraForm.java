@@ -35,7 +35,7 @@ import org.springframework.validation.BindingResult;
  * Extends {@code AbstractEntityForm<IntegrationJiraDto, IntegrationModuleOrganizationConfiguration>},
  * implements {@link FrontendMappingDefinition} lifecycle: {@code populateFrom(entity)} →
  * {@code validate(BindingResult)} → {@code populateTo(entity)}.
- * </p>
+
  * <p>
  * Form lifecycle:
  * <ol>
@@ -46,20 +46,20 @@ import org.springframework.validation.BindingResult;
  * <li>{@code populateTo(entity)}: stores validated values back to entity using getSafeValue
  * with PROJECT_NAME_ and ORGANIZATION_NAME_ mapping keys</li>
  * </ol>
- * </p>
+
  * <p>
  * OAuth integration note: Access token and refresh token are typically obtained via OAuth callback
  * controller (not entered manually by users). Cloud ID is discovered via Jira accessible-resources
  * API after OAuth authentication. This form primarily handles project name and organization name
  * manual input.
- * </p>
+
  * <p>
  * Validation note: {@code validate()} is a no-op placeholder - checks projectName is not empty
  * can be added if needed.
- * </p>
+
  * <p>
  * Integration: Used by Spring MVC controllers with @Valid annotation, BindingResult captures errors.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -104,7 +104,7 @@ public class IntegrationJiraForm extends AbstractEntityForm<IntegrationJiraDto, 
      * <p>
      * Copies jiraProjectName and jiraOrganizationName from the integration configuration entity
      * into the DTO for rendering in edit views.
-     * </p>
+
      *
      * @param entity the IntegrationModuleOrganizationConfiguration to load from
      * @return this form instance for fluent chaining
@@ -121,7 +121,7 @@ public class IntegrationJiraForm extends AbstractEntityForm<IntegrationJiraDto, 
      * <p>
      * Uses {@code getSafeValue} for null-safe field access with PROJECT_NAME_ and ORGANIZATION_NAME_
      * frontend mapping keys. Writes projectName and organizationName to entity properties.
-     * </p>
+
      *
      * @param entity the IntegrationModuleOrganizationConfiguration to populate
      * @return the populated entity
@@ -139,12 +139,12 @@ public class IntegrationJiraForm extends AbstractEntityForm<IntegrationJiraDto, 
      * Currently a no-op placeholder that performs no validation and registers no errors.
      * Business validation rules (e.g., projectName is not empty, organizationName format)
      * can be added here if needed.
-     * </p>
+
      * <p>
      * Note: Jira OAuth tokens (jiraAccessToken, jiraRefreshToken, jiraCloudId) are set via
      * JiraIntegrationController OAuth callback, not via this form. This form handles only
      * project/organization name configuration.
-     * </p>
+
      *
      * @param br the Spring BindingResult for error collection
      * @return this form instance for fluent chaining

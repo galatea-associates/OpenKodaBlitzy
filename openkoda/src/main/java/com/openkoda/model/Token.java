@@ -39,25 +39,25 @@ import java.util.*;
  * Supports single-use and single-request token consumption modes for enhanced security. Tokens have configurable expiration (default 2 days from creation)
  * and can carry specific privileges for fine-grained authorization. Used for password reset flows (canRecoverPassword privilege),
  * email verification (canVerifyAccount privilege), and stateless API authentication. References {@link User} via userId foreign key.
- * </p>
+
  * <p>
  * Security characteristics: 61-byte {@link SecureRandom} generation provides approximately 488 bits of entropy for cryptographic strength.
  * Tokens include privileges string for authorization checks enabling token-scoped permissions that can limit (but not extend) user privileges.
  * SingleUse flag enforces one-time consumption for password resets and account verification workflows. SingleRequest flag enforces
  * single HTTP request usage with immediate expiration for enhanced security in sensitive operations.
- * </p>
+
  * <p>
  * Token lifecycle: Default expiration is createdOn + 2 days (configurable via constructor). Expired tokens are automatically invalidated
  * via {@link #isValid} @Formula computed field (used = false AND expires_on > current_timestamp). Tokens are removed post-consumption
  * if singleUse=true via {@link #invalidateIfSingleUse()} method.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * Token resetToken = new Token(user, true, Privilege.canRecoverPassword);
  * tokenRepository.save(resetToken);
  * </pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -261,7 +261,7 @@ public class Token extends TimestampedEntity implements AuditableEntity {
 
     /**
      * Computed boolean field indicating token validity.
-     * @Formula expression: (used = false AND expires_on > current_timestamp)
+     * Database formula expression: (used = false AND expires_on > current_timestamp)
      * Returns true if token is unused and not yet expired, false otherwise.
      * Database-computed field - not insertable/updatable from application code.
      */
@@ -286,7 +286,7 @@ public class Token extends TimestampedEntity implements AuditableEntity {
      * Token authentication can limit (but not extend) the privileges given to the user.
      * If privileges == null, then all user's privileges are granted during token authentication.
      * Any privilege that user does not have is ignored - tokens cannot escalate user privileges.
-     * </p>
+
      * Null value: Token inherits all user privileges without restrictions.
      */
     @Column(length = 65535)
@@ -299,7 +299,7 @@ public class Token extends TimestampedEntity implements AuditableEntity {
      * <p>
      * If privileges string is null, returns empty set (token inherits all user privileges).
      * Privilege set enables token-scoped authorization checks during authentication.
-     * </p>
+
      *
      * @return set of {@link PrivilegeBase} privileges, never null (returns empty set if no privileges defined)
      * @see PrivilegeHelper for privilege serialization/deserialization utilities
@@ -328,7 +328,7 @@ public class Token extends TimestampedEntity implements AuditableEntity {
      * Invalidated tokens are rejected by authentication regardless of expiration time.
      * <p>
      * Fluent API design returns this token instance for method chaining.
-     * </p>
+
      *
      * @return this {@link Token} instance for method chaining
      */
@@ -343,7 +343,7 @@ public class Token extends TimestampedEntity implements AuditableEntity {
      * No-op if singleUse is false (multi-use tokens remain valid until expiration).
      * <p>
      * Fluent API design returns this token instance for method chaining.
-     * </p>
+
      *
      * @return this {@link Token} instance for method chaining
      * @see #invalidate() for unconditional invalidation
@@ -407,7 +407,7 @@ public class Token extends TimestampedEntity implements AuditableEntity {
 
     /**
      * Checks if token is currently valid for authentication.
-     * @Formula computed field: (used = false AND expires_on > current_timestamp)
+     * Computed field via @Formula annotation: (used = false AND expires_on &gt; current_timestamp)
      * Token is valid only if unused and not yet expired.
      *
      * @return true if token can be used for authentication, false if invalidated or expired

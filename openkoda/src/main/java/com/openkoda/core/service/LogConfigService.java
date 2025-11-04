@@ -36,19 +36,19 @@ import java.util.stream.Collectors;
  * enabling runtime control of debug logging on a per-class basis. It supports individual
  * and bulk enable/disable operations for debug loggers, manages debug entry buffer configuration,
  * and provides configuration persistence through the {@link #saveConfig(int, Collection)} method.
- * </p>
+
  * <p>
  * Debug logging operates by maintaining a set of active logger classes whose debug output is
  * captured in a request-scoped buffer. When debug mode is enabled for a class, its debug log
  * entries are recorded and can be retrieved via {@link #getDebugEntriesAsList()} for runtime
  * inspection and troubleshooting.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * service.turnOnDebugForClassNames(Arrays.asList("com.openkoda.controller.UserController"));
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -72,7 +72,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * The buffer size determines the maximum number of debug log entries
      * that can be retained in memory. When this limit is exceeded, older
      * entries are evicted to make room for new entries.
-     * </p>
+
      *
      * @return the current maximum number of debug entries that can be stored
      * @see #setMaxEntries(int)
@@ -89,7 +89,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * in the debug stack. When the buffer reaches this capacity, older entries
      * are automatically evicted when new entries are added, following a
      * first-in-first-out (FIFO) eviction policy.
-     * </p>
+
      *
      * @param maxBuffer the maximum number of debug entries to retain; must be positive
      * @return {@code true} if the buffer size was successfully updated, {@code false} otherwise
@@ -106,7 +106,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * Activates debug mode for the logger associated with the given class name,
      * adding it to the set of active debug loggers. Once enabled, debug log
      * entries from this class will be captured in the debug buffer for inspection.
-     * </p>
+
      *
      * @param classname the fully qualified class name to enable debug logging for; must not be null
      * @return {@code true} if debug mode was successfully enabled, {@code false} otherwise
@@ -124,7 +124,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * This is a type-safe variant of {@link #turnOnDebugModeForLoggerClassname(String)}
      * that accepts a Class object rather than a string. It provides compile-time type
      * checking and avoids potential typos in class names.
-     * </p>
+
      *
      * @param c the Class object to enable debug logging for; must not be null
      * @return {@code true} if debug mode was successfully enabled, {@code false} otherwise
@@ -142,7 +142,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * Deactivates debug mode for the logger associated with the given class name,
      * removing it from the set of active debug loggers. Debug log entries from
      * this class will no longer be captured after this operation.
-     * </p>
+
      *
      * @param classname the fully qualified class name to disable debug logging for; must not be null
      * @return {@code true} if debug mode was successfully disabled, {@code false} otherwise
@@ -160,7 +160,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * This is a type-safe variant of {@link #turnOffDebugModeForLoggerClassname(String)}
      * that accepts a Class object rather than a string. It provides compile-time type
      * checking and avoids potential typos in class names.
-     * </p>
+
      *
      * @param c the Class object to disable debug logging for; must not be null
      * @return {@code true} if debug mode was successfully disabled, {@code false} otherwise
@@ -177,7 +177,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * Clears the entire set of classes that have debug logging enabled,
      * effectively disabling debug mode for all loggers. This operation
      * does not affect the debug buffer itself or previously captured entries.
-     * </p>
+
      *
      * @return {@code true} indicating the operation completed successfully
      * @see #getDebugLoggers()
@@ -194,7 +194,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * Collects the names of all loggers that are available for debug mode
      * configuration. This includes loggers for all classes in the application
      * context that participate in the logging framework.
-     * </p>
+
      *
      * @return an array containing all available logger names as strings
      * @see #getAvailableLoggers()
@@ -211,7 +211,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * class. This method returns {@code true} only if all operations succeed.
      * Note that partial failures are possible - some classes may have debug
      * mode enabled while others fail.
-     * </p>
+
      *
      * @param classCollection the collection of Class objects to enable debug logging for; must not be null
      * @return {@code true} if debug mode was successfully enabled for all classes, {@code false} if any operation failed
@@ -234,7 +234,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * mode for each. This method returns {@code true} only if all operations succeed.
      * Note that partial failures are possible - some classes may have debug mode
      * enabled while others fail.
-     * </p>
+
      *
      * @param classCollection the collection of fully qualified class names to enable debug logging for; must not be null
      * @return {@code true} if debug mode was successfully enabled for all classes, {@code false} if any operation failed
@@ -257,7 +257,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * class. This method returns {@code true} only if all operations succeed.
      * Note that partial failures are possible - some classes may have debug
      * mode disabled while others fail.
-     * </p>
+
      *
      * @param classCollection the collection of Class objects to disable debug logging for; must not be null
      * @return {@code true} if debug mode was successfully disabled for all classes, {@code false} if any operation failed
@@ -280,7 +280,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * mode for each. This method returns {@code true} only if all operations succeed.
      * Note that partial failures are possible - some classes may have debug mode
      * disabled while others fail.
-     * </p>
+
      *
      * @param classCollection the collection of fully qualified class names to disable debug logging for; must not be null
      * @return {@code true} if debug mode was successfully disabled for all classes, {@code false} if any operation failed
@@ -303,7 +303,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * that are currently active but not in the provided collection, and enables debug mode for
      * any loggers in the collection that are not currently active. The end result is that the
      * set of active debug loggers exactly matches the provided collection.
-     * </p>
+
      *
      * @param classes the collection of Class objects representing the desired set of active debug loggers; must not be null
      * @return {@code true} if all operations succeeded, {@code false} if any enable or disable operation failed
@@ -327,7 +327,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      *   <li>Enables debug mode for loggers in the collection that are not currently active</li>
      *   <li>Leaves unchanged any loggers that are both active and in the provided collection</li>
      * </ul>
-     * </p>
+
      *
      * @param classes the collection of fully qualified class names representing the desired set of active debug loggers; must not be null
      * @return {@code true} if all operations succeeded, {@code false} if any enable or disable operation failed
@@ -361,7 +361,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * and reconciling the active debug loggers to match the provided collection.
      * Both operations are performed, and the method returns {@code true} only if
      * both succeed.
-     * </p>
+
      *
      * @param buffer the desired debug buffer size; must be positive
      * @param classes the collection of fully qualified class names for active debug loggers; must not be null
@@ -385,7 +385,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * sequence identifier and the value is the debug message. The list is reversed
      * so that the most recent entries appear first, facilitating recent-first
      * inspection during troubleshooting.
-     * </p>
+
      *
      * @return a list of debug entries as Map.Entry&lt;String, String&gt; pairs, with most recent entries first
      * @see #getMaxEntries()
@@ -403,7 +403,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * Retrieves the collection of Class objects for which debug logging is
      * currently enabled. This provides a type-safe representation of the
      * active debug configuration.
-     * </p>
+
      *
      * @return a set of Class objects representing loggers with debug mode enabled
      * @see #getDebugLoggersNames()
@@ -419,7 +419,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * Retrieves the collection of fully qualified class names for which debug
      * logging is currently enabled. This provides a string-based representation
      * of the active debug configuration, useful for persistence or display purposes.
-     * </p>
+
      *
      * @return a set of fully qualified class names representing loggers with debug mode enabled
      * @see #getDebugLoggers()
@@ -436,7 +436,7 @@ public class LogConfigService implements LoggingComponentWithRequestId {
      * for debug mode configuration. This includes all classes in the application
      * context that participate in the logging framework, regardless of whether
      * debug mode is currently enabled for them.
-     * </p>
+
      *
      * @return a list of all Class objects available for debug logging configuration
      * @see #collectLoggerNames()

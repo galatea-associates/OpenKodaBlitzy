@@ -31,12 +31,10 @@ import java.util.List;
  * This POJO is automatically populated by Spring Boot via property binding using the "datasources" prefix.
  * Properties with prefix {@code datasources.list[i]} are mapped to the list field, enabling configuration
  * of multiple database connections for database-per-tenant or database-per-organization multi-tenancy scenarios.
- * </p>
  * <p>
  * Datasources are created at application startup and pooled via HikariCP for high-performance connection management.
  * Each tenant database configuration includes a unique name identifier and a HikariConfig object containing
  * JDBC connection parameters, pool sizing, and advanced Hikari settings.
- * </p>
  * <p>
  * Configuration example in application.properties:
  * <pre>
@@ -52,7 +50,6 @@ import java.util.List;
  * </pre>
  * More config settings can be applied - see
  * <a href="https://github.com/brettwooldridge/HikariCP#gear-configuration-knobs-baby">HikariCP Configuration</a>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -69,12 +66,12 @@ public class Datasources {
      * The {@code name} field provides a unique identifier for the datasource (e.g., "primary", "secondary_1"),
      * while the {@code config} field contains HikariCP connection pool parameters including JDBC URL,
      * credentials, pool sizing, connection timeout, and other performance tuning settings.
-     * </p>
+     * 
      * <p>
      * Binding pattern: Maps to {@code datasources.list[i].name} and {@code datasources.list[i].config.*}
      * properties in application.properties, where Spring Boot automatically instantiates TenantDB objects
      * and populates fields from the configuration hierarchy.
-     * </p>
+     * 
      *
      * @author OpenKoda Team
      * @since 1.7.1

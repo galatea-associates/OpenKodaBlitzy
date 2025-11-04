@@ -29,18 +29,18 @@ import com.openkoda.model.notification.Notification;
  * This class serves as a target for JPQL queries that combine notification data with read status
  * information from a LEFT JOIN with ReadNotification. It carries a Notification entity plus an
  * optional read-marker ID to indicate whether the notification has been read.
- * </p>
+
  * <p>
  * This is a mutable POJO with no validation or defensive copying. It is intended for in-memory
  * use only and has no persistence mappings. Callers are responsible for the object lifecycle.
- * </p>
+
  * <p>
  * Example usage in JPQL:
  * <pre>
  * SELECT NEW NotificationKeeper(n, rn.notificationId)
  * FROM Notification n LEFT JOIN n.readNotifications rn
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1

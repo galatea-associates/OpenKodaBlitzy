@@ -28,11 +28,11 @@ package com.openkoda.integration.model.dto;
  * controllers, services, and form binding layers. It uses the standard JavaBean pattern
  * with public fields and conventional getter/setter methods for compatibility with
  * Spring MVC property binding and Jackson serialization.
- * </p>
+ * 
  * <p>
  * The webhook URL field contains sensitive endpoint information that should be protected.
  * Instances are not thread-safe due to mutable fields.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

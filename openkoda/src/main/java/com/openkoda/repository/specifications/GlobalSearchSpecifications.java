@@ -42,11 +42,11 @@ import java.util.Optional;
  * to filter results based on the current user's global privileges. Unauthenticated requests return
  * empty results via {@code disjunction()} predicates. These specifications are composable via
  * {@code and()}/{@code or()} operators for complex filtering.
- * </p>
+ * 
  * <p>
  * <b>Note:</b> Uses string-based attribute names ('indexString', 'requiredReadPrivilege') which are
  * fragile to entity refactoring. Consider migrating to JPA metamodel for type safety.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -67,16 +67,16 @@ public class GlobalSearchSpecifications {
      * privilege. Returns {@code disjunction()} (always-false predicate) for unauthenticated users. For
      * authenticated users, combines text search with privilege check: matches entities where
      * requiredReadPrivilege is null OR present in user's global privileges.
-     * </p>
+     * 
      * <p>
      * Usage example:
      * <pre>{@code
      * Specification<GlobalEntitySearch> spec = createSpecification("invoice").and(additionalFilters);
      * }</pre>
-     * </p>
+     * 
      * <p>
      * <b>Security note:</b> This method enforces row-level security based on user privileges.
-     * </p>
+     * 
      *
      * @param searchTerm the text to search for. Null values are treated as empty strings.
      *                   Case-insensitive substring matching is applied

@@ -13,15 +13,15 @@ import org.hibernate.annotations.Formula;
  * and {@link Formula @Formula}-derived privilege requirements. Used for modular architecture, feature enablement,
  * and module-level authorization. Enables plugin-style extensibility where modules can be enabled/disabled or
  * access-controlled via privileges.
- * </p>
+ * 
  * <p>
  * Design: name field has no public setter - enforces module name immutability after entity creation.
  * Prevents accidental module renaming which would break module references.
- * </p>
+ * 
  * <p>
  * {@link Formula @Formula} fields: requiredReadPrivilege and requiredWritePrivilege computed from
  * {@link PrivilegeNames} constants for module configuration access control.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -38,7 +38,7 @@ public class OpenkodaModule extends OpenkodaEntity {
      * <p>
      * No public setter - name is immutable after entity creation to prevent breaking module references.
      * Module name serves as the primary business identifier for feature grouping and module lookup.
-     * </p>
+     * 
      */
     @Column
     private String name;
@@ -48,7 +48,7 @@ public class OpenkodaModule extends OpenkodaEntity {
      * <p>
      * Computed from {@link PrivilegeNames#_canAccessGlobalSettings} constant.
      * Enforces access control for module write operations.
-     * </p>
+     * 
      */
     @Formula("( '" + PrivilegeNames._canAccessGlobalSettings + "' )")
     private String requiredWritePrivilege;
@@ -58,7 +58,7 @@ public class OpenkodaModule extends OpenkodaEntity {
      * <p>
      * Computed from {@link PrivilegeNames#_canAccessGlobalSettings} constant.
      * Enforces access control for module read operations.
-     * </p>
+     * 
      */
     @Formula("( '" + PrivilegeNames._canAccessGlobalSettings + "' )")
     private String requiredReadPrivilege;
@@ -67,7 +67,7 @@ public class OpenkodaModule extends OpenkodaEntity {
      * Constructs OpenkodaModule with organization scope.
      * <p>
      * Creates module associated with specific organization for multi-tenant scenarios.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID to associate with this module, or null for global modules
      */
@@ -80,7 +80,7 @@ public class OpenkodaModule extends OpenkodaEntity {
      * <p>
      * Creates global module (not associated with specific organization).
      * Module name must be set separately after construction.
-     * </p>
+     * 
      */
     public OpenkodaModule() {
         super(null);
@@ -91,7 +91,7 @@ public class OpenkodaModule extends OpenkodaEntity {
      * <p>
      * Creates global module (not associated with specific organization) with immutable name.
      * Name cannot be changed after construction due to lack of public setter.
-     * </p>
+     * 
      *
      * @param name the unique module identifier, must not be null
      */
@@ -105,7 +105,7 @@ public class OpenkodaModule extends OpenkodaEntity {
      * <p>
      * Immutable after creation - no public setter available.
      * Serves as primary business identifier for module lookup and feature grouping.
-     * </p>
+     * 
      *
      * @return the unique module name, or null if not set
      */
@@ -118,7 +118,7 @@ public class OpenkodaModule extends OpenkodaEntity {
      * <p>
      * Computed from {@link PrivilegeNames#_canAccessGlobalSettings} constant.
      * Used for privilege-based access control on module read operations.
-     * </p>
+     * 
      *
      * @return the privilege token string required for read access
      */
@@ -132,7 +132,7 @@ public class OpenkodaModule extends OpenkodaEntity {
      * <p>
      * Computed from {@link PrivilegeNames#_canAccessGlobalSettings} constant.
      * Used for privilege-based access control on module write operations.
-     * </p>
+     * 
      *
      * @return the privilege token string required for write access
      */

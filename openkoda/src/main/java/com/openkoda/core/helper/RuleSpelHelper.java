@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
  * This helper class enables conversion between string-based SpEL expressions and structured rule data transfer objects.
  * It validates literal tokens with a whitelist regex pattern to prevent code injection, traverses the SpEL Abstract
  * Syntax Tree (AST) to produce structural maps, and builds JPA Criteria API Predicate objects from expressions.
- * </p>
  * <p>
  * Key capabilities:
  * <ul>
@@ -59,14 +58,12 @@ import java.util.stream.Collectors;
  *   <li>Generate JPA Criteria Predicates from SpEL rules</li>
  *   <li>Convert rules to SQL CASE WHEN statements</li>
  * </ul>
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
  * boolean valid = RuleSpelHelper.isRuleValid("field == 'value'");
  * RuleDto dto = RuleSpelHelper.parseToRuleDto("status == 'active' ? 1 : 0");
  * }</pre>
- * </p>
  * <p>
  * <b>Important warnings:</b>
  * <ul>
@@ -75,10 +72,8 @@ import java.util.stream.Collectors;
  *   <li>Whitelist regex (VALUE_REGEX) prevents code injection in literal values</li>
  *   <li>SpEL parsing is expensive - avoid in performance-critical loops</li>
  * </ul>
- * </p>
  * <p>
  * Thread-safety: All methods are static and stateless, safe for concurrent use.
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -111,7 +106,7 @@ public class RuleSpelHelper {
      * Traverses the structured rule data transfer object and produces a ternary SpEL expression
      * in the format: {@code condition ? thenValue : elseValue}. Validates that both if-condition
      * and then-statement operators are present before generating the expression.
-     * </p>
+     * 
      *
      * @param ruleDto the rule data transfer object containing if/then/else statement components
      * @return the SpEL expression string, or empty string if required operators are missing
@@ -138,11 +133,11 @@ public class RuleSpelHelper {
      * Converts the string-based SpEL rule into separate if/then/else statement components by traversing
      * the Abstract Syntax Tree (AST). Each statement is decomposed into fields, operators, and values
      * stored in a map structure for programmatic access and manipulation.
-     * </p>
+     * 
      * <p>
      * The method expects ternary expressions with the pattern: {@code condition ? thenValue : elseValue}.
      * The else clause is optional.
-     * </p>
+     * 
      *
      * @param rule the SpEL expression string to parse (e.g., "status == 'active' ? 1 : 0")
      * @return structured RuleDto with separated if/then/else statement maps, or empty RuleDto if rule is null/empty
@@ -174,11 +169,11 @@ public class RuleSpelHelper {
      * Attempts to parse the rule using Spring's SpEL parser. Returns true if parsing succeeds,
      * indicating valid SpEL syntax. Returns false if parsing throws a ParseException, indicating
      * invalid syntax.
-     * </p>
+     * 
      * <p>
      * Note: This method only validates SpEL syntax, not semantic correctness or whitelist compliance.
      * For security validation of literal values, see {@link #validateRuleValue(String)}.
-     * </p>
+     * 
      *
      * @param rule the SpEL expression string to validate
      * @return true if the rule has valid SpEL syntax, false otherwise
@@ -199,11 +194,11 @@ public class RuleSpelHelper {
      * <p>
      * Parses the SpEL rule and generates a corresponding SQL SELECT statement using CASE WHEN syntax.
      * This enables direct database-level evaluation of rules that were originally defined in SpEL format.
-     * </p>
+     * 
      * <p>
      * The generated SQL follows the pattern:
      * {@code SELECT CASE WHEN condition THEN value1 ELSE value2 FROM tableName}
-     * </p>
+     * 
      *
      * @param rule the SpEL ternary expression (e.g., "status == 'active' ? 1 : 0")
      * @param tableName the database table name to use in the FROM clause
@@ -227,11 +222,11 @@ public class RuleSpelHelper {
      * (fields, operators, values) and optionally building JPA Criteria API predicates for database queries.
      * The method handles different AST node types including method references, operators, property references,
      * and inline lists.
-     * </p>
+     * 
      * <p>
      * The method supports logical operators (AND, OR) and comparison operators (equals, notEquals, greaterThan,
      * lessThan, contains, in) by delegating to specialized handler methods.
-     * </p>
+     * 
      *
      * @param <R> the entity type for JPA Criteria Root
      * @param index the current statement index in the rule parts map
@@ -294,7 +289,7 @@ public class RuleSpelHelper {
      * Extracts the field name from the left operand and the comparison value from the right operand.
      * If an EntityManager is provided, generates the corresponding JPA Criteria API predicate for
      * database query construction.
-     * </p>
+     * 
      *
      * @param <R> the entity type for JPA Criteria Root
      * @param index the current statement index
@@ -353,7 +348,7 @@ public class RuleSpelHelper {
      * Creates a new statement index for the right operand and recursively parses both sides of the
      * logical operator. If an EntityManager is provided, combines the resulting predicates using
      * JPA Criteria Builder's and() or or() methods.
-     * </p>
+     * 
      *
      * @param <R> the entity type for JPA Criteria Root
      * @param index the current statement index for the left operand
@@ -400,7 +395,7 @@ public class RuleSpelHelper {
      * Processes method calls like {@code contains()} which map to SQL LIKE or IN operations depending
      * on the context. When the contains method is called on an inline list, it generates an IN predicate.
      * When called with a string argument, it generates a LIKE predicate with wildcards.
-     * </p>
+     * 
      *
      * @param <R> the entity type for JPA Criteria Root
      * @param index the current statement index
@@ -450,10 +445,10 @@ public class RuleSpelHelper {
      * Iterates through the statement map, building a SpEL expression by combining fields, operators,
      * and values. Handles special formatting for IN operator (inline list syntax) and validates all
      * literal values against the whitelist regex to prevent code injection.
-     * </p>
+     * 
      * <p>
      * The method enforces security by calling {@link #validateRuleValue(String)} on all literal values.
-     * </p>
+     * 
      *
      * @param statements the map of statement components indexed by position
      * @return concatenated SpEL expression string
@@ -490,7 +485,7 @@ public class RuleSpelHelper {
      * Ensures that rule values contain only safe characters (alphanumeric, spaces, commas, periods,
      * underscores, hyphens) as defined by {@link #VALUE_REGEX}. This is a critical security measure
      * to prevent malicious code injection through user-supplied rule values.
-     * </p>
+     * 
      *
      * @param value the literal value to validate
      * @throws RuntimeException with message "Rule statement value invalid!" if validation fails

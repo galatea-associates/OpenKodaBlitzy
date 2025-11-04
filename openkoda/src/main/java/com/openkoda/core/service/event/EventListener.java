@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * This interface extends {@link java.util.function.Consumer} to leverage JDK functional interface patterns,
  * enabling lambda expressions, method references, and functional composition. It serves as a semantic alias
  * for event consumer registration, providing type-safe event handling throughout the OpenKoda platform.
- * </p>
+
  * <p>
  * <b>Key Benefits:</b>
  * <ul>
@@ -38,23 +38,23 @@ import java.util.function.Consumer;
  *   <li>Method reference compatibility for existing handler methods</li>
  *   <li>Functional composition via {@code andThen()} for chaining handlers</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Integration Points:</b><br>
- * Event listeners are registered with {@link EventListenerService#registerEventConsumer} or
+ * Event listeners are registered with {@link EventListenerService#registerListenerClusterAware} or
  * {@link ApplicationEventService#registerEventListener}. The ApplicationEventService dispatches
  * events asynchronously using a dedicated executor, requiring implementations to be thread-safe.
- * </p>
+
  * <p>
  * <b>Thread Safety:</b><br>
  * Implementations must be thread-safe as listeners may be invoked concurrently by ApplicationEventService's
  * async executor. Shared mutable state should be properly synchronized or avoided.
- * </p>
+
  * <p>
  * <b>Exception Handling:</b><br>
  * Uncaught exceptions in listener implementations propagate to the caller or event dispatcher.
  * Consider wrapping handler logic with appropriate error handling to prevent event processing failures.
- * </p>
+
  * <p>
  * <b>Usage Examples:</b>
  * <pre>{@code
@@ -67,11 +67,11 @@ import java.util.function.Consumer;
  * // Functional composition
  * EventListener<User> composed = listener.andThen(user -> sendEmail(user));
  * }</pre>
- * </p>
+
  * <p>
  * This is a SAM (Single Abstract Method) interface, inheriting {@code accept(T)} from Consumer,
  * which enables seamless lambda usage and functional programming patterns.
- * </p>
+
  *
  * @param <T> Event payload type that this listener consumes
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)

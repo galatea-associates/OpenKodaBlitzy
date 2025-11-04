@@ -47,26 +47,26 @@ import static com.openkoda.model.common.ModelConstants.*;
  * queryable structure. The view provides a standardized interface for searching across multiple
  * entity types with consistent column mappings for id, name, organization_id, timestamps,
  * description, privilege requirements, and URL paths.
- * </p>
+ * 
  * <p>
  * The view creation process discovers all searchable repositories via the {@link SearchableRepositories}
  * registry and uses metadata annotations to construct appropriate SQL subqueries for each entity type.
  * Interface-based feature detection determines which columns are available for each entity
  * (e.g., {@link OrganizationRelatedEntity}, {@link TimestampedEntity}).
- * </p>
+ * 
  * <p>
  * This component is invoked during application lifecycle events, typically at startup or during
  * maintenance operations. View creation uses CREATE OR REPLACE semantics, with optional DROP VIEW
  * behavior when not running in initialization profiles.
- * </p>
+ * 
  * <p>
  * <b>Thread Safety:</b> This component should be invoked in a controlled manner during application
  * lifecycle events. Concurrent executions may result in database-level conflicts during DDL operations.
- * </p>
+ * 
  * <p>
  * <b>Database Privileges:</b> Requires DDL privileges (CREATE VIEW, DROP VIEW) on the target database
  * schema to execute view creation and maintenance operations.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -83,7 +83,7 @@ public class SearchViewCreator implements LoggingComponentWithRequestId {
      * <p>
      * This executor handles the transactional execution of DROP VIEW and CREATE OR REPLACE VIEW
      * statements, ensuring database consistency during view maintenance operations.
-     * </p>
+     * 
      */
     @Inject
     protected QueryExecutor queryExecutor;
@@ -92,7 +92,7 @@ public class SearchViewCreator implements LoggingComponentWithRequestId {
      * Creates or refreshes the global_search_view database view by discovering and unioning all searchable repositories.
      * <p>
      * This is the main entry point for view maintenance operations. The method performs the following steps:
-     * </p>
+     * 
      * <ol>
      *   <li>Discovers all searchable repositories via {@link SearchableRepositories#getSearchableRepositoriesWithEntityKeys()}</li>
      *   <li>Conditionally drops the existing view (only when not in initialization profile)</li>
@@ -104,15 +104,15 @@ public class SearchViewCreator implements LoggingComponentWithRequestId {
      * <b>DROP VIEW Behavior:</b> When running outside initialization profiles (e.g., drop_and_init_database),
      * this method executes DROP VIEW IF EXISTS before creating the view. This prevents conflicts during
      * database initialization scenarios where the view might not exist yet.
-     * </p>
+     * 
      * <p>
      * <b>Transactional Execution:</b> All DDL operations are executed transactionally through
-     * {@link QueryExecutor#runQueriesInTransaction(String)}, ensuring atomic view creation.
-     * </p>
+     * {@link QueryExecutor#runQueriesInTransaction(String...)}, ensuring atomic view creation.
+     * 
      *
      * @see SearchableRepositories#getSearchableRepositoriesWithEntityKeys()
      * @see SearchableRepositories#getGlobalSearchableRepositoryAnnotation(SecureRepository)
-     * @see QueryExecutor#runQueriesInTransaction(String)
+     * @see QueryExecutor#runQueriesInTransaction(String...)
      */
     public void prepareSearchableRepositories() {
         debug("[prepareSearchableRepositories]");
@@ -146,7 +146,7 @@ public class SearchViewCreator implements LoggingComponentWithRequestId {
      * <p>
      * This method constructs a SELECT statement that maps entity-specific columns to the standardized
      * global_search_view schema. The subquery includes the following columns:
-     * </p>
+     * 
      * <ul>
      *   <li><b>id:</b> Entity primary key</li>
      *   <li><b>name:</b> Entity key from {@link SearchableRepositoryMetadata#entityKey()}</li>
@@ -161,7 +161,7 @@ public class SearchViewCreator implements LoggingComponentWithRequestId {
      * <p>
      * <b>Interface-Based Feature Detection:</b> The method uses interface assignments to determine
      * available entity features:
-     * </p>
+     * 
      * <ul>
      *   <li>{@link OrganizationRelatedEntity}: Entity has organization_id (multi-tenant)</li>
      *   <li>{@link TimestampedEntity} or {@link OpenkodaEntity}: Entity has created_on/updated_on timestamps</li>
@@ -171,7 +171,7 @@ public class SearchViewCreator implements LoggingComponentWithRequestId {
      * <b>Formula Resolution:</b> URL path formulas are resolved from metadata annotations with fallbacks:
      * organization-relative entities use organizationRelatedPathFormula or default pattern,
      * global entities use globalPathFormula or default pattern.
-     * </p>
+     * 
      *
      * @param c the entity class to generate a subquery for (e.g., Organization.class, User.class)
      * @param tableName the database table name discovered via {@link SearchableRepositories#discoverTableName(Class)}
@@ -215,10 +215,10 @@ public class SearchViewCreator implements LoggingComponentWithRequestId {
      * This method uses reflection to read the SQL formula that computes the required read privilege
      * for accessing an entity. The formula is defined in the entity's requiredReadPrivilege field
      * via Hibernate's {@link Formula} annotation.
-     * </p>
+     * 
      * <p>
      * <b>Privilege Resolution Logic:</b>
-     * </p>
+     * 
      * <ul>
      *   <li>If the class implements {@link EntityWithRequiredPrivilege}, the method attempts to
      *       reflectively access the "requiredReadPrivilege" field and extract its @Formula annotation value</li>
@@ -228,7 +228,7 @@ public class SearchViewCreator implements LoggingComponentWithRequestId {
      * <b>Exception Handling:</b> If {@link NoSuchFieldException} is thrown during reflective field access,
      * the exception is printed to standard error and "null" is returned as the default privilege value.
      * This ensures view creation continues even when privilege formulas are missing.
-     * </p>
+     * 
      *
      * @param c the entity class to extract privilege formula from (e.g., Organization.class)
      * @return the SQL formula string from the @Formula annotation (e.g., "CASE WHEN removable THEN 'canAccessGlobalSettings' END"),

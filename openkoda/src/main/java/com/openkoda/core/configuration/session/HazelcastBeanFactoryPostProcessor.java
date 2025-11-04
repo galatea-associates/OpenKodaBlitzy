@@ -31,18 +31,18 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  * Implements postProcessBeanFactory() to programmatically register OAuthClientContextHazelcastSessionScope
  * with scope name SESSION_HAZELCAST_AWARE. This processor enables the application to define session-scoped
  * beans that leverage Hazelcast for distributed session replication in clustered environments.
- * </p>
+ * 
  * <p>
  * Note: Registration line is currently commented out, making processor inert. If enabled, must run before
  * beans referencing custom scope are instantiated. Spring invokes BeanFactoryPostProcessor implementations
  * early in the container lifecycle (after bean definitions loaded, before bean instantiation).
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see BeanFactoryPostProcessor
- * @see com.openkoda.core.security.oauth.OAuthClientContextHazelcastSessionScope
+ * See {@code BeanFactoryPostProcessor}
+ * See {@code OAuthClientContextHazelcastSessionScope}
  */
 public class HazelcastBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
@@ -55,7 +55,7 @@ public class HazelcastBeanFactoryPostProcessor implements BeanFactoryPostProcess
      * Would call factory.registerScope() to add Hazelcast-aware session scope, enabling Spring beans
      * to use the custom scope annotation. When enabled, registers OAuthClientContextHazelcastSessionScope
      * instance with scope name SESSION_HAZELCAST_AWARE for distributed session management.
-     * </p>
+     * 
      *
      * @param factory the ConfigurableListableBeanFactory for scope registration
      * @throws BeansException if scope registration fails (when enabled)

@@ -33,26 +33,22 @@ import com.openkoda.core.repository.common.ScopedSecureRepository;
  * The atomic pairing ensures that form definitions are always registered with their
  * corresponding data access layer, preventing misconfiguration where a form might be
  * registered without an appropriate repository.
- * </p>
  * <p>
  * Instances of this record are registered in {@link FrontendMappingMap} for lookup operations
  * and are typically created during module initialization via
  * {@link CustomisationService#registerFrontendMapping}. The registry uses the mapping name
  * from {@code definition.name} as the key for retrieval.
- * </p>
  * <p>
  * As a Java record, this class is inherently immutable and thread-safe. All fields are
  * final and the canonical constructor performs defensive initialization. Records provide
  * automatic implementations of {@code equals()}, {@code hashCode()}, and {@code toString()}
  * based on component values.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
  * FrontendMapping mapping = new FrontendMapping(formDefinition, secureRepository);
  * customisationService.registerFrontendMapping(mapping);
  * }</pre>
- * </p>
  *
  * @param definition the frontend mapping definition containing form metadata, field specifications,
  *                   validation rules, and UI rendering instructions. Must not be null.
@@ -60,7 +56,7 @@ import com.openkoda.core.repository.common.ScopedSecureRepository;
  *                   for the entity associated with this mapping. Must not be null.
  *
  * @see FrontendMappingMap
- * @see CustomisationService#registerFrontendMapping(FrontendMapping)
+ * @see CustomisationService#registerFrontendMapping
  * @see FrontendMappingDefinition
  * @see ScopedSecureRepository
  * @since 1.7.1

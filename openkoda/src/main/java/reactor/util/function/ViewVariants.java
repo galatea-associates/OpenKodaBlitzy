@@ -32,7 +32,7 @@ import java.util.Optional;
  * ViewVariants is a specialized tuple that bundles four Optional components for view template resolution
  * and page model construction. It extends {@code Tuple4<Optional<String>, Optional<String>, Optional<PageModelFunction>, Optional<PageModelFunction>>}
  * with explicit semantic meaning for each tuple slot:
- * </p>
+
  * <ul>
  *   <li><b>Slot 1 (T1)</b>: Primary view template name wrapped in {@code Optional<String>} (e.g., {@code Optional.of("user-profile")})</li>
  *   <li><b>Slot 2 (T2)</b>: Fallback view template name wrapped in {@code Optional<String>} (e.g., {@code Optional.of("default-profile")})</li>
@@ -42,20 +42,20 @@ import java.util.Optional;
  * <p>
  * This class is used by view resolution code, controller adapters, and reactive pipelines to provide
  * flexible rendering strategies with automatic fallback when primary views or model functions are unavailable.
- * </p>
+
  * <p>
  * <b>Immutability:</b> ViewVariants instances are immutable if the underlying Tuple4 implementation
  * and Optional instances are immutable (which they are by default).
- * </p>
+
  * <p>
  * <b>Thread-Safety:</b> Instances are thread-safe assuming PageModelFunction callbacks do not capture
  * mutable state or perform non-thread-safe operations.
- * </p>
+
  * <p>
  * <b>Package Naming Note:</b> This class resides in the {@code reactor.util.function} namespace,
  * which mirrors Project Reactor packages. Despite the package name, this is an OpenKoda-specific
  * implementation for view variant management.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -63,7 +63,7 @@ import java.util.Optional;
  *     Optional.of("user-profile"), Optional.of("default"),
  *     Optional.of(model -> model.put("user", currentUser)), Optional.empty());
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -78,12 +78,12 @@ public class ViewVariants extends Tuple4<Optional<String>, Optional<String>, Opt
      * This constructor follows a package-private visibility design pattern to enforce controlled instantiation.
      * No additional fields or state are declared beyond what Tuple4 provides. All tuple data is managed
      * by the parent class.
-     * </p>
+
      * <p>
      * <b>Usage Note:</b> Clients should use the public static factory method {@link #of(Optional, Optional, Optional, Optional)}
      * for instantiation instead of direct construction. This design enforces consistent instantiation patterns
      * and provides a cleaner API surface.
-     * </p>
+
      *
      * @param s Primary view template name wrapped in Optional
      * @param s2 Fallback view template name wrapped in Optional
@@ -101,7 +101,7 @@ public class ViewVariants extends Tuple4<Optional<String>, Optional<String>, Opt
      * components (primary view, fallback view, primary model function, fallback model function)
      * into a single immutable tuple for use in view resolution code, controller adapters, and
      * reactive pipelines.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
@@ -109,7 +109,7 @@ public class ViewVariants extends Tuple4<Optional<String>, Optional<String>, Opt
      *     Optional.of("user-profile"), Optional.of("default-profile"),
      *     Optional.of(model -> model.put("data", userData)), Optional.empty());
      * }</pre>
-     * </p>
+
      *
      * @param t1 Primary view template name (e.g., {@code Optional.of("user-profile")}) used for primary rendering path
      * @param t2 Fallback view template name (e.g., {@code Optional.of("default-profile")}) used when primary view is unavailable

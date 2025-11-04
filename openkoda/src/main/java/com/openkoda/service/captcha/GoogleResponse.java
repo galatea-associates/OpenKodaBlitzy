@@ -32,18 +32,18 @@ import java.util.Map;
  * This class encapsulates the JSON response received from the Google reCAPTCHA siteverify API.
  * It uses Jackson {@code @JsonProperty} annotations to map between snake_case field names
  * used in the Google API and camelCase Java field names following standard naming conventions.
- * </p>
+
  * <p>
  * The response structure varies between reCAPTCHA v2 and v3:
  * <ul>
  *   <li>v2: Returns success, challenge_ts, hostname, and error-codes</li>
  *   <li>v3: Additionally includes score (0.0-1.0) and action fields</li>
  * </ul>
- * </p>
+
  * <p>
  * This DTO is designed for automatic deserialization by Spring's RestTemplate
  * via {@code RestTemplate.getForObject(..., GoogleResponse.class)}.
- * </p>
+
  * <p>
  * Example successful reCAPTCHA v3 response:
  * <pre>
@@ -55,7 +55,7 @@ import java.util.Map;
  *   "action": "login"
  * }
  * </pre>
- * </p>
+
  * <p>
  * Example failed response with error codes:
  * <pre>
@@ -64,7 +64,7 @@ import java.util.Map;
  *   "error-codes": ["invalid-input-response", "timeout-or-duplicate"]
  * }
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -87,7 +87,7 @@ public class GoogleResponse {
      * <p>
      * This field indicates whether the verification succeeded. When false, consult
      * the {@link #errorCodes} field for details about the failure reason.
-     * </p>
+
      */
     @JsonProperty("success")
     private boolean success;
@@ -97,7 +97,7 @@ public class GoogleResponse {
      * <p>
      * Format example: "2023-08-15T10:30:45Z". This field can be used to detect
      * token replay attacks by comparing against the current time.
-     * </p>
+
      */
     @JsonProperty("challenge_ts")
     private String challengeTs;
@@ -107,7 +107,7 @@ public class GoogleResponse {
      * <p>
      * This should match your application's expected domain. Verification should
      * fail if the hostname does not match to prevent token theft across domains.
-     * </p>
+
      */
     @JsonProperty("hostname")
     private String hostname;
@@ -118,7 +118,7 @@ public class GoogleResponse {
      * This field is only present for reCAPTCHA v3 responses. Scores closer to 1.0
      * indicate higher confidence that the user is legitimate. Typical threshold
      * values range from 0.5 to 0.7 depending on security requirements.
-     * </p>
+
      */
     @JsonProperty("score")
     private float score;
@@ -129,7 +129,7 @@ public class GoogleResponse {
      * This field is only present for reCAPTCHA v3 responses. Common action values
      * include "login", "submit", "register". This allows verification of the
      * context in which the reCAPTCHA was executed.
-     * </p>
+
      */
     @JsonProperty("action")
     private String action;
@@ -145,7 +145,7 @@ public class GoogleResponse {
      *   <li>invalid-input-secret: Secret key is invalid</li>
      * </ul>
      * This field is null when verification succeeds.
-     * </p>
+
      */
     @JsonProperty("error-codes")
     private ErrorCode[] errorCodes;
@@ -157,15 +157,15 @@ public class GoogleResponse {
      * a client-side problem such as {@link ErrorCode#InvalidResponse} or
      * {@link ErrorCode#MissingResponse}. This helps distinguish client token errors
      * from server configuration issues like invalid secret keys or server connectivity problems.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>
-     * if (!response.isSuccess() && response.hasClientError()) {
+     * if (!response.isSuccess() &amp;&amp; response.hasClientError()) {
      *     throw new ValidationException("Invalid reCAPTCHA token");
      * }
      * </pre>
-     * </p>
+
      *
      * @return true if error codes contain InvalidResponse or MissingResponse, false otherwise
      */
@@ -191,11 +191,11 @@ public class GoogleResponse {
      * This enum maps Google API error tokens (kebab-case strings) to Java enum constants
      * for type-safe error handling. The static lookup map maintained in this enum enables
      * O(1) normalization during JSON deserialization via the {@link #forValue(String)} method.
-     * </p>
+
      * <p>
      * Error codes are returned in the "error-codes" array field when verification fails.
      * Multiple error codes may be present in a single response.
-     * </p>
+
      *
      * @since 1.7.1
      */
@@ -205,7 +205,7 @@ public class GoogleResponse {
          * <p>
          * This indicates a server configuration error where the reCAPTCHA secret
          * was not included in the API call.
-         * </p>
+
          */
         MissingSecret,
         
@@ -214,7 +214,7 @@ public class GoogleResponse {
          * <p>
          * This indicates a server configuration error with incorrect credentials.
          * Verify that the secret key matches the site key configured in Google reCAPTCHA admin.
-         * </p>
+
          */
         InvalidSecret,
         
@@ -223,7 +223,7 @@ public class GoogleResponse {
          * <p>
          * This indicates the client failed to include the reCAPTCHA token in the request,
          * typically due to missing form data or incorrect parameter names.
-         * </p>
+
          */
         MissingResponse,
         
@@ -232,7 +232,7 @@ public class GoogleResponse {
          * <p>
          * This is the most common client error, indicating the token is malformed,
          * expired (tokens expire after 2 minutes), or has already been verified.
-         * </p>
+
          */
         InvalidResponse,
         
@@ -241,7 +241,7 @@ public class GoogleResponse {
          * <p>
          * This indicates incorrect request format or missing required parameters
          * in the API call to Google's verification endpoint.
-         * </p>
+
          */
         BadRequest,
         
@@ -251,7 +251,7 @@ public class GoogleResponse {
          * reCAPTCHA tokens can only be verified once. This error occurs when attempting
          * to verify the same token multiple times, or when the verification request
          * to Google's servers timed out.
-         * </p>
+
          */
         TimeoutOrDuplicate;
 
@@ -273,7 +273,7 @@ public class GoogleResponse {
          * error code strings from the Google API response to Java enum constants.
          * The {@link JsonCreator} annotation enables automatic invocation during
          * deserialization of the "error-codes" array.
-         * </p>
+
          *
          * @param value the error code string from Google API (e.g., "invalid-input-response")
          * @return the corresponding ErrorCode enum constant, or null if the value is unrecognized

@@ -41,19 +41,16 @@ import static com.openkoda.core.form.FormFieldDefinitionBuilderStart.DATALIST_PR
  * internationalization keys (label, placeholder, tooltip, etc.), rendering properties (CSS, content type, URL),
  * and bidirectional value conversion between DTO and entity representations. All field definitions are immutable
  * after construction to ensure thread-safety and consistent rendering behavior.
- * </p>
  * <p>
  * Field definitions support multiple binding modes: DTO-based (dto.fieldName), map-based (dto[fieldName]), and non-DTO (fieldName).
  * The class generates standard i18n keys following the pattern formName.fieldName.suffix (label, placeholder, tooltip, warning, alert, description).
  * Datalist identifiers are automatically prefixed to maintain consistency across the application.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
  * FrontendMappingFieldDefinition nameField = 
  *     FrontendMappingFieldDefinition.createFormFieldDefinition("userForm", "username", FieldType.text);
  * }</pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1

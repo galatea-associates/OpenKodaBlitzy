@@ -41,7 +41,7 @@ import static com.openkoda.controller.common.URLConstants.EXTERNAL_SESSION_ID;
  * requests, delegates to request-scoped {@link WebRequestIdHolder} bean and appends external session ID from 
  * request attributes. For cron jobs, retrieves job ID from SLF4J MDC (placed by {@link TrackJobAspect}). 
  * Thread-safe through use of ThreadLocal-based MDC and request-scoped beans.
- * </p>
+
  * <p>
  * <b>ID Resolution Algorithm:</b>
  * <ol>
@@ -50,18 +50,18 @@ import static com.openkoda.controller.common.URLConstants.EXTERNAL_SESSION_ID;
  * <li>If no: fall back to {@link #cronJobId()} which reads from MDC</li>
  * <li>Return empty string if no context available</li>
  * </ol>
- * </p>
+
  * <p>
  * <b>ID Format:</b> Generated IDs follow format: {@code yyyyMMddHHmmss-[8-char-alphanumeric-random]} 
  * (e.g., {@code 20240115143022-aB3dEf7H})
- * </p>
+
  * <p>
  * Example - automatic context-aware resolution:
  * <pre>{@code
  * String id = RequestIdHolder.getId();
  * // Returns web request ID if in HTTP context, job ID if in scheduled job, empty string otherwise
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -80,7 +80,7 @@ public class RequestIdHolder {
      * Value: {@code "jobId"}. Used by {@link TrackJobAspect} to inject job IDs into MDC before scheduled 
      * method execution. Public mutable field - can be changed but not recommended as it breaks integration 
      * with {@link TrackJobAspect}.
-     * </p>
+
      *
      * @see TrackJobAspect#setJobIdForThread()
      */
@@ -91,7 +91,7 @@ public class RequestIdHolder {
      * <p>
      * Pattern: {@code yyyyMMddHHmmss} (e.g., {@code 20240115143022}). Immutable and thread-safe per 
      * {@link DateTimeFormatter} contract.
-     * </p>
+
      */
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
@@ -103,11 +103,11 @@ public class RequestIdHolder {
      * {@link RandomStringUtils}. Thread-safe as {@link LocalDateTime} is immutable and 
      * {@link RandomStringUtils} uses secure random generation. IDs are unique with high probability 
      * due to timestamp precision and random suffix.
-     * </p>
+
      * <p>
      * Used by {@link WebRequestIdHolder} during bean initialization and {@link TrackJobAspect} 
      * before scheduled job execution.
-     * </p>
+
      *
      * @return unique correlation ID in format {@code yyyyMMddHHmmss-[8-char-random]} 
      *         (e.g., {@code 20240115143022-aB3dEf7H})
@@ -129,11 +129,11 @@ public class RequestIdHolder {
      * <li>Returns empty string if neither context available</li>
      * </ol>
      * Thread-safe through ThreadLocal-based mechanisms.
-     * </p>
+
      * <p>
      * Primary method for retrieving correlation ID in application code. Automatically adapts to 
      * execution context.
-     * </p>
+
      *
      * @return web request ID (with optional external session ID appended) if in HTTP context, 
      *         cron job ID if in scheduled job context, empty string if no context available
@@ -156,11 +156,11 @@ public class RequestIdHolder {
      * Reads job ID from SLF4J MDC using key {@link #PARAM_CRON_JOB_ID} ({@code "jobId"}). Returns 
      * empty string if MDC entry is null or empty. Job IDs are placed into MDC by {@link TrackJobAspect} 
      * before scheduled method execution. Thread-safe as MDC is ThreadLocal-based.
-     * </p>
+
      * <p>
      * Called by {@link #getId()} when no web request context exists. Public for direct access in 
      * specialized scenarios.
-     * </p>
+
      *
      * @return job correlation ID if present in MDC under key {@link #PARAM_CRON_JOB_ID}, 
      *         empty string otherwise

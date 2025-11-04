@@ -50,24 +50,24 @@ import static com.openkoda.core.service.event.ApplicationEvent.*;
  *   <li>Registration of persisted listeners from database</li>
  *   <li>Cluster-aware registration and unregistration</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Architecture:</b> Extends {@link ComponentProvider} for services and repositories access; implements
  * {@link HasSecurityRules} for privilege checking. The {@code @DependsOn} annotation ensures
  * {@link ApplicationEventService} is initialized before this service.
- * </p>
+
  * <p>
  * <b>State Management:</b> Maintains ordered LinkedHashMaps (events, consumers, consumersArray) and eventClasses list.
  * <b>WARNING:</b> Internal collections are NOT synchronized and unsafe for concurrent modifications.
- * </p>
+
  * <p>
  * <b>Reflection:</b> Uses reflection to discover {@link AbstractApplicationEvent} fields, resolve consumer methods,
  * and build metadata for UI dropdowns.
- * </p>
+
  * <p>
  * <b>Cluster Integration:</b> Cluster-aware methods delegate to {@link ClusterEventSenderService} in clustered mode;
  * direct registration in single-instance mode.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -77,7 +77,7 @@ import static com.openkoda.core.service.event.ApplicationEvent.*;
  * // Registration
  * eventListenerService.registerListenerClusterAware(listenerEntry);
  * }</pre>
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
@@ -96,10 +96,10 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Key format: 'EventClassName,EventName,EventObjectType' (comma-separated)
      * <br>Value format: 'EventName (ObjectType)' for display in UI
-     * </p>
+
      * <p>
      * <b>WARNING:</b> NOT synchronized; unsafe for concurrent modifications.
-     * </p>
+
      */
     private Map<Object, String> events = new LinkedHashMap<>();
     
@@ -108,10 +108,10 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Key: canonical method name
      * <br>Value: human-friendly description
-     * </p>
+
      * <p>
      * <b>WARNING:</b> NOT synchronized; unsafe for concurrent modifications.
-     * </p>
+
      */
     private Map<Object, String> consumers = new LinkedHashMap<>();
     
@@ -120,10 +120,10 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Key: canonical method name
      * <br>Value: Map with keys 'c' (category), 'm' (method), 'p' (parameters), 'd' (description), 'v' (verbose)
-     * </p>
+
      * <p>
      * <b>WARNING:</b> NOT synchronized; unsafe for concurrent modifications.
-     * </p>
+
      */
     private Map<Object, Map<String, String>> consumersArray = new LinkedHashMap<>();
 
@@ -146,10 +146,10 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Key format: serialized event metadata (EventClassName, EventName, EventObjectType)
      * <br>Value format: display label for UI dropdown
-     * </p>
+
      * <p>
      * <b>Note:</b> Immutable view recommended to prevent external modifications.
-     * </p>
+
      *
      * @return Map of event descriptors for UI dropdown rendering
      */
@@ -162,10 +162,10 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Key format: canonical method name (ConsumerClassName, ConsumerMethodName, ConsumerObjectType, parameter count)
      * <br>Value format: human-friendly description for UI dropdown
-     * </p>
+
      * <p>
      * <b>Note:</b> Immutable view recommended to prevent external modifications.
-     * </p>
+
      *
      * @return Map of consumer methods for UI dropdown rendering
      */
@@ -180,7 +180,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Typically used to register event descriptor classes (e.g., ApplicationEvent.class) containing
      * public static event field definitions.
-     * </p>
+
      *
      * @param events array of AbstractApplicationEvent subclasses (typically ApplicationEvent.class)
      * @param <T> event type extending AbstractApplicationEvent
@@ -195,7 +195,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * Registers single {@link AbstractApplicationEvent} subclass for reflective event discovery.
      * <p>
      * Used to register individual event descriptor classes containing public static event field definitions.
-     * </p>
+
      *
      * @param eventClass event descriptor class to register
      * @param <T> event type extending AbstractApplicationEvent
@@ -212,7 +212,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Typically invoked during application startup to restore event listener configurations.
      * Individual registration failures are logged but do not stop iteration.
-     * </p>
+
      *
      * @return true indicating operation completed (individual failures logged but non-blocking)
      * @see #registerListener(EventListenerEntry)
@@ -229,11 +229,11 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * <b>Reflection mechanism:</b> Uses {@link ParameterizedType} to extract generic type argument
      * (event payload type) for display labeling.
-     * </p>
+
      * <p>
      * Iterates registered eventClasses, extracts public fields, and builds composite keys containing
      * event class name, field name, and payload type.
-     * </p>
+
      *
      * @return events Map containing discovered event descriptors with display labels
      */
@@ -259,14 +259,14 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * canonical method names and descriptions.
      * <p>
      * Filters to consumers with non-null consumerMethod (reflective consumers); omits functional lambda consumers.
-     * </p>
+
      * <p>
      * Builds two internal maps:
      * <ul>
      *   <li><b>consumers:</b> canonical name → description</li>
      *   <li><b>consumersArray:</b> canonical name → detailed metadata Map</li>
      * </ul>
-     * </p>
+
      *
      * @return consumers Map containing discovered consumer methods
      */
@@ -296,7 +296,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Uses {@code Class.forName()} to load event descriptor class, then retrieves public static field
      * containing the event instance.
-     * </p>
+
      *
      * @param className fully-qualified class name (e.g., 'com.openkoda.core.service.event.ApplicationEvent')
      * @param fieldName static field name (e.g., 'USER_CREATED')
@@ -318,7 +318,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Iterates consumers registered for eventObjectClass and uses {@code verifyMethod()} to match
      * consumer class name, method name, event type, and static parameter count.
-     * </p>
+
      *
      * @param eventObjectClass event payload Class to match
      * @param consumerClassName fully-qualified consumer class name
@@ -343,10 +343,10 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * <b>Cluster behavior:</b> In cluster mode, delegates to {@link ClusterEventSenderService} to propagate
      * registration across nodes. In single-instance mode, registers directly via {@link #registerListener(EventListenerEntry)}.
-     * </p>
+
      * <p>
      * Publishes {@code EVENT_LISTENER_CREATED} event to notify application components of listener creation.
-     * </p>
+
      *
      * @param eventListenerEntry persisted listener configuration to register
      * @return true if registration successful
@@ -371,10 +371,10 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * <b>Cluster behavior:</b> In cluster mode, delegates to {@link ClusterEventSenderService} to propagate
      * unregistration across nodes. In single-instance mode, unregisters directly via {@link #unregisterEventListener(Long)}.
-     * </p>
+
      * <p>
      * Publishes {@code EVENT_LISTENER_DELETED} event to notify application components of listener deletion.
-     * </p>
+
      *
      * @param eventListenerEntry persisted listener configuration to unregister
      * @return true if unregistration successful
@@ -400,7 +400,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * <b>Cluster behavior:</b> In cluster mode, publishes RELOAD event via {@link ClusterEventSenderService}.
      * In single-instance mode, calls {@link #updateEventListener(EventListenerEntry)} directly.
-     * </p>
+
      *
      * @param eventListenerEntry updated listener configuration
      * @return true if update successful
@@ -422,10 +422,10 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Atomic update operation: unregisters existing listener via {@link #unregisterEventListener(Long)},
      * then registers updated configuration via {@link #registerListener(EventListenerEntry)}.
-     * </p>
+
      * <p>
      * Publishes {@code EVENT_LISTENER_MODIFIED} event to notify application components of configuration change.
-     * </p>
+
      *
      * @param eventListenerEntry updated listener configuration
      * @return true if re-registration successful
@@ -447,7 +447,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * <p>
      * Removes existing listener registration via {@link #unregisterEventListener(Long)}, then reloads
      * fresh configuration from database via {@link #loadFromDb(Long)}.
-     * </p>
+
      *
      * @param eventListenerEntryId database primary key of listener to reload
      * @return true if reload successful
@@ -465,7 +465,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * used by cluster event handlers.
      * <p>
      * Fetches listener entity from database, then registers via {@link #registerListener(EventListenerEntry)}.
-     * </p>
+
      *
      * @param eventListenerEntryId database primary key of listener to load
      * @return true if registration successful
@@ -489,7 +489,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      *   <li>Retrieves event descriptor via {@link #getEventByClassAndName(String, String)}</li>
      *   <li>Registers with ApplicationEventService including up to 4 static String parameters</li>
      * </ol>
-     * </p>
+
      *
      * @param eventListenerEntry listener configuration with event/consumer metadata and static parameters
      * @return true if successfully registered
@@ -533,7 +533,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * Counts consecutive non-null static data fields for consumer method parameter matching.
      * <p>
      * Examines staticData1 through staticData4 fields and returns count of non-null values (0-4).
-     * </p>
+
      *
      * @param listenerEntry listener configuration with staticData1-4 fields
      * @return count of non-null static data fields (0-4)
@@ -553,7 +553,7 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * Delegates to {@link ApplicationEventService#unregisterEventListener(Long)} to remove listener from registry.
      * <p>
      * Exceptions during unregistration are caught, logged, and return false.
-     * </p>
+
      *
      * @param eventListenerEntryId database primary key of listener to unregister
      * @return true if listener found and removed; false if not found or exception occurred
@@ -572,10 +572,10 @@ public class EventListenerService extends ComponentProvider implements HasSecuri
      * Returns consumer metadata Maps for detailed UI rendering.
      * <p>
      * Map structure: canonical method name → Map(category, method, parameters, description, verbose)
-     * </p>
+
      * <p>
      * <b>Note:</b> Immutable view recommended to prevent external modifications.
-     * </p>
+
      *
      * @return Map of consumer metadata Maps for detailed UI rendering
      */

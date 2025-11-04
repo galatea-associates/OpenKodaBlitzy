@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toMap;
  * from annotated Java methods. It uses the {@link Autocomplete} annotation to identify methods that
  * should be exposed in autocomplete contexts, and formats them with parameter names and documentation
  * for presentation to users.
- * </p>
+ * 
  * <p>
  * Reflection capabilities include:
  * <ul>
@@ -28,26 +28,26 @@ import static java.util.stream.Collectors.toMap;
  * <li>Retrieving documentation strings from annotation attributes</li>
  * <li>Supporting optional variable name prefixes for context-aware suggestions</li>
  * </ul>
- * </p>
+ * 
  * <p>
  * The autocomplete format consists of suggestion keys (method signatures) mapped to documentation
  * values, suitable for JSON serialization and consumption by web-based code editors. When duplicate
  * method signatures occur, the merge strategy prefers the first non-empty documentation string.
- * </p>
+ * 
  * <p>
  * Dependencies: Requires {@link ReflectionHelper} for reflection operations and relies on the
  * {@link Autocomplete} annotation contract for method discovery and documentation extraction.
- * </p>
+ * 
  * <p>
  * Thread-safety: This class is designed to be used as a Spring-managed singleton. The injected
  * {@link ReflectionHelper} must be thread-safe for safe concurrent use. Methods are stateless
  * and side-effect-free.
- * </p>
+ * 
  * <p>
  * Performance notes: Reflection operations are performed on-demand without caching. For performance-critical
  * scenarios, consider caching the results of {@link #getExposedMethods(String)} and
  * {@link #getSuggestionsAndDocumentation(Method[], String)}.
- * </p>
+ * 
  *
  * @see ReflectionHelper
  * @see Autocomplete
@@ -62,7 +62,7 @@ class GenericAutocompleteService extends ComponentProvider {
      * <p>
      * Provides method discovery, signature formatting with parameter names, and other
      * reflection-based operations required for autocomplete suggestion generation.
-     * </p>
+     * 
      */
     @Autowired
     private ReflectionHelper helper;
@@ -74,12 +74,12 @@ class GenericAutocompleteService extends ComponentProvider {
      * formatted suggestion strings (method signatures) and values are documentation strings
      * from the {@link Autocomplete} annotation. An optional variable name prefix can be
      * prepended to each suggestion for context-aware autocomplete.
-     * </p>
+     * 
      * <p>
      * When duplicate suggestion keys occur (multiple methods with identical signatures), the
      * merge function preserves the first non-empty documentation string, discarding empty
      * documentation in favor of meaningful content.
-     * </p>
+     * 
      *
      * @param methods array of methods to process for autocomplete suggestions
      * @param variableName optional prefix to prepend to each suggestion (e.g., "user" results
@@ -99,11 +99,11 @@ class GenericAutocompleteService extends ComponentProvider {
      * Generates a formatted method signature including parameter names using {@link ReflectionHelper}.
      * If a variable name is provided, it is prepended with a dot separator to create context-aware
      * suggestions like "user.getName()" or "organization.getProperties()".
-     * </p>
+     * 
      * <p>
      * Null-handling: When variableName is null, only the method signature is returned without
      * any prefix.
-     * </p>
+     * 
      *
      * @param variableName optional prefix to prepend (e.g., "user"), or null for no prefix
      * @param method the method to format as a suggestion
@@ -121,13 +121,13 @@ class GenericAutocompleteService extends ComponentProvider {
      * Extracts the {@code doc} attribute value from the method's {@code @Autocomplete} annotation.
      * This documentation string typically describes the method's purpose, behavior, or usage
      * examples for display in autocomplete tooltips or documentation panels.
-     * </p>
+     * 
      * <p>
      * Warning: This method assumes the {@link Autocomplete} annotation is present. A
      * {@link NullPointerException} will occur if called on a method without this annotation.
      * Callers should ensure methods are filtered by {@link #getExposedMethods(String)} before
      * invoking this method.
-     * </p>
+     * 
      *
      * @param method the method annotated with {@code @Autocomplete}
      * @return the documentation string from the annotation's {@code doc} attribute
@@ -145,11 +145,11 @@ class GenericAutocompleteService extends ComponentProvider {
      * class name, then filters to include only those methods annotated with {@code @Autocomplete}.
      * This filtering logic ensures only methods explicitly marked for autocomplete exposure are
      * included in suggestion lists.
-     * </p>
+     * 
      * <p>
      * The returned array contains methods suitable for passing to
      * {@link #getSuggestionsAndDocumentation(Method[], String)} for autocomplete generation.
-     * </p>
+     * 
      *
      * @param className fully-qualified class name (e.g., "com.openkoda.service.UserService")
      * @return array of methods from the class that are annotated with {@link Autocomplete},

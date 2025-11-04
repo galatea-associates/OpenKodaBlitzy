@@ -31,19 +31,19 @@ import jakarta.persistence.Entity;
  * Hybrid role type granting both global platform access and organization-specific permissions. Enables support staff or 
  * cross-tenant administrators to access system-wide functions while also operating within organizational contexts. 
  * Examples: Support Engineer with org access, Multi-tenant Account Manager. Less common than pure GlobalRole or OrganizationRole.
- * </p>
+ * 
  * <p>
  * <b>Inheritance:</b> Part of Role single-table inheritance hierarchy. @DiscriminatorValue('GLOBAL_ORG') identifies records 
  * as global-organization hybrid roles.
- * </p>
+ * 
  * <p>
  * <b>Authorization:</b> Privileges evaluated in both global context (no org requirement) and organizational context (with org ID). 
  * Dual-scope access pattern.
- * </p>
+ * 
  * <p>
  * <b>Use cases:</b> Customer support with system access, managed service providers, cross-organizational coordinators, 
  * platform support teams.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

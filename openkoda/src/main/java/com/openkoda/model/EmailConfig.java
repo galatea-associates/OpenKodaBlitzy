@@ -29,14 +29,14 @@ import jakarta.persistence.SequenceGenerator;
  * mail providers. Uses @DynamicUpdate for selective column updates. organizationId is non-updatable foreign key enforcing
  * one config per organization. Includes @Formula-derived referenceString for display and requiredReadPrivilege/requiredWritePrivilege
  * for access control.
- * </p>
+ * 
  * <p>
  * Multi-tenancy: Each organization can have distinct email provider configuration. organizationId enforced as non-updatable
  * to prevent config reassignment.
- * </p>
+ * 
  * <p>
  * Security: Stores sensitive credentials (mailgunApiKey, password). Should be encrypted at rest in production.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -105,26 +105,26 @@ public class EmailConfig extends TimestampedEntity implements AuditableEntity, E
     private Organization organization;
     
     /**
-     * @Formula-derived display string for UI reference.
+     * Database formula-derived display string for UI reference.
      */
     @Formula(DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA)
     private String referenceString;
     
     /**
      * Foreign key to organization entity.
-     * @Column(updatable=false) - Non-updatable after creation to prevent config migration between tenants.
+     * Non-updatable after creation (Column updatable=false) to prevent config migration between tenants.
      */
     @Column(nullable = true, updatable = false, name = ORGANIZATION_ID)
     private Long organizationId;
     
     /**
-     * @Formula-derived privilege token for email config read access control.
+     * Database formula-derived privilege token for email config read access control.
      */
     @Formula("( '" + PrivilegeNames._canReadBackend + "' )")
     private String requiredReadPrivilege;
 
     /**
-     * @Formula-derived privilege token for email config write access control.
+     * Database formula-derived privilege token for email config write access control.
      */
     @Formula("( '" + PrivilegeNames._canManageBackend + "' )")
     private String requiredWritePrivilege;

@@ -42,7 +42,7 @@ import static com.openkoda.service.export.FolderPathConstants.*;
  * <p>
  * This converter extends {@link AbstractEntityToYamlConverter} to provide specialized export logic for frontend resources
  * (HTML, JavaScript, CSS files) including both UI components and frontend resources. The converter produces two types of output:
- * </p>
+ * 
  * <ul>
  *   <li>Content files: HTML/JS/CSS source code at EXPORT_RESOURCES_PATH_ + exportPath + name + type.extension</li>
  *   <li>YAML configuration: metadata at EXPORT_CONFIG_PATH_ + exportPath + name + ".yaml"</li>
@@ -52,10 +52,10 @@ import static com.openkoda.service.export.FolderPathConstants.*;
  * {@link ControllerEndpointRepository} for all controller endpoints associated with the frontend resource and delegates
  * their packaging to {@link ControllerEndpointEntityToYamlConverter} <i>before</i> packaging the frontend resource itself.
  * This ensures complete export of the resource and its API endpoints in a single operation.
- * </p>
+ * 
  * <p>
  * <b>Export Path Construction:</b> The export path is computed based on resource type, access level, and organization:
- * </p>
+ * 
  * <pre>
  * exportPath = (resourceType == UI_COMPONENT ? UI_COMPONENT_ : FRONTEND_RESOURCE_) 
  *            + accessLevel.getPath() 
@@ -65,10 +65,10 @@ import static com.openkoda.service.export.FolderPathConstants.*;
  * <b>DTO Aggregation:</b> The {@link #getConversionDto(FrontendResource)} method embeds a list of
  * {@link ControllerEndpointConversionDto} objects within the {@link FrontendResourceConversionDto}, providing
  * a complete representation of the resource and its endpoints for YAML serialization.
- * </p>
+ * 
  * <p>
  * <b>Dependencies:</b> This converter requires two injected components:
- * </p>
+ * 
  * <ul>
  *   <li>{@link ControllerEndpointEntityToYamlConverter} - delegates controller endpoint packaging</li>
  *   <li>{@link ControllerEndpointRepository} - queries endpoints by frontend resource ID</li>
@@ -76,7 +76,7 @@ import static com.openkoda.service.export.FolderPathConstants.*;
  * <p>
  * <b>Thread Safety:</b> This class is a stateless Spring {@code @Component} and is safe for concurrent use
  * by multiple threads.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -101,17 +101,17 @@ public class FrontendResourceEntityToYamlConverter extends AbstractEntityToYamlC
      * Packages the frontend resource and all associated controller endpoints into the zip output stream.
      * <p>
      * This method overrides the base implementation to provide cascading export behavior. The algorithm:
-     * </p>
+     * 
      * <ol>
-     *   <li>Query {@link ControllerEndpointRepository#findByFrontendResourceId(Long)} to retrieve all controller endpoints
+     *   <li>Query {@link ControllerEndpointRepository#findByFrontendResourceId(long)} to retrieve all controller endpoints
      *       linked to this frontend resource</li>
-     *   <li>For each controller endpoint, delegate packaging to {@link ControllerEndpointEntityToYamlConverter#addToZip(ControllerEndpoint, ZipOutputStream, Set)}</li>
+     *   <li>For each controller endpoint, delegate packaging to {@link AbstractEntityToYamlConverter#addToZip(Object, ZipOutputStream, Set)}</li>
      *   <li>Call {@code super.addToZip(entity, zipOut, zipEntries)} to package the frontend resource itself</li>
      * </ol>
      * <p>
      * This ensures that all controller endpoints are exported alongside their frontend resource in a single operation,
      * maintaining referential integrity in the export package.
-     * </p>
+     * 
      *
      * @param entity the {@link FrontendResource} entity to export (must not be null)
      * @param zipOut the {@link ZipOutputStream} to write zip entries to (must not be null, managed by caller)
@@ -119,7 +119,7 @@ public class FrontendResourceEntityToYamlConverter extends AbstractEntityToYamlC
      * @return {@link FrontendResourceConversionDto} for the exported frontend resource
      * @throws NullPointerException if any parameter is null
      * @throws RuntimeException if zip I/O fails during packaging
-     * @see ControllerEndpointEntityToYamlConverter#addToZip(ControllerEndpoint, ZipOutputStream, Set)
+     * @see AbstractEntityToYamlConverter#addToZip(Object, ZipOutputStream, Set)
      */
     @Override
     public FrontendResourceConversionDto addToZip(FrontendResource entity, ZipOutputStream zipOut, Set<String> zipEntries){
@@ -135,10 +135,10 @@ public class FrontendResourceEntityToYamlConverter extends AbstractEntityToYamlC
      * Constructs the absolute file path for the frontend resource content file (HTML, JavaScript, or CSS).
      * <p>
      * The path pattern is: {@code EXPORT_RESOURCES_PATH_ + exportPath + name + type.extension}
-     * </p>
+     * 
      * <p>
      * The {@code exportPath} component is computed based on:
-     * </p>
+     * 
      * <ul>
      *   <li>Resource type: {@code UI_COMPONENT_} or {@code FRONTEND_RESOURCE_}</li>
      *   <li>Access level path: from {@code entity.getAccessLevel().getPath()}</li>
@@ -147,7 +147,7 @@ public class FrontendResourceEntityToYamlConverter extends AbstractEntityToYamlC
      * <p>
      * The file extension is determined by {@code entity.getType().getExtension()}, which returns values
      * like {@code .html}, {@code .js}, or {@code .css} based on the resource type.
-     * </p>
+     * 
      *
      * @param entity the {@link FrontendResource} entity to export (must not be null)
      * @return absolute filesystem path to the content file with appropriate extension
@@ -175,11 +175,11 @@ public class FrontendResourceEntityToYamlConverter extends AbstractEntityToYamlC
      * Constructs the absolute file path for the frontend resource YAML configuration file.
      * <p>
      * The path pattern is: {@code EXPORT_CONFIG_PATH_ + exportPath + name + ".yaml"}
-     * </p>
+     * 
      * <p>
      * The YAML file contains metadata about the frontend resource including access level, required privileges,
      * resource type, and references to associated controller endpoints.
-     * </p>
+     * 
      *
      * @param entity the {@link FrontendResource} entity to export (must not be null)
      * @return absolute filesystem path to the YAML configuration file
@@ -195,19 +195,19 @@ public class FrontendResourceEntityToYamlConverter extends AbstractEntityToYamlC
      * Creates a {@link FrontendResourceConversionDto} with embedded controller endpoint DTOs for YAML serialization.
      * <p>
      * <b>Critical Aggregation Logic:</b> This method performs the following steps:
-     * </p>
+     * 
      * <ol>
      *   <li>Calls {@link #populateDto(FrontendResource)} to create a DTO with basic frontend resource fields</li>
-     *   <li>Queries {@link ControllerEndpointRepository#findByFrontendResourceId(Long)} to retrieve all associated endpoints</li>
+     *   <li>Queries {@link ControllerEndpointRepository#findByFrontendResourceId(long)} to retrieve all associated endpoints</li>
      *   <li>Maps each {@link ControllerEndpoint} to {@link ControllerEndpointConversionDto} via
-     *       {@link ControllerEndpointEntityToYamlConverter#getConversionDto(ControllerEndpoint)}</li>
+     *       {@link com.openkoda.service.export.converter.impl.ControllerEndpointEntityToYamlConverter#getConversionDto(ControllerEndpoint)}</li>
      *   <li>Sets the list of controller endpoint DTOs on the frontend resource DTO</li>
      * </ol>
      * <p>
      * The populated DTO includes these fields from {@link #populateDto(FrontendResource)}:
-     * </p>
+     * 
      * <ul>
-     *   <li>{@code content} - relative resource path to content file (via {@link #getResourcePathToContentFile(FrontendResource)})</li>
+     *   <li>{@code content} - relative resource path to content file (via {@link AbstractEntityToYamlConverter#getResourcePathToContentFile(Object)})</li>
      *   <li>{@code includeInSitemap} - sitemap inclusion flag</li>
      *   <li>{@code name} - resource name</li>
      *   <li>{@code accessLevel} - access level enum</li>
@@ -238,7 +238,7 @@ public class FrontendResourceEntityToYamlConverter extends AbstractEntityToYamlC
      * Computes the export path prefix based on resource type, access level, and organization.
      * <p>
      * The path is constructed from three components:
-     * </p>
+     * 
      * <ol>
      *   <li><b>Resource type prefix:</b> {@code UI_COMPONENT_} if {@code resourceType == UI_COMPONENT}, 
      *       otherwise {@code FRONTEND_RESOURCE_}</li>
@@ -261,10 +261,10 @@ public class FrontendResourceEntityToYamlConverter extends AbstractEntityToYamlC
      * <p>
      * This method populates the basic fields of the DTO. The controller endpoints list is not set here;
      * it is populated separately by {@link #getConversionDto(FrontendResource)}.
-     * </p>
+     * 
      * <p>
      * Field mappings:
-     * </p>
+     * 
      * <ul>
      *   <li>{@code content} - relative resource path via {@link #getResourcePathToContentFile(FrontendResource)}</li>
      *   <li>{@code includeInSitemap} - from {@code entity.getIncludeInSitemap()}</li>

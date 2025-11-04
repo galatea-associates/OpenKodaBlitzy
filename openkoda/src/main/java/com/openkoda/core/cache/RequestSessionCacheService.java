@@ -23,36 +23,35 @@ import static com.openkoda.controller.common.URLConstants.EXTERNAL_SESSION_ID;
  * <p>
  * This service implements the tryGet(key, supplier) pattern: checks cache for existing result, executes 
  * supplier function if cache miss, stores result for subsequent requests within same session and timestamp.
- * </p>
+ * 
  * <p>
  * Cache lifecycle is bound to HTTP session ID and request timestamp. Entries persist across multiple 
  * requests within the same session ONLY when timestamp parameter matches exactly. This enables consistent 
  * data views within a single user interaction flow while preventing stale data across different operations.
- * </p>
+ * 
  * <p>
  * Cache structure maintains per-Class type buckets using ConcurrentHashMap. Each bucket contains 
  * session-keyed metadata entries with ReentrantReadWriteLock for write serialization. Type-safe 
  * access is provided through Class tokens as cache keys.
- * </p>
+ * 
  * <p>
  * Limitations: In-memory only cache, not distributed. No automatic eviction beyond timestamp equality 
  * checking. Entries persist until application restart and can cause memory retention in long-lived sessions.
  * Bucket creation in objectCache is not fully synchronized and can race under heavy concurrency.
- * </p>
+ * 
  * <p>
  * Thread-safety: Per-bucket ConcurrentHashMaps provide thread-safe reads. Write operations (cache population) 
  * are serialized via ReentrantReadWriteLock per bucket.
- * </p>
+ * 
  * <p>
  * Configuration is controlled by property ${cache.request.session.enabled:false}. When disabled, 
  * supplier functions execute directly with no caching overhead.
- * </p>
+ * 
  * <p>
  * Example usage:
  * <pre>{@code
  * MyData data = cache.tryGet(MyData.class, () -> expensiveOperation());
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -103,20 +102,20 @@ public class RequestSessionCacheService implements LoggingComponentWithRequestId
      * it checks the cache bucket for the given class type. If a cached entry exists with matching 
      * timestamp, returns the cached object. Otherwise, executes the producer supplier, stores the 
      * result, and returns it.
-     * </p>
+     * 
      * <p>
      * Behavior when no servlet request context is available (e.g., background job): supplier executes 
      * directly without caching, returning immediately.
-     * </p>
+     * 
      * <p>
      * Timestamp resolution: Reads timestamp from request parameter 'timestamp' or retrieves generated 
      * timestamp from request attribute 'rtimestamp' with SCOPE_REQUEST(0). If neither exists, generates 
      * new timestamp via System.currentTimeMillis() and stores in request attribute.
-     * </p>
+     * 
      * <p>
      * Locking behavior: Acquires write lock before cache access, releases in finally block. Logs error 
      * on unlock failure but continues execution.
-     * </p>
+     * 
      *
      * @param <T> Type of cached object
      * @param clazz Class token identifying cache bucket for type safety
@@ -175,7 +174,7 @@ public class RequestSessionCacheService implements LoggingComponentWithRequestId
      * Retrieves the current servlet request from Spring's RequestContextHolder and delegates to 
      * the overloaded method for metadata construction. Returns null if no request context is 
      * available, which occurs in background jobs or non-web contexts.
-     * </p>
+     * 
      *
      * @param <T> Type of cached payload
      * @return Metadata for current HTTP request, or null if no request context available
@@ -196,12 +195,12 @@ public class RequestSessionCacheService implements LoggingComponentWithRequestId
      * Reads 'timestamp' parameter from request, falls back to 'rtimestamp' request attribute if parameter 
      * is blank. If both are missing, generates new timestamp via System.currentTimeMillis() and stores 
      * in 'rtimestamp' request attribute with scope SCOPE_REQUEST(0).
-     * </p>
+     * 
      * <p>
      * Reads 'widget' parameter with case-insensitive TRUE value check to set isWidget flag. Reads 
      * EXTERNAL_SESSION_ID parameter for external session tracking. Retrieves session ID from 
      * HttpSession.getId().
-     * </p>
+     * 
      *
      * @param <T> Type of cached payload
      * @param request Current HTTP servlet request containing parameters and session

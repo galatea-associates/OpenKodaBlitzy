@@ -31,17 +31,17 @@ import com.openkoda.dto.OrganizationRelatedObject;
  * Entities implementing this interface belong to a specific tenant (organization) and are automatically filtered by
  * organization context in queries. This pattern enables secure multi-tenancy where each organization's data is
  * logically separated from other tenants' data.
- * </p>
+ * 
  * 
  * <p>
  * <b>Primary Use Case:</b> All domain entities that represent tenant-specific data should implement this interface.
  * The organizationId property serves as the tenant discriminator, ensuring that data access operations are
  * automatically scoped to the current user's organization context.
- * </p>
+ * 
  * 
  * <p>
  * <b>Inheritance Hierarchy:</b>
- * </p>
+ * 
  * <ul>
  *   <li>Extends {@link OrganizationRelatedObject} - Provides DTO contract for organization association</li>
  *   <li>Extends {@link LongIdEntity} - Provides Long-based primary key contract</li>
@@ -51,19 +51,19 @@ import com.openkoda.dto.OrganizationRelatedObject;
  * <b>Typical Implementation:</b> Most domain entities extend {@link OpenkodaEntity} which provides the base
  * implementation of this interface, including the organizationId field mapped as a foreign key to the
  * Organization table. The organizationId should be immutable once set (using {@code updatable=false}).
- * </p>
+ * 
  * 
  * <p>
- * <b>Tenant Isolation Pattern:</b> The {@link com.openkoda.core.repository.common.SecureRepository} pattern
+ * <b>Tenant Isolation Pattern:</b> The {@link com.openkoda.repository.SecureRepository} pattern
  * automatically enforces organization-scoped queries, filtering results based on the current user's organization
  * context. This ensures that users can only access data belonging to their organization.
- * </p>
+ * 
  * 
  * <p>
  * <b>Non-Organization-Related Entities:</b> The following entities are global (cross-tenant) and do NOT implement
  * this interface: User, Token, Role, ReadNotification, FacebookUser, GoogleUser, LDAPUser, LoginAndPassword.
  * These entities are shared across organizations or manage cross-tenant concerns.
- * </p>
+ * 
  * 
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -72,7 +72,7 @@ import com.openkoda.dto.OrganizationRelatedObject;
  * @see LongIdEntity
  * @see OpenkodaEntity
  * @see com.openkoda.model.Organization
- * @see com.openkoda.core.repository.common.SecureRepository
+ * @see com.openkoda.repository.SecureRepository
  */
 public interface OrganizationRelatedEntity extends OrganizationRelatedObject, LongIdEntity {
     /**
@@ -82,13 +82,13 @@ public interface OrganizationRelatedEntity extends OrganizationRelatedObject, Lo
      * This property serves as the tenant discriminator in OpenKoda's multi-tenant architecture, enabling
      * data isolation between organizations. All queries on organization-related entities should filter
      * by this organizationId to ensure tenant data separation.
-     * </p>
+     * 
      * 
      * <p>
      * The organizationId is typically implemented as a foreign key to the Organization entity and should
-     * be immutable once set (using {@code @Column(updatable=false)}). The {@link com.openkoda.core.repository.common.SecureRepository}
+     * be immutable once set (using {@code @Column(updatable=false)}). The {@link com.openkoda.repository.SecureRepository}
      * pattern automatically enforces organization-scoped queries using this field.
-     * </p>
+     * 
      *
      * @return the organization ID (foreign key to Organization entity), may be null for global entities
      *         that are not yet associated with a specific organization
@@ -102,13 +102,13 @@ public interface OrganizationRelatedEntity extends OrganizationRelatedObject, Lo
      * <b>Implementation Requirement:</b> This method must be implemented using {@link org.hibernate.annotations.Formula}
      * annotation to compute the value at the database level. The reference string is typically non-insertable and
      * non-updatable, as it's derived from other entity properties.
-     * </p>
+     * 
      * 
      * <p>
      * The standard implementation uses {@link com.openkoda.model.common.ModelConstants#DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA}
      * which generates a string combining the entity class name and ID. This provides a human-readable reference
      * that can be used in logs, audit trails, and UI displays.
-     * </p>
+     * 
      * 
      * <p>
      * Example implementation:
@@ -116,7 +116,7 @@ public interface OrganizationRelatedEntity extends OrganizationRelatedObject, Lo
      * {@code @Formula(ModelConstants.DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA)}
      * private String referenceString;
      * </pre>
-     * </p>
+     * 
      *
      * @return computed reference string combining entity class name and ID, typically in format "EntityName[id]"
      * @see org.hibernate.annotations.Formula

@@ -27,9 +27,9 @@ import java.util.regex.Pattern;
  * This service executes database schema upgrades during OpenKoda bootstrap by parsing versioned SQL migration scripts,
  * tracking applied migrations in the {@code db_version} table, and ensuring idempotent execution with transactional safety.
  * Each migration is executed exactly once and persisted to prevent duplicate application across application restarts.
- * </p>
  * 
- * <h3>Bootstrap DB Migration Workflow (7-step process)</h3>
+ * 
+ * <b>Bootstrap DB Migration Workflow (7-step process)</b>
  * <ol>
  *   <li>Read application version from META-INF/MANIFEST.MF (Implementation-Version attribute)</li>
  *   <li>Query current database version from db_version table (highest successfully applied version)</li>
@@ -40,10 +40,10 @@ import java.util.regex.Pattern;
  *   <li>Persist migration result to db_version table (done=true on success, done=false with error note on failure)</li>
  * </ol>
  * 
- * <h3>Version Marker Format</h3>
+ * <b>Version Marker Format</b>
  * <p>
  * Migration scripts use special comment markers to delimit version blocks:
- * </p>
+ * 
  * <pre>
  * -- @version: 1.7.1.0
  * ALTER TABLE organization ADD COLUMN new_field VARCHAR(255);
@@ -53,34 +53,34 @@ import java.util.regex.Pattern;
  * </pre>
  * <p>
  * Optional {@code -- @init} marker indicates migration should run during fresh database initialization.
- * </p>
  * 
- * <h3>Transaction Boundaries</h3>
+ * 
+ * <b>Transaction Boundaries</b>
  * <p>
  * Each migration version executes within its own transaction (REQUIRES_NEW isolation level).
  * On SQLException during migration execution:
- * </p>
+ * 
  * <ul>
  *   <li>Transaction is rolled back automatically</li>
  *   <li>Migration marked as done=false with error message stored in note column</li>
  *   <li>Operator prompted to proceed or halt via {@link #proceedOnError(DbVersion)}</li>
  * </ul>
  * 
- * <h3>proceedOnError Operator Behavior</h3>
+ * <b>proceedOnError Operator Behavior</b>
  * <p>
  * When migration fails, operator interaction determines next action:
- * </p>
+ * 
  * <ul>
  *   <li><b>Interactive mode</b>: Prompts "Proceed with startup? (y/n)" via System.in</li>
  *   <li><b>Force mode</b>: Automatically proceeds (configured via isForce flag)</li>
  *   <li><b>Operator declines</b>: Calls System.exit(0) to halt application startup</li>
  * </ul>
  * 
- * <h3>Migration Script Structure</h3>
+ * <b>Migration Script Structure</b>
  * <p>
  * Default script location: {@code /migration/core_upgrade.sql} (configurable via upgrade.db.file property).
  * Script format requirements:
- * </p>
+ * 
  * <ul>
  *   <li>Version markers must match pattern: {@code ^--\s*@version\s*:\s*(\d+)\.(\d+)\.(\d+)\.(\d+).*}</li>
  *   <li>SQL statements between version markers belong to that version's migration</li>
@@ -88,11 +88,12 @@ import java.util.regex.Pattern;
  *   <li>Blank lines are ignored</li>
  * </ul>
  * 
- * <h3>db_version Table Schema (5 key columns)</h3>
+ * <b>db_version Table Schema (5 key columns)</b>
  * <p>
  * Migration execution history persisted to {@code public.db_version} table:
- * </p>
+ * 
  * <table border="1">
+ *   <caption>Database Version Table Schema</caption>
  *   <tr><th>Column</th><th>Type</th><th>Description</th></tr>
  *   <tr><td>major</td><td>int4</td><td>Major version number (e.g., 1 in 1.7.1.0)</td></tr>
  *   <tr><td>minor</td><td>int4</td><td>Minor version number (e.g., 7 in 1.7.1.0)</td></tr>
@@ -103,23 +104,23 @@ import java.util.regex.Pattern;
  * </table>
  * <p>
  * Table created automatically via {@link #DV_VERSION_DDL} if not exists during first migration.
- * </p>
  * 
- * <h3>Version Comparison Logic (Semantic Versioning)</h3>
+ * 
+ * <b>Version Comparison Logic (Semantic Versioning)</b>
  * <p>
  * Versions compared using numeric hash: {@code major * 10000000 + minor * 100000 + build * 100 + revision}.
- * This ensures correct ordering: 1.7.1.0 < 1.7.2.0 < 1.8.0.0 < 2.0.0.0.
+ * This ensures correct ordering: 1.7.1.0 &lt; 1.7.2.0 &lt; 1.8.0.0 &lt; 2.0.0.0.
  * Implemented via {@link DbVersion#hashCode()} and {@link DbVersion#compareTo(DbVersion)}.
- * </p>
  * 
- * <h3>Usage Example - Bootstrap Migration</h3>
+ * 
+ * <b>Usage Example - Bootstrap Migration</b>
  * <pre>
  * DbVersionService service = new DbVersionService();
  * Connection con = dataSource.getConnection();
  * service.tryUpgade(con); // Executes all pending migrations
  * </pre>
  * 
- * <h3>Usage Example - SQL Migration Script</h3>
+ * <b>Usage Example - SQL Migration Script</b>
  * <pre>
  * -- @version: 1.7.1.0
  * -- @init
@@ -129,19 +130,19 @@ import java.util.regex.Pattern;
  * ALTER TABLE example ADD COLUMN name VARCHAR(255);
  * </pre>
  * 
- * <h3>Dependencies and Thread-Safety</h3>
+ * <b>Dependencies and Thread-Safety</b>
  * <p>
  * Dependencies: {@link DbVersionRepository} for JPA-based version queries, Spring @Value for configuration injection.
  * Thread-safety: Service is NOT thread-safe. Migrations executed serially during single-threaded application bootstrap.
  * Concurrent execution would cause duplicate migration attempts and transaction conflicts.
- * </p>
  * 
- * <h3>Comparison with Flyway</h3>
+ * 
+ * <b>Comparison with Flyway</b>
  * <p>
  * Unlike Flyway, this service provides interactive failure handling via proceedOnError operator prompts.
  * Flyway enforces strict migration immutability; this service allows operator discretion to proceed after failures.
  * Both track applied migrations in dedicated version table (Flyway: flyway_schema_history, OpenKoda: db_version).
- * </p>
+ * 
  * 
  * @author OpenKoda Team
  * @version 1.7.1
@@ -384,8 +385,8 @@ public class DbVersionService {
      * Query returns rows in ascending version order (oldest first).
      * 
      * @param con Database connection for querying version history (must be open and valid)
-     * @param appVersion Application version acting as upper bound filter (versions >= appVersion excluded from results)
-     * @return List of all successfully applied DbVersion objects where done=true and version < appVersion, ordered by version number ascending, empty list if none found
+     * @param appVersion Application version acting as upper bound filter (versions &gt;= appVersion excluded from results)
+     * @return List of all successfully applied DbVersion objects where done=true and version &lt; appVersion, ordered by version number ascending, empty list if none found
      * @throws SQLException if query execution fails or connection is invalid
      */
     public List<DbVersion> findAllInstalled(Connection con, DbVersion appVersion) throws SQLException {

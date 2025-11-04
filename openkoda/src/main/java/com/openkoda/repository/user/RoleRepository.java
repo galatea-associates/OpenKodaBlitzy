@@ -40,7 +40,7 @@ import java.util.List;
  * to provide repository operations for the Role entity hierarchy. Role uses single-table inheritance
  * with type discriminator to support GlobalRole, OrganizationRole, and GlobalOrganizationRole subtypes
  * stored in the same 'roles' table.
- * </p>
+
  * <p>
  * Key features:
  * <ul>
@@ -50,11 +50,11 @@ import java.util.List;
  *   <li>Native SQL {@link #renamePrivilege(String, String)} for bulk privilege renaming via string replacement</li>
  *   <li>Privileges stored as joined string, transient privilegesSet via PrivilegeHelper serialization</li>
  * </ul>
- * </p>
+
  * <p>
  * Note: Native SQL operations bypass JPA lifecycle and rely on database string replacement semantics.
  * Privileges column format: '(PRIVILEGE_NAME_1)(PRIVILEGE_NAME_2)(PRIVILEGE_NAME_3)'.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -75,7 +75,7 @@ public interface RoleRepository extends UnsecuredFunctionalRepositoryWithLongId<
      * Uses Spring Data query derivation to search single-table inheritance hierarchy.
      * Returns any Role subtype (GlobalRole, OrganizationRole, GlobalOrganizationRole) matching name.
      * Name comparison is case-sensitive.
-     * </p>
+
      *
      * @param name Unique role name to search for, must not be null
      * @return Role (or subtype) with matching name, null if not found
@@ -87,7 +87,7 @@ public interface RoleRepository extends UnsecuredFunctionalRepositoryWithLongId<
      * <p>
      * This guarded bulk delete operation executes JPQL:
      * {@code DELETE FROM Role WHERE id = :id AND removable = true AND CHECK_CAN_MANAGE_ROLES_JPQL}
-     * </p>
+
      * <p>
      * Security enforcement:
      * <ul>
@@ -96,11 +96,11 @@ public interface RoleRepository extends UnsecuredFunctionalRepositoryWithLongId<
      *   <li>Returns 0 if role not found, not removable, or user lacks privilege</li>
      *   <li>Annotated with @Modifying and @Transactional for write operation lifecycle</li>
      * </ul>
-     * </p>
+
      * <p>
      * Note: Bulk delete bypasses JPA entity lifecycle callbacks (no @PreRemove execution).
      * UserRole associations should be handled separately via cascade or explicit deletion.
-     * </p>
+
      *
      * @param aLong Role entity ID to delete, must not be null
      * @return Number of deleted rows (0 or 1)
@@ -116,11 +116,11 @@ public interface RoleRepository extends UnsecuredFunctionalRepositoryWithLongId<
      * <p>
      * Executes JPQL query: {@code SELECT gor FROM GlobalOrganizationRole gor}
      * Filters single-table inheritance to return only GlobalOrganizationRole type discriminator rows.
-     * </p>
+
      * <p>
      * Note: Despite method name "findAllGlobalRoles", this returns GlobalOrganizationRole subtype,
      * not GlobalRole. Used for cross-tenant role enumeration.
-     * </p>
+
      *
      * @return List of all GlobalOrganizationRole entities, empty list if none exist
      */
@@ -132,7 +132,7 @@ public interface RoleRepository extends UnsecuredFunctionalRepositoryWithLongId<
      * <p>
      * Executes native SQL:
      * {@code UPDATE roles SET privileges = replace(privileges, '(:oldName)', '(:newName)')}
-     * </p>
+
      * <p>
      * Critical behavior notes:
      * <ul>
@@ -143,11 +143,11 @@ public interface RoleRepository extends UnsecuredFunctionalRepositoryWithLongId<
      *   <li>Database-specific - uses PostgreSQL/MySQL REPLACE syntax</li>
      *   <li>No automatic cache invalidation - roles must be reloaded from database</li>
      * </ul>
-     * </p>
+
      * <p>
      * Use case: System-wide privilege refactoring when renaming canonical privilege names.
      * Should be used sparingly and followed by cache flush.
-     * </p>
+
      *
      * @param oldName Current privilege name to replace (e.g., 'OLD_PRIVILEGE'), must not be null
      * @param newName New privilege name to substitute (e.g., 'NEW_PRIVILEGE'), must not be null

@@ -29,13 +29,13 @@ package com.openkoda.form;
  * entity properties and DTO fields, ensuring uniform binding between request parameters,
  * form objects, and domain models. These constants are referenced in form {@code populateFrom()}
  * and {@code populateTo()} mapping logic and in {@code FrontendMappingDefinition} implementations.
- * </p>
+ * 
  * <p>
  * Constants are organized by functional domain: user management, organization settings,
  * frontend resources, event scheduling, email configuration, third-party integrations,
  * and billing/subscription management. Using these constants instead of string literals
  * prevents typos and enables refactoring support across the codebase.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

@@ -52,7 +52,7 @@ import static com.openkoda.controller.common.PageAttributes.*;
  * <p>
  * This component creates isolated GraalVM Context instances for evaluating JavaScript code that defines Flow pipelines.
  * Each evaluation occurs in a fresh Context with the following capabilities:
- * </p>
+
  * <ul>
  *   <li>Binds Java service objects (LiveComponentProvider) to JavaScript namespace</li>
  *   <li>Binds utility functions (date/time parsing, JSON, URI encoding, geometry parsing) as JavaScript functions</li>
@@ -64,18 +64,18 @@ import static com.openkoda.controller.common.PageAttributes.*;
  * <p>
  * <strong>Security Note:</strong> Context is configured with allowAllAccess=true and allowHostClassLookup=true.
  * JavaScript code has broad host access, so ensure script sources are trusted.
- * </p>
+
  * <p>
  * <strong>Thread-safety Note:</strong> Context instances are not thread-safe. This component creates a fresh
  * Context per evaluation call to ensure thread safety.
- * </p>
+
  * <p>
  * Example JavaScript flow:
  * <pre>{@code
  * flow.thenSet("x", a -> 5)
  *     .thenSet("result", a -> a.result("x") * 2)
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -94,7 +94,7 @@ public class JsFlowRunner {
      * Default Context.Builder pre-configured with JavaScript engine and permissive access policies.
      * <p>
      * Configuration includes:
-     * </p>
+
      * <ul>
      *   <li>allowHostAccess=ALL - JavaScript can access Java objects</li>
      *   <li>allowAllAccess=true - Enables all polyglot capabilities</li>
@@ -103,7 +103,7 @@ public class JsFlowRunner {
      * </ul>
      * <p>
      * <strong>Note:</strong> Currently unused, as evaluateJsFlow creates a fresh Context.Builder per call.
-     * </p>
+
      */
     private Context.Builder contextBuilder = Context.newBuilder("js")
             .allowHostAccess(HostAccess.ALL)
@@ -115,7 +115,7 @@ public class JsFlowRunner {
      * LiveComponentProvider aggregating service beans for JavaScript flow access.
      * <p>
      * Injected and bound to JavaScript context as utility function sources, providing:
-     * </p>
+
      * <ul>
      *   <li>util.dateNow() - Current LocalDate</li>
      *   <li>util.dateTimeNow() - Current LocalDateTime</li>
@@ -126,7 +126,7 @@ public class JsFlowRunner {
      * </ul>
      * <p>
      * Used in both preview and live mode flows.
-     * </p>
+
      */
     @Inject
     private LiveComponentProvider componentProvider;
@@ -136,11 +136,11 @@ public class JsFlowRunner {
      * <p>
      * Provides a limited set of services for safe preview execution in form designers,
      * preventing unintended side effects during flow testing.
-     * </p>
+
      * <p>
      * <strong>Note:</strong> Required=false - may be null if preview mode is not configured.
      * Used exclusively by {@link #runPreviewFlow}.
-     * </p>
+
      */
     @Autowired(required = false)
     private PreviewComponentProviderInterface previewComponentProviderInterface;
@@ -150,7 +150,7 @@ public class JsFlowRunner {
      * <p>
      * <strong>Note:</strong> Currently unused in this class but available for potential
      * future direct script loading from database.
-     * </p>
+
      */
     @Autowired
     private SecureServerJsRepository serverJsRepository;
@@ -160,7 +160,7 @@ public class JsFlowRunner {
      * <p>
      * <strong>Note:</strong> Currently unused in this class but available for potential
      * future script introspection and validation capabilities.
-     * </p>
+
      */
     @Autowired
     private JsParser jsParser;
@@ -171,11 +171,11 @@ public class JsFlowRunner {
      * Enables JavaScript imports by resolving import paths to ServerJs entities.
      * Example: {@code import {fn} from 'path'} resolves via FileSystemImpl to
      * stored ServerJs code.
-     * </p>
+
      * <p>
      * Used in evaluateJsFlow with Context.Builder.fileSystem(fileSystemImp)
      * and allowIO=true configuration.
-     * </p>
+
      */
     @Inject
     private FileSystemImpl fileSystemImp;
@@ -184,7 +184,7 @@ public class JsFlowRunner {
      * Creates GraalVM Context, binds service objects and utility functions, evaluates JavaScript code, returns Flow instance.
      * <p>
      * This method performs the following steps:
-     * </p>
+
      * <ol>
      *   <li>Creates Context with fileSystemImp (for JavaScript imports)</li>
      *   <li>Enables allowIO=true, allowHostAccess=ALL, allowAllAccess=true, allowHostClassLoading=true</li>
@@ -196,7 +196,7 @@ public class JsFlowRunner {
      * </ol>
      * <p>
      * Example transformation:
-     * </p>
+
      * <pre>{@code
      * Input:  "flow.thenSet(\"x\", a -> 5)"
      * Output: "let result = flow.thenSet(\"x\", a -> 5);\nresult"
@@ -204,7 +204,7 @@ public class JsFlowRunner {
      * <p>
      * <strong>Note:</strong> Context lifecycle - created per call, used once, eligible for GC after return.
      * This ensures thread safety and prevents context pollution between evaluations.
-     * </p>
+
      *
      * @param jsFlow JavaScript source code to evaluate (Flow definition)
      * @param initializedFlow Initial Flow instance bound to 'flow' variable in JavaScript
@@ -254,7 +254,7 @@ public class JsFlowRunner {
      * <p>
      * Simple delegation to Flow.execute(PageModelMap), included for clarity
      * and potential interception point for logging or monitoring.
-     * </p>
+
      *
      * @param f Flow to execute
      * @param initialModel Initial PageModelMap with existing attributes
@@ -271,11 +271,11 @@ public class JsFlowRunner {
      * sets organizationEntityId and userEntityId, creates JsResultAndModel, calls evaluateJsFlow to compile
      * JavaScript, and executes Flow via executeFlow. Catches PolyglotException and returns PageModelMap
      * with 'errorMessage' attribute instead of propagating the exception.
-     * </p>
+
      * <p>
      * <strong>Use case:</strong> Preview mode for form designers - show errors instead of failing controller execution.
      * This enables developers to test flows safely without impacting production systems.
-     * </p>
+
      *
      * @param jsFlow JavaScript source code defining flow logic
      * @param params Request parameters Map (String to String)
@@ -309,11 +309,11 @@ public class JsFlowRunner {
      * sets organizationEntityId and userEntityId, creates JsResultAndModel, calls evaluateJsFlow to compile
      * JavaScript, and executes Flow via executeFlow. Does NOT catch PolyglotException - allows exception
      * to propagate to controller error handling.
-     * </p>
+
      * <p>
      * <strong>Use case:</strong> Production mode - failures are logged and handled by Spring error handling.
      * Provides full access to services and allows proper error propagation for monitoring and alerting.
-     * </p>
+
      *
      * @param jsFlow JavaScript source code defining flow logic
      * @param params Request parameters Map (String to String)

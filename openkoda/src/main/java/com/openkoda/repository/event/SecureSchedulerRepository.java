@@ -31,20 +31,20 @@ import static com.openkoda.controller.common.URLConstants.SCHEDULER;
 /**
  * Secure repository for managing {@link Scheduler} entities with privilege-based access control and full-text search capabilities.
  * <p>
- * This interface extends {@link SecureRepository} to provide privilege-enforced access to scheduler records that manage cron-based
+ * This interface extends {@link com.openkoda.repository.SecureRepository} to provide privilege-enforced access to scheduler records that manage cron-based
  * job scheduling and scheduled event emissions. All repository operations automatically verify user privileges before granting access
  * to scheduler entities, ensuring secure multi-tenant data isolation.
- * </p>
+ * 
  * <p>
  * The repository integrates with the OpenKoda job scheduling framework ({@code JobsScheduler}) to support background task execution,
  * recurring event emissions, and time-based workflow automation. Schedulers define cron expressions that determine when events
  * should be emitted into the event-driven processing pipeline.
- * </p>
+ * 
  * <p>
  * <b>Search and Indexing</b>
  * <br>
  * The {@link SearchableRepositoryMetadata} annotation configures advanced search capabilities:
- * </p>
+ * 
  * <ul>
  * <li><b>Description Formula:</b> Generates user-friendly display text combining the cron expression and event data:
  * {@code (''|| cron_expression || ', Event data = "' || event_data || '"')}. This formula creates readable scheduler
@@ -56,7 +56,7 @@ import static com.openkoda.controller.common.URLConstants.SCHEDULER;
  * </ul>
  * <p>
  * <b>Usage Patterns:</b>
- * </p>
+ * 
  * <pre>
  * SecureSchedulerRepository repo = ...;
  * Optional&lt;Scheduler&gt; scheduler = repo.findOne(schedulerId); // privilege-checked

@@ -40,13 +40,13 @@ import static com.openkoda.core.service.event.ApplicationEvent.BACKUP_FILE_COPIE
  * <p>
  * Backup is done by jenkins user performing unix commands in the directory where currently running application jar is
  * placed.
- * </p>
+
  * <p>
  * This service orchestrates scheduled backup signals via {@link #doFullBackup(ScheduledSchedulerDto)} which checks
  * {@code ScheduledSchedulerDto.eventData} for the "backup" keyword. When detected, it delegates archive creation to
  * {@link BackupWriter}, and emits {@link com.openkoda.core.service.event.ApplicationEvent#BACKUP_CREATED} and
  * {@link com.openkoda.core.service.event.ApplicationEvent#BACKUP_FILE_COPIED} events on success.
- * </p>
+
  * <p>
  * Full backup performs:
  * <ul>
@@ -57,20 +57,20 @@ import static com.openkoda.core.service.event.ApplicationEvent.BACKUP_FILE_COPIE
  *   <li>encryption of tar archive with gpg</li>
  *   <li>emission of BACKUP_CREATED event</li>
  * </ul>
- * </p>
+
  * <p>
  * Configuration is controlled via the {@code backup.options} property which accepts comma-separated
  * {@link BackupOption} enum values (defaults to BACKUP_DATABASE,BACKUP_PROPERTIES).
- * </p>
+
  * <p>
  * This service extends {@link ComponentProvider} for access to services and repositories aggregators.
- * </p>
+
  * <p>
  * <b>Note:</b> Platform command execution requires jenkins user or equivalent with filesystem and database access.
- * </p>
+
  * <p>
  * Usage example: Typically invoked by SchedulerService on cron trigger with eventData="backup"
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-03-26
@@ -117,11 +117,11 @@ public class BackupService extends ComponentProvider {
      * <p>
      * Scheduled event consumer that checks {@code eventParameter.eventData} for the {@link #BACKUP} keyword
      * (case-insensitive). When matched, delegates to {@link #doBackup()} for backup execution.
-     * </p>
+
      * <p>
      * Returns {@code false} if not a backup event or if backup fails.
      * Returns {@code true} on successful backup and BACKUP_CREATED event emission.
-     * </p>
+
      *
      * @param eventParameter scheduler event DTO containing eventData field
      * @return {@code true} if backup event and backup succeeds, {@code false} otherwise
@@ -134,7 +134,7 @@ public class BackupService extends ComponentProvider {
      * Private guard checking if event parameter contains "backup" in eventData field.
      * <p>
      * Performs lowercase comparison to handle case-insensitive matching. Handles null parameter safely.
-     * </p>
+
      *
      * @param eventParameter scheduler event DTO to check, may be null
      * @return {@code true} if eventData contains "backup" (case-insensitive), {@code false} otherwise
@@ -148,7 +148,7 @@ public class BackupService extends ComponentProvider {
      * <p>
      * Invokes {@link BackupWriter#doBackup(List)} with configured {@link #backupOptions}.
      * On success, emits BACKUP_CREATED event with {@link File} payload via {@link #emitBackupCreated()}.
-     * </p>
+
      *
      * @return {@code true} if backup succeeds, {@code false} on failure
      */
@@ -167,7 +167,7 @@ public class BackupService extends ComponentProvider {
      * <p>
      * Publishes BACKUP_CREATED event with tar archive {@link File} payload to ApplicationEventService
      * for downstream processing (e.g., remote copy, notification).
-     * </p>
+
      */
     private void emitBackupCreated() {
         debug("[emitBackupCreated]");
@@ -178,10 +178,10 @@ public class BackupService extends ComponentProvider {
     /**
      * Consumer for copying backup archive to remote host.
      * <p>
-     * Event consumer for remote backup copy via SCP. Delegates to {@link BackupWriter#copyBackupFile(List, File)}
+     * Event consumer for remote backup copy via SCP. Delegates to {@link BackupWriter#copyBackupFile(Collection, File)}
      * for secure copy execution. On success, emits BACKUP_FILE_COPIED event with target path String
      * via {@link #emitBackupFileCopied()}.
-     * </p>
+
      *
      * @param file backup archive File to copy to remote host
      * @return {@code true} if remote copy succeeds, {@code false} on failure
@@ -201,7 +201,7 @@ public class BackupService extends ComponentProvider {
      * <p>
      * Publishes BACKUP_FILE_COPIED event with SCP target path String payload to ApplicationEventService
      * for tracking and notification of successful remote backup transfer.
-     * </p>
+
      */
     private void emitBackupFileCopied() {
         debug("[emitBackupFileCopied]");

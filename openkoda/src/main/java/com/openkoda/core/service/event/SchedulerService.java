@@ -46,23 +46,23 @@ import java.util.concurrent.ScheduledFuture;
  * This service registers {@link Scheduler} entities as Spring scheduled tasks using cron expressions, publishes SCHEDULER_EXECUTED events to trigger business logic,
  * and manages task lifecycle operations including schedule, reschedule, and removal. It extends {@link ComponentProvider} for services and repositories access
  * and implements {@link HasSecurityRules} for privilege checking on schedule/remove operations.
- * </p>
+
  * <p>
  * <b>Architecture:</b> Maintains an unsynchronized {@code HashMap<Long, ScheduledFuture>} tracking active scheduled tasks for cancellation.
  * Uses Spring {@link TaskScheduler} with {@link CronTrigger} for cron expression evaluation and task execution.
- * </p>
+
  * <p>
  * <b>Cluster Behavior:</b> Cluster-aware methods delegate to {@link ClusterEventSenderService} in distributed mode to propagate scheduler lifecycle
  * (add/remove/reload) across all nodes. In single-instance mode, operations are performed directly.
- * </p>
+
  * <p>
  * <b>Event Publishing:</b> {@link SchedulerTask} publishes SCHEDULER_EXECUTED event when scheduled tasks execute.
  * Event dispatch is synchronous or asynchronous based on {@link Scheduler#isAsync()} flag.
- * </p>
+
  * <p>
  * <b>Thread-Safety WARNING:</b> The {@code currentlyScheduled} HashMap is NOT synchronized. Concurrent schedule/remove operations may cause race conditions,
  * {@link java.util.ConcurrentModificationException}, or lost updates.
- * </p>
+
  * <p>
  * Usage examples:
  * <pre>{@code
@@ -72,7 +72,7 @@ import java.util.concurrent.ScheduledFuture;
  * // Cluster-aware scheduling
  * schedulerService.loadClusterAware(scheduler.getId());
  * }</pre>
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
@@ -91,7 +91,7 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * Unsynchronized HashMap mapping Scheduler.id to ScheduledFuture for task cancellation; enables remove() to cancel running tasks.
      * <p>
      * <b>WARNING:</b> NOT thread-safe. Concurrent modifications may cause {@link java.util.ConcurrentModificationException} or lost updates.
-     * </p>
+
      */
     private Map<Long, ScheduledFuture> currentlyScheduled = new HashMap<>();
 
@@ -121,7 +121,7 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * <p>
      * Retrieves all {@link Scheduler} entities using {@code repositories.unsecure.scheduler.findAll()} and schedules each by calling {@link #schedule(Scheduler)}.
      * Individual schedule failures are logged but do not stop iteration or affect the return value.
-     * </p>
+
      *
      * @return true indicating operation completed (individual schedule failures logged but do not stop iteration)
      */
@@ -136,7 +136,7 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * <p>
      * In cluster mode, {@link ClusterEventSenderService} publishes SCHEDULER_ADD event to all nodes.
      * In single-instance mode, loads {@link Scheduler} from database and schedules directly.
-     * </p>
+
      *
      * @param schedulerId Database primary key of Scheduler entity to load and schedule
      * @return true if scheduler loaded and scheduled successfully
@@ -155,7 +155,7 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * <p>
      * In cluster mode, {@link ClusterEventSenderService} publishes SCHEDULER_REMOVE event to all nodes.
      * In single-instance mode, calls {@link #remove(Long)} directly to cancel and remove the scheduled task.
-     * </p>
+
      *
      * @param schedulerId Database primary key of Scheduler to cancel and remove
      * @return true if scheduler successfully removed
@@ -173,7 +173,7 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * <p>
      * In cluster mode, {@link ClusterEventSenderService} publishes SCHEDULER_RELOAD event to all nodes.
      * In single-instance mode, calls {@link #removeAndLoadFromDb(long)} to cancel existing scheduler and reload with updated configuration.
-     * </p>
+
      *
      * @param schedulerId Database primary key of Scheduler to reload with updated configuration
      * @return true if scheduler successfully reloaded
@@ -191,7 +191,7 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * <p>
      * Retrieves {@link Scheduler} using {@code repositories.unsecure.scheduler.findOne(schedulerId)} and delegates to {@link #schedule(Scheduler)}.
      * Typically invoked by {@link ClusterEventListenerService} when handling SCHEDULER_ADD events in cluster mode.
-     * </p>
+
      *
      * @param schedulerId Database primary key of Scheduler to load
      * @return true if scheduler found and scheduled; false if entity not found or scheduling failed
@@ -208,7 +208,7 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * <p>
      * Calls {@link #remove(Long)} to cancel the current scheduled task, then {@link #loadFromDb(long)} to reload updated configuration.
      * <b>NOT truly atomic:</b> remove may succeed but reload may fail, leaving scheduler unscheduled.
-     * </p>
+
      *
      * @param schedulerId Database primary key of Scheduler to reload
      * @return true if remove successful AND reload successful; false if remove failed (reload not attempted)
@@ -229,7 +229,7 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * Calls {@link #remove(Long)} to cancel the existing scheduled task identified by {@code schedulerId},
      * then {@link #schedule(Scheduler)} to register the updated {@link Scheduler} configuration.
      * Used when cron expression or other scheduler settings change.
-     * </p>
+
      *
      * @param schedulerId Database primary key of existing Scheduler to cancel
      * @param scheduler Updated Scheduler entity with new cron expression or configuration
@@ -252,13 +252,13 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * Constructs {@link ScheduledSchedulerDto} with current timestamp, wraps in {@link SchedulerTask} Runnable,
      * schedules with {@link CronTrigger} based on {@link Scheduler#getCronExpression()}, and stores {@link ScheduledFuture}
      * in {@code currentlyScheduled} map for cancellation.
-     * </p>
+
      * <p>
      * <b>Thread-Safety:</b> NOT synchronized; concurrent {@code schedule()} calls for same {@code schedulerId} overwrite {@link ScheduledFuture} reference.
-     * </p>
+
      * <p>
      * <b>Security:</b> Requires CHECK_CAN_MANAGE_EVENT_LISTENERS privilege.
-     * </p>
+
      *
      * @param scheduler Scheduler entity with cronExpression, eventData, organizationId, onMasterOnly, isAsync configuration
      * @return false if scheduler null; true otherwise (scheduling success not guaranteed, exceptions may propagate)
@@ -291,14 +291,14 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * <p>
      * Retrieves {@link ScheduledFuture} from {@code currentlyScheduled} map and calls {@code cancel(false)},
      * allowing currently-executing task to complete without interruption. Removes entry from map upon successful cancellation.
-     * </p>
+
      * <p>
      * <b>Cancellation Behavior:</b> Calls {@link ScheduledFuture#cancel(boolean)} with {@code false},
      * allowing running task to complete; does not interrupt running task.
-     * </p>
+
      * <p>
      * <b>Security:</b> Requires CHECK_CAN_MANAGE_EVENT_LISTENERS privilege.
-     * </p>
+
      *
      * @param schedulerId Database primary key identifying scheduled task to cancel
      * @return true if ScheduledFuture found, successfully canceled, and removed; false if not found or cancel failed
@@ -322,17 +322,17 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
      * <p>
      * Bridges Spring {@link TaskScheduler} execution to {@link ApplicationEvent} system; publishes {@link ScheduledSchedulerDto} payload for event consumers.
      * Created during {@link #schedule(Scheduler)} and invoked by Spring TaskScheduler at cron schedule.
-     * </p>
+
      * <p>
      * <b>MDC Context:</b> Sets {@link RequestIdHolder#PARAM_CRON_JOB_ID} for request-correlated logging throughout event consumer execution.
-     * </p>
+
      * <p>
      * <b>Cluster Awareness:</b> If {@code onMasterOnly=true} and not {@link ClusterHelper#isMaster()}, skips execution with debug log.
-     * </p>
+
      * <p>
      * <b>Event Dispatch:</b> Publishes to {@link ApplicationEvent#SCHEDULER_EXECUTED}; consumers receive {@link ScheduledSchedulerDto};
      * {@code isAsync} determines synchronous or async dispatch.
-     * </p>
+
      */
     public class SchedulerTask implements Runnable {
 
@@ -356,7 +356,7 @@ public class SchedulerService extends ComponentProvider implements HasSecurityRu
          * Sets MDC {@link RequestIdHolder#PARAM_CRON_JOB_ID} for request-correlated logging throughout event consumer execution.
          * If {@code onMasterOnly=true} and not {@link ClusterHelper#isMaster()}, skips execution with debug log.
          * Publishes {@link ApplicationEvent#SCHEDULER_EXECUTED} event; {@code isAsync} flag determines synchronous or async dispatch.
-         * </p>
+
          */
         @Override
         public void run() {

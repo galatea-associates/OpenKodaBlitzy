@@ -33,22 +33,22 @@ import org.springframework.stereotype.Repository;
  * Provides CRUD operations and privilege-protected queries for Facebook OAuth user mappings.
  * This repository enables linking external Facebook authentication with internal User entities
  * through the Facebook OAuth flow.
- * </p>
+ * 
  * <p>
  * OAuth Flow:
  * External Facebook authentication → token exchange → findByFacebookId lookup → link/create User entity
- * </p>
+ * 
  * <p>
  * Persistence: Persists to 'facebook_user' table
- * </p>
+ * 
  * <p>
  * Security: Method-level {@code @PreAuthorize} CHECK_CAN_READ_FACEBOOK_USER privilege enforcement
  * via Spring Security. All query methods require appropriate privileges.
- * </p>
+ * 
  * <p>
  * Usage Context: Used by Facebook OAuth callback controllers for account linking and authentication
  * during the user login process.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -66,11 +66,11 @@ public interface FacebookUserRepository extends JpaRepository<FacebookUser, Long
      * This method is protected by {@code @PreAuthorize} annotation requiring
      * CHECK_CAN_READ_FACEBOOK_USER privilege. It performs a lookup by the unique
      * Facebook ID received during OAuth authentication flow.
-     * </p>
+     * 
      * <p>
      * Spring Data automatically generates the query based on method name pattern.
      * The repository is a thread-safe Spring-managed singleton.
-     * </p>
+     * 
      *
      * @param facebookId Facebook user identifier from OAuth response, must not be null
      * @return FacebookUser entity with matching Facebook ID, or null if not found

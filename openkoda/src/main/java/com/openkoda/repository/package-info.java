@@ -25,9 +25,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * This package contains lightweight repository interfaces (stateless contracts), DI aggregation holders,
  * security/scoping wrappers, native-SQL utilities, and discovery/metadata components that integrate Spring Data,
  * Hibernate/JPA, Spring Security expressions, and custom search indexing (SearchableRepositoryMetadata).
- * </p>
+
  *
- * <h2>Package Structure</h2>
+ * <b>Package Structure</b>
  * <ul>
  *   <li><b>Base Repository Interfaces:</b> ComponentEntityRepository, SecureRepository providing foundational contracts</li>
  *   <li><b>Aggregators:</b> Repositories, SecureRepositories, UnsecureRepositories for simplified DI</li>
@@ -38,9 +38,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>Marker Interfaces:</b> Secure*Repository interfaces with SearchableRepositoryMetadata annotations</li>
  * </ul>
  *
- * <h2>Key Components</h2>
+ * <b>Key Components</b>
  *
- * <h3>Repositories Aggregator Pattern</h3>
+ * <b>Repositories Aggregator Pattern</b>
  * <p>
  * {@link Repositories} provides centralized access via secure/unsecure groups:
  * <pre>
@@ -48,20 +48,20 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   repositories.secure.user.findOne(userId);  // Privilege-enforced
  *   repositories.unsecure.organization.findById(id);  // Direct access
  * </pre>
- * </p>
+
  *
- * <h3>SecureRepository Privilege Enforcement</h3>
+ * <b>SecureRepository Privilege Enforcement</b>
  * <p>
- * {@link SecureRepository} interface wraps repository operations with DEFAULT_SCOPE = USER:
+ * {@link com.openkoda.repository.SecureRepository} interface wraps repository operations with DEFAULT_SCOPE = USER:
  * <ul>
  *   <li>All operations enforce read/write privilege checks</li>
  *   <li>Privileges computed from entity @Formula annotations (requiredReadPrivilege, requiredWritePrivilege)</li>
  *   <li>Throws AccessDeniedException if user lacks required privilege</li>
  *   <li>Use scoped(SecurityScope) for temporary scope elevation (ORGANIZATION, GLOBAL)</li>
  * </ul>
- * </p>
+
  *
- * <h3>SearchableRepositories Discovery</h3>
+ * <b>SearchableRepositories Discovery</b>
  * <p>
  * {@link SearchableRepositories} discovers SecureRepository beans at startup:
  * <ul>
@@ -70,9 +70,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Caches UPDATE SQL templates for index maintenance</li>
  *   <li>Supports runtime plugin registration</li>
  * </ul>
- * </p>
+
  *
- * <h3>NativeQueries Utilities</h3>
+ * <b>NativeQueries Utilities</b>
  * <p>
  * {@link NativeQueries} provides native SQL execution:
  * <ul>
@@ -81,9 +81,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>ifTableExists - PostgreSQL pg_tables catalog check</li>
  *   <li>runReadOnly - Native SELECT with LinkedHashMap transformation</li>
  * </ul>
- * </p>
+
  *
- * <h2>Subpackages</h2>
+ * <b>Subpackages</b>
  * <ul>
  *   <li>{@link com.openkoda.repository.admin} - Audit logging repositories</li>
  *   <li>{@link com.openkoda.repository.ai} - AI/ML query report repositories</li>
@@ -96,9 +96,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@link com.openkoda.repository.user} - User, role, privilege repositories</li>
  * </ul>
  *
- * <h2>Usage Patterns</h2>
+ * <b>Usage Patterns</b>
  *
- * <h3>Standard Repository Injection</h3>
+ * <b>Standard Repository Injection</b>
  * <pre>
  *   &#64;Autowired
  *   private SecureUserRepository userRepository;
@@ -106,7 +106,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   User user = userRepository.findOne(userId);  // Privilege-checked
  * </pre>
  *
- * <h3>Aggregator Pattern (Legacy)</h3>
+ * <b>Aggregator Pattern (Legacy)</b>
  * <pre>
  *   &#64;Autowired
  *   Repositories repositories;
@@ -114,14 +114,14 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   List&lt;Organization&gt; orgs = repositories.secure.organization.search("name", "Acme");
  * </pre>
  *
- * <h3>Temporary Scope Elevation</h3>
+ * <b>Temporary Scope Elevation</b>
  * <pre>
  *   SecureRepositoryWrapper&lt;User&gt; orgScope = 
  *       repositories.secure.user.scoped(SecurityScope.ORGANIZATION);
  *   List&lt;User&gt; allOrgUsers = orgScope.findAll();  // Org-admin scope
  * </pre>
  *
- * <h3>Native SQL Execution</h3>
+ * <b>Native SQL Execution</b>
  * <pre>
  *   &#64;Autowired
  *   NativeQueries nativeQueries;
@@ -130,7 +130,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       nativeQueries.runReadOnly("SELECT id, name FROM users");
  * </pre>
  *
- * <h2>Design Principles</h2>
+ * <b>Design Principles</b>
  * <ul>
  *   <li><b>Stateless Contracts:</b> All repository interfaces proxied by Spring Data at startup</li>
  *   <li><b>Privilege-First:</b> Secure repositories default to user-level access control</li>
@@ -139,7 +139,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>Aggregation for Convenience:</b> Repositories class simplifies multi-repository injection</li>
  * </ul>
  *
- * <h2>Dependencies</h2>
+ * <b>Dependencies</b>
  * <ul>
  *   <li>Spring Data JPA - Repository proxying and query derivation</li>
  *   <li>Hibernate/JPA - ORM and native query execution</li>
@@ -148,7 +148,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>com.openkoda.core.repository - Base repository interfaces (SearchableFunctionalRepositoryWithLongId)</li>
  * </ul>
  *
- * <h2>Relationships</h2>
+ * <b>Relationships</b>
  * <ul>
  *   <li><b>Depends on:</b> com.openkoda.model (entity classes), com.openkoda.core.repository (base interfaces)</li>
  *   <li><b>Used by:</b> com.openkoda.service (business logic), com.openkoda.controller (request handling)</li>

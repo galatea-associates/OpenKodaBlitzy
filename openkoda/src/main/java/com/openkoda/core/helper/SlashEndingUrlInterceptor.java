@@ -33,22 +33,18 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * This interceptor normalizes URLs for SEO and canonical URL consistency by removing trailing slashes
  * from all paths except the root path "/". When a request URI ends with a trailing slash (and is not
  * the root), the interceptor performs an HTTP redirect to the same path without the trailing slash.
- * </p>
  * <p>
  * Important: This interceptor does not preserve query strings during redirect. For example, a request
  * to "/users/?page=1" will redirect to "/users" without the page parameter. This limitation should be
  * considered when using this interceptor with parameterized requests.
- * </p>
  * <p>
  * Example usage:
  * <pre>
  * Request to "/users/" redirects to "/users"
  * Request to "/" is preserved (root path not redirected)
  * </pre>
- * </p>
  * <p>
  * Thread-safety: This interceptor is stateless and safe for concurrent use across multiple requests.
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -67,7 +63,7 @@ public class SlashEndingUrlInterceptor implements LoggingComponentWithRequestId,
      * <li>Non-root paths ending with "/" are redirected to the same path without trailing slash</li>
      * <li>All other paths continue processing normally</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Redirect logic example:
      * <pre>
@@ -75,11 +71,11 @@ public class SlashEndingUrlInterceptor implements LoggingComponentWithRequestId,
      * "/" -> no redirect (returns true)
      * "/users" -> no redirect (returns true)
      * </pre>
-     * </p>
+     * 
      * <p>
      * Note: Query strings are not preserved during redirect. A request to "/users/?page=1"
      * will redirect to "/users" without the page parameter.
-     * </p>
+     * 
      *
      * @param request current HTTP servlet request
      * @param response current HTTP servlet response used for sending redirect

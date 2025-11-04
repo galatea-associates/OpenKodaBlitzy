@@ -29,10 +29,10 @@ package com.openkoda.service.captcha;
  * configuration of bot detection strictness. The validation levels balance security requirements
  * against user experience, with higher strictness reducing false negatives (bots passing
  * verification) but potentially increasing false positives (legitimate users failing verification).
- * </p>
+
  * <p>
  * The validation behavior differs between reCAPTCHA v2 (checkbox-based) and v3 (score-based):
- * </p>
+
  * <ul>
  *   <li><b>none</b>: No validation performed - suitable for development/testing environments</li>
  *   <li><b>normal</b>: Balanced validation with moderate security (v3 score ≥ 0.5, v2 checkbox required)</li>
@@ -44,10 +44,10 @@ package com.openkoda.service.captcha;
  * // Per-endpoint override
  * captchaService.verify(token, ValidationLevel.strict);
  * }</pre>
- * </p>
+
  * <p>
  * Use case guidance:
- * </p>
+
  * <ul>
  *   <li><b>none</b>: Local development, automated testing, internal administrative tools</li>
  *   <li><b>normal</b>: Standard user-facing forms (registration, contact forms, comments)</li>
@@ -67,13 +67,13 @@ public enum ValidationLevel {
      * This level provides no bot protection and should only be used in development or testing
      * environments where reCAPTCHA verification would interfere with automated testing or
      * local development workflows.
-     * </p>
+
      * <p>
      * <b>Security implication:</b> No protection against automated bots or abuse.
-     * </p>
+
      * <p>
      * <b>Behavior:</b>
-     * </p>
+
      * <ul>
      *   <li>reCAPTCHA v2: Ignores checkbox completion status</li>
      *   <li>reCAPTCHA v3: Ignores score value</li>
@@ -82,7 +82,7 @@ public enum ValidationLevel {
      * <p>
      * <b>Use case:</b> Local development environments, integration testing, internal admin tools
      * without public exposure.
-     * </p>
+
      */
     none,
 
@@ -92,14 +92,14 @@ public enum ValidationLevel {
      * This level provides standard bot protection suitable for most user-facing forms. The 0.5
      * threshold follows Google's recommended default for reCAPTCHA v3, balancing security against
      * false positive rates.
-     * </p>
+
      * <p>
      * <b>False positive rate:</b> Approximately 1-2% of legitimate users may occasionally face
      * verification challenges, typically resolved by retrying.
-     * </p>
+
      * <p>
      * <b>Behavior:</b>
-     * </p>
+
      * <ul>
      *   <li>reCAPTCHA v3: Requires score ≥ 0.5 (Google recommended threshold)</li>
      *   <li>reCAPTCHA v2: Requires successful checkbox completion</li>
@@ -108,7 +108,7 @@ public enum ValidationLevel {
      * <p>
      * <b>Use case:</b> Standard user registration, contact forms, comment submission, newsletter
      * signup, public content submission.
-     * </p>
+
      */
     normal,
 
@@ -118,15 +118,15 @@ public enum ValidationLevel {
      * This level provides enhanced bot protection for high-security endpoints where false negatives
      * (bots passing verification) pose significant risk. The higher 0.7 threshold reduces bot
      * passage but increases false positive rates.
-     * </p>
+
      * <p>
      * <b>False positive rate:</b> Approximately 5% of legitimate users may face verification
      * challenges, particularly users with unusual browsing patterns, VPN usage, or privacy-focused
      * browser configurations.
-     * </p>
+
      * <p>
      * <b>Behavior:</b>
-     * </p>
+
      * <ul>
      *   <li>reCAPTCHA v3: Requires score ≥ 0.7 (stricter than Google default)</li>
      *   <li>reCAPTCHA v2: Requires successful checkbox completion</li>
@@ -135,7 +135,7 @@ public enum ValidationLevel {
      * <p>
      * <b>Use case:</b> Administrator login, financial transactions, password reset, API key
      * generation, sensitive data modification, account deletion.
-     * </p>
+
      */
     strict
 

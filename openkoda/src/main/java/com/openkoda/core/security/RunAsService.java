@@ -46,18 +46,15 @@ import java.util.List;
  * Core operations include {@code startRunAsUser()} which switches the SecurityContext to a target user
  * with the isSpoofed flag set, and {@code exitRunAsUser()} which restores the original user by loading
  * the backToUserId from the database.
- * </p>
  * <p>
  * Security model: Methods are guarded by {@code @PreAuthorize(CHECK_CAN_IMPERSONATE_OR_IS_SPOOFED)},
  * ensuring only administrators with {@code Privilege.canImpersonate} or already-spoofed users can call
  * these methods. The isSpoofed flag is set on the OrganizationUser principal to distinguish impersonated
  * sessions from normal authentication, enabling UI indicators and audit logging.
- * </p>
  * <p>
  * Thread-safety: This service modifies the SecurityContextHolder (ThreadLocal), so changes affect only
  * the current HTTP request thread. The impersonated authentication is persisted to the HttpSession via
  * SecurityContextRepository, allowing it to survive across multiple requests.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -68,7 +65,6 @@ import java.util.List;
  * // Later, admin exits impersonation
  * runAsService.exitRunAsUser(originalUserId, request, response);
  * }</pre>
- * </p>
  *
  * @see OrganizationUser#isSpoofed
  * @see HasSecurityRules#CHECK_CAN_IMPERSONATE_OR_IS_SPOOFED
@@ -84,7 +80,7 @@ public class RunAsService extends ComponentProvider implements HasSecurityRules 
      * <p>
      * Enables impersonated authentication to survive across requests. The @Lazy annotation
      * is used to avoid circular dependencies during bean initialization.
-     * </p>
+     * 
      */
     @Autowired
     @Lazy
@@ -95,7 +91,7 @@ public class RunAsService extends ComponentProvider implements HasSecurityRules 
      * <p>
      * Used to construct the OrganizationUser principal with roles and privileges for the
      * impersonated user during the run-as operation.
-     * </p>
+     * 
      */
     @Inject private OrganizationUserDetailsService organizationUserDetailsService;
 
@@ -106,11 +102,11 @@ public class RunAsService extends ComponentProvider implements HasSecurityRules 
      * UsernamePasswordAuthenticationToken containing the target user's OrganizationUser principal,
      * with the isSpoofed flag set to true. The SecurityContext is persisted to the HttpSession via
      * securityContextRepository.saveContext(), making the impersonation survive across HTTP requests.
-     * </p>
+     * 
      * <p>
      * Access control: This method requires {@code @PreAuthorize(CHECK_CAN_IMPERSONATE_OR_IS_SPOOFED)},
      * allowing only users with Privilege.canImpersonate or users who are already in a spoofed session.
-     * </p>
+     * 
      *
      * @param user the target User entity to impersonate (loaded from database by controller)
      * @param request the HttpServletRequest for saving SecurityContext to session
@@ -129,11 +125,11 @@ public class RunAsService extends ComponentProvider implements HasSecurityRules 
      * delegates to authRunAsUser(user, false, request, response), setting the isSpoofed flag to false.
      * The controller is responsible for tracking the original userId before calling startRunAsUser(),
      * typically stored in a session attribute.
-     * </p>
+     * 
      * <p>
      * Access control: This method requires {@code @PreAuthorize(CHECK_CAN_IMPERSONATE_OR_IS_SPOOFED)},
      * allowing only users who are already in a spoofed session or have the canImpersonate privilege.
-     * </p>
+     * 
      *
      * @param backToUserId the database ID of the original user to restore (stored before impersonation)
      * @param request the HttpServletRequest for saving restored SecurityContext to session
@@ -152,7 +148,7 @@ public class RunAsService extends ComponentProvider implements HasSecurityRules 
      * This method performs the core authentication switch by loading user privileges, building an
      * OrganizationUser principal with the isSpoofed flag, and replacing the current SecurityContext.
      * The authentication flow follows these steps:
-     * </p>
+     * 
      * <ol>
      * <li>Queries UserRole associations via repositories.unsecure.user.getUserRolesAndPrivileges(user.getId())</li>
      * <li>Builds OrganizationUser via organizationUserDetailsService.setUserDetails(user, info)</li>
@@ -166,7 +162,7 @@ public class RunAsService extends ComponentProvider implements HasSecurityRules 
      * to preserve the existing context for chaining operations. The unsecure repository is used to
      * bypass SecureRepository privilege checks, as impersonation must work regardless of the target
      * user's organization membership.
-     * </p>
+     * 
      *
      * @param user the target User entity to authenticate as (can be impersonation target or original user for exit flow)
      * @param isSpoofed flag indicating impersonation status: true for startRunAsUser() (entering impersonation),

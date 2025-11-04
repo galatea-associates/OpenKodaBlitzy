@@ -40,10 +40,10 @@ import java.util.Set;
  * repositories to enforce authorization checks. Privilege enforcement occurs at method invocation time before
  * delegating to the underlying repository implementation, ensuring that all data access operations are subject
  * to security validation.
- * </p>
+ * 
  * <p>
  * Key method categories include:
- * </p>
+ * 
  * <ul>
  *   <li>Search operations - field-based, Specification-driven, free-text, pageable searches</li>
  *   <li>CRUD operations - findOne, findAll, saveOne, saveForm, saveAll, deleteOne, deleteAll</li>
@@ -54,10 +54,10 @@ import java.util.Set;
  * <p>
  * The interface integrates with frontend filter tuples ({@code List<Tuple3<String, FrontendMappingFieldDefinition, String>>})
  * and Spring Data types ({@link Page}, {@link Pageable}, {@link Specification}) to provide flexible query capabilities.
- * </p>
+ * 
  * <p>
  * Example usage:
- * </p>
+ * 
  * <pre>{@code
  * SecureRepository<Organization> secureRepo = secureRepositories.organization;
  * Optional<Organization> org = secureRepo.findOne(scope, orgId);
@@ -394,7 +394,7 @@ public interface UnscopedSecureRepository<T> {
      * <p>
      * This factory method provides a convenient way to instantiate new entity instances
      * with appropriate initialization based on the current context (e.g., tenant resolver).
-     * </p>
+     * 
      *
      * @return a new entity instance ready for population and persistence
      */

@@ -36,7 +36,6 @@ import java.util.Map;
  * that handle data transfer between entities and web forms with security enforcement.
  * <p>
  * Forms in OpenKoda follow a three-phase lifecycle:
- * </p>
  * <ol>
  *   <li><b>Construction:</b> Form is created with a {@link FrontendMappingDefinition} that defines field metadata</li>
  *   <li><b>Privilege Evaluation:</b> Each field's read/write permissions are evaluated using {@link #canReadField} and {@link #canWriteField}</li>
@@ -47,14 +46,12 @@ import java.util.Map;
  * The {@link #readWriteForField} map maintains privilege state for each field, enabling the rendering
  * layer to show/hide fields based on user permissions. The map stores tuples where the first element
  * indicates read permission and the second indicates write permission for each field.
- * </p>
  * <p>
  * Example usage:
  * <pre>
  * FrontendMappingDefinition mapping = new FrontendMappingDefinition(fields);
  * MyForm form = new MyForm(mapping);
  * </pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team

@@ -37,22 +37,21 @@ import java.io.IOException;
  * Analyzes the authentication exception type and redirects to appropriate error page with query parameters
  * indicating the failure reason. Distinguishes between disabled accounts (verification required) and general
  * authentication failures.
- * </p>
+ * 
  * <p>
  * Redirect behavior:
  * <ul>
  * <li>Redirects to /login?verificationError for {@link DisabledException} (account not verified)</li>
  * <li>Redirects to /login?error for all other authentication failures</li>
  * </ul>
- * </p>
  * <p>
  * Thread-safety: This is a thread-safe stateless singleton with no mutable fields. Can safely handle
  * concurrent authentication failures.
- * </p>
+ * 
  * <p>
  * Spring Security integration: Registered in WebSecurityConfig via
  * {@code formLogin().failureHandler(customAuthenticationFailureHandler)} to intercept failed login attempts.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -69,11 +68,11 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
      * Invoked by Spring Security when authentication fails. Examines the exception type to determine
      * redirect target: /login?verificationError for disabled accounts (user not verified), /login?error
      * for all other failures (bad credentials, locked account, etc.).
-     * </p>
+     * 
      * <p>
      * Implementation uses {@link HttpServletResponse#sendRedirect(String)} for client-side redirect.
      * Query parameter added to URL signals error type to login page for user feedback message display.
-     * </p>
+     * 
      *
      * @param request the HTTP request that triggered authentication (unused but required by interface)
      * @param response the HTTP response used for redirect to error page

@@ -42,21 +42,21 @@ import java.io.StringWriter;
  * methods for audit logging from any context without requiring dependency injection. The service collects
  * contextual information including user ID from {@link UserProvider}, request ID from {@link RequestIdHolder},
  * and client IP address from {@link IpService} to create comprehensive audit records.
- * </p>
+
  * <p>
  * The static helper methods ({@link #createErrorAuditForException(Throwable, String)} and
  * {@link #createSimpleInfoAudit(String, String)}) allow audit logging without Spring bean injection,
  * making it useful for exception handlers, static utility classes, and other contexts where dependency
  * injection is unavailable. If the static instance is uninitialized, these methods gracefully degrade
  * by returning {@code true} without persisting the audit record.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * AuditService.createErrorAuditForException(ex, "User login failed");
  * AuditService.createSimpleInfoAudit("Configuration loaded", configDetails);
  * }</pre>
- * </p>
+
  *
  * @see Audit
  * @see AuditRepository
@@ -74,7 +74,7 @@ public class AuditService {
      * Repository for persisting {@link Audit} entities to the database.
      * <p>
      * Used by static helper methods via the singleton {@link #instance} field to save audit records.
-     * </p>
+
      */
     @Inject
     private AuditRepository auditRepository;
@@ -85,12 +85,12 @@ public class AuditService {
      * This pattern enables static helper methods to access Spring-managed dependencies without
      * requiring dependency injection at the call site. The instance is set by the {@link #init()}
      * method after Spring completes bean construction and injection.
-     * </p>
+
      * <p>
      * If this field is {@code null} (service not yet initialized), static methods will return
      * {@code true} without persisting audit records, allowing graceful degradation in early
      * application lifecycle or test scenarios.
-     * </p>
+
      */
     private static AuditService instance;
 
@@ -101,7 +101,7 @@ public class AuditService {
      * the static helper pattern used by {@link #createErrorAuditForException(Throwable, String)} and
      * {@link #createSimpleInfoAudit(String, String)}. By storing a reference to the Spring-managed
      * bean, these static methods can delegate to instance methods with access to injected dependencies.
-     * </p>
+
      */
     @PostConstruct void init() {
         instance = this;
@@ -114,7 +114,7 @@ public class AuditService {
      * and operation {@link Audit.AuditOperation#BROWSE}. The exception stack trace is written to the
      * {@link Audit#content} field via {@link PrintWriter}, and the provided message is stored in the
      * {@link Audit#change} field. Contextual information is automatically collected:
-     * </p>
+
      * <ul>
      * <li>User ID from {@link UserProvider#getUserIdOrNotExistingId()} (or {@code NOT_EXISTING_ID} sentinel if no user)</li>
      * <li>Request ID from {@link RequestIdHolder#getId()}</li>
@@ -124,7 +124,7 @@ public class AuditService {
      * If the static {@link #instance} is uninitialized (service not yet constructed), this method performs
      * a silent no-op and returns {@code true} without persisting the audit record. This graceful degradation
      * allows audit logging during early application lifecycle without causing failures.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
@@ -134,7 +134,7 @@ public class AuditService {
      *     AuditService.createErrorAuditForException(ex, "User login failed");
      * }
      * }</pre>
-     * </p>
+
      *
      * @param exception the exception to log (stack trace written to content field); may be {@code null}
      * @param message descriptive message stored in the change field (e.g., "User login failed")
@@ -171,7 +171,7 @@ public class AuditService {
      * <p>
      * This method delegates to {@link #createSimpleInfoAudit(String, String)} with {@code null} content,
      * simplifying audit logging when only a message is needed without additional detail.
-     * </p>
+
      *
      * @param message descriptive message stored in the change field (e.g., "Configuration loaded")
      * @return always returns {@code true}, even if persistence is skipped due to uninitialized instance
@@ -188,19 +188,19 @@ public class AuditService {
      * The provided message is stored in the {@link Audit#change} field, and optional content is stored in
      * the {@link Audit#content} field. An empty request ID is explicitly set to ensure the
      * {@link Audit#indexString} update works correctly (special requirement for INFO audits without request context).
-     * </p>
+
      * <p>
      * If the static {@link #instance} is uninitialized (service not yet constructed), this method performs
      * a silent no-op and returns {@code true} without persisting the audit record. This graceful degradation
      * allows audit logging during early application lifecycle without causing failures.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * String details = loadConfiguration();
      * AuditService.createSimpleInfoAudit("Configuration loaded", details);
      * }</pre>
-     * </p>
+
      *
      * @param message descriptive message stored in the change field (e.g., "Configuration loaded")
      * @param content optional additional detail stored in the content field; may be {@code null}
@@ -226,7 +226,7 @@ public class AuditService {
      * This method provides access to {@link IpService} without requiring dependency injection, enabling
      * static methods like {@link #createErrorAuditForException(Throwable, String)} to retrieve the current
      * user's IP address via {@link IpService#getCurrentUserIpAddress()}.
-     * </p>
+
      *
      * @return the {@link IpService} bean instance from the Spring context
      * @see IpService
@@ -242,7 +242,7 @@ public class AuditService {
      * This method provides the application context to other static helpers like {@link #getIpService()},
      * enabling bean lookups without dependency injection. The context is retrieved from the static
      * {@link ApplicationContextProvider} utility.
-     * </p>
+
      *
      * @return the Spring {@link ApplicationContext} instance
      * @see ApplicationContextProvider#getContext()

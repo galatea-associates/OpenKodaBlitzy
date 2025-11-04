@@ -35,30 +35,30 @@ import com.openkoda.core.flow.PageModelMap;
  * ({@link #validate()}), GraalVM JS thread listing ({@link #getThreads()}), and thread lifecycle
  * management ({@link #interruptThread(Long)}, {@link #removeThread(Long)}). Designed for reuse by
  * concrete controllers that handle HTTP bindings and view resolution for admin monitoring dashboards.
- * </p>
+ * 
  * <p>
  * System health context: Monitors JVM metrics (memory, threads, CPU), database connection status,
  * and cache hit rates via {@code services.systemStatus}.
- * </p>
+ * 
  * <p>
  * Database validation: Generates DDL update scripts for schema drift detection via
  * {@code services.databaseValidationService}.
- * </p>
+ * 
  * <p>
  * JavaScript thread management: Controls server-side GraalVM JS execution threads via
  * {@link ServerJSProcessRunner} singleton.
- * </p>
+ * 
  * <p>
  * Thread-safety: Stateless, thread-safe. {@link ServerJSProcessRunner} operations are
  * synchronized internally.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see SystemHealthController for concrete HTTP endpoint implementation
- * @see com.openkoda.service.system.SystemStatusService for health metrics collection
- * @see ServerJSProcessRunner for GraalVM JS thread registry
+ * See {@code SystemHealthController} for concrete HTTP endpoint implementation
+ * See {@code SystemStatusService} for health metrics collection
+ * See {@code ServerJSProcessRunner} for GraalVM JS thread registry
  */
 public class AbstractSystemHealthController extends AbstractController {
 
@@ -69,14 +69,14 @@ public class AbstractSystemHealthController extends AbstractController {
      * and populates the model for admin dashboard display. Metrics include JVM memory usage (heap
      * and non-heap in MB), active and peak thread counts, database connection pool statistics,
      * and cache hit rate metrics.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>
      * PageModelMap model = getSystemHealth();
      * Map healthStatus = model.get("systemHealthStatus");
      * </pre>
-     * </p>
+     * 
      *
      * @return {@link PageModelMap} with model key "systemHealthStatus" containing {@code Map}
      *         with JVM memory usage (heap, non-heap), thread counts, database connection pool
@@ -94,10 +94,10 @@ public class AbstractSystemHealthController extends AbstractController {
      * diff enabled to produce SQL DDL statements that reconcile differences between JPA entity
      * definitions and the actual database structure. The generated script is read-only and not
      * automatically executed, enabling safe schema compliance diagnostics.
-     * </p>
+     * 
      * <p>
      * Used by admin endpoints to display schema drift without modifying the database.
-     * </p>
+     * 
      *
      * @return {@link PageModelMap} with model key "databaseUpdateScript" containing SQL DDL
      *         statements to reconcile schema drift between JPA entities and actual database structure
@@ -115,7 +115,7 @@ public class AbstractSystemHealthController extends AbstractController {
      * tracked GraalVM JavaScript execution threads. Thread metadata includes thread ID, script
      * name, start timestamp, and execution status. Used by admin monitoring UI to track and
      * debug long-running server-side JavaScript scripts.
-     * </p>
+     * 
      *
      * @return {@link PageModelMap} with model key "serverJsThreads" containing {@code List}
      *         of thread metadata (thread ID, script name, start time, status)
@@ -133,7 +133,7 @@ public class AbstractSystemHealthController extends AbstractController {
      * flag on the specified thread. The thread will terminate at the next interruptible
      * operation, allowing for graceful termination of long-running server-side JavaScript
      * scripts. Used by admin UI to stop runaway or hung JavaScript executions.
-     * </p>
+     * 
      *
      * @param threadId unique identifier of the thread to interrupt (obtained from serverJsThreads list)
      * @return {@link PageModelMap} (empty model, operation performs side-effect only)
@@ -151,7 +151,7 @@ public class AbstractSystemHealthController extends AbstractController {
      * from the tracking registry. This operation should only be performed on completed or
      * interrupted threads, not on actively executing threads. Used by admin UI for cleanup of
      * finished thread entries from the monitoring list.
-     * </p>
+     * 
      *
      * @param threadId unique identifier of the thread to remove (obtained from serverJsThreads list)
      * @return {@link PageModelMap} (empty model, operation performs side-effect only)

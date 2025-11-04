@@ -29,7 +29,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * are insufficient. This enables fine-grained transaction demarcation for complex workflows
  * that require dynamic transaction boundaries or multiple transaction scopes within a single
  * operation.
- * </p>
+
  * <p>
  * Key features include:
  * <ul>
@@ -38,7 +38,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Support for nested transactions and savepoint management</li>
  *   <li>Exception handling and rollback control for transactional operations</li>
  * </ul>
- * </p>
+
  * <p>
  * Use cases for services in this package include:
  * <ul>
@@ -47,7 +47,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Integration scenarios where external system calls must be isolated from local transactions</li>
  *   <li>Flow pipeline execution requiring explicit transaction management</li>
  * </ul>
- * </p>
+
  *
  * @see com.openkoda.core.service.common.TransactionalExecutorImpl
  * @since 1.7.1

@@ -53,7 +53,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * and protected content. Retrieves FrontendResource by URL path or ID, verifies user privileges, 
  * executes ServerJs code, and renders template. Routes under authenticated URL paths 
  * ({@code _HTML}, {@code _HTML_ORGANIZATION_ORGANIZATIONID}).
- * </p>
  * <p>
  * The controller provides two routing mechanisms:
  * <ul>
@@ -61,17 +60,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  *   <li><b>ID-based routing</b> ({@code _CI}): Uses numeric database IDs for stable programmatic access</li>
  * </ul>
  * Both mechanisms support organization-scoped multi-tenant resource access and optional subpath navigation.
- * </p>
  * <p>
  * <b>Authentication &amp; Authorization:</b> All routes require authentication. Each FrontendResource 
  * defines a {@code requiredPrivilege} that is checked before rendering. Unauthorized access results 
  * in error responses.
- * </p>
  * <p>
  * <b>Organization Context:</b> Supports multi-tenant deployments through optional {@code organizationId} 
  * parameter. When absent from path variables, attempts to parse from request parameters 
  * ({@code ORGANIZATIONID} key) using {@link NumberUtils#isCreatable(String)} validation.
- * </p>
  * <p>
  * Example routing patterns:
  * <pre>
@@ -79,12 +75,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * _HTML_ORGANIZATION_123/_CN/admin (slug-based, organization 123)
  * _HTML/_CI/456                    (ID-based, resource ID 456)
  * </pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
  * @since 1.7.1
- * @see com.openkoda.model.FrontendResource
+ * @see com.openkoda.model.component.FrontendResource
  * @see AbstractFrontendResourceController
  * @see com.openkoda.model.Privilege
  */
@@ -103,7 +98,7 @@ public class RestrictedFrontendResourceController extends AbstractFrontendResour
      * via Thymeleaf. Supports organization-scoped resources via {@code organizationId} parameter. 
      * Falls back to homeview when no path provided. Includes organizationId fallback parsing from 
      * request parameters.
-     * </p>
+     * 
      * <p>
      * <b>Request Flow:</b>
      * <ol>
@@ -113,7 +108,7 @@ public class RestrictedFrontendResourceController extends AbstractFrontendResour
      *   <li>Parse organizationId from requestParams if path variable is null</li>
      *   <li>Delegate to {@code invokeFrontendResourceEntry} for privilege check and rendering</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * <b>URL Pattern Examples:</b>
      * <pre>
@@ -122,12 +117,12 @@ public class RestrictedFrontendResourceController extends AbstractFrontendResour
      * _HTML/_CN/admin/users         (slug with subpath)
      * _HTML_ORGANIZATION_123/_CN/   (organization-scoped root)
      * </pre>
-     * </p>
+     * 
      * <p>
      * <b>Privilege Enforcement:</b> The {@code invokeFrontendResourceEntry} method (inherited from 
      * {@link AbstractFrontendResourceController}) checks {@code resource.requiredPrivilege} before 
      * rendering. Access denied response returned if user lacks privilege.
-     * </p>
+     * 
      *
      * @param organizationId ID of the organization context for multi-tenant resource access. 
      *                       If null, attempts to parse from {@code requestParams} using 
@@ -190,7 +185,7 @@ public class RestrictedFrontendResourceController extends AbstractFrontendResour
      * Preferred for programmatic resource access and stable URLs that don't change when resource names 
      * change. Supports organization-scoped resources and subpath navigation. Includes organizationId 
      * fallback parsing from request parameters.
-     * </p>
+     * 
      * <p>
      * <b>Advantages of ID-based routing:</b>
      * <ul>
@@ -199,7 +194,7 @@ public class RestrictedFrontendResourceController extends AbstractFrontendResour
      *   <li>Programmatic access - easy to generate URLs from entity IDs</li>
      *   <li>No URL conflicts - numeric IDs guarantee uniqueness</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * <b>Request Flow:</b>
      * <ol>
@@ -208,7 +203,7 @@ public class RestrictedFrontendResourceController extends AbstractFrontendResour
      *   <li>Parse organizationId from requestParams if path variable is null</li>
      *   <li>Delegate to {@code invokeFrontendResourceEntry} with frontendResourceId for direct lookup</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * <b>URL Pattern Examples:</b>
      * <pre>
@@ -217,12 +212,12 @@ public class RestrictedFrontendResourceController extends AbstractFrontendResour
      * _HTML/_CI/456/settings        (resource 456 with subpath)
      * _HTML_ORGANIZATION_789/_CI/123 (organization-scoped ID lookup)
      * </pre>
-     * </p>
+     * 
      * <p>
      * <b>Privilege Enforcement:</b> The {@code invokeFrontendResourceEntry} method (inherited from 
      * {@link AbstractFrontendResourceController}) checks {@code resource.requiredPrivilege} before 
      * rendering. Returns access denied response if user lacks required privilege.
-     * </p>
+     * 
      *
      * @param organizationId ID of the organization context for multi-tenant resource access. 
      *                       If null, attempts to parse from {@code requestParams} using 

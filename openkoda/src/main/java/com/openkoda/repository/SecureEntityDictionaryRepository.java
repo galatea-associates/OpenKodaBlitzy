@@ -73,7 +73,7 @@ import static com.openkoda.model.file.File.toFileDto;
  * entity dictionaries for use in frontend form controls. It produces {@link Tuple} and {@link LinkedHashMap}
  * results suitable for flexible JSON serialization, enabling dynamic population of select dropdowns,
  * autocomplete fields, and datalist elements across the OpenKoda UI.
- * </p>
+
  * <p>
  * Key responsibilities include:
  * <ul>
@@ -84,16 +84,16 @@ import static com.openkoda.model.file.File.toFileDto;
  *   <li>Supporting localization via {@link Locale}-specific formatting for countries and languages</li>
  *   <li>Using {@link PostConstruct} initialization to preload static dictionaries at application startup</li>
  * </ul>
- * </p>
+
  * <p>
  * The repository integrates with the OpenKoda security framework via {@link HasSecurityRules}, ensuring
  * dictionary queries respect user privileges and organization scope. Dictionary results are serialized
  * to JSON format using {@code JSONObject} and {@code JSONArray} for frontend consumption.
- * </p>
+
  * <p>
  * Thread-safety: Dictionary assembly methods are not synchronized; {@link #setupCommonDictionaries()}
  * performs atomic replacement of the {@code commonDictionaries} map to ensure consistency during updates.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -235,7 +235,7 @@ public class SecureEntityDictionaryRepository extends ComponentProvider implemen
      * Executes a two-phase query: first retrieves entity IDs filtered by user privileges and organization scope
      * via {@link #toSecurePredicate}, then fetches descriptions using native SQL with the custom formula.
      * Organization-related entities are automatically filtered by {@link TenantResolver} organization context.
-     * </p>
+
      *
      * @param <T> the entity type extending {@link SearchableEntity}
      * @param gsa the searchable repository metadata, must not be null
@@ -373,7 +373,7 @@ public class SecureEntityDictionaryRepository extends ComponentProvider implemen
      * <p>
      * Converts configured language tags to localized display names and sets this instance as the global
      * singleton for use by {@link AbstractForm} and other components requiring dictionary access.
-     * </p>
+
      */
     @PostConstruct void init() {
         for (String lang : languagesList) {
@@ -405,7 +405,7 @@ public class SecureEntityDictionaryRepository extends ComponentProvider implemen
      * Triggers {@link #setupCommonDictionaries()} to refresh cached data and serializes
      * the {@code commonDictionaries} map to JSON format. Includes frequently-used entity lists
      * such as roles, privileges, languages, event classes, HTTP methods, and countries.
-     * </p>
+
      *
      * @return JSON string representation of common dictionaries map
      * @throws JSONException if JSON serialization fails
@@ -432,7 +432,7 @@ public class SecureEntityDictionaryRepository extends ComponentProvider implemen
      * languages, events, event classes, role types, HTTP methods, response types, countries, operators,
      * and logical operators. Module-specific dictionaries registered via {@link #addModuleDictionary}
      * are also included. Dictionary map is atomically replaced to ensure consistency during concurrent access.
-     * </p>
+
      *
      * @throws JSONException if JSON serialization of any dictionary fails
      */

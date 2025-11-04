@@ -26,12 +26,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Controllers provide system monitoring, log management, audit trail browsing, integration configuration,
  * and health diagnostics. All endpoints require elevated admin privileges enforced via Spring Security
  * method-level annotations.
- * </p>
+ * 
  *
- * <h2>Architecture</h2>
+ * <b>Architecture</b>
  * <p>
  * The package follows a two-tier controller pattern:
- * </p>
+ * 
  * <ul>
  *   <li><b>Abstract Base Controllers</b>: Provide reusable Flow-based helper methods for business logic composition.
  *       Methods construct {@link com.openkoda.core.flow.PageModelMap} via Flow pipelines, delegating to
@@ -40,7 +40,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       parameter binding, view resolution, and response formatting. Delegate business logic to abstract helpers.</li>
  * </ul>
  *
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  * <ul>
  *   <li>{@link AbstractAdminLogsController} - Flow helpers for log viewing and logger configuration</li>
  *   <li>{@link AdminLogsController} - HTTP endpoints for log download, viewing, and configuration UI</li>
@@ -52,7 +52,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@link SystemHealthController} - HTTP endpoints for system health dashboard, thread monitoring, application restart</li>
  * </ul>
  *
- * <h2>Common Patterns</h2>
+ * <b>Common Patterns</b>
  * <p><b>Flow Pipeline Composition</b></p>
  * <pre>{@code
  * Flow.init()
@@ -78,7 +78,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code CHECK_CAN_MANAGE_BACKEND} - Write access to backend systems (restart, thread control, integrations)</li>
  * </ul>
  *
- * <h2>Controller Responsibilities</h2>
+ * <b>Controller Responsibilities</b>
  * <p><b>Log Management</b> (AdminLogsController)</p>
  * <ul>
  *   <li>View in-memory circular log buffer with configurable size</li>
@@ -114,7 +114,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Application restart: graceful shutdown requiring external restart mechanism</li>
  * </ul>
  *
- * <h2>Model Keys</h2>
+ * <b>Model Keys</b>
  * <p>Standard model keys populated by controllers for view rendering:</p>
  * <ul>
  *   <li><b>logsEntryList</b> - {@code List<String>} of in-memory log entries</li>
@@ -128,7 +128,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>serverJsThreads</b> - {@code List} of GraalVM JS thread metadata</li>
  * </ul>
  *
- * <h2>View Naming Conventions</h2>
+ * <b>View Naming Conventions</b>
  * <p>Thymeleaf template views resolved from controller methods:</p>
  * <ul>
  *   <li><b>logs-all</b> - Log viewing UI with entry list</li>
@@ -142,7 +142,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ul>
  * <p>
  * HTMX fragments for AJAX form submission (::fragment-name notation):
- * </p>
+ * 
  * <ul>
  *   <li><b>entity-forms::logger-settings-form-success</b> - Successful logger config save</li>
  *   <li><b>entity-forms::logger-settings-form-error</b> - Logger config validation errors</li>
@@ -151,11 +151,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>system-health::database-validation</b> - Database validation script partial</li>
  * </ul>
  *
- * <h2>Security Requirements</h2>
+ * <b>Security Requirements</b>
  * <p>
  * All endpoints require elevated admin privileges. Unauthorized access results in Spring Security
  * {@code AccessDeniedException}.
- * </p>
+ * 
  * <ul>
  *   <li><b>Support Data Read</b>: View logs, audit, system health (non-modifying operations)</li>
  *   <li><b>Support Data Manage</b>: Modify log configuration (write operations on diagnostics)</li>
@@ -163,7 +163,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>Backend Manage</b>: Modify backend systems (restart, thread control, integration config)</li>
  * </ul>
  *
- * <h2>Typical Usage</h2>
+ * <b>Typical Usage</b>
  * <pre>{@code
  * // View logs
  * GET /html/logs/all
@@ -190,7 +190,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * administrative functionality requiring elevated privileges, then yes. Administrative controllers
  * handle platform management, system monitoring, configuration, and diagnostics—not end-user
  * application features.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

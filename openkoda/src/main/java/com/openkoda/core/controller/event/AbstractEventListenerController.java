@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
  * OpenKoda platform. It leverages the Flow pipeline architecture for composable request handling and integrates with
  * {@link ComponentProvider} for repositories and services access. The controller enforces privilege-based security through
  * {@link HasSecurityRules} implementation.
- * </p>
+ * 
  * <p>
  * Key responsibilities include:
  * <ul>
@@ -68,17 +68,16 @@ import java.util.stream.Collectors;
  * <li>Component export functionality for listener definitions</li>
  * <li>Form validation and entity population through validation services</li>
  * </ul>
- * </p>
  * <p>
  * Implementing classes (such as {@link EventListenerControllerHtml}) handle HTTP binding and response formatting,
  * while this abstract controller provides the core business logic implementation. All listener operations are cluster-aware,
  * ensuring consistency across distributed application instances.
- * </p>
+ * 
  * <p>
  * The controller uses both secure and unsecure repository access patterns: secure repositories for read operations
  * with privilege enforcement, and unsecure repositories for mutation operations where privilege checks are performed
  * at the service layer.
- * </p>
+ * 
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-03-11
@@ -97,11 +96,11 @@ public class AbstractEventListenerController extends ComponentProvider implement
      * This method performs a secure repository search using Spring Data JPA {@link Specification} for advanced
      * query construction and {@link Pageable} for pagination and sorting. The search uses the secure repository
      * pattern to enforce privilege checks, ensuring users can only access listeners they have permission to view.
-     * </p>
+     * 
      * <p>
      * The method uses Flow pipeline composition with {@code Flow.init().thenSet()} to populate the model with
      * search results under the {@code eventListenerPage} key.
-     * </p>
+     * 
      *
      * @param eventListenerSearchTerm search string for filtering event listeners by name (supports partial matching)
      * @param eventListenerSpecification JPA Specification for constructing complex query predicates on EventListenerEntry fields
@@ -127,11 +126,11 @@ public class AbstractEventListenerController extends ComponentProvider implement
      * This method loads the {@link EventListenerEntry} entity from the database using the unsecure repository
      * (privilege checks occur at service layer), then creates an {@link EventListenerForm} initialized with the
      * entity data and organization context for multi-tenant operations.
-     * </p>
+     * 
      * <p>
      * The Flow pipeline populates two model keys: {@code eventListenerEntity} containing the loaded entity,
      * and {@code eventListenerForm} containing the initialized form ready for rendering or further processing.
-     * </p>
+     * 
      *
      * @param organizationId organization context identifier for multi-tenant listener operations (may be null for global listeners)
      * @param eListenerId EventListenerEntry database primary key for entity retrieval
@@ -160,11 +159,11 @@ public class AbstractEventListenerController extends ComponentProvider implement
      * <li>Registers the listener across all cluster nodes via {@code services.eventListener.registerListenerClusterAware}</li>
      * <li>Resets the form to a fresh instance for subsequent operations</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * The cluster-aware registration ensures the listener becomes active on all application instances, maintaining
      * consistency in distributed environments. Component export enables versioned deployment of listener configurations.
-     * </p>
+     * 
      *
      * @param eListenerForm validated form containing listener configuration (event type, code, enabled state)
      * @param br BindingResult for Jakarta Bean Validation error tracking and form error display
@@ -196,11 +195,11 @@ public class AbstractEventListenerController extends ComponentProvider implement
      * <li>Exports the updated listener configuration for component versioning</li>
      * <li>Updates the listener across all cluster nodes via {@code services.eventListener.updateEventListenerClusterAware}</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * The cluster-aware update ensures all application instances reload the listener configuration, maintaining
      * consistency for changes to event handling logic, enabled state, or event type subscriptions.
-     * </p>
+     * 
      *
      * @param eventListenerId EventListenerEntry database primary key for entity retrieval and update
      * @param eListenerForm validated form containing updated listener configuration (event type, code, enabled state)
@@ -231,11 +230,11 @@ public class AbstractEventListenerController extends ComponentProvider implement
      * <li>Deletes the entity from the database using {@code deleteOne}</li>
      * <li>Unregisters the listener from all cluster nodes via {@code services.eventListener.unregisterEventListenerClusterAware}</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * The cluster-aware unregistration ensures the listener stops processing events on all application instances,
      * maintaining consistency across the distributed environment. Export cleanup removes versioned configuration files.
-     * </p>
+     * 
      *
      * @param eventListenerId EventListenerEntry database primary key for entity retrieval and deletion
      * @return PageModelMap containing model key {@code eventListenerEntityToUnregister} with the entity before deletion
@@ -260,11 +259,11 @@ public class AbstractEventListenerController extends ComponentProvider implement
      * This method creates a new {@link SendEventForm} instance and adds it to the model under the {@code sendEventForm} key,
      * enabling administrators to select an event type for manual emission in the Admin panel. Manual event emission is used
      * for testing event listeners and debugging event-driven workflows.
-     * </p>
+     * 
      * <p>
      * After event type selection, the {@link #prepareEvent(SendEventForm, BindingResult)} method is called to load
      * event-specific fields.
-     * </p>
+     * 
      *
      * @return PageModelMap containing model key {@code sendEventForm} with an empty form for event type selection
      * @see SendEventForm
@@ -284,11 +283,11 @@ public class AbstractEventListenerController extends ComponentProvider implement
      * and generates a {@link SendEventForm} populated with {@link FrontendMappingDefinitions} for the corresponding
      * DTO class. The form contains fields appropriate for the event's data structure, enabling administrators to
      * populate event data for manual emission.
-     * </p>
+     * 
      * <p>
      * The method uses {@link #getEventFormForClass(Event)} to map event types to their corresponding DTO forms
      * (e.g., InvoiceDto, PaymentDto, UserDto). The populated form is returned under the {@code sendEventForm} model key.
-     * </p>
+     * 
      *
      * @param eventForm SendEventForm containing the selected event type from {@link #chooseEvent()}
      * @param br BindingResult for Jakarta Bean Validation error tracking during event form validation
@@ -320,12 +319,12 @@ public class AbstractEventListenerController extends ComponentProvider implement
      * <li>Resolves the event class via {@link AbstractApplicationEvent#getEvent}</li>
      * <li>Emits the event using {@code services.applicationEvent.emitEvent} for listener processing</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * The generic approach using Map allows handling diverse event types without type-specific code paths.
      * Supported event objects include InvoiceDto, PaymentDto, PlanDto, SubscriptionDto, FrontendResourceDto,
      * ScheduledSchedulerDto, BasicUser, UserRoleDto, OrganizationDto, and NotificationDto.
-     * </p>
+     * 
      *
      * @param eventData Map of event DTO field values with {@code dto.*} prefixed keys (e.g., "dto.name", "dto.amount")
      * @return PageModelMap containing model key {@code sendEventForm} with the event type that was emitted
@@ -356,7 +355,7 @@ public class AbstractEventListenerController extends ComponentProvider implement
      * {@link SendEventForm} instances with appropriate {@link FrontendMappingDefinitions} for each supported
      * DTO type. The form fields are generated based on the DTO structure, enabling dynamic form rendering
      * in the Admin panel for manual event emission.
-     * </p>
+     * 
      * <p>
      * Supported event object types and their mappings:
      * <ul>
@@ -372,7 +371,7 @@ public class AbstractEventListenerController extends ComponentProvider implement
      * <li>{@code com.openkoda.dto.NotificationDto} → {@link FrontendMappingDefinitions#sendEventNotificationDto}</li>
      * <li>Unknown types → Empty {@link SendEventForm}</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param event Event object containing the event type and associated DTO class name
      * @return SendEventForm initialized with a new DTO instance, appropriate FrontendMappingDefinitions, and event type string;

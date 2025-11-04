@@ -32,17 +32,17 @@ import static com.openkoda.model.common.ModelConstants.ID_PATH_FORMULA;
 /**
  * Secure repository marker interface for Organization entities with tenant-aware privilege enforcement and search metadata configuration.
  * <p>
- * This interface extends {@link SecureRepository} to provide privilege-checked access to Organization entities
+ * This interface extends {@link com.openkoda.repository.SecureRepository} to provide privilege-checked access to Organization entities
  * in multi-tenant operations. All repository methods inherited from the parent interface enforce read and write
  * privilege validation before database access, ensuring proper tenant isolation and access control.
- * </p>
+
  * <p>
  * <b>Security Model:</b><br>
  * All operations inherited from {@code SecureRepository} enforce privilege checks automatically. When any
  * repository method is invoked, the framework validates that the current user has the required privileges
  * before executing the database operation. This provides an additional security layer beyond the explicit
  * security JPQL queries used in {@link OrganizationRepository}.
- * </p>
+
  * <p>
  * <b>SearchableRepositoryMetadata Configuration:</b><br>
  * This interface is annotated with {@link SearchableRepositoryMetadata} to enable full-text search and
@@ -55,25 +55,25 @@ import static com.openkoda.model.common.ModelConstants.ID_PATH_FORMULA;
  *   <li>{@code searchIndexFormula}: Full-text search indexing with pattern {@code "lower(name || ' orgid:' || COALESCE(CAST (id as text), ''))"} 
  *       for organization discovery by name or ID</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Tenant Isolation:</b><br>
  * Ensures access control on organization and tenant operations via the privilege system. Each operation
  * verifies that users can only access organizations they have privileges for, maintaining strict
  * multi-tenant boundaries.
- * </p>
+
  * <p>
  * <b>Usage Context:</b><br>
  * Used by {@code OrganizationService} and multi-tenant components requiring privilege-enforced organization
  * access. This interface differs from {@link OrganizationRepository} by applying automatic privilege checks
  * to all operations, while the unsecured repository requires explicit security JPQL in custom queries.
- * </p>
+
  * <p>
  * <b>Methods:</b><br>
  * This is a marker interface with no methods declared. All repository methods are inherited from
  * {@code SecureRepository<Organization>} with automatic privilege enforcement applied to standard
  * Spring Data JPA operations like {@code findById}, {@code findAll}, {@code save}, and {@code delete}.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1

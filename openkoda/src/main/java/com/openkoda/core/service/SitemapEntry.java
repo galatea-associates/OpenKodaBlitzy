@@ -33,7 +33,7 @@ import java.time.format.DateTimeFormatter;
  * This class is used for sitemap.xml generation, containing the location URL
  * and last modification timestamp for a frontend resource. Each entry corresponds
  * to one {@code <url>} element in the sitemap following the sitemaps.org protocol.
- * </p>
+ * 
  *
  * @see FrontendResource
  * @see SitemapIndex
@@ -52,7 +52,7 @@ public class SitemapEntry implements Serializable {
      * the complete URL and initializing the last modification timestamp. URL construction
      * handles special cases: the root resource with name "/" is mapped to the base URL
      * without a trailing path segment, while other resources append their name to the base URL.
-     * </p>
+     * 
      *
      * @param entry the FrontendResource to convert to a sitemap entry
      * @param baseUrl the base URL for the application (e.g., "https://example.com")
@@ -67,7 +67,7 @@ public class SitemapEntry implements Serializable {
      * <p>
      * This is the {@code <loc>} element in the sitemap XML, representing
      * the full URL where the resource can be accessed.
-     * </p>
+     * 
      *
      * @return the complete URL location
      */
@@ -89,7 +89,7 @@ public class SitemapEntry implements Serializable {
      * <p>
      * This is the {@code <lastmod>} element in the sitemap XML, formatted according
      * to the ISO 8601 date format (yyyy-MM-dd) as required by the sitemap protocol.
-     * </p>
+     * 
      *
      * @return the last modification date formatted as ISO_LOCAL_DATE string
      */

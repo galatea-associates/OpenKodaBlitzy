@@ -31,19 +31,19 @@ import com.openkoda.dto.OrganizationRelatedObject;
  * cron expression, event data payload, and multi-tenant configuration. It implements
  * {@link CanonicalObject} for notification message formatting and
  * {@link OrganizationRelatedObject} for multi-tenant job isolation.
- * </p>
+
  * <p>
  * This class follows a mutable design pattern without validation, equals/hashCode overrides,
  * or thread-safety guarantees. Validation of cron expression syntax and event data payload
  * format is performed by scheduler frameworks (Spring Scheduling, Quartz) and event handlers,
  * not by this DTO.
- * </p>
+
  * <p>
  * Usage example:
  * <pre>{@code
  * SchedulerDto job = new SchedulerDto("0 0 * * * *", "{\"action\":\"sync\"}", tenantId, true);
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -59,7 +59,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * Required by Jackson for JSON deserialization, JPA for entity mapping,
      * and other serialization/persistence frameworks. Initializes all fields
      * to their default values (null for objects, false for booleans).
-     * </p>
+
      */
     public SchedulerDto() {}
 
@@ -69,7 +69,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * Initializes a complete scheduler configuration including cron scheduling,
      * event payload, multi-tenant isolation, cluster deployment settings, and
      * execution mode. No validation is performed on the parameters.
-     * </p>
+
      *
      * @param cronExpression cron expression defining job schedule (e.g., "0 0 * * * *" for hourly execution)
      * @param eventData JSON or string payload passed to scheduled event handler
@@ -90,7 +90,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * <p>
      * Convenience constructor that delegates to the full constructor with
      * async parameter defaulting to false (synchronous, blocking execution).
-     * </p>
+
      *
      * @param cronExpression cron expression defining job schedule
      * @param eventData JSON or string payload for scheduled event
@@ -107,7 +107,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * Standard cron format (e.g., "0 0 * * * *" for hourly, "0 0 0 * * *" for daily).
      * No validation is performed by this DTO; validation is delegated to scheduler
      * frameworks such as Spring Scheduling or Quartz.
-     * </p>
+
      */
     public String cronExpression;
 
@@ -116,7 +116,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * <p>
      * Typically contains JSON configuration for the job execution. No validation
      * is performed by this DTO; validation is delegated to event handlers.
-     * </p>
+
      */
     public String eventData;
 
@@ -125,7 +125,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * <p>
      * When null, indicates a system-wide job not scoped to any specific tenant.
      * When non-null, restricts job execution and data access to the specified organization.
-     * </p>
+
      */
     public Long organizationId;
 
@@ -134,7 +134,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * <p>
      * When true, prevents duplicate job execution across multiple application instances
      * in a cluster. When false, job may execute on any node.
-     * </p>
+
      */
     public boolean onMasterOnly;
 
@@ -143,7 +143,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * <p>
      * When true, job runs asynchronously without blocking the scheduler thread.
      * When false, job runs synchronously and may block subsequent job execution.
-     * </p>
+
      */
     private boolean async;
 
@@ -161,7 +161,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * <p>
      * No validation is performed; cron syntax validation is delegated
      * to scheduler frameworks.
-     * </p>
+
      *
      * @param cronExpression cron expression (no validation performed)
      */
@@ -183,7 +183,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * <p>
      * Typically a JSON string containing job configuration. No validation
      * is performed by this DTO.
-     * </p>
+
      *
      * @param eventData event payload string (typically JSON)
      */
@@ -204,7 +204,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * Sets the tenant identifier for multi-tenant job scoping.
      * <p>
      * Use null to indicate a system-wide job not scoped to any specific tenant.
-     * </p>
+
      *
      * @param organizationId tenant ID (null for system-wide)
      */
@@ -226,7 +226,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * <p>
      * In clustered deployments, setting this to true prevents duplicate job
      * execution across multiple application instances.
-     * </p>
+
      *
      * @param onMasterOnly whether to restrict execution to master node
      */
@@ -248,7 +248,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * <p>
      * When true, jobs run asynchronously without blocking the scheduler thread.
      * When false, jobs run synchronously and may block subsequent job execution.
-     * </p>
+
      *
      * @param async whether execution should be asynchronous
      */
@@ -262,7 +262,7 @@ public class SchedulerDto implements CanonicalObject, OrganizationRelatedObject 
      * Generates a message in the format: "Scheduler: {cronExpression}. With payload: {eventData}."
      * This message is used for logging, notifications, and audit trails to provide
      * human-readable job identification.
-     * </p>
+
      *
      * @return formatted notification message with cronExpression and eventData
      * @throws NullPointerException if cronExpression or eventData is null during String.format()

@@ -14,14 +14,14 @@ import static com.openkoda.core.helper.NameHelper.*;
  * global list of all generated descriptors. Provides accessor methods for retrieving registered descriptors
  * filtered by load state. Used during application startup to load dynamic entities into JPA context and
  * Byte Buddy class generation pipeline.
- * </p>
+ * 
  * 
  * <p><b>Registry Pattern:</b></p>
  * <p>
  * Static Map&lt;String, DynamicEntityDescriptor&gt; keyed by entityKey provides central descriptor storage.
  * Factory method {@link #create(String, String, Collection, Long)} adds new descriptors. Accessor methods
  * {@link #instances()} and {@link #loadableInstances()} return descriptor lists for different use cases.
- * </p>
+ * 
  * 
  * <p><b>Lifecycle Integration:</b></p>
  * <ol>
@@ -39,7 +39,7 @@ import static com.openkoda.core.helper.NameHelper.*;
  * required when calling {@code create()} concurrently. Read-only access via {@code instances()}/
  * {@code loadableInstances()} is thread-safe AFTER registration complete. Concurrent registration can cause
  * race conditions and duplicate descriptors.
- * </p>
+ * 
  * 
  * <p><b>Usage Example:</b></p>
  * <pre>{@code
@@ -65,12 +65,12 @@ public class DynamicEntityDescriptorFactory {
      * during {@code buildAndLoadDynamicClasses()} to identify which descriptors need JPA entity class generation
      * and registration. After class generation completes, descriptors are marked as loaded to prevent duplicate
      * processing.
-     * </p>
+     * 
      * <p><b>Thread-Safety:</b> Thread-safe for reads after registration phase complete.</p>
      * 
      * @return Filtered list of descriptors where {@code isLoadable() == true} (not yet loaded into JPA context)
      * @see DynamicEntityDescriptor#isLoadable()
-     * @see com.openkoda.service.dynamicentity.DynamicEntityRegistrationService#buildAndLoadDynamicClasses()
+     * @see com.openkoda.service.dynamicentity.DynamicEntityRegistrationService#buildAndLoadDynamicClasses(ClassLoader)
      */
     public static List<DynamicEntityDescriptor> loadableInstances(){
         return map.values().stream().filter(DynamicEntityDescriptor::isLoadable).collect(Collectors.toList());
@@ -82,7 +82,7 @@ public class DynamicEntityDescriptorFactory {
      * Creates defensive copy as ArrayList to prevent external modification of internal registry. Includes both
      * loaded and unloaded descriptors. Used for runtime queries when complete descriptor inventory is needed,
      * such as administrative interfaces or validation processes.
-     * </p>
+     * 
      * <p><b>Thread-Safety:</b> Thread-safe for reads after registration phase complete.</p>
      * 
      * @return ArrayList copy of all registered descriptors (defensive copy prevents registry modification)
@@ -99,7 +99,7 @@ public class DynamicEntityDescriptorFactory {
      * keyed by {@code entityKey} for subsequent retrieval via {@link #getInstanceByEntityKey(String)}.
      * The descriptor encapsulates all metadata needed for Byte Buddy runtime class generation including
      * table name, field definitions with JPA annotations, and optional timestamp suffix for class versioning.
-     * </p>
+     * 
      * <p><b>Thread-Safety WARNING:</b> Not thread-safe. Callers must synchronize when calling concurrently
      * during application startup to prevent race conditions and duplicate descriptor registration.</p>
      * 
@@ -123,7 +123,7 @@ public class DynamicEntityDescriptorFactory {
      * Used for many_to_one field reference resolution during Byte Buddy class generation when dynamic entities
      * reference other dynamic entities. Entity key is computed from form name using {@code NameHelper.toEntityKey()}.
      * Returns null if no descriptor registered for the specified key.
-     * </p>
+     * 
      * <p><b>Thread-Safety:</b> Thread-safe for reads after registration phase complete.</p>
      * 
      * @param entityKey Entity key computed from form name via {@code NameHelper.toEntityKey()}

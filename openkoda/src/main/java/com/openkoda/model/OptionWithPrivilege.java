@@ -29,11 +29,11 @@ package com.openkoda.model;
  * user's privileges, enabling fine-grained access control in selection lists, dropdown menus, 
  * and form fields. The privilege check is performed by UI layer components before rendering 
  * the option.
- * </p>
+ * 
  * <p>
  * Common implementations include Role enums, dynamic entity type selectors, and administrative 
  * configuration options where visibility depends on user permissions.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -49,7 +49,7 @@ public interface OptionWithPrivilege extends OptionWithLabel {
      * <p>
      * UI components check this privilege against the user's granted privileges before 
      * including the option in selection lists.
-     * </p>
+     * 
      *
      * @return the privilege that must be granted to the current user for this option to be 
      *         visible, may be null for publicly visible options

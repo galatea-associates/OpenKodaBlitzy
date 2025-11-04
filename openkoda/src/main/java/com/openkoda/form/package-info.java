@@ -28,7 +28,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * helpers such as getSafeValue, nullIfBlank and defaultErrorMessage. Forms are request-scoped, 
  * not thread-safe, and follow a populateFrom -&gt; validate(BindingResult) -&gt; populateTo lifecycle.
  * 
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  * <ul>
  *   <li>{@link com.openkoda.form.FrontendMappingDefinitions} - Authoritative DSL-style collection 
  *       of pre-built form definitions used application-wide</li>
@@ -46,7 +46,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       - Centralized field name constants</li>
  * </ul>
  * 
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <p><b>Form Lifecycle:</b></p>
  * <ul>
  *   <li>populateFrom (entity → form) - Transfers entity state to DTO</li>
@@ -63,14 +63,14 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p><b>Frontend Mapping DSL:</b> Field builders with validators, value suppliers, and privilege 
  * predicates define form structure and behavior declaratively.</p>
  * 
- * <h2>Usage Examples</h2>
+ * <b>Usage Examples</b>
  * <pre>
  * BasicUserForm form = new BasicUserForm(user);
  * form.populateFrom(user);
  * if(form.validate(br).getResult()) form.populateTo(user);
  * </pre>
  * 
- * <h2>Relationships</h2>
+ * <b>Relationships</b>
  * <p>Depends on:</p>
  * <ul>
  *   <li>core.form DSL (AbstractEntityForm, FrontendMappingDefinition)</li>
@@ -78,7 +78,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>dto package (BasicUserDto, RoleDto)</li>
  * </ul>
  * 
- * <h2>Common Pitfalls</h2>
+ * <b>Common Pitfalls</b>
  * <ul>
  *   <li>Forgetting to call validate before populateTo leads to invalid entity state</li>
  *   <li>Some forms have unimplemented validate stubs (FileForm, GlobalOrgRoleForm) requiring completion</li>

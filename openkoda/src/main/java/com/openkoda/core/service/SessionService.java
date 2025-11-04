@@ -34,18 +34,18 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * Provides thread-safe session attribute management within Spring MVC request scope by leveraging
  * Spring's RequestContextHolder to access the current HTTP session. This service implements
  * LoggingComponentWithRequestId for request correlation and debugging support.
- * </p>
+ * 
  * <p>
  * The service supports both instance-based Spring bean injection and static access through
  * getInstance() for legacy code compatibility. All session operations check for request
  * context availability and gracefully handle scenarios where no HTTP request is active
  * (e.g., async threads, background jobs).
- * </p>
+ * 
  * <p>
  * <strong>Warning:</strong> The {@link #getSessionAttribute(String)} method always creates
  * a session if one doesn't exist. Use {@link #getAttributeIfSessionExists(String)} to avoid
  * inadvertent session creation.
- * </p>
+ * 
  *
  * @see RequestContextHolder
  * @see HttpSession
@@ -64,7 +64,7 @@ public class SessionService implements LoggingComponentWithRequestId {
      * This field is populated by Spring during {@link PostConstruct} phase and enables
      * the {@link #getInstance()} static accessor method. The static pattern is maintained
      * for backward compatibility with existing code that cannot use dependency injection.
-     * </p>
+     * 
      */
     private static SessionService instance;
 
@@ -74,7 +74,7 @@ public class SessionService implements LoggingComponentWithRequestId {
      * This method checks RequestAttributes availability before attempting to access the session,
      * ensuring safe operation in contexts where no HTTP request is active (e.g., async threads,
      * background jobs, scheduled tasks). Returns null if no request context is available.
-     * </p>
+     * 
      * <p>
      * The {@code create} parameter controls session creation behavior per
      * {@link HttpSession} semantics:
@@ -82,7 +82,7 @@ public class SessionService implements LoggingComponentWithRequestId {
      *   <li>{@code true}: Returns existing session or creates a new one</li>
      *   <li>{@code false}: Returns existing session or null if none exists</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param create if {@code true}, creates a session if one doesn't exist; if {@code false},
      *               returns null when no session exists
@@ -107,11 +107,11 @@ public class SessionService implements LoggingComponentWithRequestId {
      * {@link #getSession(boolean)}, which means it will create a new session if one doesn't
      * already exist. This may inadvertently create sessions for users who haven't authenticated
      * or performed any stateful operations.
-     * </p>
+     * 
      * <p>
      * To avoid unintended session creation, use {@link #getAttributeIfSessionExists(String)}
      * instead, which only retrieves attributes from existing sessions.
-     * </p>
+     * 
      *
      * @param id the name of the session attribute to retrieve
      * @return the attribute value, or null if the attribute doesn't exist
@@ -128,14 +128,14 @@ public class SessionService implements LoggingComponentWithRequestId {
      * This method retrieves a named attribute only if an HTTP session already exists. Unlike
      * {@link #getSessionAttribute(String)}, this method will not create a new session, making
      * it safe to call for users who may not have an active session yet.
-     * </p>
+     * 
      * <p>
      * Returns null in two cases:
      * <ul>
      *   <li>No HTTP session exists for the current request</li>
      *   <li>The session exists but the named attribute is not found</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param id the name of the session attribute to retrieve
      * @return the attribute value if found, or null if the session doesn't exist or the
@@ -155,12 +155,12 @@ public class SessionService implements LoggingComponentWithRequestId {
      * session exists, the method returns without creating one, avoiding the session creation
      * side-effect present in direct {@link HttpSession#setAttribute(String, Object)} usage
      * on newly obtained sessions.
-     * </p>
+     * 
      * <p>
      * <strong>Note:</strong> This method returns {@code true} always for consistency, even when
      * the session doesn't exist and no attribute is actually set. The return value indicates
      * the method completed successfully, not whether the attribute was set.
-     * </p>
+     * 
      *
      * @param id the name of the session attribute to set
      * @param value the value to store in the session attribute
@@ -181,12 +181,12 @@ public class SessionService implements LoggingComponentWithRequestId {
      * This method removes a named attribute only when an HTTP session is already active.
      * If no session exists, the method returns without attempting removal, making it safe
      * to call in scenarios where session state is uncertain.
-     * </p>
+     * 
      * <p>
      * <strong>Note:</strong> This method returns {@code true} always for consistency, even when
      * the session doesn't exist and no attribute is actually removed. The return value indicates
      * the method completed successfully, not whether an attribute was removed.
-     * </p>
+     * 
      *
      * @param id the name of the session attribute to remove
      * @return {@code true} always (indicates successful method execution, not attribute removal)
@@ -206,7 +206,7 @@ public class SessionService implements LoggingComponentWithRequestId {
      * This method is invoked automatically by Spring during the {@link PostConstruct} phase
      * after dependency injection is complete. It populates the static {@link #instance} field
      * to enable the {@link #getInstance()} static accessor method.
-     * </p>
+     * 
      *
      * @see PostConstruct
      * @see #getInstance()
@@ -221,11 +221,11 @@ public class SessionService implements LoggingComponentWithRequestId {
      * Returns the SessionService instance that was initialized during Spring ApplicationContext
      * startup. This static accessor enables legacy code to access session functionality without
      * requiring dependency injection.
-     * </p>
+     * 
      * <p>
      * <strong>Note:</strong> This method is only available after ApplicationContext initialization
      * is complete. Calling it before Spring bootstrap finishes will return null.
-     * </p>
+     * 
      *
      * @return the Spring-managed SessionService singleton instance
      * @see #init()

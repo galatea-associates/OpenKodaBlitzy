@@ -32,17 +32,17 @@ import java.util.List;
  * It extends {@link ComponentDto} to inherit module identifier and organization scope fields. This DTO maps the
  * {@link com.openkoda.model.component.FrontendResource} domain entity and is used throughout frontend resource
  * export/import pipelines and converters.
- * </p>
+ * 
  * <p>
  * The {@code controllerEndpoints} field contains a nested list of {@link ControllerEndpointConversionDto} objects
  * and is not defensively copied - callers receive and set direct references to the underlying list. The {@code embeddable}
  * field is exposed as a public field and provides both {@code isEmbeddable()} and {@code getEmbeddable()} accessors
  * for JavaBean framework compatibility.
- * </p>
+ * 
  * <p>
  * This class provides no validation or framework annotations and is not thread-safe. It is intended for use by
  * mapping frameworks (Jackson, MapStruct), export pipelines, and admin controllers.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

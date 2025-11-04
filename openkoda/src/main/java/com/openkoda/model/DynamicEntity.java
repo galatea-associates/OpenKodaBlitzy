@@ -17,19 +17,19 @@ import java.util.Collection;
  * entity definition per table. Used by DynamicEntityDescriptor factory for entity class synthesis with JPA
  * annotations. Extends TimestampedEntity for audit timestamps. Part of OpenKoda's no-code entity creation
  * capability.
- * </p>
+ * 
  * <p>
  * Created from Form entities via DynamicEntityRegistrationService, which generates JPA entity classes,
  * repositories, and DDL at runtime. Enables application administrators to define new entity types through
  * UI without code changes.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see com.openkoda.service.dynamicentity.DynamicEntityDescriptor
  * @see com.openkoda.service.dynamicentity.DynamicEntityRegistrationService
- * @see Form
+ * @see com.openkoda.model.component.Form
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"table_name"}))

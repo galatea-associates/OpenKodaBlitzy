@@ -28,11 +28,11 @@ package com.openkoda.model;
  * Contains userId and organizationId as mutable Long fields with public accessors. Provides isPresent() helper method to check
  * if both IDs are non-null, indicating valid association. Used in service layer, controllers, and forms for user-organization
  * context passing without loading full User or UserRole entities.
- * </p>
+ * 
  * <p>
  * Design: Plain Java Bean (POJO) with no JPA annotations. Mutable for form binding and data transfer.
  * Simpler alternative to full UserRole entity when only IDs needed.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -59,7 +59,7 @@ public class MutableUserInOrganization {
      * <p>
      * Gets the ID of the User entity associated with this user-organization relationship.
      * May be null if no user is currently associated.
-     * </p>
+     * 
      *
      * @return the user ID, or null if no user associated
      */
@@ -72,7 +72,7 @@ public class MutableUserInOrganization {
      * <p>
      * Assigns the ID of the User entity for this user-organization relationship.
      * Set to null to indicate no user association.
-     * </p>
+     * 
      *
      * @param userId the user ID to set, or null to clear user association
      */
@@ -85,7 +85,7 @@ public class MutableUserInOrganization {
      * <p>
      * Gets the ID of the Organization entity associated with this user-organization relationship.
      * May be null if no organization is currently associated.
-     * </p>
+     * 
      *
      * @return the organization ID, or null if no organization associated
      */
@@ -98,7 +98,7 @@ public class MutableUserInOrganization {
      * <p>
      * Assigns the ID of the Organization entity for this user-organization relationship.
      * Set to null to indicate no organization association.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID to set, or null to clear organization association
      */
@@ -121,7 +121,7 @@ public class MutableUserInOrganization {
      * Helper method to check if this DTO represents a complete user-organization relationship.
      * Returns true when both IDs are present (non-null), false if either ID is null.
      * Useful for validation and conditional logic when processing user-organization contexts.
-     * </p>
+     * 
      *
      * @return true if both userId and organizationId are non-null, false otherwise
      */

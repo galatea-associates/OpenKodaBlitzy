@@ -24,11 +24,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p>
  * This package contains the shared JPA contracts, {@code @MappedSuperclass} base entities, multi-tenancy support,
  * audit trail infrastructure, and search indexing capabilities that underpin the entire application data model.
- * </p>
+ * 
  *
- * <h2>Package Contents Overview</h2>
+ * <b>Package Contents Overview</b>
  *
- * <h3>Key Base Classes</h3>
+ * <b>Key Base Classes</b>
  * <ul>
  *   <li>{@link com.openkoda.model.common.TimestampedEntity}: {@code @MappedSuperclass} providing automatic audit
  *       timestamps (createdOn, updatedOn, createdBy, modifiedBy) via Spring Data JPA auditing</li>
@@ -40,7 +40,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       type, severity, change details, and request correlation</li>
  * </ul>
  *
- * <h3>Foundational Interfaces</h3>
+ * <b>Foundational Interfaces</b>
  * <ul>
  *   <li>{@link com.openkoda.model.common.LongIdEntity}: Root interface providing {@code getId()} contract and
  *       Serializable support for all entities</li>
@@ -54,7 +54,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       with {@code getRequiredReadPrivilege()} and {@code getRequiredWritePrivilege()} accessors</li>
  * </ul>
  *
- * <h3>Composite Marker Interfaces</h3>
+ * <b>Composite Marker Interfaces</b>
  * <ul>
  *   <li>{@link com.openkoda.model.common.SearchableOrganizationRelatedEntity}: Combines organization scope and
  *       search capabilities (extends {@code OrganizationRelatedEntity} and {@code SearchableEntity})</li>
@@ -62,7 +62,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       organization scope (extends {@code AuditableEntity} and {@code OrganizationRelatedEntity})</li>
  * </ul>
  *
- * <h3>Annotations</h3>
+ * <b>Annotations</b>
  * <ul>
  *   <li>{@link com.openkoda.model.common.SearchableRepository}: Repository-level annotation configuring search
  *       index update SQL via {@code indexUpdateSql()} element</li>
@@ -75,17 +75,17 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       tenant-scoped for multi-tenancy discovery and partitioning</li>
  * </ul>
  *
- * <h3>Constants Interface</h3>
+ * <b>Constants Interface</b>
  * <ul>
  *   <li>{@link com.openkoda.model.common.ModelConstants}: Central repository defining sequence generator names,
  *       column names and lengths, timestamp column names, SQL formula fragments, initial sequence values, privilege
  *       placeholders (USER_ID_PLACEHOLDER), and path formula bases</li>
  * </ul>
  *
- * <h2>Base Class Hierarchy</h2>
+ * <b>Base Class Hierarchy</b>
  * <p>
  * The entity inheritance pattern follows a layered approach:
- * </p>
+ * 
  * <pre>
  * LongIdEntity (root interface)
  *   ↓
@@ -99,7 +99,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </pre>
  * <p>
  * Interface composition for OpenkodaEntity:
- * </p>
+ * 
  * <ul>
  *   <li>Implements {@code SearchableOrganizationRelatedEntity} (= OrganizationRelatedEntity + SearchableEntity)</li>
  *   <li>Implements {@code AuditableEntityOrganizationRelated} (= AuditableEntity + OrganizationRelatedEntity)</li>
@@ -107,7 +107,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Implements {@code ModelConstants}</li>
  * </ul>
  *
- * <h2>JPA Conventions</h2>
+ * <b>JPA Conventions</b>
  * <ul>
  *   <li><b>Inheritance Strategy:</b> {@code @MappedSuperclass} with TABLE_PER_CLASS approach where each concrete
  *       entity class gets its own database table</li>
@@ -124,10 +124,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       populated by database triggers or scheduled jobs</li>
  * </ul>
  *
- * <h2>Multi-Tenancy Pattern</h2>
+ * <b>Multi-Tenancy Pattern</b>
  * <p>
  * OpenKoda implements organization-scoped data isolation through the following mechanisms:
- * </p>
+ * 
  * <ul>
  *   <li><b>Organization Foreign Key:</b> Entities implement {@code OrganizationRelatedEntity} with organizationId
  *       column referencing the Organization entity</li>
@@ -139,10 +139,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       {@code remove_organizations_by_id.sql} procedure</li>
  * </ul>
  *
- * <h2>Audit Trail Pattern</h2>
+ * <b>Audit Trail Pattern</b>
  * <p>
  * Comprehensive audit trail functionality includes:
- * </p>
+ * 
  * <ul>
  *   <li><b>Automatic Timestamps:</b> Spring Data auditing populates createdOn, updatedOn, createdBy, and modifiedBy
  *       fields on entity changes</li>
@@ -154,10 +154,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       fields (passwords, tokens) from audit trail</li>
  * </ul>
  *
- * <h2>Search Index Pattern</h2>
+ * <b>Search Index Pattern</b>
  * <p>
  * Full-text search capabilities are enabled through:
- * </p>
+ * 
  * <ul>
  *   <li><b>Index String Column:</b> {@code SearchableEntity.getIndexString()} provides access to the indexString
  *       column containing concatenated searchable entity data</li>
@@ -169,10 +169,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       controls whether entities appear in application-wide search results</li>
  * </ul>
  *
- * <h2>Privilege Enforcement Pattern</h2>
+ * <b>Privilege Enforcement Pattern</b>
  * <p>
  * Per-instance privilege requirements are implemented through:
- * </p>
+ * 
  * <ul>
  *   <li><b>Privilege Contract:</b> {@code EntityWithRequiredPrivilege} interface exposes
  *       {@code getRequiredReadPrivilege()} and {@code getRequiredWritePrivilege()} returning privilege name strings
@@ -185,10 +185,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       public or owner-based access</li>
  * </ul>
  *
- * <h2>Key Classes and Interfaces</h2>
+ * <b>Key Classes and Interfaces</b>
  * <p>
  * This package contains 18 source artifacts:
- * </p>
+ * 
  * <ol>
  *   <li><b>LongIdEntity:</b> Root interface providing Long ID contract and Serializable support</li>
  *   <li><b>TimestampedEntity:</b> @MappedSuperclass with automatic audit timestamp fields</li>
@@ -210,7 +210,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>package-info:</b> This package documentation file</li>
  * </ol>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <ul>
  *   <li><b>Template Method:</b> Base classes (TimestampedEntity, OpenkodaEntity) provide common infrastructure with
  *       hooks that subclasses override for specific behavior</li>
@@ -220,9 +220,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       contracts without adding methods</li>
  * </ul>
  *
- * <h2>Usage Examples</h2>
+ * <b>Usage Examples</b>
  *
- * <h3>Example 1: Creating Organization-Scoped Entity</h3>
+ * <b>Example 1: Creating Organization-Scoped Entity</b>
  * <pre>{@code
  * @Entity
  * public class CustomEntity extends OpenkodaEntity {
@@ -230,7 +230,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * }
  * }</pre>
  *
- * <h3>Example 2: Implementing Audit Trail</h3>
+ * <b>Example 2: Implementing Audit Trail</b>
  * <pre>{@code
  * @Override
  * public String toAuditString() {
@@ -238,13 +238,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * }
  * }</pre>
  *
- * <h3>Example 3: Per-Instance Privilege with User ID Placeholder</h3>
+ * <b>Example 3: Per-Instance Privilege with User ID Placeholder</b>
  * <pre>{@code
  * @Formula("CASE WHEN user_id = ##userId## THEN NULL ELSE 'canReadData' END")
  * private String requiredReadPrivilege;
  * }</pre>
  *
- * <h2>Thread Safety</h2>
+ * <b>Thread Safety</b>
  * <ul>
  *   <li><b>ModelConstants.simpleDateFormat:</b> NOT thread-safe. Synchronize access or use ThreadLocal wrapper when
  *       formatting dates</li>

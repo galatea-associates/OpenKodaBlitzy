@@ -30,13 +30,13 @@ package com.openkoda.service.export.dto;
  * registration. This DTO is used by export/import pipelines and listener registration systems to
  * configure event-driven behavior. It is not thread-safe and should not be shared across threads
  * without external synchronization.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see ComponentDto for inherited module and organizationId fields
- * @see com.openkoda.model.EventListenerEntry domain entity
+ * @see com.openkoda.model.component.event.EventListenerEntry
  */
 public class EventListenerEntryConversionDto extends ComponentDto {
 

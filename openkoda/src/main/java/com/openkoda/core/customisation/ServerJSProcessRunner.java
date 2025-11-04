@@ -43,12 +43,10 @@ import java.util.function.Function;
  * This class serves as the execution context for server-side JavaScript threads, exposing a comprehensive
  * set of utility methods to ServerJS scripts running within the OpenKoda platform. It provides capabilities
  * for logging, data type conversion, event emission, file system operations, and command-line process execution.
- * </p>
  * <p>
  * An instance of ServerJSProcessRunner is created for each ServerJS execution and injected into the JavaScript
  * context, making its public methods callable from JavaScript code. The class manages thread registration,
  * log capture, and provides safe command execution across Windows (WSL) and Linux platforms.
- * </p>
  * <p>
  * Key responsibilities include:
  * <ul>
@@ -59,19 +57,16 @@ import java.util.function.Function;
  *   <li>Type conversion helpers for JavaScript-Java interoperability</li>
  *   <li>Asynchronous event emission to application event bus</li>
  * </ul>
- * </p>
  * <p>
  * Example usage pattern from ServerJSRunner:
  * <pre>{@code
  * ServerJSProcessRunner runner = new ServerJSProcessRunner(services, logWriter);
  * String result = runner.runCommandToString("ls -la /tmp");
  * }</pre>
- * </p>
  * <p>
  * <b>Thread Safety:</b> The static {@code serverJsThreads} registry uses a LinkedHashMap and is accessed
  * concurrently. Manual synchronization is required when modifying the registry beyond the automatic
  * cleanup performed in the constructor.
- * </p>
  *
  * @author OpenKoda Team
  * @since 1.7.1
@@ -87,11 +82,11 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Set to {@code true} if the application runs on Windows operating system, {@code false} otherwise.
      * This flag determines command execution strategy: Windows uses WSL bash
      * ({@code c:/Windows/System32/wsl.exe bash -c command}), while Linux/Unix uses native bash.
-     * </p>
+     * 
      * <p>
      * Initialized at class loading time by inspecting the {@code os.name} system property.
      * Detection is case-insensitive and matches any OS name starting with "windows".
-     * </p>
+     * 
      *
      * @see #startProcess(String)
      */
@@ -103,11 +98,11 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * All log entries generated during ServerJS script execution are written to this writer,
      * enabling log streaming to files, consoles, or other destinations. If no writer is provided
      * to the constructor, a {@link NullWriter} is used to discard log output.
-     * </p>
+     * 
      * <p>
      * The writer is flushed after each log entry to ensure immediate visibility of log messages.
      * This field is {@code final} and immutable after construction, ensuring thread-safe read access.
-     * </p>
+     * 
      *
      * @see #log(String)
      * @see #log(Object)
@@ -122,10 +117,10 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * and integration services. The {@link Services} aggregator exposes 50+ service beans, enabling
      * ServerJS scripts to interact with the application's business logic, database operations,
      * and external integrations.
-     * </p>
+     * 
      * <p>
      * Example usage from ServerJS: {@code runner.services.organizationService.findById(orgId)}
-     * </p>
+     * 
      *
      * @see Services
      * @see #emitEventAsync(String, Object)
@@ -138,16 +133,16 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Maintains the last 50 log entries for the current thread's execution, enabling real-time
      * monitoring and debugging of ServerJS scripts. Each entry is timestamped with
      * {@link LocalDateTime} and stored as a string message.
-     * </p>
+     * 
      * <p>
      * This stack operates as a circular buffer: when capacity (50 entries) is exceeded, the oldest
      * entries are automatically evicted. The log stack is registered in {@link #serverJsThreads}
      * during construction, making it accessible for monitoring via {@link #getServerJsThreads()}.
-     * </p>
+     * 
      * <p>
      * Log entries are added via {@link #log(String)} and {@link #log(Object)} methods, which
      * write to both the {@link #logWriter} and this in-memory stack.
-     * </p>
+     * 
      *
      * @see LoggingEntriesStack
      * @see #log(String)
@@ -161,20 +156,20 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Maps each active ServerJS execution thread to its corresponding {@link LoggingEntriesStack},
      * enabling monitoring, log capture, and thread management across the application. The registry
      * is populated automatically in the constructor when a new ServerJSProcessRunner is instantiated.
-     * </p>
+     * 
      * <p>
      * LinkedHashMap preserves insertion order, allowing iteration in chronological order of thread creation.
      * The registry implements automatic cleanup: when size exceeds 30 entries, the first terminated thread
      * is removed to prevent unbounded growth.
-     * </p>
+     * 
      * <p>
      * <b>Thread Safety:</b> This LinkedHashMap is not synchronized. Concurrent access from multiple threads
      * requires external synchronization. The constructor modifies this map, as do {@link #interruptThread(long)}
      * and {@link #removeJsThread(long)} methods.
-     * </p>
+     * 
      * <p>
      * <b>Access Pattern:</b> Use {@link #getServerJsThreads()} for safe retrieval as DTOs.
-     * </p>
+     * 
      *
      * @see LoggingEntriesStack
      * @see ServerJsThreadDto
@@ -189,11 +184,11 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Converts the internal {@link #serverJsThreads} registry into a map of DTOs suitable for
      * presentation or monitoring interfaces. Each thread is wrapped in a {@link ServerJsThreadDto}
      * containing thread metadata (ID, name, state) while preserving the associated log stack.
-     * </p>
+     * 
      * <p>
      * This method provides a safe way to access thread information without exposing the raw
      * Thread objects, preventing unintended thread manipulation.
-     * </p>
+     * 
      *
      * @return new HashMap mapping ServerJsThreadDto to LoggingEntriesStack for each active thread;
      *         empty map if no ServerJS threads are currently running
@@ -215,17 +210,17 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Initializes the execution context by exposing service layer beans and configuring log capture.
      * The constructor automatically registers the current thread in the {@link #serverJsThreads}
      * registry with a new {@link LoggingEntriesStack} for log capture.
-     * </p>
+     * 
      * <p>
      * <b>Automatic Registry Cleanup:</b> If the registry size exceeds 30 entries, the first
      * terminated thread is automatically removed to prevent unbounded memory growth. This cleanup
      * occurs synchronously during construction and does not guarantee removal (if all threads
      * are still active, no cleanup occurs).
-     * </p>
+     * 
      * <p>
      * <b>Null Safety:</b> If {@code logWriter} is {@code null}, a {@link NullWriter} is substituted
      * to safely discard log output without throwing exceptions.
-     * </p>
+     * 
      *
      * @param services service bean aggregator to expose to ServerJS context; must not be {@code null}
      *                 as it provides access to application business logic and integrations
@@ -254,14 +249,14 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Provides JavaScript-to-Java type conversion for numeric values requiring 64-bit precision.
      * This method is callable from ServerJS contexts and enables handling of large integer values
      * that exceed JavaScript's safe integer range (2^53 - 1).
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method appears unused in Java code but is dynamically invoked from
      * ServerJS scripts. Do not remove.
-     * </p>
+     * 
      * <p>
      * Example from ServerJS: {@code let id = runner.getLong("9223372036854775807");}
-     * </p>
+     * 
      *
      * @param val string containing decimal representation of a long value
      * @return Long value parsed from the string
@@ -278,14 +273,14 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Enables JavaScript-to-Java conversion for financial calculations and other scenarios requiring
      * arbitrary-precision decimal arithmetic. JavaScript's native number type (IEEE 754 double) suffers
      * from floating-point precision issues; this method provides lossless decimal representation.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method appears unused in Java code but is dynamically invoked from
      * ServerJS scripts. Do not remove.
-     * </p>
+     * 
      * <p>
      * Example from ServerJS: {@code let price = runner.getBigDecimal("19.99");}
-     * </p>
+     * 
      *
      * @param val string containing decimal representation (e.g., "123.45", "0.001", "1E+10")
      * @return BigDecimal value parsed from the string with exact precision
@@ -303,25 +298,25 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Enables ServerJS scripts to participate in OpenKoda's event-driven architecture by publishing
      * events to the application event bus. The event is processed asynchronously by registered listeners,
      * allowing non-blocking integration with business workflows, audit trails, and external systems.
-     * </p>
+     * 
      * <p>
      * The event name must correspond to a registered event enum constant in the {@link ApplicationEvent}
      * registry. The payload object is delivered to all event listeners subscribed to the specified event.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method appears unused in Java code but is dynamically invoked from
      * ServerJS scripts. Do not remove.
-     * </p>
+     * 
      * <p>
      * Example from ServerJS: {@code runner.emitEventAsync("USER_CREATED", userObj);}
-     * </p>
+     * 
      *
      * @param eventName name of the event to emit; must match a registered ApplicationEvent enum constant
      * @param object payload object to deliver with the event; can be {@code null}
      * @return {@code true} if event emission succeeded, {@code false} if event name is unrecognized
      *         or emission failed
      * @see ApplicationEvent#getEvent(String)
-     * @see com.openkoda.core.service.event.AbstractApplicationEvent#emitEventAsync
+     * @see com.openkoda.core.service.event.ApplicationEventService#emitEventAsync(com.openkoda.core.service.event.AbstractApplicationEvent, Object)
      */
     public boolean emitEventAsync(String eventName, Object object) {
         return services.applicationEvent.emitEventAsync(ApplicationEvent.getEvent(eventName), object);
@@ -334,14 +329,14 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * in ServerJS scripts for polling operations, rate limiting, or coordinating with external systems.
      * The sleep can be interrupted via {@link #interruptThread(long)}, which will log the interruption
      * and return {@code false}.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method appears unused in Java code but is dynamically invoked from
      * ServerJS scripts. Do not remove.
-     * </p>
+     * 
      * <p>
      * Example from ServerJS: {@code runner.sleep(5000); // pause for 5 seconds}
-     * </p>
+     * 
      *
      * @param milliseconds duration to sleep in milliseconds; must be non-negative
      * @return {@code true} if sleep completed normally, {@code false} if interrupted
@@ -364,19 +359,19 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Writes the provided string content to a file at the given path, creating the file if it
      * doesn't exist or overwriting it if it does. This method enables ServerJS scripts to generate
      * reports, export data, or create configuration files during execution.
-     * </p>
+     * 
      * <p>
      * <b>Security Note:</b> The file is created with default permissions. ServerJS scripts have
      * filesystem access according to the application's security context. Validate file paths
      * to prevent directory traversal attacks.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method appears unused in Java code but is dynamically invoked from
      * ServerJS scripts. Do not remove.
-     * </p>
+     * 
      * <p>
      * Example from ServerJS: {@code runner.createFileWithContent("/tmp/report.txt", data);}
-     * </p>
+     * 
      *
      * @param filePath absolute or relative path where the file should be created
      * @param content text content to write to the file; written using platform's default charset
@@ -404,11 +399,11 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Convenience method that converts any object to its string representation via {@code toString()}
      * before delegating to {@link #log(String)}. This enables ServerJS scripts to log complex objects,
      * arrays, or primitives without explicit string conversion.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method appears unused in Java code but is dynamically invoked from
      * ServerJS scripts. Do not remove.
-     * </p>
+     * 
      *
      * @param logEntry object to log; converted to string via {@code toString()}; {@code null} results in "null"
      * @return {@code true} indicating successful log write
@@ -427,19 +422,19 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Writes the log entry to {@link #logWriter} with newline appending and immediate flush,
      * and records the timestamped entry in {@link #logStack} for monitoring. This dual-write
      * approach enables both persistent log streaming and real-time in-memory access.
-     * </p>
+     * 
      * <p>
      * After logging, checks for thread interruption and throws {@link InterruptedException} if
      * the thread has been interrupted via {@link #interruptThread(long)}, enabling graceful
      * script termination.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method appears unused in Java code but is dynamically invoked from
      * ServerJS scripts. Do not remove.
-     * </p>
+     * 
      * <p>
      * Example from ServerJS: {@code runner.log("Processing record " + recordId);}
-     * </p>
+     * 
      *
      * @param logEntry message to log; appended with newline before writing
      * @return {@code true} indicating successful log write
@@ -447,7 +442,7 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * @throws InterruptedException if the current thread has been interrupted
      * @see #logWriter
      * @see #logStack
-     * @see LoggingEntriesStack#log(String, String)
+     * @see LoggingEntriesStack#log(Object, String)
      */
     public boolean log(String logEntry) throws IOException, InterruptedException {
         logWriter.write(logEntry);
@@ -466,22 +461,22 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Streams the command's standard output line-by-line, invoking the provided function for each line.
      * This enables efficient processing of large outputs without loading the entire result into memory.
      * Common use cases include processing CSV files, parsing logs, or filtering command output.
-     * </p>
+     * 
      * <p>
      * The command executes under bash (Linux) or WSL bash (Windows) as determined by {@link #isWindows}.
      * The callback function receives each line as a string parameter; the function's return value is ignored.
-     * </p>
+     * 
      * <p>
      * <b>Interruption Support:</b> Checks for thread interruption between lines, enabling graceful
      * cancellation via {@link #interruptThread(long)}.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method appears unused in Java code but is dynamically invoked from
      * ServerJS scripts. Do not remove.
-     * </p>
+     * 
      * <p>
      * Example from ServerJS: {@code runner.runCommandCallbackPerLine("cat data.csv", processLine);}
-     * </p>
+     * 
      *
      * @param command bash command to execute; syntax depends on OS (see {@link #startProcess(String)})
      * @param f callback function applied to each output line; receives line as String parameter
@@ -518,22 +513,22 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Buffers the command's complete standard output in memory before invoking the callback function
      * with the entire result as a single string. Suitable for processing structured documents like XML,
      * JSON, or small text files where the entire content must be parsed atomically.
-     * </p>
+     * 
      * <p>
      * <b>Memory Warning:</b> The entire output is loaded into memory. For large outputs (>10MB),
      * use {@link #runCommandCallbackPerLine(String, Function)} to stream line-by-line instead.
-     * </p>
+     * 
      * <p>
      * The command executes under bash (Linux) or WSL bash (Windows) as determined by {@link #isWindows}.
      * Line breaks in the output are not preserved; lines are concatenated without delimiters.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method appears unused in Java code but is dynamically invoked from
      * ServerJS scripts. Do not remove.
-     * </p>
+     * 
      * <p>
      * Example from ServerJS: {@code runner.runCommandCallbackWhole("cat config.xml", parseXml);}
-     * </p>
+     * 
      *
      * @param command bash command to execute; syntax depends on OS (see {@link #startProcess(String)})
      * @param f callback function invoked with complete output as String parameter
@@ -571,7 +566,7 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Instance method wrapper for {@link #commandToInputStream(String)} enabling invocation from
      * ServerJS scripts. Returns a stream to the process's standard output, allowing streaming
      * consumption of command results.
-     * </p>
+     * 
      *
      * @param command bash command to execute
      * @return InputStream connected to command's standard output, or {@code null} on IOException
@@ -587,7 +582,7 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Instance method wrapper for {@link #commandToString(String)} enabling invocation from
      * ServerJS scripts. Waits for command completion and returns the entire standard output
      * as a string.
-     * </p>
+     * 
      *
      * @param command bash command to execute
      * @return command output as String, or {@code null} on IOException or interruption
@@ -602,7 +597,7 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * <p>
      * Instance method wrapper for {@link #commandToByteArray(String)} enabling invocation from
      * ServerJS scripts. Waits for command completion and returns the standard output as raw bytes.
-     * </p>
+     * 
      *
      * @param command bash command to execute
      * @return command output as byte array, or {@code null} on IOException or interruption
@@ -618,15 +613,15 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Starts the process and immediately returns a stream to its standard output without waiting
      * for completion. This enables streaming consumption of command output for large results
      * or long-running processes. The process continues running while the stream is consumed.
-     * </p>
+     * 
      * <p>
      * <b>Process Lifecycle:</b> The caller is responsible for closing the returned InputStream
      * and managing the process lifecycle. The process is destroyed on IOException but remains
      * running for successful invocations.
-     * </p>
+     * 
      * <p>
      * The command executes under bash (Linux) or WSL bash (Windows) as determined by {@link #isWindows}.
-     * </p>
+     * 
      *
      * @param command bash command to execute; must be valid bash syntax
      * @return InputStream connected to process standard output, or {@code null} on IOException;
@@ -654,19 +649,19 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Buffers the entire command output in memory as raw bytes, making it suitable for binary
      * data (images, compressed files) or when charset encoding must be handled explicitly.
      * The method blocks until the command completes or the thread is interrupted.
-     * </p>
+     * 
      * <p>
      * <b>Memory Warning:</b> Entire output is loaded into memory. Avoid using this method for
      * commands producing large outputs (>10MB). For text output, prefer {@link #commandToString(String)}.
      * For large results, use {@link #commandToInputStream(String)} for streaming.
-     * </p>
+     * 
      * <p>
      * <b>Interruption Support:</b> Returns {@code null} if the thread is interrupted during output
      * consumption, enabling graceful cancellation.
-     * </p>
+     * 
      * <p>
      * The command executes under bash (Linux) or WSL bash (Windows) as determined by {@link #isWindows}.
-     * </p>
+     * 
      *
      * @param command bash command to execute; must be valid bash syntax
      * @return command standard output as byte array, or {@code null} on IOException or interruption
@@ -702,20 +697,20 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * Buffers the entire command output in memory as text using the platform's default charset,
      * making it ideal for text-based commands (ls, grep, cat). The method blocks until the command
      * completes or the thread is interrupted.
-     * </p>
+     * 
      * <p>
      * <b>Memory Warning:</b> Entire output is loaded into memory. Avoid using this method for
      * commands producing large outputs (>10MB). For streaming consumption, use
      * {@link #commandToInputStream(String)} instead.
-     * </p>
+     * 
      * <p>
      * <b>Interruption Support:</b> Returns {@code null} if the thread is interrupted during output
      * consumption, enabling graceful cancellation.
-     * </p>
+     * 
      * <p>
      * The command executes under bash (Linux) or WSL bash (Windows) as determined by {@link #isWindows}.
      * Output encoding uses the platform's default charset from {@link InputStreamReader}.
-     * </p>
+     * 
      *
      * @param command bash command to execute; must be valid bash syntax
      * @return command standard output as String with platform default charset encoding,
@@ -754,23 +749,23 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * expected text (case-insensitive substring match). Returns immediately when a match is found
      * or when the timeout expires. Useful for monitoring log files or waiting for application
      * startup indicators.
-     * </p>
+     * 
      * <p>
      * <b>Timeout Behavior:</b> Timeout is checked between lines, not mid-line. If the process
      * blocks on a long line, the actual wait time may exceed the timeout slightly. Timeout is
      * based on wall-clock time, not CPU time.
-     * </p>
+     * 
      * <p>
      * <b>Process Lifecycle:</b> The process is NOT terminated when a match is found or timeout
      * expires. The caller is responsible for managing the process lifecycle using the returned PID.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This method appears unused in Java code but is dynamically invoked from
      * ServerJS scripts. Do not remove.
-     * </p>
+     * 
      * <p>
      * Example from ServerJS: {@code let pid = runner.runCommandWaitForOutputWithTimeout("tail -f /var/log/app.log", "STARTED", 60);}
-     * </p>
+     * 
      *
      * @param command bash command to execute; typically a long-running or streaming command like tail -f
      * @param expectedOutput text to search for in command output; matching is case-insensitive substring
@@ -808,7 +803,7 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * <p>
      * This internal method provides cross-platform command execution by automatically selecting
      * the appropriate bash invocation strategy based on the operating system:
-     * </p>
+     * 
      * <ul>
      *   <li><b>Linux/Unix:</b> {@code bash -c "command"} - Direct bash invocation</li>
      *   <li><b>Windows:</b> {@code c:/Windows/System32/wsl.exe bash -c "command"} - Bash via WSL</li>
@@ -817,17 +812,17 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * The {@code -c} flag instructs bash to execute the command string directly without reading
      * from a script file. All commands should use bash syntax (pipes, redirections, environment
      * variables, etc.) regardless of the host OS.
-     * </p>
+     * 
      * <p>
      * <b>Windows Requirements:</b> Windows Subsystem for Linux (WSL) must be installed and
      * configured. The wsl.exe executable must exist at {@code c:/Windows/System32/wsl.exe}.
      * WSL provides a Linux environment on Windows, enabling bash command execution.
-     * </p>
+     * 
      * <p>
      * <b>Process Management:</b> The returned Process object represents the bash process, not
      * the command itself. Standard output/error streams and exit code refer to bash's execution.
      * The process starts immediately and runs asynchronously.
-     * </p>
+     * 
      *
      * @param commandString bash command to execute; must use bash syntax (e.g., "ls -la | grep txt")
      * @return started Process object representing the bash process executing the command
@@ -855,18 +850,18 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * thread will detect interruption in methods like {@link #log(String)},
      * {@link #sleep(int)}, and command execution methods, typically throwing
      * {@link InterruptedException} to terminate the script gracefully.
-     * </p>
+     * 
      * <p>
      * <b>Cooperative Cancellation:</b> Interruption is a request, not forceful termination.
      * The target thread must check {@link Thread#isInterrupted()} or handle
      * {@link InterruptedException} to actually stop. Well-behaved ServerJS scripts should
      * check interruption status periodically.
-     * </p>
+     * 
      * <p>
      * <b>Thread Safety:</b> This method reads from {@link #serverJsThreads} without synchronization.
      * Concurrent modifications may result in ConcurrentModificationException if iteration occurs
      * during registry changes.
-     * </p>
+     * 
      *
      * @param threadId unique identifier of the ServerJS thread to interrupt (from {@link Thread#getId()})
      * @return {@code true} always, regardless of whether a matching thread was found;
@@ -890,17 +885,17 @@ public class ServerJSProcessRunner implements LoggingComponent {
      * if its state is {@link Thread.State#TERMINATED}. This provides manual cleanup of completed
      * threads to free memory used by the log stack. Automatic cleanup occurs in the constructor
      * when the registry exceeds 30 entries.
-     * </p>
+     * 
      * <p>
      * <b>Safety:</b> Only terminated threads can be removed. This prevents accidental removal
      * of active threads and ensures log stacks remain accessible for running executions.
      * Attempting to remove a non-terminated thread returns {@code false} without modification.
-     * </p>
+     * 
      * <p>
      * <b>Thread Safety:</b> This method modifies {@link #serverJsThreads} without synchronization.
      * Concurrent registry access may result in ConcurrentModificationException. Synchronize
      * externally if calling from multiple threads.
-     * </p>
+     * 
      *
      * @param threadId unique identifier of the ServerJS thread to remove (from {@link Thread#getId()})
      * @return {@code true} if a terminated thread with the given ID was found and removed,

@@ -38,7 +38,6 @@ import java.lang.annotation.Target;
  * This annotation provides consistent parameter descriptions for Spring Data pagination parameters
  * in OpenAPI/Swagger documentation. It automatically documents three standard query parameters
  * used for pagination and sorting in REST API endpoints.
- * </p>
  * <p>
  * The annotation defines the following query parameters:
  * <ul>
@@ -47,7 +46,6 @@ import java.lang.annotation.Target;
  * <li><b>sort</b>: Sorting criteria in the format {@code property,asc|desc}. Multiple sort
  * criteria are supported. Default sort order is ascending.</li>
  * </ul>
- * </p>
  * <p>
  * Example usage on a controller method:
  * <pre>{@code
@@ -57,17 +55,14 @@ import java.lang.annotation.Target;
  *     return ResponseEntity.ok(organizationService.findAll(pageable));
  * }
  * }</pre>
- * </p>
  * <p>
  * This annotation requires {@code io.swagger.v3.oas.annotations} OpenAPI annotations on the classpath
  * and is used by OpenAPI documentation generators (such as Springdoc or Swagger) to produce
  * comprehensive API documentation with pagination parameter details.
- * </p>
  * <p>
  * This is a compile-time and runtime annotation ({@link RetentionPolicy#RUNTIME} retention) with
  * no runtime behavior. It is purely for documentation generation purposes and does not affect
  * application execution.
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1

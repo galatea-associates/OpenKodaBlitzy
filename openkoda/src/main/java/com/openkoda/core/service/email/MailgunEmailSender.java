@@ -54,15 +54,15 @@ import java.util.List;
  * the Mailgun email service API. It is registered as a Spring {@code @Service} bean and activated when
  * the "mailgun" profile is active via {@code @Profile("mailgun")}. The {@code @Primary} annotation makes
  * this implementation the default EmailSender when the mailgun profile is enabled.
- * </p>
+
  * <p>
  * The implementation performs HTTP multipart/form-data POST requests to the Mailgun API endpoint,
  * supporting inline attachments, custom reply-to headers, and embedded application logos.
- * </p>
+
  * <p>
  * <b>Configuration:</b> Mailgun API credentials and endpoint URL are configured via application properties
  * (mailgun.apikey, mailgun.apiurl) or can be overridden per-organization through persisted EmailConfig entities.
- * </p>
+
  * <p>
  * <b>Mailgun-Specific Features:</b>
  * <ul>
@@ -71,17 +71,17 @@ import java.util.List;
  *   <li>Per-organization EmailConfig overrides for API key and sender addresses</li>
  *   <li>Temporary file cleanup after attachment materialization</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Error Handling:</b> Exceptions during email sending are propagated to the caller.
  * Temporary attachment files are deleted after send attempts regardless of success or failure.
- * </p>
+
  * <p>
  * <b>Usage Example:</b>
  * <pre>{@code
  * mailgunEmailSender.sendEmail("from@example.com", "to@example.com", "Subject", "<html>Body</html>", null, null);
  * }</pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @since 1.7.1
@@ -97,10 +97,10 @@ public class MailgunEmailSender extends EmailSender {
      * Injected from application property {@code mailgun.apikey}. This key is used as a fallback
      * when no per-organization EmailConfig with a custom API key is found. The API key is encoded
      * as Base64("api:" + key) for HTTP Basic Authorization header.
-     * </p>
+
      * <p>
      * Default value is empty string if property is not configured.
-     * </p>
+
      */
     @Value("${mailgun.apikey:}")
     String mailgunApiKey;
@@ -111,10 +111,10 @@ public class MailgunEmailSender extends EmailSender {
      * Injected from application property {@code mailgun.apiurl}. This URL is the target for HTTP POST
      * requests containing multipart/form-data email payloads. Typically follows the format:
      * {@code https://api.mailgun.net/v3/YOUR_DOMAIN_NAME/messages}
-     * </p>
+
      * <p>
      * Default value is empty string if property is not configured.
-     * </p>
+
      */
     @Value("${mailgun.apiurl:}")
     String mailgunApiUrl;
@@ -125,10 +125,10 @@ public class MailgunEmailSender extends EmailSender {
      * Injected from application property {@code application.logo} with default value
      * {@code /vendor/swagger-ui/springfox-swagger-ui/favicon-32x32.png}. The logo is loaded as a
      * ClassPathResource and added as an inline attachment to email messages for branding purposes.
-     * </p>
+
      * <p>
      * If the path is empty or null, no logo is embedded in outgoing emails.
-     * </p>
+
      */
     @Value("${application.logo:/vendor/swagger-ui/springfox-swagger-ui/favicon-32x32.png}")
     String appLogoPath;
@@ -138,7 +138,7 @@ public class MailgunEmailSender extends EmailSender {
      * <p>
      * Injected via {@code @Inject} annotation. Used for resolving classpath resources and
      * accessing servlet container-specific functionality when preparing email content.
-     * </p>
+
      */
     @Inject
     ServletContext context;
@@ -157,15 +157,15 @@ public class MailgunEmailSender extends EmailSender {
      *   <li>Posts request to mailgunApiUrl using RestTemplate</li>
      *   <li>Deletes temporary attachment files after sending</li>
      * </ol>
-     * </p>
+
      * <p>
      * <b>Per-Organization Configuration:</b> If an EmailConfig entity exists in the repository,
      * its mailgunApiKey, from, and replyTo values override the default configuration properties.
-     * </p>
+
      * <p>
      * <b>Error Handling:</b> All exceptions (network errors, API errors, file I/O errors) propagate
      * to the caller. Temporary files are cleaned up in a finally-like manner regardless of send outcome.
-     * </p>
+
      *
      * @param fullFrom the sender email address in "Name &lt;email@example.com&gt;" or "email@example.com" format;
      *                 may be overridden by EmailConfig.from if configured

@@ -46,24 +46,23 @@ import java.util.stream.Collectors;
  * Supports three role types: GlobalRole (platform-wide permissions), OrganizationRole (organization-scoped permissions),
  * and GlobalOrganizationRole (global permissions within organization context). Uses single-table inheritance
  * for Role entities.
- * </p>
+ * 
  * <p>
  * Subclasses provide concrete endpoint mappings for different access methods (HTML, API).
  * Delegates to {@code services.role} for role reconciliation and privilege synchronization.
  * Uses Flow pipeline pattern for request orchestration.
- * </p>
+ * 
  * <p>
  * Example usage:
  * <pre>{@code
  * PageModelMap result = findRole(roleId);
  * Role role = result.get("roleEntity");
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see com.openkoda.service.role.RoleService
+ * @see com.openkoda.service.user.RoleService
  * @see com.openkoda.model.Role
  * @see com.openkoda.model.Privilege
  */
@@ -79,7 +78,7 @@ public class AbstractRoleController extends AbstractController {
      * <p>
      * Uses secure repository to enforce privilege-based access control. Only roles visible to the current user
      * are returned based on their permissions. Search is performed on role names when aSearchTerm is provided.
-     * </p>
+     * 
      *
      * @param aSearchTerm optional text search term for filtering roles by name, null for no filtering
      * @param aSpecification JPA Specification for additional filtering criteria, null for no specification
@@ -101,7 +100,7 @@ public class AbstractRoleController extends AbstractController {
      * <p>
      * Uses unsecure repository for internal operations. Pre-populates form with role data for edit scenarios.
      * For roleId of -1, initializes an empty form for creation workflow.
-     * </p>
+     * 
      *
      * @param roleId role identifier to retrieve, use -1 for new role form initialization
      * @return PageModelMap containing 'roleEntity' (Role), 'roleForm' (RoleForm pre-populated), 
@@ -122,11 +121,11 @@ public class AbstractRoleController extends AbstractController {
      * Flow: Validates form → Checks role name uniqueness → Converts privilege identifier strings to
      * PrivilegeBase instances via {@code PrivilegeHelper.valueOfString()} → Delegates to 
      * {@code services.role.createRole()} for persistence → Resets form on success.
-     * </p>
+     * 
      * <p>
      * Privilege identifiers are mapped using PrivilegeHelper. Falls back to empty privilege set if 
      * dto.privileges is null. Validation failures are recorded in BindingResult without exception throwing.
-     * </p>
+     * 
      *
      * @param roleFormData form containing role name, type (GlobalRole/OrganizationRole/GlobalOrganizationRole), 
      *                     and selected privilege identifiers
@@ -155,11 +154,11 @@ public class AbstractRoleController extends AbstractController {
      * Cascade deletion pattern: First removes UserRole associations via 
      * {@code repositories.unsecure.userRole.deleteUserRoleByRoleId()}, then deletes Role entity.
      * This prevents orphaned UserRole records. Transaction ensures atomicity with rollback on any failure.
-     * </p>
+     * 
      * <p>
      * Warning: No validation for roles in use. Caller must implement business rule checks 
      * (e.g., prevent deleting last admin role).
-     * </p>
+     * 
      *
      * @param roleId role identifier to delete
      * @return PageModelMap indicating operation completion
@@ -179,11 +178,11 @@ public class AbstractRoleController extends AbstractController {
      * Flow: Loads existing role via {@code repositories.unsecure.role.findOne()} → Validates and merges
      * form data via {@code services.validation.validateAndPopulateToEntity()} → Persists updated role →
      * Triggers privilege change notification via {@code services.privilege.notifyOnPrivilagesChange()}.
-     * </p>
+     * 
      * <p>
      * Privilege change notification triggers recalculation of effective privileges for all users with this role.
      * Updates UserRole effective privilege caches.
-     * </p>
+     * 
      *
      * @param roleId role identifier to update
      * @param roleFormData form containing updated role name and privilege selections

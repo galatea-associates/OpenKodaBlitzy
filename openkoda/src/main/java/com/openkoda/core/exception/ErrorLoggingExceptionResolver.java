@@ -47,10 +47,10 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
  * This resolver extends {@link SimpleMappingExceptionResolver} to integrate with Spring's exception
  * resolution chain and implements {@link LoggingComponentWithRequestId} for request-correlated logging
  * and {@link ReadableCode} for readable conditional logic.
- * </p>
+ * 
  * <p>
  * Exception resolution workflow:
- * </p>
+ * 
  * <ol>
  *   <li>Catches uncaught exceptions from controllers</li>
  *   <li>Maps to appropriate HTTP status (HttpStatusException → custom status, AccessDeniedException → 401, others → 500)</li>
@@ -61,10 +61,10 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
  * Integration with {@link RequestIdHolder} enables request correlation for distributed tracing.
  * Noise suppression mechanisms detect client abort conditions and filter user agents to reduce
  * log pollution from known problematic clients.
- * </p>
+ * 
  * <p>
  * Example configuration in MvcConfig:
- * </p>
+ * 
  * <pre>
  * ErrorLoggingExceptionResolver resolver = new ErrorLoggingExceptionResolver(excludedAgent);
  * resolvers.add(resolver);
@@ -72,7 +72,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
  * <p>
  * Thread safety: This class is effectively thread-safe. The static field is only mutated during construction,
  * and all instance methods operate on immutable state or thread-safe Spring components.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -91,7 +91,7 @@ public class ErrorLoggingExceptionResolver extends
 	 * <p>
 	 * Exceptions from requests with matching User-Agent headers are not logged at ERROR level
 	 * to reduce log noise from known problematic clients. A null value means no filtering is applied.
-	 * </p>
+	 * 
 	 */
 	private static String userAgentExcludedFromErrorLog = null;
 
@@ -99,7 +99,7 @@ public class ErrorLoggingExceptionResolver extends
 	 * Constructs an exception resolver with user agent filtering configuration.
 	 * <p>
 	 * Initialization steps:
-	 * </p>
+	 * 
 	 * <ol>
 	 *   <li>Sets warn log category to this class name for controlled logging levels</li>
 	 *   <li>Sets default error view to "frontend-resource/error" for error page rendering</li>
@@ -121,10 +121,10 @@ public class ErrorLoggingExceptionResolver extends
 	 * <p>
 	 * This method uses the older Spring MVC API and receives the handler that generated the exception
 	 * (typically an <tt>@Controller</tt> annotated class).
-	 * </p>
+	 * 
 	 * <p>
 	 * Exception resolution logic:
-	 * </p>
+	 * 
 	 * <ol>
 	 *   <li>Determines if exception should be logged via {@link #shouldErrorLogException}</li>
 	 *   <li>Extracts HTTP status from exception type:
@@ -162,7 +162,7 @@ public class ErrorLoggingExceptionResolver extends
 	 * Determines if a given exception should be logged at ERROR level.
 	 * <p>
 	 * Logging decision logic:
-	 * </p>
+	 * 
 	 * <ul>
 	 *   <li>Returns false for null exceptions</li>
 	 *   <li>Returns false for excluded user agents (configured via constructor parameter)</li>
@@ -174,7 +174,7 @@ public class ErrorLoggingExceptionResolver extends
 	 * <p>
 	 * This method reduces log noise from known benign conditions while preserving visibility
 	 * into genuine server-side errors.
-	 * </p>
+	 * 
 	 *
 	 * @param exception Exception to evaluate for logging eligibility
 	 * @param request   HTTP request containing User-Agent header for filtering
@@ -199,12 +199,12 @@ public class ErrorLoggingExceptionResolver extends
 	 * This static method performs substring matching against the configured exclusion filter
 	 * to reduce log pollution from known troublesome agents (such as aggressive crawlers,
 	 * monitoring tools, or misbehaving clients).
-	 * </p>
+	 * 
 	 * <p>
 	 * The filter is case-sensitive and matches any occurrence of the configured substring
 	 * within the User-Agent header. If no filter is configured (null value), all user agents
 	 * are allowed and this method returns false.
-	 * </p>
+	 * 
 	 *
 	 * @param userAgent User-Agent header value from HTTP request, may be null
 	 * @return True if user agent contains the configured exclusion substring,

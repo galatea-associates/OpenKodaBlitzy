@@ -44,18 +44,18 @@ import static com.openkoda.core.controller.generic.AbstractController.*;
  * {@link EventListenerEntry} entities. It follows a delegation pattern where HTTP request
  * bindings are resolved, business logic is delegated to {@link AbstractEventListenerController},
  * and ModelAndView responses are generated via the {@code .mav()} method for Thymeleaf rendering.
- * </p>
+ * 
  * <p>
  * All endpoints are mapped with the prefix {@code _HTML + _EVENTLISTENER} and integrate with
  * the Flow pipeline architecture for transactional execution. Security is enforced via
  * {@code @PreAuthorize} annotations requiring either {@code CHECK_CAN_READ_BACKEND} for
  * read operations or {@code CHECK_CAN_MANAGE_BACKEND} for write operations.
- * </p>
+ * 
  * <p>
  * Form binding leverages Jakarta Bean Validation with {@code @Valid} annotations, and
  * validation errors are captured in {@code BindingResult} instances for conditional view
  * fragment selection (success vs. error fragments).
- * </p>
+ * 
  * 
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-03-11
@@ -71,10 +71,10 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
      * Displays paginated list of all event listeners with optional search filtering.
      * <p>
      * Maps to {@code GET _HTML/_EVENTLISTENER/_ALL} and requires {@code CHECK_CAN_READ_BACKEND}
-     * privilege. Delegates to {@link #findListenersFlow(String, Object, Pageable)} which executes
+     * privilege. Delegates to {@link #findListenersFlow(String, Specification, Pageable)} which executes
      * a Flow pipeline performing the search query, then renders the result as ModelAndView using
      * the "eventlistener-all" Thymeleaf template fragment.
-     * </p>
+     * 
      *
      * @param pageable pagination parameters qualified with "event" bean name for page size and sorting
      * @param search optional search string for filtering event listeners by name or properties (default: empty string)
@@ -94,10 +94,10 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
      * Displays the settings configuration page for an existing event listener.
      * <p>
      * Maps to {@code GET _HTML/_EVENTLISTENER/{id}/_SETTINGS} and requires
-     * {@code CHECK_CAN_READ_BACKEND} privilege. Delegates to {@link #find(Object, Long)} which
+     * {@code CHECK_CAN_READ_BACKEND} privilege. Delegates to {@link #find(Long, long)} which
      * retrieves the specified {@link EventListenerEntry} via Flow pipeline, then renders the
      * "eventlistener-settings" view for editing.
-     * </p>
+     * 
      *
      * @param eListenerId the ID of the event listener entity to display, bound from path variable "id"
      * @return ModelAndView containing the {@link EventListenerEntry} entity and associated form for "eventlistener-settings" view
@@ -115,9 +115,9 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
      * <p>
      * Maps to {@code GET _HTML/_EVENTLISTENER/_NEW_SETTINGS} and requires
      * {@code CHECK_CAN_MANAGE_BACKEND} privilege for write access. Delegates to
-     * {@link #find(Object, Long)} with ID=-1 to initialize an empty form, then renders
+     * {@link #find(Long, long)} with ID=-1 to initialize an empty form, then renders
      * the "eventlistener-settings" view with a blank {@link EventListenerForm} for creation.
-     * </p>
+     * 
      *
      * @return ModelAndView containing an initialized empty {@link EventListenerForm} for "eventlistener-settings" view
      */
@@ -134,10 +134,10 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
      * <p>
      * Maps to {@code POST _HTML/_EVENTLISTENER/{id}/_SETTINGS} and requires
      * {@code CHECK_CAN_MANAGE_BACKEND} privilege. Validates the submitted {@link EventListenerForm}
-     * via Jakarta Bean Validation, then delegates to {@link #update(Long, EventListenerForm, BindingResult)}
+     * via Jakarta Bean Validation, then delegates to {@link #update(long, EventListenerForm, BindingResult)}
      * which executes the Flow pipeline for persistence. Returns conditional view fragments based on
      * validation success: "::eventlistener-settings-form-success" or "::eventlistener-settings-form-error".
-     * </p>
+     * 
      *
      * @param listenerId the ID of the event listener entity to update, bound from path variable "id"
      * @param eventListenerForm the validated form containing updated listener configuration fields
@@ -162,7 +162,7 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
      * which executes the Flow pipeline for database persistence. Returns conditional view fragments:
      * "::eventlistener-settings-form-success" on successful creation or
      * "::eventlistener-settings-form-error" on validation failure.
-     * </p>
+     * 
      *
      * @param eventListenerForm the validated form containing new listener configuration including event type, consumer name, and code
      * @param br binding result capturing validation errors such as required field violations
@@ -181,11 +181,11 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
      * Deletes an existing event listener entity from the database.
      * <p>
      * Maps to {@code POST _HTML/_EVENTLISTENER/{id}/_REMOVE} and requires
-     * {@code CHECK_CAN_MANAGE_BACKEND} privilege. Delegates to {@link #remove(Long)} which
+     * {@code CHECK_CAN_MANAGE_BACKEND} privilege. Delegates to {@link #remove(long)} which
      * executes the Flow pipeline for deletion, then generates a boolean-based ModelAndView
      * response using lambda functions {@code (a -> true)} for success and {@code (a -> false)}
      * for failure, enabling conditional view fragment selection.
-     * </p>
+     * 
      *
      * @param listenerId the ID of the event listener entity to delete, bound from path variable "id"
      * @return ModelAndView with boolean result indicating successful deletion (true) or failure (false)
@@ -205,7 +205,7 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
      * privilege. Delegates to {@link #chooseEvent()} which prepares the available {@link Event}
      * types for selection, then renders the "eventlistener-send" view containing an event type
      * picker form for administrative manual event triggering.
-     * </p>
+     * 
      *
      * @return ModelAndView containing available event types for selection in "eventlistener-send" view
      */
@@ -225,7 +225,7 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
      * delegates to {@link #prepareEvent(SendEventForm, BindingResult)} which prepares the appropriate
      * DTO input form. Returns conditional fragments: "::eventlistener-emit-event" for successful
      * selection or "::eventlistener-choose-event-error" on validation failure.
-     * </p>
+     * 
      *
      * @param eventType the form containing the selected {@link Event} type identifier to emit
      * @param br binding result capturing validation errors from event type selection
@@ -249,7 +249,7 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
      * parses the form parameters into the appropriate DTO structure and publishes the event to
      * registered listeners. Returns conditional fragments: "::eventlistener-emit-event-success"
      * on successful emission or "::eventlistener-emit-event-error" on processing failure.
-     * </p>
+     * 
      *
      * @param formData map of form field names to values containing the event DTO payload from x-www-form-urlencoded submission
      * @return ModelAndView with success fragment on event publication or error fragment on failure

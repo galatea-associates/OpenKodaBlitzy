@@ -41,10 +41,10 @@ import java.util.Map;
  * {@link PrivilegeConversionDto} objects into {@link DynamicPrivilege} entities and
  * persists them through the privilege service. The converter is automatically discovered
  * by the export/import subsystem via the {@link YamlToEntityParentConverter} annotation.
- * </p>
+ * 
  * <p>
  * <b>Key Responsibilities:</b>
- * </p>
+ * 
  * <ul>
  * <li>Converts PrivilegeConversionDto to DynamicPrivilege entities with lookup-or-create semantics</li>
  * <li>Uses {@link PrivilegeHelper#valueOfString(String)} to find existing privileges by name</li>
@@ -53,16 +53,16 @@ import java.util.Map;
  * </ul>
  * <p>
  * <b>Delegation Pattern:</b> This converter does NOT directly save entities via repository.
- * Instead, it delegates to {@link com.openkoda.service.privilege.PrivilegeService#createOrUpdateDynamicPrivilege}
+ * Instead, it delegates to PrivilegeService.createOrUpdateDynamicPrivilege()
  * to ensure proper privilege enumeration registration in the runtime privilege system.
- * </p>
+ * 
  * <p>
  * <b>Return Type:</b> Methods return {@link PrivilegeBase} (interface), but the actual
  * returned instance is always a {@link DynamicPrivilege}.
- * </p>
+ * 
  * <p>
  * <b>Thread Safety:</b> Stateless Spring {@code @Component} safe for concurrent use.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -73,7 +73,7 @@ import java.util.Map;
  * @see DynamicPrivilege
  * @see PrivilegeConversionDto
  * @see ComponentProvider
- * @see PrivilegeHelper
+ * @see com.openkoda.core.helper.PrivilegeHelper
  */
 @Component
 @YamlToEntityParentConverter(dtoClass = PrivilegeConversionDto.class)
@@ -86,11 +86,11 @@ public class PrivilegeYamlToEntityConverter extends ComponentProvider implements
      * It delegates to {@link #getPrivilege(PrivilegeConversionDto)} to create or update the entity,
      * then registers the privilege through {@code services.privilege.createOrUpdateDynamicPrivilege}
      * to ensure proper privilege enumeration registration in the runtime system.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> The {@code filePath} parameter is unused because privileges have no associated
      * content files, but it is required by the {@link YamlToEntityConverter} interface.
-     * </p>
+     * 
      *
      * @param dto the PrivilegeConversionDto containing privilege metadata (must not be null)
      * @param filePath the YAML file path (unused but required by interface)
@@ -98,7 +98,7 @@ public class PrivilegeYamlToEntityConverter extends ComponentProvider implements
      * @throws NullPointerException if dto is null
      * @throws IllegalArgumentException if dto.getGroup() is not a valid PrivilegeGroup enum value
      * @see #getPrivilege(PrivilegeConversionDto)
-     * @see com.openkoda.service.privilege.PrivilegeService#createOrUpdateDynamicPrivilege
+     * @see com.openkoda.service.user.BasicPrivilegeService#createOrUpdateDynamicPrivilege(com.openkoda.model.DynamicPrivilege)
      */
     @Override
     public PrivilegeBase convertAndSave(PrivilegeConversionDto dto, String filePath) {
@@ -114,11 +114,11 @@ public class PrivilegeYamlToEntityConverter extends ComponentProvider implements
      * but accepts an in-memory resources Map. The resources parameter is unused because privileges
      * have no associated content files, but the method signature is required by the
      * {@link YamlToEntityConverter} interface.
-     * </p>
+     * 
      * <p>
      * The method delegates to {@link #getPrivilege(PrivilegeConversionDto)} to create or update
      * the entity, then registers the privilege through {@code services.privilege.createOrUpdateDynamicPrivilege}.
-     * </p>
+     * 
      *
      * @param dto the PrivilegeConversionDto containing privilege metadata (must not be null)
      * @param filePath the YAML file path (unused)
@@ -141,10 +141,10 @@ public class PrivilegeYamlToEntityConverter extends ComponentProvider implements
      * to find an existing privilege by name. If found, it casts the {@link PrivilegeBase} to
      * {@link DynamicPrivilege} (assumes only dynamic privileges are managed by this converter).
      * If not found, it creates a new DynamicPrivilege instance.
-     * </p>
+     * 
      * <p>
      * <b>DTO to Entity Mappings:</b>
-     * </p>
+     * 
      * <ul>
      * <li>{@code name} - Lookup key and identifier</li>
      * <li>{@code group} - Converted to {@link PrivilegeGroup} enum via valueOf</li>
@@ -159,7 +159,7 @@ public class PrivilegeYamlToEntityConverter extends ComponentProvider implements
      * @throws NullPointerException if dto is null
      * @throws IllegalArgumentException if dto.getGroup() is not a valid PrivilegeGroup enum value
      * @throws ClassCastException if existing privilege is not DynamicPrivilege (should not occur)
-     * @see PrivilegeHelper#valueOfString(String)
+     * @see com.openkoda.core.security.PrivilegeHelper#valueOfString(String)
      * @see PrivilegeGroup
      */
     @NotNull

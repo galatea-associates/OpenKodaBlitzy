@@ -34,12 +34,10 @@ import java.util.Collection;
  * reloading a principal from the database after privilege changes. When a {@code wasModifiedSince}
  * check triggers a reload, {@code UserProvider} creates this token to rebuild the {@code OrganizationUser}
  * with updated roles and privileges.
- * </p>
  * <p>
  * The {@code LoginByPasswordOrTokenAuthenticationProvider} recognizes this token type and handles it
  * without password verification, since the user has already been authenticated. This is a thin wrapper
  * with no additional fields beyond the superclass properties (principal, credentials, authorities).
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -47,7 +45,6 @@ import java.util.Collection;
  * Collection<GrantedAuthority> authorities = loadAuthorities(user);
  * return new PreauthenticatedReloadUserToken(user, null, authorities);
  * }</pre>
- * </p>
  *
  * @see UserProvider
  * @see LoginByPasswordOrTokenAuthenticationProvider
@@ -65,7 +62,7 @@ public class PreauthenticatedReloadUserToken extends UsernamePasswordAuthenticat
      * and privileges from the database without requiring password verification. The token
      * is created in an authenticated state (isAuthenticated() returns true) with the
      * updated user information.
-     * </p>
+     * 
      *
      * @param principal the OrganizationUser principal being reloaded from database with updated privileges
      * @param credentials the user credentials (typically null for preauthenticated flows where password already verified)

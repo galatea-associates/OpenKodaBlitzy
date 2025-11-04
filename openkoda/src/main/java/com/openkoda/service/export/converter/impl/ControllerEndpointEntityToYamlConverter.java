@@ -37,7 +37,7 @@ import static com.openkoda.service.export.FolderPathConstants.*;
  * entities as JavaScript code files with YAML component metadata. The converter constructs JavaScript file
  * paths using FolderPathConstants (UI_COMPONENT_, EXPORT_CODE_PATH_) combined with frontend resource
  * metadata retrieved from SecureFrontendResourceRepository.
- * </p>
+
  * <p>
  * Key behaviors:
  * <ul>
@@ -46,15 +46,15 @@ import static com.openkoda.service.export.FolderPathConstants.*;
  *   <li>YAML component file: null (no separate YAML component generated for controller endpoints)</li>
  *   <li>Organization handling: null organizationId = global, non-null = tenant-scoped path</li>
  * </ul>
- * </p>
+
  * <p>
  * Thread-safety: This is a stateless Spring @Component, safe for concurrent use by multiple threads.
- * </p>
+
  * <p>
  * WARNING: This converter lacks defensive null checks on frontend resource lookup. If frontendResourceId
  * is invalid or the resource does not exist, the converter may throw NullPointerException during path
  * construction.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -78,7 +78,7 @@ public class ControllerEndpointEntityToYamlConverter extends AbstractEntityToYam
      * This method builds the absolute filesystem path where the JavaScript code for this controller endpoint
      * will be exported. The path pattern follows:
      * EXPORT_CODE_PATH_ + UI_COMPONENT_ + accessLevel + orgPath + "{frontendResourceName}-{httpMethod}-{subPath}.js"
-     * </p>
+
      * <p>
      * Path components:
      * <ul>
@@ -88,11 +88,11 @@ public class ControllerEndpointEntityToYamlConverter extends AbstractEntityToYam
      *   <li>orgPath: Organization-specific path (empty for global, "organization_{id}/" for tenant-scoped)</li>
      *   <li>Filename: "{frontendResourceName}-{httpMethod}-{subPath}.js"</li>
      * </ul>
-     * </p>
+
      * <p>
      * Organization handling: If organizationId is null, the endpoint is global and no organization path
      * prefix is added. If organizationId is non-null, the path includes SUBDIR_ORGANIZATION_PREFIX + organizationId + "/".
-     * </p>
+
      *
      * @param entity the ControllerEndpoint entity to export (must not be null)
      * @return absolute filesystem path to the .js content file
@@ -113,7 +113,7 @@ public class ControllerEndpointEntityToYamlConverter extends AbstractEntityToYam
      * <p>
      * This method extracts the JavaScript implementation code stored in the entity. The code typically
      * contains controller logic that handles HTTP requests for this endpoint.
-     * </p>
+
      *
      * @param entity the ControllerEndpoint entity (must not be null)
      * @return JavaScript code string from entity.getCode(), may be null if no code is defined
@@ -130,7 +130,7 @@ public class ControllerEndpointEntityToYamlConverter extends AbstractEntityToYam
      * ControllerEndpoint entities export only JavaScript code files and do not generate separate YAML
      * component files. The endpoint metadata is embedded within the parent FrontendResource's YAML
      * configuration instead.
-     * </p>
+
      *
      * @param entity the ControllerEndpoint entity (unused)
      * @return always null - no YAML component file is generated for controller endpoints
@@ -146,7 +146,7 @@ public class ControllerEndpointEntityToYamlConverter extends AbstractEntityToYam
      * This method converts the ControllerEndpoint entity into a DTO that will be serialized to YAML format
      * during the export process. The DTO contains all endpoint metadata required for reimporting the
      * controller endpoint.
-     * </p>
+
      * <p>
      * DTO field mappings:
      * <ul>
@@ -159,11 +159,11 @@ public class ControllerEndpointEntityToYamlConverter extends AbstractEntityToYam
      *   <li>module: Module name from entity.getModuleName()</li>
      *   <li>organizationId: Tenant organization ID (null for global endpoints)</li>
      * </ul>
-     * </p>
+
      * <p>
      * Note: The code field contains a relative resource path (with EXPORT_PATH prefix removed), not the
      * actual JavaScript content. This makes the export portable across different deployment environments.
-     * </p>
+
      *
      * @param entity the ControllerEndpoint entity to convert (must not be null)
      * @return populated ControllerEndpointConversionDto ready for YAML serialization

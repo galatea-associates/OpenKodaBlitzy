@@ -40,28 +40,28 @@ import java.util.Map;
  * providing complete data isolation between different customer organizations. Each organization maintains its own
  * property bag stored as JSONB for flexible configuration, branding settings (colors, logo), and computed access
  * control tokens. Organizations use a dedicated sequence generator (seqOrganizationId) with initial value 122.
- * </p>
+ * 
  * <p>
  * JPA mapping details: {@code @Entity} with {@code @DynamicUpdate} for selective column updates. Extends
  * {@link TimestampedEntity} for automatic createdOn/updatedOn audit fields via AuditingEntityListener.
- * </p>
+ * 
  * <p>
  * Multi-tenancy note: organizationId field duplicates id to satisfy {@link OrganizationRelatedEntity} interface
  * for polymorphic entity handling.
- * </p>
+ * 
  * <p>
  * Computed fields: {@code @Formula}-derived fields include referenceString (id as string), requiredReadPrivilege
  * (_readOrgData token), requiredWritePrivilege (_manageOrgData token), and indexString (search index,
  * database-generated default empty string).
- * </p>
+ * 
  * <p>
  * Property storage: properties Map persisted to organization_property join table, enabling flexible key-value
  * configuration without schema changes.
- * </p>
+ * 
  * <p>
  * Branding: Supports UI customization via mainBrandColor, secondBrandColor, logoId (lazy-loaded File reference),
  * and personalizeDashboard flag.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -88,7 +88,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Serves as unique organization identifier across the system. The sequence starts at 122 to allow
      * reserved IDs for system organizations.
-     * </p>
+     * 
      */
     @Id
     @SequenceGenerator(name = ORGANIZATION_ID_GENERATOR, sequenceName = ORGANIZATION_ID_GENERATOR,
@@ -101,7 +101,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * No uniqueness constraint enforced at database level, allowing multiple organizations
      * with the same display name if needed.
-     * </p>
+     * 
      */
     @Column
     private String name;
@@ -111,7 +111,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Required to satisfy {@link OrganizationRelatedEntity} interface contract for polymorphic
      * entity queries. Value automatically synchronized with id by database mapping.
-     * </p>
+     * 
      */
     @Column(name = "id", insertable = false, updatable = false)
     private Long organizationId;
@@ -121,7 +121,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Database-generated with default empty string. Non-insertable from application code.
      * Used for efficient full-text search queries on organization data.
-     * </p>
+     * 
      */
     @Column(name = INDEX_STRING_COLUMN, length = INDEX_STRING_COLUMN_LENGTH, insertable = false)
     @ColumnDefault("''")
@@ -132,7 +132,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * {@code @Formula} computed field: (id). Returns organization ID as string representation
      * for use in templates and API responses.
-     * </p>
+     * 
      */
     @Formula(REFERENCE_FORMULA)
     private String referenceString;
@@ -142,7 +142,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Default value 0. Used in multi-database deployments to route queries to specific
      * database instances based on organization assignment.
-     * </p>
+     * 
      */
     @Column(name = "assigned_datasource", columnDefinition = "INTEGER DEFAULT 0")
     private int assignedDatasource;
@@ -157,7 +157,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * {@code @Formula} computed constant: '_readOrgData'. This privilege token must be granted
      * to users or roles to enable read access to this organization's data.
-     * </p>
+     * 
      *
      * @see PrivilegeNames#_readOrgData
      */
@@ -169,7 +169,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * {@code @Formula} computed constant: '_manageOrgData'. This privilege token must be granted
      * to users or roles to enable write access to this organization's data.
-     * </p>
+     * 
      *
      * @see PrivilegeNames#_manageOrgData
      */
@@ -182,7 +182,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * {@code @ElementCollection} Map persisted to organization_property join table. Enables flexible
      * key-value storage for organization-specific configuration (SMTP settings, API keys, feature flags)
      * without schema modifications. Properties are stored as name-value pairs in the join table.
-     * </p>
+     * 
      */
     @ElementCollection
     @CollectionTable(name = "organization_property",
@@ -198,7 +198,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Default false. When enabled, allows organizations to customize their dashboard layout
      * and widgets according to their specific needs.
-     * </p>
+     * 
      */
     @Column(columnDefinition = "boolean default false")
     private Boolean personalizeDashboard = false;
@@ -207,7 +207,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * Primary brand color in hex format for organization branding.
      * <p>
      * Used for UI theme customization to match organization's visual identity.
-     * </p>
+     * 
      */
     @Column
     private String mainBrandColor;
@@ -216,7 +216,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * Secondary brand color in hex format for organization branding.
      * <p>
      * Used for UI theme customization to complement the main brand color.
-     * </p>
+     * 
      */
     @Column
     private String secondBrandColor;
@@ -226,7 +226,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Read-only association for fetching logo file when needed. Logo is loaded lazily to avoid
      * unnecessary database queries. Non-insertable and non-updatable; use logoId to modify the association.
-     * </p>
+     * 
      *
      * @see File
      */
@@ -240,7 +240,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Nullable. Set this field to associate a logo with the organization. The logo itself
      * is fetched via the {@link #logo} association when needed.
-     * </p>
+     * 
      */
     @Column(nullable = true, name = "logo_id", updatable = true)
     protected Long logoId;
@@ -250,7 +250,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Creates an empty Organization instance. Fields should be populated using setters
      * before persisting to database.
-     * </p>
+     * 
      */
     public Organization() {
     }
@@ -260,7 +260,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Used primarily for testing or when reconstructing entities with known IDs.
      * Note that organizationId is normally non-updatable and synchronized with id.
-     * </p>
+     * 
      *
      * @param organizationId the organization identifier to set
      */
@@ -273,7 +273,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Creates a new organization with the specified name and assigns it to the default
      * datasource (0).
-     * </p>
+     * 
      *
      * @param name the organization display name
      */
@@ -287,7 +287,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Creates a new organization with the specified name and assigns it to the given datasource.
      * If assignedDatasource is null, defaults to 0.
-     * </p>
+     * 
      *
      * @param name the organization display name
      * @param assignedDatasource the datasource assignment identifier (null defaults to 0)
@@ -311,7 +311,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Typically not called directly as the ID is generated by the database sequence.
      * May be used when reconstructing entities or in testing scenarios.
-     * </p>
+     * 
      *
      * @param id the organization ID to set
      */
@@ -342,7 +342,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Provides a human-readable representation of the organization for audit logs and
      * tracking changes.
-     * </p>
+     * 
      *
      * @return the organization name for audit purposes
      */
@@ -355,7 +355,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * Gets the organization identifier.
      * <p>
      * Returns the organizationId field which is synchronized with the id field.
-     * </p>
+     * 
      *
      * @return the organization ID
      */
@@ -368,7 +368,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * Gets the full-text search index string.
      * <p>
      * Returns the database-generated search index used for efficient full-text queries.
-     * </p>
+     * 
      *
      * @return the search index string (may be empty string if not yet generated)
      */
@@ -399,7 +399,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * Formats notification message including organization name and ID.
      * <p>
      * Provides a formatted string suitable for user notifications and system messages.
-     * </p>
+     * 
      *
      * @return formatted notification message with organization name and ID
      */
@@ -413,7 +413,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Returns the computed privilege constant '_readOrgData' required for reading
      * this organization's data.
-     * </p>
+     * 
      *
      * @return the required read privilege token
      */
@@ -427,7 +427,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Returns the computed privilege constant '_manageOrgData' required for modifying
      * this organization's data.
-     * </p>
+     * 
      *
      * @return the required write privilege token
      */
@@ -440,7 +440,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * Retrieves a property value by key from the properties map.
      * <p>
      * Returns null if the key is not found in the properties map.
-     * </p>
+     * 
      *
      * @param name the property key to look up
      * @return the property value, or null if not found
@@ -453,7 +453,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * Sets a property value in the properties map.
      * <p>
      * Adds or updates the property with the specified key and value.
-     * </p>
+     * 
      *
      * @param name the property key
      * @param value the property value to set
@@ -531,7 +531,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Set this field to associate a logo file with the organization. The actual file
      * entity can be fetched via {@link #getLogo()}.
-     * </p>
+     * 
      *
      * @param logoId the logo file ID to set, or null to remove the logo association
      */
@@ -544,7 +544,7 @@ public class Organization extends TimestampedEntity implements AuditableEntity, 
      * <p>
      * Fetches the logo file associated with this organization. The file is loaded lazily,
      * so accessing this method may trigger a database query if the logo hasn't been loaded yet.
-     * </p>
+     * 
      *
      * @return the logo File entity, or null if no logo is assigned
      * @see File

@@ -38,20 +38,20 @@ import org.hibernate.annotations.Formula;
  * should be emitted within the OpenKoda event-driven architecture. Each scheduler instance specifies
  * a cron expression for timing, event data for emission, and execution parameters such as master-only
  * or asynchronous processing.
- * </p>
+
  * <p>
  * The scheduler entity inherits organization-scoped multi-tenancy support from {@link ComponentEntity},
  * ensuring that scheduled jobs are properly isolated within their organizational context. Persistence
  * occurs via standard JPA operations, followed by automatic loading during application startup and
  * registration with the job scheduler for periodic event emission.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * Scheduler job = new Scheduler("0 0 * * * ?", "eventClassName,eventName,eventType", true);
  * schedulerRepository.save(job);
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -129,7 +129,7 @@ public class Scheduler extends ComponentEntity {
     
     /**
      * Computed privilege required to read this scheduler entity.
-     * Generated via database formula requiring {@link PrivilegeNames#canReadBackend} privilege
+     * Generated via database formula requiring {@link PrivilegeNames#_canReadBackend} privilege
      * for accessing scheduler information.
      */
     @Formula("( '" + PrivilegeNames._canReadBackend + "' )")
@@ -137,7 +137,7 @@ public class Scheduler extends ComponentEntity {
 
     /**
      * Computed privilege required to modify this scheduler entity.
-     * Generated via database formula requiring {@link PrivilegeNames#canManageBackend} privilege
+     * Generated via database formula requiring {@link PrivilegeNames#_canManageBackend} privilege
      * for creating, updating, or deleting scheduler configurations.
      */
     @Formula("( '" + PrivilegeNames._canManageBackend + "' )")

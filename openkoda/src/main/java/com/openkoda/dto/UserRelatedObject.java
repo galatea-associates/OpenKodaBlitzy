@@ -28,11 +28,11 @@ package com.openkoda.dto;
  * The user ID is used for user-scoped operations, authorization checks, and audit trail generation
  * throughout the OpenKoda platform. By implementing this interface, DTOs signal that they
  * represent data owned by or related to a specific user in the system.
- * </p>
+
  * <p>
  * Typical implementing classes include user-related DTOs such as {@code RegisteredUserDto},
  * {@code NotificationDto}, and other DTOs that track user-specific data or actions.
- * </p>
+
  * <p>
  * This interface is commonly used by:
  * <ul>
@@ -41,7 +41,7 @@ package com.openkoda.dto;
  *   <li>Authorization code to verify user access rights</li>
  *   <li>Audit logging to track user-initiated operations</li>
  * </ul>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -55,7 +55,7 @@ public interface UserRelatedObject {
      * The user ID is used to scope operations to a specific user context, enabling
      * user-specific data filtering, authorization checks, and audit trail generation.
      * When the user context is not available or not applicable, this method may return null.
-     * </p>
+
      *
      * @return the user ID, or null when user context is not available
      */

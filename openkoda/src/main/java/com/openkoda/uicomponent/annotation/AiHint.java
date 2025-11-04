@@ -33,11 +33,11 @@ import java.lang.annotation.Target;
  * metadata for AI systems, UI tooltips, documentation generators, and other runtime consumers.
  * The hint text clarifies the field's meaning, format, units, or usage constraints in a way
  * that enhances automated processing and human comprehension.
- * </p>
+
  * <p>
  * <b>Retention and Target:</b> Available at runtime via reflection ({@code RetentionPolicy.RUNTIME})
  * and restricted to field declarations only ({@code ElementType.FIELD}).
- * </p>
+
  * <p>
  * <b>Usage Example:</b>
  * <pre>{@code
@@ -47,7 +47,7 @@ import java.lang.annotation.Target;
  * @AiHint("format: ISO-8601")
  * private String createdDate;
  * }</pre>
- * </p>
+
  * <p>
  * <b>Accessing at Runtime:</b> Consumers read annotation values via reflection:
  * <pre>{@code
@@ -57,15 +57,15 @@ import java.lang.annotation.Target;
  *     String hintText = hint.value();
  * }
  * }</pre>
- * </p>
+
  * <p>
  * <b>Mandatory Value:</b> The {@link #value()} element has no default, making the hint
  * text mandatory at every usage site. Consumers should cache extracted hints for
  * performance and handle missing annotations defensively.
- * </p>
+
  * <p>
  * <b>Thread Safety:</b> Annotation instances are immutable JVM proxies and inherently thread-safe.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -85,7 +85,7 @@ public @interface AiHint {
      * purpose, format, units, constraints, or other semantic information. The hint
      * should be written to improve AI prompt construction, UI tooltip generation,
      * and automated documentation.
-     * </p>
+
      * <p>
      * <b>Examples:</b>
      * <ul>
@@ -94,12 +94,12 @@ public @interface AiHint {
      * <li>{@code "nullable; defaults to system locale"} - documents nullability and default behavior</li>
      * <li>{@code "must be positive integer"} - expresses validation constraint</li>
      * </ul>
-     * </p>
+
      * <p>
      * <b>No Default:</b> This element has no default value, making the hint mandatory
      * at every usage site. Consumers can rely on the presence of hint text whenever
      * the annotation is present.
-     * </p>
+
      *
      * @return hint text for the annotated field, never {@code null} or empty when annotation is present
      */

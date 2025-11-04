@@ -42,12 +42,12 @@ import static com.openkoda.controller.common.URLConstants._HTML;
  * mark-as-read buttons, and delete actions. Routes under /notifications base path. Extends
  * {@link AbstractNotificationController} with HTML response handling. Includes WebSocket integration
  * for real-time notification delivery.
- * </p>
+ * 
  * <p>
  * Handler methods are stateless and execute synchronously on the request thread. Method-level authorization
  * uses {@code @PreAuthorize(CHECK_IS_THIS_USERID)} from {@link HasSecurityRules} to verify that the
  * authenticated user matches the userId path variable.
- * </p>
+ * 
  * <p>
  * Example notification flow with WebSocket:
  * <pre>{@code
@@ -57,9 +57,8 @@ import static com.openkoda.controller.common.URLConstants._HTML;
  * // → Publishes WebSocket message to /topic/notifications/{userId}
  * // → Client receives real-time update and displays toast
  * }</pre>
- * </p>
  *
- * <h3>Endpoints:</h3>
+ * <b>Endpoints:</b>
  * <ul>
  *   <li>GET /notifications/{userId}/all → List all notifications with pagination</li>
  *   <li>GET /organization/{orgId}/notifications/{userId}/all → List organization-scoped notifications</li>
@@ -67,7 +66,7 @@ import static com.openkoda.controller.common.URLConstants._HTML;
  *   <li>POST /notifications/{userId}/all/mark-read → Bulk mark all notifications as read</li>
  * </ul>
  *
- * <h3>Notification Types:</h3>
+ * <b>Notification Types:</b>
  * <ul>
  *   <li>INFO: General information (blue icon)</li>
  *   <li>WARNING: Warnings (yellow icon)</li>
@@ -75,7 +74,7 @@ import static com.openkoda.controller.common.URLConstants._HTML;
  *   <li>SUCCESS: Success messages (green icon)</li>
  * </ul>
  *
- * <h3>Unread Badge Count:</h3>
+ * <b>Unread Badge Count:</b>
  * All views include unread count via {@code @ModelAttribute}, displayed in navigation bar notification icon.
  * Updates in real-time via WebSocket.
  *
@@ -96,7 +95,7 @@ public class NotificationController extends AbstractNotificationController imple
      * GET endpoint retrieving both read and unread notifications for the authenticated user across
      * all their organizations. Results are ordered by creation date descending. The Pageable parameter
      * is selected using named bean qualifier 'notification', which must exist in Spring configuration.
-     * </p>
+     * 
      *
      * @param userId the user ID from path variable, must match authenticated user per security constraint
      * @param notificationPageable pagination parameters (page, size, sort) injected via @Qualifier("notification")
@@ -118,7 +117,7 @@ public class NotificationController extends AbstractNotificationController imple
      * GET endpoint retrieving both read and unread notifications for the authenticated user within
      * a specific organization context. Filters results to the provided organization ID. Results are
      * ordered by creation date descending.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID from path variable to scope notification results
      * @param userId the user ID from path variable, must match authenticated user per security constraint
@@ -141,7 +140,7 @@ public class NotificationController extends AbstractNotificationController imple
      * in the user's notification dropdown. Delegates to {@link AbstractNotificationController#markAsRead}
      * which persists read state via NotificationService. Both organization-scoped and non-organization
      * paths are supported.
-     * </p>
+     * 
      *
      * @param organizationId optional organization ID from path variable, may be null if using non-organization path
      * @param userId the user ID from path variable, must match authenticated user per security constraint
@@ -166,7 +165,7 @@ public class NotificationController extends AbstractNotificationController imple
      * organizationId is provided, only marks notifications within that organization context.
      * Updates readAt timestamp to current time via NotificationService. Supports both organization-scoped
      * and non-organization paths.
-     * </p>
+     * 
      *
      * @param organizationId optional organization ID from path variable, may be null if using non-organization path
      * @param userId the user ID from path variable, must match authenticated user per security constraint

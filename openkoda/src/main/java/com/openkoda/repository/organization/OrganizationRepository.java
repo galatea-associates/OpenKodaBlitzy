@@ -44,42 +44,42 @@ import java.util.stream.Stream;
  * This repository provides comprehensive data access operations for the {@code Organization} entity, which represents
  * tenants in OpenKoda's multi-tenant architecture. It implements both secured and unsecured query methods to support
  * different access control requirements across the application.
- * </p>
+
  * <p>
  * <b>Multi-Tenant Operations:</b> Provides queries for organization/tenant lookup by name, status, parent relationships,
  * and datasource assignments. Organizations can be hierarchically structured with parent-child relationships for
  * organizational hierarchy management.
- * </p>
+
  * <p>
  * <b>Security Model:</b> Implements both secured methods (using {@code CHECK_CAN_READ_ORG_DATA_OR_IS_ORG_MEMEBER_JPQL}
  * fragment) and unsecured direct lookup methods. The security fragment from {@code HasSecurityRules} enforces row-level
  * access control, ensuring users can only read/delete organizations where they have appropriate privileges or membership.
- * </p>
+
  * <p>
  * <b>Properties Bag Persistence:</b> Persists to 'organizations' table with JSONB properties column for flexible
  * tenant configuration. Each organization can store arbitrary key-value properties for customization.
- * </p>
+
  * <p>
  * <b>Datasource Mapping:</b> Provides native PostgreSQL query for organization-to-datasource assignment aggregation,
  * enabling multi-database tenant isolation strategies.
- * </p>
+
  * <p>
  * <b>Usage by OrganizationService:</b> Primary repository used by {@code OrganizationService} for tenant provisioning,
  * management, and removal operations.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * Organization org = organizationRepository.findByName("TenantCo");
  * Map&lt;Long, Integer&gt; datasourceMap = organizationRepository.findOrganizationToDatasourceIndexMap();
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see Organization
- * @see OrganizationService
+ * @see com.openkoda.model.Organization
+ * @see com.openkoda.service.organization.OrganizationService
  * @see UnsecuredFunctionalRepositoryWithLongId
  * @see HasSecurityRules
  */
@@ -92,7 +92,7 @@ public interface OrganizationRepository extends UnsecuredFunctionalRepositoryWit
      * This method uses the {@code CHECK_CAN_READ_ORG_DATA_OR_IS_ORG_MEMEBER_JPQL} security fragment to filter
      * results based on the current user's privileges and organization memberships. Only organizations that the
      * user has permission to read or is a member of will be included in the results.
-     * </p>
+
      *
      * @param page Pagination parameters including page number, size, and sort criteria
      * @return Page of Organization entities accessible to the current user based on privilege checks
@@ -106,7 +106,7 @@ public interface OrganizationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * Returns the organization only if the current user has appropriate read privileges or is a member of the
      * organization. Returns {@code null} if the organization doesn't exist or the user lacks access permissions.
-     * </p>
+
      *
      * @param organizationId Organization entity identifier
      * @return Organization entity if found and accessible, {@code null} otherwise
@@ -120,7 +120,7 @@ public interface OrganizationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * <b>Warning:</b> This method bypasses security checks. Use only in trusted contexts or with manual privilege
      * validation. For privilege-enforced queries, use {@code findOne(Long)} instead.
-     * </p>
+
      *
      * @param id Organization identifier
      * @return Organization entity if found, {@code null} otherwise
@@ -134,7 +134,7 @@ public interface OrganizationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * <b>Warning:</b> No security fragment applied. Validate privileges manually if needed. The name comparison
      * is case-sensitive.
-     * </p>
+
      *
      * @param name Organization name (case-sensitive)
      * @return Organization entity if found, {@code null} if no organization with given name exists
@@ -147,7 +147,7 @@ public interface OrganizationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * Uses {@code CHECK_CAN_READ_ORG_DATA_OR_IS_ORG_MEMEBER_JPQL} to enforce delete permissions. The organization
      * will only be deleted if the current user has appropriate privileges or membership.
-     * </p>
+
      *
      * @param aLong Organization identifier to delete
      * @return {@code true} if organization deleted successfully, {@code false} if not found or access denied
@@ -161,7 +161,7 @@ public interface OrganizationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * Returns a stream of organization IDs suitable for processing large result sets without loading all entities
      * into memory. Ideal for bulk operations, reporting, and background job processing.
-     * </p>
+
      *
      * @return Stream of organization IDs for processing large result sets
      */
@@ -173,7 +173,7 @@ public interface OrganizationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * Disabled organizations are identified by naming convention: names starting with '(disabled)' prefix.
      * This method filters out such organizations to return only active tenant IDs.
-     * </p>
+
      *
      * @return List of organization IDs where name does not start with '(disabled)' prefix
      */
@@ -194,7 +194,7 @@ public interface OrganizationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * Annotated with {@code @Transactional} to ensure atomic write operation. If the entity is new (no ID),
      * it will be persisted with a generated ID. If it already exists, it will be updated.
-     * </p>
+
      *
      * @param entity Organization entity to save or update
      * @param <S> Organization or subtype
@@ -209,7 +209,7 @@ public interface OrganizationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * <b>Warning:</b> PostgreSQL-specific query using {@code string_agg} and {@code ::} cast syntax - not portable
      * to other databases. Returns raw aggregation suitable for processing by {@code findOrganizationToDatasourceIndexMap()}.
-     * </p>
+
      *
      * @return List of Object[] rows where [0]=datasource_index (Number), [1]=comma-separated org IDs (String)
      * @see #findOrganizationToDatasourceIndexMap()
@@ -221,20 +221,20 @@ public interface OrganizationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * Executes {@code findDatasourceAssignments()}, parses comma-separated IDs, skips blank values, and populates
      * a map from organization ID to datasource index. This map is used for multi-database tenant isolation strategies.
-     * </p>
+
      * <p>
      * <b>Thread-safety:</b> Single-thread safe (allocates fresh collections) but not synchronized for concurrent access.
-     * </p>
+
      * <p>
      * <b>Memory:</b> Materializes all mapped IDs into memory - suitable for moderate organization counts.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>
      * Map&lt;Long, Integer&gt; dsMap = organizationRepository.findOrganizationToDatasourceIndexMap();
      * Integer datasourceIndex = dsMap.get(organizationId);
      * </pre>
-     * </p>
+
      *
      * @return HashMap mapping organization ID (Long) to datasource index (Integer)
      * @throws NumberFormatException If database contains invalid (non-numeric) organization ID tokens in aggregated string

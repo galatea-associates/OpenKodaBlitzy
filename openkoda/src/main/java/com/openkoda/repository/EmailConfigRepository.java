@@ -34,13 +34,13 @@ import com.openkoda.model.EmailConfig;
  * SMTP server settings including host, port, authentication credentials, and TLS configuration.
  * These settings enable the application's email notification services to deliver outbound mail
  * through configured SMTP servers.
- * </p>
+
  * <p>
  * The repository supports organization-scoped email configurations for multi-tenant deployments,
  * allowing each tenant to maintain independent SMTP settings. Email configurations are typically
  * managed through the administration interface and applied automatically by notification services
  * when sending emails on behalf of specific organizations.
- * </p>
+
  * <p>
  * Inherited operations from {@code FunctionalRepositoryWithLongId} include:
  * <ul>
@@ -50,7 +50,7 @@ import com.openkoda.model.EmailConfig;
  *   <li>{@code delete(EmailConfig)} - Remove email configuration</li>
  *   <li>{@code count()} - Count total configurations</li>
  * </ul>
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
@@ -58,7 +58,7 @@ import com.openkoda.model.EmailConfig;
  * config.setSmtpHost("smtp.example.com");
  * emailConfigRepository.save(config);
  * </pre>
- * </p>
+
  *
  * @author mboronski
  * @author OpenKoda Team

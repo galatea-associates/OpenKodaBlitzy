@@ -33,19 +33,19 @@ import jakarta.inject.Inject;
  * services, and security context. Injects integration-specific services: {@link IntegrationService}
  * for OAuth token management and organization configuration, and {@link IntegrationUrlHelper} for
  * provider authorization URL generation.
- * </p>
+
  * <p>
  * Extended by {@link IntegrationControllerHtml} to access integration module beans without manual
  * service lookup. Uses Jakarta CDI field injection (@Inject) for stateless dependency wiring.
- * </p>
+
  * <p>
  * <b>Design Pattern:</b> Implements component provider pattern - centralizes dependency injection
  * so subclasses inherit all necessary services without boilerplate constructor or setter injection.
- * </p>
+
  * <p>
  * <b>Thread Safety:</b> Stateless and thread-safe. Contains no mutable state, only injected service
  * references managed by the Spring/Jakarta CDI container.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -57,7 +57,7 @@ import jakarta.inject.Inject;
  *     }
  * }
  * }</pre>
- * </p>
+
  *
  * @see IntegrationControllerHtml
  * @see IntegrationService

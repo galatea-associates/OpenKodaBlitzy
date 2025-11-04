@@ -72,7 +72,6 @@ import static com.openkoda.controller.common.URLConstants.EXTERNAL_SESSION_ID;
  * organization data, notifications, date formatters, captcha configuration, build information, and session
  * metadata. This ensures views have access to common attributes without requiring each controller to
  * explicitly add them.
- * </p>
  * <p>
  * The enrichment process adds the following standard attributes:
  * <ul>
@@ -86,7 +85,6 @@ import static com.openkoda.controller.common.URLConstants.EXTERNAL_SESSION_ID;
  *   <li>Session ID and external session tracking</li>
  *   <li>Common and organization-specific dictionaries</li>
  * </ul>
- * </p>
  * <p>
  * <strong>Important Notes:</strong>
  * <ul>
@@ -95,7 +93,6 @@ import static com.openkoda.controller.common.URLConstants.EXTERNAL_SESSION_ID;
  *   <li>Uses RequestSessionCacheService for performance optimization via memoization</li>
  *   <li>Thread-safe through Spring's request-scoped injection</li>
  * </ul>
- * </p>
  * <p>
  * Example usage (automatic - no code required):
  * <pre>{@code
@@ -106,7 +103,6 @@ import static com.openkoda.controller.common.URLConstants.EXTERNAL_SESSION_ID;
  *     return mav; // Will contain organizationEntity, userId, notifications, etc.
  * }
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -182,7 +178,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
      * The resources version is generated from the current timestamp (format: yyMMddHHmm) and
      * is used for cache busting static resources (CSS, JavaScript) in the view templates.
      * This ensures browsers fetch updated resources after deployments.
-     * </p>
+     * 
      */
     public ModelEnricherInterceptor() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmm");
@@ -197,7 +193,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
      * determines the tenant (organization) from the URL, sets up external session tracking,
      * and validates user privileges for organization access. If the user has readOrgData privilege,
      * the organization entity is loaded and added to request attributes for use in postHandle.
-     * </p>
+     * 
      *
      * @param request the current HTTP request to pre-process
      * @param response the current HTTP response (not modified)
@@ -257,16 +253,16 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
      * It adds common attributes to the model including user context, organization data, notifications,
      * dictionaries, date formatters, build information, and session metadata. The enrichment uses
      * RequestSessionCacheService for performance optimization through memoization.
-     * </p>
+     * 
      * <p>
      * Enrichment is skipped for redirect responses (RedirectView or view names starting with "redirect:")
      * to avoid unnecessary processing when the view will not be rendered.
-     * </p>
+     * 
      * <p>
      * Added attributes include: organizationEntity, organizationEntityId, userEntityId,
      * unreadNotificationsList, unreadNotificationsNumber, commonDictionaries, organizationDictionariesJson,
      * defaultLayout, resourcesVersion, buildInfo, and modelAndView reference.
-     * </p>
+     * 
      *
      * @param request the current HTTP servlet request containing organization and user context
      * @param response the current HTTP servlet response (not modified by this method)
@@ -308,12 +304,12 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
      * notifications, dictionaries, layout configuration, and build information. The enrichment
      * validates consistency between URL-based organization context and controller-provided model
      * to prevent mismatches. Results are cached in RequestSessionCacheService for performance.
-     * </p>
+     * 
      * <p>
      * For widget scopes, notification enrichment is skipped to optimize performance for embedded
      * components. The method also handles special debug mode when user has global settings privilege
      * and DEBUG_MODEL parameter is present.
-     * </p>
+     * 
      *
      * @param request the current HTTP request containing organization and user attributes
      * @param modelAndView the ModelAndView being enriched (may be modified for debug mode)
@@ -435,7 +431,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
      * Checks the "__view" parameter for explicit layout selection ("plain" or "embedded").
      * If not present, examines the Referer header to maintain layout across page navigation.
      * Defaults to the configured default layout if no indicators are found.
-     * </p>
+     * 
      *
      * @param request the HTTP request to examine for layout indicators
      * @return the layout template name (defaultLayoutName, plainLayoutName, or embeddedLayoutName)
@@ -470,7 +466,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
      * from BuildProperties when available (production builds). For development environments
      * without BuildProperties, returns sensible defaults (version "HEAD", branch "local").
      * The result is cached in buildInfo field to avoid repeated parsing.
-     * </p>
+     * 
      *
      * @return map containing build metadata (Artifact, Version, Timestamp, Branch, CommitId, Hostname)
      */
@@ -507,7 +503,7 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
      * This method executes after the view has been rendered and the response is complete.
      * It checks if the current user was authenticated for a single request only (e.g., API token)
      * and clears the authentication context to prevent session leakage.
-     * </p>
+     * 
      *
      * @param request the current HTTP request
      * @param response the current HTTP response

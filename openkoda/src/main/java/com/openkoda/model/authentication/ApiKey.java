@@ -38,12 +38,12 @@ import java.util.List;
  * This entity enables machine-to-machine authentication for REST API access without
  * requiring username/password credentials. API keys are BCrypt-encoded for security
  * and are excluded from JSON serialization and audit logs to prevent exposure.
- * </p>
+
  * <p>
  * Persisted to 'api_key' table with a shared primary key relationship to the User entity,
  * establishing a one-to-one association via the {@code @MapsId} pattern. This ensures
  * each API key is uniquely associated with exactly one User account.
- * </p>
+
  * <p>
  * Security considerations:
  * <ul>
@@ -51,16 +51,16 @@ import java.util.List;
  *   <li>{@code @JsonIgnore} annotations prevent JSON exposure of sensitive fields</li>
  *   <li>API key field is excluded from audit logs via {@link #ignorePropertiesInAudit()}</li>
  * </ul>
- * </p>
+
  * <p>
  * Thread-safety note: The static {@code passwordEncoder} initialization is not synchronized,
  * creating a potential startup ordering dependency. Ensure {@link #setPasswordEncoderOnce(PasswordEncoder)}
  * is called during application initialization before any ApiKey instances are created.
- * </p>
+
  * <p>
  * {@code @DynamicUpdate} annotation enables Hibernate optimization to update only modified
  * columns in UPDATE statements, reducing database overhead.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -80,7 +80,7 @@ public class ApiKey extends LoggedUser {
      * <p>
      * Contains "apiKey" to prevent the BCrypt-encoded API key hash from appearing
      * in audit trails for security purposes.
-     * </p>
+
      */
     final static List<String> ignoredProperties = Arrays.asList("apiKey");
 
@@ -89,7 +89,7 @@ public class ApiKey extends LoggedUser {
      * <p>
      * This ID is identical to the associated User's ID, establishing the shared
      * primary key relationship pattern for one-to-one associations.
-     * </p>
+
      */
     @Id
     private Long id;
@@ -101,11 +101,11 @@ public class ApiKey extends LoggedUser {
      * The {@code @JsonIgnore} annotation prevents this sensitive field from being
      * included in JSON serialization, and it is excluded from audit logs via
      * {@link #ignorePropertiesInAudit()}.
-     * </p>
+
      * <p>
      * Warning: Use {@link #setPlainApiKey(String)} to encode and set a new API key.
      * The {@link #setApiKey(String)} method assigns the value directly without encoding.
-     * </p>
+
      */
     @JsonIgnore
     private String apiKey;
@@ -116,10 +116,10 @@ public class ApiKey extends LoggedUser {
      * The {@code @MapsId} annotation indicates this relationship uses the User's ID
      * as this entity's primary key. The {@code @JoinColumn(name="user_id")} specifies
      * the foreign key column name in the api_key table.
-     * </p>
+
      * <p>
      * {@code @JsonIgnore} prevents circular reference issues during JSON serialization.
-     * </p>
+
      */
     @MapsId
     @OneToOne
@@ -133,11 +133,11 @@ public class ApiKey extends LoggedUser {
      * This encoder is initialized once during application startup via
      * {@link #setPasswordEncoderOnce(PasswordEncoder)}. It is used by the constructor
      * and {@link #setPlainApiKey(String)} to encode plaintext API keys before storage.
-     * </p>
+
      * <p>
      * Thread-safety note: Initialization is not synchronized. Ensure this is set
      * during single-threaded application startup before any ApiKey instances are created.
-     * </p>
+
      */
     private static PasswordEncoder passwordEncoder;
 
@@ -147,12 +147,12 @@ public class ApiKey extends LoggedUser {
      * This method sets the static {@code passwordEncoder} field if it has not been
      * initialized. Subsequent calls are ignored, making this method safe to call
      * multiple times during application startup.
-     * </p>
+
      * <p>
      * Thread-safety warning: This method is NOT thread-safe. It should only be called
      * during single-threaded application initialization before any ApiKey instances
      * are created or any concurrent access occurs.
-     * </p>
+
      *
      * @param pe the PasswordEncoder to use for BCrypt encoding of API keys
      */
@@ -169,7 +169,7 @@ public class ApiKey extends LoggedUser {
      * <p>
      * Required by JPA specification for entity lifecycle management. This constructor
      * is used by Hibernate when loading entities from the database.
-     * </p>
+
      */
     public ApiKey() {
     }
@@ -180,12 +180,12 @@ public class ApiKey extends LoggedUser {
      * The plaintext API key is immediately encoded using the static {@code passwordEncoder}
      * via BCrypt hashing before storage. The encoded hash is stored in the {@link #apiKey}
      * field, not the plaintext value.
-     * </p>
+
      * <p>
      * Precondition: The static {@code passwordEncoder} must be initialized via
      * {@link #setPasswordEncoderOnce(PasswordEncoder)} before calling this constructor,
      * otherwise a NullPointerException will be thrown.
-     * </p>
+
      *
      * @param plainApiKey the plaintext API key to encode and store
      * @param user the User entity to associate with this API key via shared primary key
@@ -201,7 +201,7 @@ public class ApiKey extends LoggedUser {
      * <p>
      * This relationship is established via the {@code @MapsId} shared primary key pattern,
      * ensuring a one-to-one association between ApiKey and User.
-     * </p>
+
      *
      * @return the associated User entity
      */
@@ -214,7 +214,7 @@ public class ApiKey extends LoggedUser {
      * <p>
      * This establishes the one-to-one relationship between ApiKey and User via
      * shared primary key.
-     * </p>
+
      *
      * @param user the User entity to associate with this API key
      */
@@ -227,7 +227,7 @@ public class ApiKey extends LoggedUser {
      * <p>
      * Provides the entity ID as a string for audit logging. This method is part
      * of the {@link com.openkoda.model.common.AuditableEntity} contract.
-     * </p>
+
      *
      * @return the string representation of the ID for audit trails
      */
@@ -242,7 +242,7 @@ public class ApiKey extends LoggedUser {
      * This method returns the encoded hash value, not the plaintext API key.
      * The value is suitable for comparison with user-provided API keys using
      * PasswordEncoder's matches() method.
-     * </p>
+
      *
      * @return the BCrypt-encoded API key hash
      */
@@ -256,11 +256,11 @@ public class ApiKey extends LoggedUser {
      * <strong>Warning:</strong> This method assigns the provided value directly to the
      * {@link #apiKey} field without BCrypt encoding. Use {@link #setPlainApiKey(String)}
      * instead if you need to encode a plaintext API key before storage.
-     * </p>
+
      * <p>
      * This method is typically used only when setting an already-encoded hash value,
      * such as during entity deserialization or data migration.
-     * </p>
+
      *
      * @param apiKey the API key value to set (should be pre-encoded)
      */
@@ -275,12 +275,12 @@ public class ApiKey extends LoggedUser {
      * {@code passwordEncoder} and stores the resulting hash in the {@link #apiKey}
      * field. This is the recommended method for updating an API key with a new
      * plaintext value.
-     * </p>
+
      * <p>
      * Precondition: The static {@code passwordEncoder} must be initialized via
      * {@link #setPasswordEncoderOnce(PasswordEncoder)} before calling this method,
      * otherwise a NullPointerException will be thrown.
-     * </p>
+
      *
      * @param plainApiKey the plaintext API key to encode and store
      * @throws NullPointerException if passwordEncoder has not been initialized
@@ -294,7 +294,7 @@ public class ApiKey extends LoggedUser {
      * <p>
      * This ID is identical to the associated User's ID due to the {@code @MapsId}
      * shared primary key relationship pattern.
-     * </p>
+
      *
      * @return the primary key value
      */
@@ -308,7 +308,7 @@ public class ApiKey extends LoggedUser {
      * <p>
      * This ID should match the associated User's ID to maintain the shared
      * primary key relationship established by {@code @MapsId}.
-     * </p>
+
      *
      * @param id the primary key value
      */
@@ -322,7 +322,7 @@ public class ApiKey extends LoggedUser {
      * This method is part of the {@link com.openkoda.model.common.AuditableEntity}
      * contract. It returns a list containing "apiKey" to prevent the BCrypt-encoded
      * API key hash from appearing in audit trails for security purposes.
-     * </p>
+
      *
      * @return a collection containing "apiKey" to exclude from audit logs
      */

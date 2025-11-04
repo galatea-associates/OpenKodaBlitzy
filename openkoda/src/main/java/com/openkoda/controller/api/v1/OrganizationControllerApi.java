@@ -34,19 +34,18 @@ import static com.openkoda.controller.common.URLConstants.*;
  * This controller is a minimal declarative adapter extending {@code CRUDApiController<Organization>}.
  * It is marked as {@code @Deprecated}, indicating a planned migration to a newer API version.
  * Coordinate with all API clients before removing this controller to prevent service disruptions.
- * </p>
+ * 
  * <p>
  * The controller exposes organization CRUD operations under two URL paths for flexibility:
  * <ul>
  *   <li>{@code /api/v1/{organizationId}/organization} - Organization-scoped routes for operations within a specific organization context</li>
  *   <li>{@code /api/v1/organization} - Collection-scoped routes for operations across organizations</li>
  * </ul>
- * </p>
  * <p>
  * The controller is stateless with no additional methods beyond the inherited CRUD functionality.
  * All CRUD operations are provided by the parent {@link CRUDApiController} class.
  * The constructor calls {@code super(ORGANIZATION)} to bind the controller to the ORGANIZATION resource configuration.
- * </p>
+ * 
  * <p>
  * Inherited endpoints include:
  * <ul>
@@ -56,7 +55,6 @@ import static com.openkoda.controller.common.URLConstants.*;
  *   <li>POST /{id}/update - Update an existing organization</li>
  *   <li>POST /{id}/remove - Delete an organization</li>
  * </ul>
- * </p>
  *
  * @see com.openkoda.controller.api.CRUDApiController
  * @see com.openkoda.model.Organization
@@ -78,11 +76,11 @@ public class OrganizationControllerApi extends CRUDApiController<Organization> {
      * instance for Organization entity CRUD operations. The ORGANIZATION constant is defined in
      * {@link com.openkoda.controller.common.URLConstants} and determines routing behavior
      * and resource identification for all inherited CRUD endpoints.
-     * </p>
+     * 
      * <p>
      * This controller is a stateless singleton managed by Spring and is instantiated once
      * at application startup during component scanning.
-     * </p>
+     * 
      */
     public OrganizationControllerApi(){
         super(ORGANIZATION);

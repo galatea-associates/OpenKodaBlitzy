@@ -35,7 +35,7 @@ import java.util.Set;
  * <p>
  * This repository provides paginated queries for retrieving notifications with read status, supporting three notification
  * visibility scopes:
- * </p>
+ * 
  * <ul>
  *   <li>User-specific notifications (organizationId=null, userId set)</li>
  *   <li>Organization-specific notifications (userId=null, organizationId set)</li>
@@ -44,7 +44,7 @@ import java.util.Set;
  * <p>
  * The repository uses LEFT JOIN with ReadNotification to efficiently determine read/unread status without N+1 queries.
  * Results are ordered to prioritize unread notifications (rn.notificationId DESC) and recent notifications (n.id DESC).
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -52,7 +52,7 @@ import java.util.Set;
  * @see Notification
  * @see NotificationKeeper
  * @see com.openkoda.model.notification.ReadNotification
- * @see com.openkoda.repository.SecureNotificationRepository
+ * @see com.openkoda.repository.notifications.SecureNotificationRepository
  */
 public interface NotificationRepository extends UnsecuredFunctionalRepositoryWithLongId<Notification> {
 
@@ -61,7 +61,7 @@ public interface NotificationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * This method uses JPQL SELECT NEW to create NotificationKeeper instances containing the Notification entity
      * and the read notification ID. The query returns notifications matching three conditions:
-     * </p>
+     * 
      * <ol>
      *   <li>User-specific: null organizationId and matching userId</li>
      *   <li>Organization-specific: null userId and organizationId in user's organizations</li>
@@ -70,17 +70,17 @@ public interface NotificationRepository extends UnsecuredFunctionalRepositoryWit
      * <p>
      * Notifications marked hiddenFromAuthor=true are excluded for their creator to prevent self-notification display.
      * The LEFT JOIN with ReadNotification ensures unread notifications (with null rn.notificationId) are included in results.
-     * </p>
+     * 
      * <p>
      * Ordering strategy: Results are ordered by rn.notificationId DESC (unread notifications first with null sorting last in DESC),
      * then by n.id DESC (recent notifications first).
-     * </p>
+     * 
      * <p>
      * Typical usage:
      * <pre>
      * notificationRepository.findAll(currentUser.getId(), userOrganizationIds, PageRequest.of(0, 20));
      * </pre>
-     * </p>
+     * 
      *
      * @param userId the ID of the user requesting notifications, must not be null
      * @param organizationIds the set of organization IDs the user belongs to, may be empty for users without organizations

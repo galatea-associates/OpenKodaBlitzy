@@ -32,11 +32,11 @@ import java.math.BigDecimal;
  * This mutable POJO implements {@link CanonicalObject} for notification formatting
  * and {@link OrganizationRelatedObject} for multi-tenant organization scoping.
  * Designed for data transfer and serialization between layers without direct entity exposure.
- * </p>
+ * 
  * <p>
  * Uses {@link BigDecimal} for price field to ensure monetary precision and avoid
  * floating-point rounding errors in financial calculations.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -51,7 +51,7 @@ public class PaymentProductDto implements CanonicalObject, OrganizationRelatedOb
      * <p>
      * Primary key for the payment product entity.
      * May be null for new instances not yet persisted.
-     * </p>
+     * 
      */
     public Long id;
 
@@ -60,7 +60,7 @@ public class PaymentProductDto implements CanonicalObject, OrganizationRelatedOb
      * <p>
      * Ensures accurate financial calculations without floating-point rounding errors.
      * Should represent the total price for this line item in the payment.
-     * </p>
+     * 
      */
     public BigDecimal price;
 
@@ -69,7 +69,7 @@ public class PaymentProductDto implements CanonicalObject, OrganizationRelatedOb
      * <p>
      * Human-readable label identifying what is being purchased.
      * Used in notifications and display formatting.
-     * </p>
+     * 
      */
     public String itemName;
 
@@ -77,7 +77,7 @@ public class PaymentProductDto implements CanonicalObject, OrganizationRelatedOb
      * Reference to the parent payment record identifier.
      * <p>
      * Foreign key linking this product line item to its containing payment transaction.
-     * </p>
+     * 
      */
     public Long paymentId;
 
@@ -86,7 +86,7 @@ public class PaymentProductDto implements CanonicalObject, OrganizationRelatedOb
      * <p>
      * Scopes this payment product to a specific organization for tenant isolation.
      * Required by {@link OrganizationRelatedObject} contract.
-     * </p>
+     * 
      */
     public Long organizationId;
 
@@ -94,7 +94,7 @@ public class PaymentProductDto implements CanonicalObject, OrganizationRelatedOb
      * Constructs a new PaymentProductDto with all fields initialized.
      * <p>
      * Full-argument constructor for easy fixture creation and complete initialization.
-     * </p>
+     * 
      *
      * @param id the payment product record identifier, may be null for new instances
      * @param price the product price as BigDecimal for monetary precision
@@ -116,7 +116,7 @@ public class PaymentProductDto implements CanonicalObject, OrganizationRelatedOb
      * Implements {@link CanonicalObject#notificationMessage()} to provide
      * a human-readable summary including organization ID, item name, and price.
      * Format: "Org {organizationId}: Item {itemName} price {price}"
-     * </p>
+     * 
      *
      * @return formatted summary string with organizationId, itemName, and price
      */
@@ -202,7 +202,7 @@ public class PaymentProductDto implements CanonicalObject, OrganizationRelatedOb
      * <p>
      * Implements {@link OrganizationRelatedObject#getOrganizationId()}
      * for tenant isolation and scoping.
-     * </p>
+     * 
      *
      * @return the organization identifier for tenant scoping
      */

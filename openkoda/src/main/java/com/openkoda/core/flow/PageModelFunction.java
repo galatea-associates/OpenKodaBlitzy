@@ -28,19 +28,16 @@ package com.openkoda.core.flow;
  * of {@link PageModelMap} data into a result of type T. The interface enables concise, functional-style
  * programming when working with Flow pipelines where accumulated model state needs to be extracted
  * or transformed into a specific result type.
- * </p>
  * <p>
  * This interface is commonly used in Flow operations to map the current state of the model to a computed
  * result. As a functional interface, it supports lambda expressions, method references, and constructor
  * references, making it ideal for inline definitions in Flow pipeline chains.
- * </p>
  * <p>
  * Example usage in a Flow pipeline:
  * <pre>{@code
  * PageModelFunction<User> userExtractor = model -> model.get("currentUser");
  * User user = userExtractor.getResult(pageModelMap);
  * }</pre>
- * </p>
  *
  * @param <T> the type of result computed from the PageModelMap
  * @see PageModelMap
@@ -57,7 +54,7 @@ public interface PageModelFunction<T> {
 	 * <p>
 	 * Extracts or transforms data from the accumulated model state to produce a result of type T.
 	 * This method is invoked by Flow pipeline operations to retrieve computed values from the model.
-	 * </p>
+	 * 
 	 *
 	 * @param model the PageModelMap containing accumulated state from the Flow pipeline, must not be null
 	 * @return the computed result of type T extracted or derived from the model, may be null depending on implementation

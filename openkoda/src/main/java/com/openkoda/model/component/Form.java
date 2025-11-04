@@ -45,7 +45,7 @@ import java.util.List;
  * the {@code code} field are parsed by {@code DynamicEntityRegistrationService} to generate JPA entities
  * at runtime using Byte Buddy bytecode generation. The generated entities are registered with the JPA
  * EntityManager and can have REST API and HTML CRUD interfaces automatically generated.
- * </p>
+
  * <p>
  * The Form entity uses a dual privilege representation pattern:
  * <ul>
@@ -53,11 +53,11 @@ import java.util.List;
  *   <li>Persisted privilege strings ({@code readPrivilegeString}, {@code writePrivilegeString}) for database storage</li>
  *   <li>Nanosecond timestamps for lazy materialization and cache invalidation via {@link PrivilegeHelper}</li>
  * </ul>
- * </p>
+
  * <p>
  * Organization-scoped multi-tenancy is provided through inheritance from {@link ComponentEntity}, ensuring
  * forms are isolated by organization.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
@@ -65,7 +65,7 @@ import java.util.List;
  * form.setName("Customer");
  * form.setTableName("customer");
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -300,11 +300,11 @@ public class Form extends ComponentEntity {
      * If the persisted privilege string has been updated more recently than the cached PrivilegeBase
      * (determined by comparing nanosecond timestamps), this method re-materializes the PrivilegeBase
      * from the string via {@link PrivilegeHelper#valueOfString(String)}.
-     * </p>
+
      * <p>
      * Thread-safety note: This method uses {@link System#nanoTime()} timestamps but is not synchronized,
      * so concurrent access may cause redundant PrivilegeHelper calls.
-     * </p>
+
      *
      * @return the read privilege for form-based entities, may be null
      */
@@ -356,11 +356,11 @@ public class Form extends ComponentEntity {
      * If the persisted privilege string has been updated more recently than the cached PrivilegeBase
      * (determined by comparing nanosecond timestamps), this method re-materializes the PrivilegeBase
      * from the string via {@link PrivilegeHelper#valueOfString(String)}.
-     * </p>
+
      * <p>
      * Thread-safety note: This method uses {@link System#nanoTime()} timestamps but is not synchronized,
      * so concurrent access may cause redundant PrivilegeHelper calls.
-     * </p>
+
      *
      * @return the write privilege for form-based entities, may be null
      */
@@ -412,7 +412,7 @@ public class Form extends ComponentEntity {
      * <p>
      * Note: This is the privilege for the Form entity itself, not for entities created from this form.
      * For form-based entity privileges, see {@link #getReadPrivilege()}.
-     * </p>
+
      *
      * @return the required read privilege string, evaluates to {@link PrivilegeNames#_canReadBackend}
      */
@@ -427,7 +427,7 @@ public class Form extends ComponentEntity {
      * <p>
      * Note: This is the privilege for the Form entity itself, not for entities created from this form.
      * For form-based entity privileges, see {@link #getWritePrivilege()}.
-     * </p>
+
      *
      * @return the required write privilege string, evaluates to {@link PrivilegeNames#_canManageBackend}
      */

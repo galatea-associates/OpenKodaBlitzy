@@ -43,22 +43,22 @@ import static com.openkoda.model.common.ModelConstants.ORGANIZATION_ID;
  * Persisted to 'users_roles' table. Links users to roles within specific organizational contexts, enabling multi-tenant
  * role-based access control. Each UserRole record grants a user specific role permissions within one organization.
  * Users can have multiple UserRole entries for different organizations with different roles.
- * </p>
+ * 
  * <p>
  * Extends {@link TimestampedEntity} for automatic creation and update timestamp tracking.
  * Implements {@link AuditableEntityOrganizationRelated} for organization scoping and audit trail support.
  * Uses ORGANIZATION_RELATED_ID_GENERATOR sequence for tenant-scoped ID generation with allocation size of 10.
- * </p>
+ * 
  * <p>
  * Multi-tenancy: The organizationId column enforces tenant isolation. Users access organization data based on
  * UserRole assignments. Global roles (organizationId = null) grant system-wide permissions.
- * </p>
+ * 
  * <p>
  * Table constraints:
  * - Unique constraint on (user_id, organization_id) prevents duplicate role assignments per user per organization
  * - Index on role_id for efficient role-based queries
  * - Composite index on (user_id, role_id, organization_id) for authorization checks
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -102,11 +102,11 @@ public class UserRole extends TimestampedEntity implements AuditableEntityOrgani
      * Eagerly loaded (default fetch type) for authorization checks and audit trail generation.
      * Marked as optional to handle orphaned records during cascading operations.
      * Join column is read-only (insertable=false, updatable=false) to prevent accidental modifications.
-     * </p>
+     * 
      * <p>
      * Note: TODO Rule 4.4 suggests this should use FetchType.LAZY for performance optimization.
      * Currently eager-loaded to ensure user data availability during privilege evaluation.
-     * </p>
+     * 
      *
      * @see User
      */
@@ -130,15 +130,15 @@ public class UserRole extends TimestampedEntity implements AuditableEntityOrgani
      * Eagerly loaded (default fetch type) to access privilege set during authorization checks.
      * Required field (optional=false) ensures every UserRole has an associated role definition.
      * Join column is read-only (insertable=false, updatable=false) to maintain referential integrity.
-     * </p>
+     * 
      * <p>
      * The role determines what privileges the user has within the organization context.
      * Role can be GlobalRole, OrganizationRole, or GlobalOrganizationRole based on inheritance.
-     * </p>
+     * 
      * <p>
      * Note: TODO Rule 4.4 suggests this should use FetchType.LAZY for performance optimization.
      * Currently eager-loaded to ensure privilege data availability during security evaluations.
-     * </p>
+     * 
      *
      * @see Role
      */
@@ -162,14 +162,14 @@ public class UserRole extends TimestampedEntity implements AuditableEntityOrgani
      * Eagerly loaded (default fetch type) for organization name display in UI and audit trails.
      * Optional field allows for global role assignments where organizationId is null.
      * Join column is read-only (insertable=false, updatable=false) to prevent accidental scope changes.
-     * </p>
+     * 
      * <p>
      * When organizationId is null, the role assignment is global (system-wide permissions).
      * When organizationId is set, the role assignment is scoped to that specific tenant organization.
-     * </p>
+     * 
      * <p>
      * Note: TODO Rule 4.4 suggests this should use FetchType.LAZY for performance optimization.
-     * </p>
+     * 
      *
      * @see Organization
      */
@@ -184,12 +184,12 @@ public class UserRole extends TimestampedEntity implements AuditableEntityOrgani
      * <p>
      * Inherited from {@link AuditableEntityOrganizationRelated} for tenant scoping.
      * Enforces tenant isolation for role assignments - users can only access data within their assigned organizations.
-     * </p>
+     * 
      * <p>
      * When null, indicates a global role assignment with system-wide permissions.
      * When set, restricts role permissions to the specified organization tenant.
      * Part of unique constraint (user_id, organization_id) to prevent duplicate assignments.
-     * </p>
+     * 
      */
     @Column(nullable = true, updatable = false, name = ORGANIZATION_ID)
     private Long organizationId;
@@ -200,7 +200,7 @@ public class UserRole extends TimestampedEntity implements AuditableEntityOrgani
      * This convenience method extracts the role name from the associated Role entity.
      * Returns "N/A" if the role relationship is not loaded or is null.
      * Included in JSON serialization via @JsonInclude annotation.
-     * </p>
+     * 
      *
      * @return the role name string, or "N/A" if role is null
      */
@@ -215,7 +215,7 @@ public class UserRole extends TimestampedEntity implements AuditableEntityOrgani
      * This convenience method extracts the organization name from the associated Organization entity.
      * Returns null for global role assignments where organizationId is null (system-wide permissions).
      * Included in JSON serialization via @JsonInclude annotation.
-     * </p>
+     * 
      *
      * @return the organization name string, or null for global roles
      */
@@ -369,11 +369,11 @@ public class UserRole extends TimestampedEntity implements AuditableEntityOrgani
      * Format for organization-scoped roles: "user@example.com:RoleName@123" where 123 is the organization ID.
      * Format for global roles: "user@example.com:RoleName" (no organization suffix).
      * Returns "N/A" for user email if the user relationship is not loaded or is null.
-     * </p>
+     * 
      * <p>
      * This method is called by the audit subsystem to generate human-readable audit log entries
      * when UserRole assignments are created, modified, or deleted.
-     * </p>
+     * 
      *
      * @return formatted audit string in the format "email:role[@orgId]"
      */
@@ -420,7 +420,7 @@ public class UserRole extends TimestampedEntity implements AuditableEntityOrgani
      * Creates a lightweight DTO containing only the identifier fields (id, userId, roleId, organizationId)
      * without the associated entity relationships. Useful for API responses and inter-layer data transfer
      * where full entity graphs are not needed.
-     * </p>
+     * 
      *
      * @return a UserRoleDto populated with this entity's identifier fields
      * @see UserRoleDto

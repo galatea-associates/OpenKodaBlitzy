@@ -28,7 +28,7 @@ package com.openkoda.controller.api.v1.model;
  * Used by TokenControllerApiV1 refresh endpoint to receive refresh token requests from clients.
  * Jackson JSON binding deserializes incoming requests without validation annotations,
  * so consumers must validate, trim and verify the token string before use.
- * </p>
+ * 
  * <p>
  * Example usage:
  * <pre>
@@ -36,7 +36,6 @@ package com.openkoda.controller.api.v1.model;
  * Content-Type: application/json
  * {"tokenRefresher": "refresh_token_value"}
  * </pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -49,7 +48,7 @@ public class RefreshTokenRequest {
      * <p>
      * Contains sensitive token credential. Enforce TLS for transmission
      * and avoid logging this value in plain text.
-     * </p>
+     * 
      */
     private String tokenRefresher;
 

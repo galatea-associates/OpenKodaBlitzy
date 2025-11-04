@@ -83,7 +83,6 @@ import static org.springframework.security.web.util.matcher.RegexRequestMatcher.
  * <li>Security context repository for HTTP session</li>
  * <li>Session management (stateful for web, stateless for APIs)</li>
  * </ul>
- * </p>
  * <p>
  * Integrates custom authentication handlers:
  * <ul>
@@ -91,7 +90,6 @@ import static org.springframework.security.web.util.matcher.RegexRequestMatcher.
  * <li>{@link CustomAuthenticationFailureHandler} - Failed login handling</li>
  * <li>{@link RequestParameterTokenAuthenticationSuccessHandler} - Token-based authentication success</li>
  * </ul>
- * </p>
  * <p>
  * Security model supports multiple authentication mechanisms:
  * <ul>
@@ -100,7 +98,6 @@ import static org.springframework.security.web.util.matcher.RegexRequestMatcher.
  * <li>API token header authentication</li>
  * <li>Token path prefix authentication</li>
  * </ul>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -195,11 +192,11 @@ public class WebSecurityConfig implements URLConstants {
      * <li>{@link LoginByPasswordOrTokenAuthenticationProvider} - Validates token-based authentication
      * including request parameter tokens and API token headers</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * The ProviderManager iterates through providers until one successfully authenticates
      * or all providers have been attempted.
-     * </p>
+     * 
      *
      * @return configured {@link ProviderManager} with DaoAuthenticationProvider and token authentication provider
      * @see DaoAuthenticationProvider
@@ -237,10 +234,10 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Form-based login with custom processing URL</li>
      * <li>Remember-me functionality with token-based services</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Authorization rules delegate to {@link #webHttpSecurity(HttpSecurity)}.
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return the configured {@link SecurityFilterChain} for web endpoints
@@ -262,7 +259,7 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Request cache disabled</li>
      * <li>Stateless session management (no HTTP session created)</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return the configured {@link SecurityFilterChain} for API authentication endpoints
@@ -287,7 +284,7 @@ public class WebSecurityConfig implements URLConstants {
      * <li>All requests require authentication</li>
      * <li>Stateless session management</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return the configured {@link SecurityFilterChain} for token path prefix endpoints
@@ -314,7 +311,7 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Stateless session management</li>
      * <li>Custom authentication entry point returning HTTP 401 Unauthorized</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return the configured {@link SecurityFilterChain} for API V1 endpoints
@@ -341,7 +338,7 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Stateless session management</li>
      * <li>Custom authentication entry point returning HTTP 401 Unauthorized</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return the configured {@link SecurityFilterChain} for API V2 endpoints
@@ -370,7 +367,7 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Password management endpoints require authentication</li>
      * <li>Logout configuration with session cleanup and user unsubscription</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return the configured {@link SecurityFilterChain} for public web endpoints
@@ -393,18 +390,18 @@ public class WebSecurityConfig implements URLConstants {
      * <li>{@code /html/local/**} - restricted to local network IP addresses</li>
      * <li>{@code /html/**} - requires authentication</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Form login configuration:
      * <ul>
      * <li>Login page: configured via URLConstants._LOGIN</li>
      * <li>Processing URL: /perform_login</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Remember-me configuration uses token-based services with configurable key,
      * parameter name, and cookie name from application properties.
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return configured {@link HttpSecurity} for web endpoints
@@ -447,7 +444,7 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Request cache disabled</li>
      * <li>Stateless session creation policy (no HTTP session)</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return configured {@link HttpSecurity} for API auth endpoints
@@ -473,7 +470,7 @@ public class WebSecurityConfig implements URLConstants {
      * <li>All requests authenticated</li>
      * <li>Stateless session management</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return configured {@link HttpSecurity} for token path endpoints
@@ -503,7 +500,7 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Stateless session management</li>
      * <li>Custom authentication entry point returning 401 Unauthorized</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return configured {@link HttpSecurity} for API V1 endpoints
@@ -534,7 +531,7 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Stateless session management</li>
      * <li>Custom authentication entry point returning 401 Unauthorized</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return configured {@link HttpSecurity} for API V2 endpoints
@@ -561,10 +558,10 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Frontend resources with authentication parameters - require authentication</li>
      * <li>Password management endpoints ({@code /password/**}) - require authentication</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * CSRF protection enabled with configurable disabled pages via {@code application.pages.csrf-disabled}.
-     * </p>
+     * 
      * <p>
      * Logout configuration:
      * <ul>
@@ -573,7 +570,7 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Unsubscribes user from custom user details service</li>
      * <li>Redirects to home page after logout</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param http the {@link HttpSecurity} to configure
      * @return configured {@link HttpSecurity} for public web endpoints
@@ -613,7 +610,7 @@ public class WebSecurityConfig implements URLConstants {
      * <p>
      * Configures {@link RequestParameterTokenAuthenticationFilter} with custom success handler
      * that uses the security context repository for session management.
-     * </p>
+     * 
      *
      * @return composite {@link Filter} containing SSO authentication filters
      * @see RequestParameterTokenAuthenticationFilter
@@ -633,7 +630,7 @@ public class WebSecurityConfig implements URLConstants {
      * <p>
      * Enables use of Spring Security expressions in Spring Data JPA queries and other
      * SpEL contexts (e.g., {@code ?#{ principal.username }}).
-     * </p>
+     * 
      *
      * @return {@link SecurityEvaluationContextExtension} for SpEL integration
      */
@@ -648,7 +645,7 @@ public class WebSecurityConfig implements URLConstants {
      * Configures the session cookie secure flag based on application property
      * {@code secure.cookie} (defaults to true). When secure flag is enabled,
      * cookies are only transmitted over HTTPS connections.
-     * </p>
+     * 
      *
      * @param secure whether to enable secure flag on session cookies (from {@code secure.cookie} property)
      * @return {@link ServletContextInitializer} that configures session cookie security
@@ -669,7 +666,7 @@ public class WebSecurityConfig implements URLConstants {
      * <p>
      * Uses {@link HttpSessionSecurityContextRepository} to store {@link org.springframework.security.core.context.SecurityContext}
      * in the HTTP session, enabling stateful session management for web endpoints.
-     * </p>
+     * 
      *
      * @return {@link HttpSessionSecurityContextRepository} for HTTP session-based security context storage
      */
@@ -688,10 +685,10 @@ public class WebSecurityConfig implements URLConstants {
      * <li>Matching algorithm: MD5 for token validation (for backward compatibility)</li>
      * <li>User details service: injected {@link UserDetailsService} for user lookup</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Token is stored in cookie with name configured via {@code rememberme.parameter} property.
-     * </p>
+     * 
      *
      * @param userDetailsService the {@link UserDetailsService} for loading user details during remember-me authentication
      * @return configured {@link TokenBasedRememberMeServices} for remember-me functionality

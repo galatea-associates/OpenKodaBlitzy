@@ -38,19 +38,19 @@ import static com.openkoda.controller.common.URLConstants.*;
  * {@code CRUDApiController}, which implements pagination, search, create, update, and delete
  * operations. This controller is discovered by Spring component scanning at startup and
  * instantiated as a stateless singleton bean.
- * </p>
  * 
- * <h3>Request Mapping Base Paths</h3>
+ * 
+ * <b>Request Mapping Base Paths</b>
  * <ul>
  *   <li>{@code /api/v2/{organizationId}/frontend-resource} - Organization-scoped endpoints</li>
  *   <li>{@code /api/v2/frontend-resource} - Global v2 endpoints</li>
  * </ul>
  * 
- * <h3>Inherited CRUD Endpoints</h3>
+ * <b>Inherited CRUD Endpoints</b>
  * <p>
  * All endpoints are inherited from {@link CRUDApiController} and return JSON responses
  * wrapped in {@code ApiResult}:
- * </p>
+ * 
  * <ul>
  *   <li><b>GET /api/v2/frontend-resource/all</b> - List FrontendResources with pagination and search</li>
  *   <li><b>GET /api/v2/frontend-resource/{id}</b> - Get single FrontendResource by ID</li>
@@ -60,9 +60,9 @@ import static com.openkoda.controller.common.URLConstants.*;
  * </ul>
  * <p>
  * Organization-scoped variants replace {@code /api/v2} with {@code /api/v2/{organizationId}}.
- * </p>
  * 
- * <h3>API Response Format</h3>
+ * 
+ * <b>API Response Format</b>
  * <p><b>Success response (list):</b></p>
  * <pre>{@code
  * { "data": [...], "success": true }
@@ -78,35 +78,35 @@ import static com.openkoda.controller.common.URLConstants.*;
  * { "error": "...", "success": false }
  * }</pre>
  * 
- * <h3>Usage Example</h3>
+ * <b>Usage Example</b>
  * <pre>{@code
  * curl -X GET http://localhost:8080/api/v2/frontend-resource/all
  * curl -X GET http://localhost:8080/api/v2/frontend-resource/123
  * curl -X POST http://localhost:8080/api/v2/frontend-resource/create -d '{...}'
  * }</pre>
  * 
- * <h3>Security</h3>
+ * <b>Security</b>
  * <p>
  * Authentication and authorization are enforced by the parent controller. Multi-tenancy
  * isolation is applied through organization-scoped paths. Requests without valid
  * authentication return HTTP 401, and requests without required privileges return HTTP 403.
- * </p>
  * 
- * <h3>Operational Considerations</h3>
+ * 
+ * <b>Operational Considerations</b>
  * <p>
  * This controller is a low-risk routing adapter. Removing or renaming it breaks API contracts.
  * Changing the {@code @RequestMapping} paths or the constant passed to {@code super(...)}
  * affects endpoint registration and configuration resolution. Coordinate changes with API
  * documentation, client applications, and integration tests.
- * </p>
  * 
- * <h3>Maintainability</h3>
+ * 
+ * <b>Maintainability</b>
  * <p>
  * This class contains no business logic and serves only to bind the generic CRUD controller
  * to the FrontendResource domain type. Treat it as part of the public API surface. Include
  * in CI regression suites and API contract tests. The stateless design ensures thread safety
  * for concurrent requests.
- * </p>
+ * 
  *
  * @see CRUDApiController
  * @see FrontendResource
@@ -126,11 +126,11 @@ public class FrontendResourceControllerApi extends CRUDApiController<FrontendRes
      * configuration from {@code ApiCRUDControllerConfigurationMap}, which contains the
      * {@code SecureRepository<FrontendResource>}, form class, {@code FrontendMappingDefinition},
      * and privilege requirements for this resource type.
-     * </p>
+     * 
      * <p>
      * <b>Note:</b> This controller is stateless with no instance fields, ensuring thread safety
      * for concurrent HTTP requests.
-     * </p>
+     * 
      */
     public FrontendResourceControllerApi() {
         super(FRONTENDRESOURCE);

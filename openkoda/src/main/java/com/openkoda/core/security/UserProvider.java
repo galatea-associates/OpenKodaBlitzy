@@ -57,10 +57,10 @@ import static com.openkoda.model.PrivilegeNames.*;
  * the OpenKoda application. It retrieves OrganizationUser from SecurityContextHolder, caches
  * the principal per-request via RequestSessionCacheService to avoid repeated SecurityContext
  * lookups, and detects privilege changes via User.updatedOn timestamp comparison.
- * </p>
+ * 
  * <p>
  * Core responsibilities include:
- * </p>
+ * 
  * <ul>
  *   <li>Retrieving the current authenticated OrganizationUser from Spring SecurityContextHolder</li>
  *   <li>Caching the principal per HTTP request to prevent repeated database queries</li>
@@ -72,10 +72,10 @@ import static com.openkoda.model.PrivilegeNames.*;
  * The class uses a static API pattern that provides static getFromContext() method accessible
  * from any code layer without Spring injection. The instance field is initialized via @PostConstruct
  * to enable static method delegation.
- * </p>
+ * 
  * <p>
  * Synthetic principal creators:
- * </p>
+ * 
  * <ul>
  *   <li>setCronJobAuthentication() - Creates principal for scheduled jobs with admin privileges</li>
  *   <li>setOAuthAuthentication() - Creates principal for OAuth callbacks with readUserData and manageUserRoles</li>
@@ -83,7 +83,7 @@ import static com.openkoda.model.PrivilegeNames.*;
  * </ul>
  * <p>
  * Usage example in Flow pipelines:
- * </p>
+ * 
  * <pre>
  * Optional&lt;OrganizationUser&gt; user = UserProvider.getFromContext();
  * </pre>
@@ -131,7 +131,7 @@ public class UserProvider extends ComponentProvider {
      * and registers markUserAsModified(BasicUser) as an event listener. When a USER_MODIFIED
      * event is fired, the listener updates User.updatedOn timestamp, triggering privilege
      * reload in getFromContext() on the next call.
-     * </p>
+     * 
      */
     @PostConstruct
     private void init() {
@@ -145,7 +145,7 @@ public class UserProvider extends ComponentProvider {
      * Triggers UserRepository.setUserAsModified(userId) to update the User.updatedOn timestamp
      * to the current time. This causes getFromContext() to reload privileges on the next call,
      * ensuring users see role and privilege changes immediately without requiring re-login.
-     * </p>
+     * 
      *
      * @param u BasicUser DTO containing the userId to mark as modified
      */
@@ -161,14 +161,14 @@ public class UserProvider extends ComponentProvider {
      * request, avoiding repeated SecurityContext reads and database queries. It delegates to
      * getFromContext(true) which checks the User.updatedOn timestamp and rebuilds the principal
      * if role or privilege changes are detected.
-     * </p>
+     * 
      * <p>
      * Thread-safety: SecurityContextHolder uses ThreadLocal, so each thread has an independent
      * SecurityContext. This method is safe to call from multiple threads.
-     * </p>
+     * 
      * <p>
      * Usage example in controllers:
-     * </p>
+     * 
      * <pre>
      * Optional&lt;OrganizationUser&gt; user = UserProvider.getFromContext();
      * </pre>
@@ -190,7 +190,7 @@ public class UserProvider extends ComponentProvider {
      * Returns true if SecurityContext.getAuthentication().isAuthenticated() returns true,
      * false for null context or anonymous authentication. Used in templates and controllers
      * for conditional rendering based on authentication status.
-     * </p>
+     * 
      *
      * @return true if user is authenticated, false for anonymous or null authentication
      */
@@ -205,7 +205,7 @@ public class UserProvider extends ComponentProvider {
      * Returns true for null SecurityContext, null Authentication, or AnonymousAuthenticationToken.
      * Returns false for authenticated users. This is the inverse of isAuthenticated() but handles
      * AnonymousAuthenticationToken explicitly.
-     * </p>
+     * 
      *
      * @return true for anonymous requests, false for authenticated users
      */
@@ -220,10 +220,10 @@ public class UserProvider extends ComponentProvider {
      * This method extracts Authentication from SecurityContextHolder.getContext() and returns
      * empty Optional if authentication is null or principal is not an OrganizationUser. If
      * checkWasModified is false, returns the cached principal immediately.
-     * </p>
+     * 
      * <p>
      * Privilege reload algorithm when checkWasModified is true:
-     * </p>
+     * 
      * <ol>
      *   <li>Queries UserRepository.wasModifiedSince(userId, user.updatedOn) to check if User entity timestamp updated</li>
      *   <li>Queries UserRoleRepository.wasModifiedSince(userId, user.updatedOn) to check if UserRole associations changed</li>
@@ -236,7 +236,7 @@ public class UserProvider extends ComponentProvider {
      * <p>
      * This prevents stale privileges: users see role and privilege changes immediately without
      * re-login, enabling live privilege propagation.
-     * </p>
+     * 
      *
      * @param checkWasModified if true, queries database for User/UserRole updates since principal creation and rebuilds OrganizationUser if modified
      * @return Optional containing OrganizationUser from SecurityContext principal, rebuilt if privileges changed
@@ -306,7 +306,7 @@ public class UserProvider extends ComponentProvider {
      * <p>
      * Used in audit logging and repository queries where userId must not be null. Returns the authenticated
      * user's ID if present, otherwise returns -2L to indicate anonymous or unauthenticated access.
-     * </p>
+     * 
      *
      * @return User ID (Long) if authenticated, -2L for anonymous/unauthenticated requests
      */
@@ -323,7 +323,7 @@ public class UserProvider extends ComponentProvider {
      * <p>
      * Calls getUserIdOrNotExistingId() and converts the result to String. Returns "-2" for
      * anonymous requests.
-     * </p>
+     * 
      *
      * @return String representation of getUserIdOrNotExistingId(), "-2" for anonymous
      */
@@ -337,7 +337,7 @@ public class UserProvider extends ComponentProvider {
      * Sets SecurityContextHolder.getContext().setAuthentication(null) to remove the principal.
      * Typically called after session invalidation during the logout flow to ensure complete
      * cleanup of authentication state.
-     * </p>
+     * 
      */
     public static final void clearAuthentication() {
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -350,11 +350,11 @@ public class UserProvider extends ComponentProvider {
      * PrivilegeHelper.getAdminPrivilegeStrings(). This enables scheduled jobs to bypass privilege
      * checks, allowing them to perform administrative tasks such as cleanup operations, report
      * generation, and data maintenance.
-     * </p>
+     * 
      * <p>
      * Sets PreAuthenticatedAuthenticationToken in SecurityContextHolder for the job thread duration.
      * No password or credentials are required as this uses a pre-authenticated token.
-     * </p>
+     * 
      */
     public static final void setCronJobAuthentication() {
 
@@ -385,11 +385,11 @@ public class UserProvider extends ComponentProvider {
      * manageUserRoles. This is used by OAuth controllers to create and update User entities
      * during the OAuth login flow, restricting privileges to prevent OAuth callbacks from
      * escalating beyond user management operations.
-     * </p>
+     * 
      * <p>
      * Sets PreAuthenticatedAuthenticationToken in SecurityContextHolder for the OAuth callback
      * thread duration. No password or credentials are required.
-     * </p>
+     * 
      */
     public static final void setOAuthAuthentication() {
 
@@ -415,11 +415,11 @@ public class UserProvider extends ComponentProvider {
      * manageUserRoles. This is used by integration consumers (Trello, GitHub, Jira) to read
      * backend configuration and manage user associations. The privileges allow backend reads
      * but not full admin access, restricting consumer operations to integration-specific tasks.
-     * </p>
+     * 
      * <p>
      * Sets PreAuthenticatedAuthenticationToken in SecurityContextHolder for the consumer
      * request thread duration. No password or credentials are required.
-     * </p>
+     * 
      */
     public static final void setConsumerAuthentication() {
 

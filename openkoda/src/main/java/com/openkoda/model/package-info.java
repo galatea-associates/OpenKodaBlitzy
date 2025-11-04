@@ -28,13 +28,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Uses JPA 3.x (Jakarta Persistence) with Hibernate 6.x extensions for {@code @Formula} computed fields,
  * {@code @DynamicUpdate} selective updates, {@code @JdbcTypeCode} for JSON storage, and Spring Data auditing
  * ({@code @LastModifiedDate}, {@code @CreatedDate}).
- * </p>
+ * 
  *
- * <h2>Architecture Overview</h2>
+ * <b>Architecture Overview</b>
  * <p>
  * The model package follows a multi-tenancy pattern with {@link com.openkoda.model.Organization} as the primary
  * tenant entity. Entities extend base classes from the {@code common/} subpackage for shared behavior:
- * </p>
+ * 
  * <ul>
  *   <li>{@code TimestampedEntity} - Provides audit timestamps (createdOn, updatedOn)</li>
  *   <li>{@code OpenkodaEntity} - Adds organization scope plus timestamps for tenant-scoped entities</li>
@@ -44,14 +44,14 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ul>
  * <p>
  * ID generation uses ModelConstants sequence generators:
- * </p>
+ * 
  * <ul>
  *   <li>{@code GLOBAL_ID_GENERATOR} - For cross-tenant entities (User, Role, Token)</li>
  *   <li>{@code ORGANIZATION_ID_GENERATOR} - For Organization IDs</li>
  *   <li>{@code ORGANIZATION_RELATED_ID_GENERATOR} - For tenant-scoped entities (UserRole, EmailConfig)</li>
  * </ul>
  *
- * <h2>Subpackage Organization</h2>
+ * <b>Subpackage Organization</b>
  * <ul>
  *   <li>{@code authentication/} - External authentication provider entities (FacebookUser, GoogleUser, LinkedinUser, LDAPUser, SalesforceUser, LoginAndPassword)</li>
  *   <li>{@code common/} - Base entity classes, constants, and interfaces shared across all domain types</li>
@@ -63,9 +63,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code task/} - Background task and scheduled job entities</li>
  * </ul>
  *
- * <h2>Key Entity Listings</h2>
+ * <b>Key Entity Listings</b>
  *
- * <h3>Core Tenant Entities</h3>
+ * <b>Core Tenant Entities</b>
  * <ul>
  *   <li>{@link com.openkoda.model.Organization} - Tenant entity with property bag and branding configuration</li>
  *   <li>{@link com.openkoda.model.User} - Authentication entity with multi-organization membership support</li>
@@ -74,21 +74,21 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@link com.openkoda.model.UserRole} - Join entity linking users to roles within organizational contexts</li>
  * </ul>
  *
- * <h3>Dynamic Entity System</h3>
+ * <b>Dynamic Entity System</b>
  * <ul>
  *   <li>{@link com.openkoda.model.DynamicEntity} - Runtime entity definitions for Byte Buddy-generated JPA entities</li>
  *   <li>{@link com.openkoda.model.DynamicPrivilege} - Custom runtime-configurable privileges</li>
  *   <li>{@code Form} - Entity definitions for no-code entity creation</li>
  * </ul>
  *
- * <h3>Configuration Entities</h3>
+ * <b>Configuration Entities</b>
  * <ul>
  *   <li>{@link com.openkoda.model.EmailConfig} - Per-organization SMTP and mail provider configuration</li>
  *   <li>{@link com.openkoda.model.MapEntity} - Key-value store for flexible organization-scoped configuration</li>
  *   <li>{@link com.openkoda.model.OpenkodaModule} - Feature module definitions for modular architecture</li>
  * </ul>
  *
- * <h3>Security Entities</h3>
+ * <b>Security Entities</b>
  * <ul>
  *   <li>{@link com.openkoda.model.Token} - Short-lived authentication tokens for password reset, email verification, and API access</li>
  *   <li>{@link com.openkoda.model.PrivilegeBase} - Interface for uniform privilege handling across static enums and dynamic entities</li>
@@ -97,33 +97,33 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@link com.openkoda.model.PrivilegeType} - Coarse-grained privilege classification (ORGANIZATION, GLOBAL, USER)</li>
  * </ul>
  *
- * <h3>Search and Audit Entities</h3>
+ * <b>Search and Audit Entities</b>
  * <ul>
  *   <li>{@link com.openkoda.model.GlobalEntitySearch} - Read-only projection for cross-entity full-text search with privilege filtering</li>
  *   <li>{@link com.openkoda.model.DbVersion} - Schema version tracking for database migration orchestration</li>
  * </ul>
  *
- * <h2>JPA Patterns and Conventions</h2>
+ * <b>JPA Patterns and Conventions</b>
  *
- * <h3>Sequence Generators</h3>
+ * <b>Sequence Generators</b>
  * <p>
  * All ID generation uses ModelConstants sequence generator names with {@code allocationSize=10} for batch allocation:
- * </p>
+ * 
  * <pre>
  * {@code @GeneratedValue(generator = ModelConstants.GLOBAL_ID_GENERATOR)
  * @GenericGenerator(name = ModelConstants.GLOBAL_ID_GENERATOR, ...)}
  * </pre>
  *
- * <h3>Audit Fields</h3>
+ * <b>Audit Fields</b>
  * <p>
  * Timestamps managed via Spring Data JPA auditing with {@code @CreatedDate} and {@code @LastModifiedDate}
  * annotations. {@code AuditingEntityListener} must be registered via {@code @EnableJpaAuditing}.
- * </p>
+ * 
  *
- * <h3>Computed Fields</h3>
+ * <b>Computed Fields</b>
  * <p>
  * {@code @Formula} annotations define database-computed fields for derived values. Common patterns:
- * </p>
+ * 
  * <ul>
  *   <li>{@code indexString} - Full-text search index, database-generated with default empty string</li>
  *   <li>{@code requiredReadPrivilege} - Privilege token required to read entity (e.g., "_readOrgData")</li>
@@ -131,25 +131,25 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code referenceString} - Display string for UI reference (e.g., organization ID as string)</li>
  * </ul>
  *
- * <h3>Multi-Tenancy</h3>
+ * <b>Multi-Tenancy</b>
  * <p>
  * Tenant isolation enforced via {@code organizationId} column on all tenant-scoped entities.
  * {@code OpenkodaEntity} base class provides organization scope. Repository queries must filter
  * by {@code organizationId} to enforce proper tenant isolation in multi-tenant deployments.
- * </p>
+ * 
  *
- * <h3>Search Indexing</h3>
+ * <b>Search Indexing</b>
  * <p>
  * Full-text search enabled via {@code INDEX_STRING_COLUMN} (length 16300) on searchable entities.
  * Database-generated with default empty string. Non-insertable from application code. Populated
  * via database triggers or computed via {@code @Formula} annotations.
- * </p>
+ * 
  *
- * <h3>JSON Storage</h3>
+ * <b>JSON Storage</b>
  * <p>
  * PostgreSQL JSONB storage for flexible schema-less data using {@code @JdbcTypeCode(SqlTypes.JSON)}
  * with {@code columnDefinition='jsonb'}. Common use cases:
- * </p>
+ * 
  * <ul>
  *   <li>{@code Organization.properties} - Key-value property bag via {@code @ElementCollection} join table</li>
  *   <li>{@code MapEntity.value} - JSON string with transient typed Map view</li>
@@ -157,7 +157,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code User.attributes} - Custom user metadata without schema changes</li>
  * </ul>
  *
- * <h2>Common Pitfalls</h2>
+ * <b>Common Pitfalls</b>
  * <ul>
  *   <li><strong>DbVersion NPE Risk:</strong> {@code DbVersion.value()} and {@code toString()} perform Integer
  *       unboxing without null checks. Ensure major/minor/build/revision are initialized to avoid NPE.</li>

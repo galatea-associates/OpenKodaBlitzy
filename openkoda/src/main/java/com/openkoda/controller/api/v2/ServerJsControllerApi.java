@@ -37,21 +37,21 @@ import static com.openkoda.controller.common.URLConstants.*;
  * {@code _API_V2_ORGANIZATION_ORGANIZATIONID + _SERVERJS} and a global v2 path
  * composed from {@code _API_V2 + _SERVERJS}. The controller is a stateless adapter
  * with no additional methods or fields beyond the inherited functionality.
- * </p>
+ * 
  * <p>
  * The constructor calls {@code super(SERVERJS)} to pass the logical resource identifier
  * constant into the base {@link CRUDApiController}. All CRUD operations are inherited
  * from the parent controller, and this class exists solely to register routes and bind
  * the generic CRUD implementation to the ServerJs domain type and canonical URL constants.
- * </p>
  * 
- * <h3>Request Mapping Base Paths</h3>
+ * 
+ * <b>Request Mapping Base Paths</b>
  * <ul>
  *   <li>Organization-scoped: {@code /api/v2/{organizationId}/server-js}</li>
  *   <li>Global v2: {@code /api/v2/server-js}</li>
  * </ul>
  * 
- * <h3>Inherited Endpoints</h3>
+ * <b>Inherited Endpoints</b>
  * <ul>
  *   <li>{@code GET /api/v2/server-js/all} - List ServerJs scripts with pagination</li>
  *   <li>{@code GET /api/v2/server-js/{id}} - Get single ServerJs script by ID</li>
@@ -60,10 +60,10 @@ import static com.openkoda.controller.common.URLConstants.*;
  *   <li>{@code POST /api/v2/server-js/{id}/remove} - Delete script</li>
  * </ul>
  * 
- * <h3>API Response Format</h3>
+ * <b>API Response Format</b>
  * <p>
  * All endpoints return JSON responses wrapped in standard API result structure:
- * </p>
+ * 
  * <pre>
  * // List response
  * {"success": true, "data": [{"id": 1, "name": "script.js"}]}
@@ -75,14 +75,14 @@ import static com.openkoda.controller.common.URLConstants.*;
  * {"success": true, "data": {"id": 2, "name": "new-script.js"}}
  * </pre>
  * 
- * <h3>Security</h3>
+ * <b>Security</b>
  * <p>
  * All endpoints require authentication and are subject to authorization checks. Multi-tenancy
  * is enforced through organization-scoped paths when the {@code organizationId} path variable
  * is present. Unauthorized requests return HTTP 401 or 403 status codes.
- * </p>
  * 
- * <h3>Operational Considerations</h3>
+ * 
+ * <b>Operational Considerations</b>
  * <p>
  * Removing, renaming, or changing the package of this class will break compile-time references
  * and prevent Spring from registering the endpoints. Altering {@code @RequestMapping} values
@@ -90,19 +90,19 @@ import static com.openkoda.controller.common.URLConstants.*;
  * base-controller binding including resource resolution, permissions, and logging. Maintain
  * compatibility when evolving URL constants or {@link CRUDApiController} APIs. Coordinate
  * changes with configuration updates and testing.
- * </p>
  * 
- * <h3>Maintainability</h3>
+ * 
+ * <b>Maintainability</b>
  * <p>
  * This class is a low-risk routing adapter but critical to the public API surface for v2.
  * Include it in CI regression suites and API contract tests. Changes to this controller
  * should be accompanied by updates to integration tests, API documentation, and release notes.
- * </p>
  * 
- * <h3>Thread Safety</h3>
+ * 
+ * <b>Thread Safety</b>
  * <p>
  * Stateless singleton - thread-safe. Each request creates a new Flow pipeline for execution.
- * </p>
+ * 
  * 
  * @see CRUDApiController
  * @see ServerJs
@@ -122,10 +122,10 @@ public class ServerJsControllerApi extends CRUDApiController<ServerJs> {
      * from {@code ApiCRUDControllerConfigurationMap} and contains the necessary
      * components for CRUD operations including the SecureRepository, form class,
      * FrontendMappingDefinition, and privilege requirements for ServerJs entities.
-     * </p>
+     * 
      * <p>
      * Stateless - thread-safe for concurrent requests.
-     * </p>
+     * 
      */
     public ServerJsControllerApi() {
         super(SERVERJS);

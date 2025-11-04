@@ -37,7 +37,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * This service validates the database state against registered {@link FrontendMappingFieldDefinition}
  * entries, builds ALTER TABLE statements for missing columns, and handles foreign key constraints
  * for organization_select fields. The generated DDL scripts are safe to review and execute manually.
- * </p>
+
  * <p>
  * Core responsibilities include:
  * <ul>
@@ -47,7 +47,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  *   <li>Validating column type consistency between application metadata and database schema</li>
  *   <li>Producing validation logs identifying schema inconsistencies</li>
  * </ul>
- * </p>
+
  * <p>
  * SQL generation patterns:
  * <ul>
@@ -56,16 +56,16 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  *   <li>Creates foreign key constraints with fk_ prefix for organization_select fields</li>
  *   <li>References organization(id) for organizational scoping</li>
  * </ul>
- * </p>
+
  * <p>
  * Exception handling: {@link SQLException} instances are caught and rethrown as {@link RuntimeException}.
  * Database connections are always released via {@link DataSourceUtils#releaseConnection} in finally blocks
  * to prevent connection leaks.
- * </p>
+
  * <p>
  * Thread-safety: This service is effectively stateless (namingStrategy is immutable after initialization)
  * and safe for concurrent calls. Multiple threads can safely invoke validation and script generation methods.
- * </p>
+
  * <p>
  * Integration points:
  * <ul>
@@ -75,7 +75,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  *   <li>Processes {@link FrontendMappingFieldDefinition} metadata for type information</li>
  *   <li>Accesses {@link DataSource} via Spring JDBC utilities for connection management</li>
  * </ul>
- * </p>
+
  * <p>
  * Example usage showing typical validation workflow with form import:
  * <pre>{@code
@@ -83,7 +83,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * // Review generated SQL script for ALTER TABLE statements
  * // Execute script manually or via database migration tool
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @since 1.7.1
@@ -136,7 +136,7 @@ public class DatabaseValidationService extends ComponentProvider {
      * and delegates to {@link #getUpdateScript(FrontendMappingDefinition, String, boolean)}
      * for each registered mapping. Generated scripts use ALTER TABLE IF NOT EXISTS statements
      * for safe idempotent execution.
-     * </p>
+
      *
      * @param includeOnlyMissingColumns if true, generates DDL only for columns not present in database;
      *                                  if false, generates DDL for all columns regardless of existence
@@ -167,14 +167,14 @@ public class DatabaseValidationService extends ComponentProvider {
      *   <li>Generates ALTER TABLE ADD COLUMN IF NOT EXISTS statement if needed</li>
      *   <li>Creates foreign key constraint for organization_select field types</li>
      * </ul>
-     * </p>
+
      * <p>
      * Foreign key generation for organization_select fields follows the pattern:
      * <pre>{@code
      * alter table <table_name> add constraint fk_<column_name>
      *   foreign key (<column_name>) references organization(id);
      * }</pre>
-     * </p>
+
      *
      * @param frontendMappingDefinition the frontend mapping definition containing field metadata
      *                                  to validate against the database schema
@@ -228,17 +228,17 @@ public class DatabaseValidationService extends ComponentProvider {
      *   <li>Column presence check - generates ALTER TABLE DDL for missing columns</li>
      *   <li>Column type consistency check - validates database type matches expected type</li>
      * </ul>
-     * </p>
+
      * <p>
      * For missing columns, this method appends ALTER TABLE ADD COLUMN IF NOT EXISTS statements
      * to the updateDatabaseScript parameter. For organization_select fields, it additionally
      * generates foreign key constraint statements referencing organization(id).
-     * </p>
+
      * <p>
      * All validation findings are appended to the validationLog parameter with descriptive
      * messages. Type mismatches result in false return value while missing columns do not
      * affect validation success (they are handled via generated DDL).
-     * </p>
+
      *
      * @param tableName the database table name to validate; if blank, validation is skipped
      * @param columns map of field names to {@link FrontendMappingFieldDefinition} containing
@@ -305,7 +305,7 @@ public class DatabaseValidationService extends ComponentProvider {
      *   <li>Releases connection in finally block via {@link DataSourceUtils#releaseConnection}</li>
      *   <li>Ensures connection is returned to pool even if SQLException occurs</li>
      * </ul>
-     * </p>
+
      *
      * @param tableName the database table name to query for column metadata;
      *                  case-sensitivity depends on database configuration

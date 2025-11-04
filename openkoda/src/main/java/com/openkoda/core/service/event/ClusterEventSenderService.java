@@ -34,37 +34,37 @@ import static com.openkoda.core.service.event.ClusterEvent.EventType.*;
  * This service publishes ClusterEvent messages to all cluster nodes when Scheduler, EventListenerEntry,
  * or Form entities are created, modified, or deleted. It provides the broadcast mechanism for keeping
  * runtime configuration synchronized across a multi-node OpenKoda cluster deployment.
- * </p>
+
  * <p>
  * <b>Architecture:</b> Uses {@link com.openkoda.core.helper.ClusterHelper#isCluster()} check before
  * publishing. In single-instance mode (non-cluster), all methods perform no operation and return false.
  * In cluster mode, events are published to Hazelcast ITopic&lt;ClusterEvent&gt; named CLUSTER_EVENT_TOPIC
  * retrieved via {@code getHazelcastInstance().getTopic()}.
- * </p>
+
  * <p>
  * <b>Statefulness:</b> Completely stateless service with no caching or internal state. Safe for concurrent
  * invocation from multiple threads without synchronization.
- * </p>
+
  * <p>
  * <b>Transaction Context:</b> Typically invoked AFTER database transaction commit to ensure entity exists
  * when other nodes reload from database. Publish operations should occur after successful persistence.
- * </p>
+
  * <p>
  * <b>Error Handling:</b> Hazelcast publish() exceptions propagate to caller. No retry or error recovery
  * logic is implemented. Calling services should handle failures appropriately.
- * </p>
+
  * <p>
  * <b>Usage:</b> Called by SchedulerService, EventListenerService, and FormService after entity persistence
  * operations to notify other cluster nodes to synchronize their runtime state.
- * </p>
+
  * <p>
  * <b>Idempotency:</b> Publish operations are idempotent. Duplicate events are handled gracefully by
  * receiving nodes through the ClusterEventListenerService event handlers.
- * </p>
+
  * <p>
  * <b>Cluster Detection:</b> Uses ClusterHelper.isCluster() which checks for 'hazelcast' Spring profile
  * activation to determine if cluster mode is enabled.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -72,7 +72,7 @@ import static com.openkoda.core.service.event.ClusterEvent.EventType.*;
  * Scheduler scheduler = schedulerRepository.save(newScheduler);
  * clusterEventSenderService.loadScheduler(scheduler.getId());
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -92,10 +92,10 @@ public class ClusterEventSenderService implements LoggingComponentWithRequestId 
      * Called by SchedulerService.schedule() after successful database insert. Receiving nodes invoke
      * SchedulerService.loadScheduler() to query the scheduler entity by ID and register it in their
      * local job scheduler instance.
-     * </p>
+
      * <p>
      * <b>Timing:</b> Publish AFTER database commit to ensure entity exists when other nodes query by ID.
-     * </p>
+
      *
      * @param schedulerId Database primary key of Scheduler entity to load
      * @return true if cluster mode enabled and event published; false if single-instance mode (no-op)
@@ -116,10 +116,10 @@ public class ClusterEventSenderService implements LoggingComponentWithRequestId 
      * Called by SchedulerService.reschedule() after database update. Receiving nodes invoke
      * SchedulerService.reloadScheduler() to fetch updated configuration and reschedule the task
      * with new timing or parameters.
-     * </p>
+
      * <p>
      * <b>Timing:</b> Publish AFTER database commit to ensure updated entity is visible to other nodes.
-     * </p>
+
      *
      * @param schedulerId Database primary key of Scheduler entity to reload
      * @return true if cluster mode enabled and event published; false if single-instance mode (no-op)
@@ -140,11 +140,11 @@ public class ClusterEventSenderService implements LoggingComponentWithRequestId 
      * Called by SchedulerService.remove() after database deletion. Receiving nodes invoke
      * SchedulerService.removeScheduler() to cancel the scheduled task and remove it from the
      * local job scheduler registry.
-     * </p>
+
      * <p>
      * <b>Timing:</b> Publish AFTER database commit to ensure deletion is persisted before other nodes
      * remove their local registrations.
-     * </p>
+
      *
      * @param schedulerId Database primary key of Scheduler entity to remove
      * @return true if cluster mode enabled and event published; false if single-instance mode (no-op)
@@ -164,10 +164,10 @@ public class ClusterEventSenderService implements LoggingComponentWithRequestId 
      * Called by EventListenerService.registerListener() after database insert. Receiving nodes invoke
      * EventListenerService.loadListener() to query the EventListenerEntry by ID and register the
      * event consumer in their local application event system.
-     * </p>
+
      * <p>
      * <b>Timing:</b> Publish AFTER database commit to ensure entity exists when other nodes query by ID.
-     * </p>
+
      *
      * @param eventListenerId Database primary key of EventListenerEntry to load
      * @return true if cluster mode enabled and event published; false if single-instance mode (no-op)
@@ -186,10 +186,10 @@ public class ClusterEventSenderService implements LoggingComponentWithRequestId 
      * <p>
      * Called after EventListenerEntry update. Receiving nodes re-register the event consumer with
      * updated configuration, including new event types, filters, or handler logic.
-     * </p>
+
      * <p>
      * <b>Timing:</b> Publish AFTER database commit to ensure updated entity is visible to other nodes.
-     * </p>
+
      *
      * @param eventListenerId Database primary key of EventListenerEntry to reload
      * @return true if cluster mode enabled and event published; false if single-instance mode (no-op)
@@ -209,11 +209,11 @@ public class ClusterEventSenderService implements LoggingComponentWithRequestId 
      * Called after EventListenerEntry deletion. Receiving nodes invoke
      * ApplicationEventService.unregisterEventListener() to remove the event consumer from their
      * local application event system.
-     * </p>
+
      * <p>
      * <b>Timing:</b> Publish AFTER database commit to ensure deletion is persisted before other nodes
      * remove their local registrations.
-     * </p>
+
      *
      * @param eventListenerId Database primary key of EventListenerEntry to remove
      * @return true if cluster mode enabled and event published; false if single-instance mode (no-op)
@@ -234,10 +234,10 @@ public class ClusterEventSenderService implements LoggingComponentWithRequestId 
      * Called by FormService after Form insert. Receiving nodes invoke FormService.loadForm() and
      * potentially DynamicEntityRegistrationService if the form requires runtime entity generation.
      * This ensures form metadata and associated dynamic entities are synchronized across all nodes.
-     * </p>
+
      * <p>
      * <b>Timing:</b> Publish AFTER database commit to ensure entity exists when other nodes query by ID.
-     * </p>
+
      *
      * @param formId Database primary key of Form entity to load
      * @return true if cluster mode enabled and event published; false if single-instance mode (no-op)
@@ -258,10 +258,10 @@ public class ClusterEventSenderService implements LoggingComponentWithRequestId 
      * Called after Form update. Receiving nodes refresh form metadata and regenerate validation
      * logic to reflect the updated configuration. This ensures consistent form behavior across
      * all cluster nodes.
-     * </p>
+
      * <p>
      * <b>Timing:</b> Publish AFTER database commit to ensure updated entity is visible to other nodes.
-     * </p>
+
      *
      * @param formId Database primary key of Form entity to reload
      * @return true if cluster mode enabled and event published; false if single-instance mode (no-op)
@@ -281,11 +281,11 @@ public class ClusterEventSenderService implements LoggingComponentWithRequestId 
      * Called after Form deletion. Receiving nodes invoke FormService.removeForm() to remove the
      * form metadata from their local registry, ensuring the deleted form is no longer available
      * for use across the cluster.
-     * </p>
+
      * <p>
      * <b>Timing:</b> Publish AFTER database commit to ensure deletion is persisted before other nodes
      * remove their local registrations.
-     * </p>
+
      *
      * @param formId Database primary key of Form entity to remove
      * @return true if cluster mode enabled and event published; false if single-instance mode (no-op)

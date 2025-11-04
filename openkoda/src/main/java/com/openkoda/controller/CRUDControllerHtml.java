@@ -73,11 +73,11 @@ import static com.openkoda.core.repository.common.SearchableFunctionalRepository
  * via Flow pipelines and {@link ReflectionBasedEntityForm}. Supports CSV exports via services.csv
  * and services.file. Retrieves configuration from {@link HtmlCRUDControllerConfigurationMap} by {obj}
  * path variable.
- * </p>
+ * 
  * <p>
  * Key helpers: {@link #createPageable(HttpServletRequest, String)}, {@link #createSearch(HttpServletRequest, String)},
  * {@link #convertUsingReflection(Object)}.
- * </p>
+ * 
  * <p>
  * Example usage for registered entity "users":
  * <pre>
@@ -85,10 +85,9 @@ import static com.openkoda.core.repository.common.SearchableFunctionalRepository
  * GET /html/users/new-settings - Create form
  * POST /html/users/123/settings - Update user
  * </pre>
- * </p>
  * <p>
  * Thread-safety: Stateless controller, thread-safe.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -120,10 +119,10 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * GET endpoint that displays paginated list of entity instances registered under the given objKey.
      * Applies search filtering, column sorting, custom filters, and privilege-based access control.
      * Returns entities visible to current user based on organization membership and privileges.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: GET /{obj}/all where {obj} is entity type key (e.g., "users", "organizations")
-     * </p>
+     * 
      * <p>
      * Query parameters:
      * - {obj}_page: Page number (0-based, default: 0)
@@ -132,7 +131,7 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * - {obj}_search: Full-text search term
      * - obj_search: Common search term across all columns
      * - obj_filter_{field}: Filter by specific field value
-     * </p>
+     * 
      * <p>
      * Flow usage:
      * <pre>
@@ -140,7 +139,7 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      *   .thenSet(entities, a -> repository.findAll(pageable))
      *   .execute()
      * </pre>
-     * </p>
+     * 
      *
      * @param organizationId Organization ID for organization-scoped entities (optional, extracted from path)
      * @param objKey Entity type key from configuration map (e.g., "users", "organizations")
@@ -227,10 +226,10 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * GET endpoint that renders form for creating new entity instance. Form fields are defined
      * in {@link CRUDControllerConfiguration#getFrontendMappingDefinition()}. Returns empty form
      * with default values and validation rules applied.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: GET /{obj}/new-settings
-     * </p>
+     * 
      *
      * @param organizationId Organization ID for organization-scoped entities (optional)
      * @param objKey Entity type key from configuration map (e.g., "users", "organizations")
@@ -261,16 +260,15 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * GET endpoint that retrieves existing entity by ID and renders edit form with current values.
      * Form fields are populated from entity using {@link ReflectionBasedEntityForm}. Returns form
      * ready for modification and submission.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: GET /{obj}/{id}/settings
-     * </p>
+     * 
      *
      * @param objectId Entity ID to edit
      * @param organizationId Organization ID for organization-scoped entities (optional)
      * @param objKey Entity type key from configuration map (e.g., "users", "organizations")
      * @return ModelAndView with pre-populated form and settings view template
-     * @throws com.openkoda.core.exception.ResourceNotFoundException if entity with given ID not found
      * @throws org.springframework.security.access.AccessDeniedException if user lacks required read privilege
      */
     @GetMapping(_ID_SETTINGS)
@@ -300,16 +298,16 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * POST endpoint that validates form data, creates new entity instance, and persists to database.
      * Performs Jakarta Bean Validation on form, populates entity from form using reflection,
      * saves via secure repository. Returns success or error fragment based on validation result.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: POST /{obj}/new-settings
-     * </p>
+     * 
      * <p>
      * Flow pipeline:
      * <pre>
      * validateAndPopulateToEntity(form) -> repository.save() -> createNewForm()
      * </pre>
-     * </p>
+     * 
      *
      * @param organizationId Organization ID for organization-scoped entities (optional)
      * @param objKey Entity type key from configuration map (e.g., "users", "organizations")
@@ -350,16 +348,16 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * POST endpoint that validates form data, retrieves existing entity, updates fields, and persists changes.
      * Performs Jakarta Bean Validation on form, loads entity by ID, populates updated fields from form,
      * saves via secure repository. Returns success or error fragment based on validation result.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: POST /{obj}/{id}/settings
-     * </p>
+     * 
      * <p>
      * Flow pipeline:
      * <pre>
      * repository.findOne(id) -> validateAndPopulateToEntity(form) -> repository.save()
      * </pre>
-     * </p>
+     * 
      *
      * @param objectId Entity ID to update
      * @param organizationId Organization ID for organization-scoped entities (optional)
@@ -368,7 +366,6 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * @param br BindingResult containing validation errors if any
      * @return ModelAndView with success fragment (entity updated) or error fragment (validation failed)
      * @throws jakarta.validation.ValidationException if form validation fails
-     * @throws com.openkoda.core.exception.ResourceNotFoundException if entity with given ID not found
      * @throws org.springframework.security.access.AccessDeniedException if user lacks required update privilege
      */
     @PostMapping(_ID_SETTINGS)
@@ -400,16 +397,15 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * <p>
      * POST endpoint that removes entity instance from database. Performs secure delete via repository
      * with privilege enforcement. Returns boolean success indicator.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: POST /{obj}/{id}/remove
-     * </p>
+     * 
      *
      * @param objectId Entity ID to delete
      * @param organizationId Organization ID for organization-scoped entities (optional)
      * @param objKey Entity type key from configuration map (e.g., "users", "organizations")
      * @return ModelAndView with true on success, false on failure
-     * @throws com.openkoda.core.exception.ResourceNotFoundException if entity with given ID not found
      * @throws org.springframework.security.access.AccessDeniedException if user lacks required delete privilege
      */
     @PostMapping(_ID_REMOVE)
@@ -436,16 +432,15 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * GET endpoint that retrieves entity by ID and displays read-only detail view. Converts entity
      * to map representation using reflection for flexible rendering. Useful for viewing entity
      * details without edit capability.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: GET /{obj}/{id}/view
-     * </p>
+     * 
      *
      * @param objectId Entity ID to view
      * @param organizationId Organization ID for organization-scoped entities (optional)
      * @param objKey Entity type key from configuration map (e.g., "users", "organizations")
      * @return ModelAndView with 'organizationRelatedEntity' and 'organizationRelatedObjectMap' attributes
-     * @throws com.openkoda.core.exception.ResourceNotFoundException if entity with given ID not found
      * @throws org.springframework.security.access.AccessDeniedException if user lacks required read privilege
      */
     @GetMapping(_ID + _VIEW)
@@ -477,16 +472,16 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * parameters as list view, renders all matching entities (no pagination) to CSV format. Uses
      * services.csv.createCSV for generation and services.file for attachment download. CSV filename
      * includes entity key and timestamp.
-     * </p>
+     * 
      * <p>
      * HTTP mapping: GET /{obj}/report/csv
-     * </p>
+     * 
      * <p>
      * Query parameters: Same as getAll (search, filters) but without pagination
-     * </p>
+     * 
      * <p>
      * CSV format: First row contains column headers, subsequent rows contain entity data
-     * </p>
+     * 
      *
      * @param organizationId Organization ID for organization-scoped entities (optional)
      * @param objKey Entity type key from configuration map (e.g., "users", "organizations")
@@ -540,7 +535,7 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * <p>
      * Checks if current user has global or organization-specific privilege for accessing entity.
      * Used internally by all CRUD endpoints for privilege enforcement.
-     * </p>
+     * 
      *
      * @param privilege Required privilege for operation (read, create, update, delete)
      * @param confOrganizationId Organization ID from controller configuration (unused in current implementation)
@@ -557,7 +552,7 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * Extracts all declared fields from entity object and populates map with field name as key
      * and field value as value. Skips fields from dynamic entity package to avoid circular references.
      * Used by view endpoint for generic entity display.
-     * </p>
+     * 
      *
      * @param object Entity instance to convert (typically SearchableOrganizationRelatedEntity)
      * @return Map with field names as keys and field values as values
@@ -587,10 +582,10 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * Constructs search parameter name from qualifier (entity key) and "_search" suffix.
      * Supports case-insensitive parameter matching. Returns last value if parameter specified
      * multiple times. Returns empty string if parameter not present.
-     * </p>
+     * 
      * <p>
      * Expected parameter format: {qualifier}_search={searchTerm}
-     * </p>
+     * 
      *
      * @param request HTTP request containing search parameters
      * @param qualifier Entity key qualifier (e.g., "users" results in parameter "users_search")
@@ -616,11 +611,11 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * Collects all request parameters that don't start with qualifier prefix (entity-specific params).
      * Returns both query string format and map representation for URL reconstruction and parameter access.
      * Useful for preserving external parameters when redirecting or paginating.
-     * </p>
+     * 
      *
      * @param request HTTP request with all parameters
      * @param qualifier Entity key qualifier to exclude (parameters starting with "{qualifier}_" are filtered out)
-     * @return Tuple2 with query string (e.g., "&param1=value1&param2=value2") and parameter map
+     * @return Tuple2 with query string (e.g., "&amp;param1=value1&amp;param2=value2") and parameter map
      */
     public static Tuple2<String, Map<String, String>> createRemainingParams(HttpServletRequest request, String qualifier) {
         StringBuilder result = new StringBuilder();
@@ -647,11 +642,11 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * Collects filter parameters following pattern {qualifier}_filter_{fieldName}={value}.
      * Filters out empty values. Returns map with field names as keys and filter values as values.
      * Used by getAll and getCsvReport for applying column-specific filters.
-     * </p>
+     * 
      * <p>
      * Example: users_filter_status=active, users_filter_role=admin results in
      * Map: {"status": "active", "role": "admin"}
-     * </p>
+     * 
      *
      * @param request HTTP request containing filter parameters
      * @param qualifier Entity key qualifier (e.g., "users" results in parameters like "users_filter_status")
@@ -680,13 +675,13 @@ public class CRUDControllerHtml extends AbstractController implements HasSecurit
      * Extracts pagination and sorting parameters from request with entity-specific qualifier prefix.
      * Parses page number, page size, and optional sort column with direction. Returns Pageable
      * instance for use with Spring Data JPA repositories.
-     * </p>
+     * 
      * <p>
      * Expected parameters:
      * - {qualifier}_page: Page number (0-based, default: 0)
      * - {qualifier}_size: Page size (default: 10)
      * - {qualifier}_sort: Sort specification in format "column" or "column,direction" (e.g., "name,asc")
-     * </p>
+     * 
      *
      * @param request HTTP request containing pagination parameters
      * @param qualifier Entity key qualifier (e.g., "users" results in parameters like "users_page", "users_size")

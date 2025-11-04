@@ -28,14 +28,12 @@ package com.openkoda.core.customisation;
  * service registration, and customization bootstrap procedures have finished. It serves
  * as a synchronization point for components that depend on a fully initialized OpenKoda
  * core environment before performing their own initialization logic.
- * </p>
  * <p>
  * The event is emitted by {@link BasicCustomisationService} following the processing of
  * Spring's {@link org.springframework.context.event.ContextRefreshedEvent}. This ensures
  * that all Spring beans are instantiated, dependency injection is complete, and OpenKoda's
  * customization subsystem has finished registering custom modules, privileges, and
  * dynamic entities before downstream components begin their initialization.
- * </p>
  * <p>
  * <b>Lifecycle Context:</b> The typical Spring boot sequence is:
  * <ol>
@@ -45,7 +43,6 @@ package com.openkoda.core.customisation;
  * <li>{@code CoreSettledEvent} published (this event)</li>
  * <li>Application ready for normal operation</li>
  * </ol>
- * </p>
  * <p>
  * <b>Usage Example:</b>
  * <pre>{@code
@@ -54,15 +51,12 @@ package com.openkoda.core.customisation;
  *     // Perform initialization that requires fully settled core
  * }
  * }</pre>
- * </p>
  * <p>
  * <b>Thread Safety:</b> This class is immutable and thread-safe. Event instances can be
  * safely published and consumed across multiple threads.
- * </p>
  * <p>
  * <b>Immutability:</b> This is a stateless marker class with no fields or methods. Each
  * instance serves purely as a type-safe signal in Spring's event publishing mechanism.
- * </p>
  *
  * @see BasicCustomisationService
  * @see org.springframework.context.event.ContextRefreshedEvent

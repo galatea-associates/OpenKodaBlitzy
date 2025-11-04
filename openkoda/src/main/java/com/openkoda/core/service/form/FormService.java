@@ -60,9 +60,9 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  * including frontend mappings, HTML CRUD controllers, and API CRUD controllers. The service 
  * integrates with auditing and multitenancy registries and provides cluster-aware orchestration 
  * for distributed deployments.
- * </p>
+
  * 
- * <h2>Architecture Flow</h2>
+ * <b>Architecture Flow</b>
  * <p>
  * The form binding architecture follows this flow:
  * <ol>
@@ -71,9 +71,9 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  *   <li>Controller registration makes form available at runtime</li>
  *   <li>Runtime availability for HTML and API endpoints</li>
  * </ol>
- * </p>
+
  * 
- * <h2>Form Registration Sequence</h2>
+ * <b>Form Registration Sequence</b>
  * <p>
  * When a form is registered via {@link #registerForm(Form)}, the following steps occur:
  * <ul>
@@ -87,9 +87,9 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  *   <li>HTML CRUD controller registration with {@link CRUDControllerConfiguration}</li>
  *   <li>API CRUD controller registration</li>
  * </ul>
- * </p>
+
  * 
- * <h2>Usage Examples</h2>
+ * <b>Usage Examples</b>
  * <pre>
  * // Form registration
  * formService.addForm(formId);
@@ -104,7 +104,7 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  * formService.loadAllFormsFromDb(true);
  * </pre>
  * 
- * <h2>Integration Notes</h2>
+ * <b>Integration Notes</b>
  * <p>
  * This service collaborates with:
  * <ul>
@@ -117,16 +117,16 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  *   <li>{@link SearchableRepositoryMetadata} for repository field/configuration metadata</li>
  *   <li>{@link CRUDControllerConfiguration} for generic table fields and filter fields setup</li>
  * </ul>
- * </p>
+
  * 
- * <h2>Security and Privilege Handling</h2>
+ * <b>Security and Privilege Handling</b>
  * <p>
  * Implements {@link HasSecurityRules} and uses Form privilege fields (readPrivilege, writePrivilege) 
  * to register controller access rules. Generated controllers enforce privilege-based access control 
  * for all CRUD operations.
- * </p>
+
  * 
- * <h2>Error Handling</h2>
+ * <b>Error Handling</b>
  * <p>
  * Methods return {@code false} when:
  * <ul>
@@ -135,21 +135,21 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
  * </ul>
  * Note: Persisted JavaScript evaluation has arbitrary runtime effects. All dynamic code 
  * execution is centralized in this service.
- * </p>
+
  * 
- * <h2>Thread-Safety</h2>
+ * <b>Thread-Safety</b>
  * <p>
  * Form registration and unregistration operations should be carefully synchronized in 
  * multi-threaded environments. {@link AbstractForm#markDirty(String)} marks metadata 
  * as dirty for cache invalidation across the application.
- * </p>
+
  * 
- * <h2>Performance Considerations</h2>
+ * <b>Performance Considerations</b>
  * <p>
  * The {@link #loadAllFormsFromDb(boolean)} bulk operation may have performance impact 
  * at startup when loading many forms. Cluster-aware operations incur broadcast overhead 
  * via {@link ClusterEventSenderService}.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -172,7 +172,7 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * and reload operations are synchronized across all nodes in the cluster. 
      * When {@link ClusterHelper#isCluster()} returns true, this service broadcasts 
      * operations to all cluster members.
-     * </p>
+
      *
      * @see ClusterEventSenderService#loadForm(long)
      * @see ClusterEventSenderService#removeForm(long)
@@ -187,7 +187,7 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * Handles the registration and removal of form table names in multitenancy 
      * environments. When multitenancy is enabled, form table names are added to 
      * the tenant-aware table registry for proper data isolation.
-     * </p>
+
      *
      * @see MultitenancyService#addTenantedTables(List)
      * @see MultitenancyService#removeTenantedTables(List)
@@ -202,14 +202,14 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * existing form (removing frontend mappings, controllers, and auditable class 
      * registrations), then registering it again with the current persisted configuration. 
      * This is typically used after a Form entity has been modified in the database.
-     * </p>
+
      * <p>
      * The Form entity is fetched from the unsecure repository to ensure access 
      * regardless of security context. If the form is not found or unregistration 
      * fails, the method returns {@code false}.
-     * </p>
+
      * 
-     * <h3>Workflow</h3>
+     * <b>Workflow</b>
      * <ol>
      *   <li>Fetch Form entity by ID from unsecure repository</li>
      *   <li>Call {@link #unregisterForm(Form)} to clean up existing registrations</li>
@@ -241,13 +241,13 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * delegates to {@link #registerForm(Form)} to perform the complete registration 
      * sequence. Registration includes creating frontend mappings, generating CRUD 
      * controllers, and integrating with auditing and multitenancy systems.
-     * </p>
+
      * <p>
      * The registration process evaluates the persisted JavaScript code in the Form's 
      * {@code code} field via {@link ServerJSRunner} to generate a 
      * {@link FrontendMappingDefinition}, which is then used to create HTML and API 
      * endpoints for the form.
-     * </p>
+
      *
      * @param formId the ID of the Form entity to register, must not be null
      * @return {@code true} if the form was successfully registered, {@code false} if 
@@ -273,11 +273,11 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * sequence. Unregistration includes removing frontend mappings, unregistering 
      * CRUD controllers, removing multitenancy table entries, and cleaning up 
      * auditable class registrations.
-     * </p>
+
      * <p>
      * After unregistration, the form's endpoints are no longer available and 
      * cached metadata is invalidated.
-     * </p>
+
      *
      * @param formId the ID of the Form entity to unregister, must not be null
      * @return {@code true} if the form was successfully unregistered, {@code false} 
@@ -300,27 +300,27 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * This method is typically called during application startup or admin-initiated 
      * bulk operations to initialize all persisted forms. It fetches all Form entities 
      * from the database and registers each one via {@link #registerForm(Form)}.
-     * </p>
+
      * <p>
      * When multitenancy is enabled ({@link MultitenancyService#isMultitenancy()} 
      * returns true), all form table names are added to the multitenancy service's 
      * tenant-aware table registry in a single batch operation for efficiency.
-     * </p>
+
      * 
-     * <h3>Usage Context</h3>
+     * <b>Usage Context</b>
      * <ul>
      *   <li>Application startup initialization</li>
      *   <li>Admin-triggered bulk form reload operations</li>
      *   <li>System configuration changes requiring full form refresh</li>
      * </ul>
      * 
-     * <h3>Performance Impact</h3>
+     * <b>Performance Impact</b>
      * <p>
      * This operation may have significant performance impact when loading many forms, 
      * as each form triggers JavaScript evaluation and controller registration. Consider 
      * using this method during maintenance windows for production systems with large 
      * numbers of forms.
-     * </p>
+
      *
      * @param proceed if {@code true}, performs the bulk load operation; if {@code false}, 
      *                returns immediately without any action. This flag allows conditional 
@@ -349,13 +349,13 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * the operation is broadcast to all cluster members via 
      * {@link ClusterEventSenderService#loadForm(long)}. In single-node mode, it 
      * delegates to the local {@link #addForm(Long)} method.
-     * </p>
+
      * <p>
      * Use this method instead of {@link #addForm(Long)} in clustered environments 
      * to ensure consistent form availability across all application instances.
-     * </p>
+
      * 
-     * <h3>Cluster Behavior</h3>
+     * <b>Cluster Behavior</b>
      * <ul>
      *   <li><b>Cluster mode:</b> Broadcasts operation via ClusterEventSenderService</li>
      *   <li><b>Single-node mode:</b> Calls local addForm method</li>
@@ -384,13 +384,13 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * the operation is broadcast to all cluster members via 
      * {@link ClusterEventSenderService#removeForm(long)}. In single-node mode, it 
      * delegates to the local {@link #removeForm(Long)} method.
-     * </p>
+
      * <p>
      * Use this method instead of {@link #removeForm(Long)} in clustered environments 
      * to ensure forms are removed consistently across all application instances.
-     * </p>
+
      * 
-     * <h3>Cluster Behavior</h3>
+     * <b>Cluster Behavior</b>
      * <ul>
      *   <li><b>Cluster mode:</b> Broadcasts operation via ClusterEventSenderService</li>
      *   <li><b>Single-node mode:</b> Calls local removeForm method</li>
@@ -419,14 +419,14 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * returns true, the operation is broadcast to all cluster members via 
      * {@link ClusterEventSenderService#reloadForm(long)}. In single-node mode, it 
      * delegates to the local {@link #reloadForm(Long)} method.
-     * </p>
+
      * <p>
      * Use this method instead of {@link #reloadForm(Long)} in clustered environments 
      * to ensure form configuration changes are applied consistently across all 
      * application instances.
-     * </p>
+
      * 
-     * <h3>Cluster Behavior</h3>
+     * <b>Cluster Behavior</b>
      * <ul>
      *   <li><b>Cluster mode:</b> Broadcasts operation via ClusterEventSenderService</li>
      *   <li><b>Single-node mode:</b> Calls local reloadForm method</li>
@@ -452,7 +452,7 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * This convenience method extracts the form's name, privilege strings, and JavaScript 
      * code, then delegates to the overloaded method for evaluation.
-     * </p>
+
      *
      * @param form the Form entity containing name, privileges, and code, must not be null
      * @return a FrontendMappingDefinition instance created by evaluating the form's JavaScript code
@@ -470,17 +470,17 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * Creates a FrontendMappingDefinition by evaluating persisted JavaScript code.
      * <p>
      * This method constructs a ServerJs snippet that calls 
-     * {@link com.openkoda.core.service.FrontendMappingDefinitionService#createFrontendMappingDefinition(String, String, String, Object)}
+     * {@link com.openkoda.core.service.FrontendMappingDefinitionService#createFrontendMappingDefinition}
      * with the provided parameters and the form's JavaScript code. The ServerJs is then 
-     * evaluated via {@link ServerJSRunner#evaluateServerJs(ServerJs, Map, Object, Class)} 
+     * evaluated via {@link ServerJSRunner#evaluateServerJsScript} 
      * to produce a FrontendMappingDefinition instance.
-     * </p>
+
      * <p>
      * <b>Warning:</b> The JavaScript code evaluation has arbitrary runtime effects. 
      * Ensure that persisted code is trusted and validated before registration.
-     * </p>
+
      * 
-     * <h3>JavaScript Evaluation</h3>
+     * <b>JavaScript Evaluation</b>
      * <p>
      * The constructed JavaScript snippet follows this pattern:
      * <pre>
@@ -488,7 +488,7 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      *     .createFrontendMappingDefinition("formName", "readPriv", "writePriv", codeObject);
      * form
      * </pre>
-     * </p>
+
      *
      * @param name the form name identifier, must not be null
      * @param readPrivilege the privilege required for read operations, may be null or empty
@@ -496,7 +496,7 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * @param code the JavaScript code defining the form structure and behavior, must not be null
      * @return a FrontendMappingDefinition instance created by evaluating the JavaScript code
      * @see ServerJs
-     * @see ServerJSRunner#evaluateServerJs(ServerJs, Map, Object, Class)
+     * @see ServerJSRunner#evaluateServerJsScript
      * @see com.openkoda.core.service.FrontendMappingDefinitionService
      */
     public static FrontendMappingDefinition getFrontendMappingDefinition(String name, String readPrivilege, String writePrivilege, String code) {
@@ -514,9 +514,9 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * This private method orchestrates the complex registration workflow that transforms 
      * a persisted Form entity into runtime-available UI and API endpoints. The registration 
      * process involves multiple integration points and side effects across the application.
-     * </p>
+
      * 
-     * <h3>Registration Sequence</h3>
+     * <b>Registration Sequence</b>
      * <ol>
      *   <li><b>Repository Resolution:</b> Calls services.data.getRepository with entity key 
      *       derived from form name to obtain the {@link ScopedSecureRepository}</li>
@@ -546,7 +546,7 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      *       registers API CRUD controller for programmatic access</li>
      * </ol>
      * 
-     * <h3>Integration Points</h3>
+     * <b>Integration Points</b>
      * <ul>
      *   <li>services.data.getRepository: Dynamic repository lookup</li>
      *   <li>services.customisation.registerFrontendMapping: Frontend mapping registry</li>
@@ -555,7 +555,7 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      *   <li>services.customisation.registerApiCrudController: API controller registry</li>
      * </ul>
      * 
-     * <h3>Side Effects</h3>
+     * <b>Side Effects</b>
      * <ul>
      *   <li>Creates runtime HTTP endpoints for form access</li>
      *   <li>Modifies global frontend mapping registry</li>
@@ -617,9 +617,9 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      * artifacts created during form registration. The unregistration process ensures 
      * that the form's endpoints are no longer accessible and all related integrations 
      * are cleaned up.
-     * </p>
+
      * 
-     * <h3>Unregistration Sequence</h3>
+     * <b>Unregistration Sequence</b>
      * <ol>
      *   <li><b>Multitenancy Table Removal:</b> Calls 
      *       {@link MultitenancyService#removeTenantedTables(List)} with the form's table 
@@ -635,7 +635,7 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      *       to remove API endpoints</li>
      * </ol>
      * 
-     * <h3>Cleanup Integration Points</h3>
+     * <b>Cleanup Integration Points</b>
      * <ul>
      *   <li>MultitenancyService.removeTenantedTables: Tenant table registry cleanup</li>
      *   <li>services.customisation.unregisterFrontendMapping: Frontend mapping cleanup</li>
@@ -643,7 +643,7 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      *   <li>services.customisation.unregisterApiCrudController: API controller cleanup</li>
      * </ul>
      * 
-     * <h3>Side Effects</h3>
+     * <b>Side Effects</b>
      * <ul>
      *   <li>Removes runtime HTTP endpoints for form access</li>
      *   <li>Modifies global frontend mapping registry</li>
@@ -651,12 +651,12 @@ public class FormService extends ComponentProvider implements HasSecurityRules {
      *   <li>Removes both HTML and API controllers regardless of registration flags</li>
      * </ul>
      * 
-     * <h3>Post-Unregistration State</h3>
+     * <b>Post-Unregistration State</b>
      * <p>
      * After unregistration, attempts to access the form's endpoints will result in 
      * 404 errors. Cached metadata may still reference the form until next cache 
      * invalidation cycle.
-     * </p>
+
      *
      * @param form the Form entity to unregister, must not be null
      * @return {@code true} always (unregistration sequence completes successfully 

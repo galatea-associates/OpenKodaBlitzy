@@ -31,12 +31,12 @@ import org.apache.commons.lang3.StringUtils;
  * three notification scope variants: global notifications (no userId or organizationId),
  * organization-scoped notifications (organizationId set), and user-scoped notifications
  * (userId set, optionally within an organization context).
- * </p>
+ * 
  * <p>
  * Used extensively by notification services, event listeners, and messaging subsystems
  * to construct and deliver notifications via email, in-app messaging, or other channels.
  * Implements {@link CanonicalObject} for standardized notification message formatting.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -51,7 +51,7 @@ public class NotificationDto implements CanonicalObject {
      * <p>
      * May be null if no attachment is present. When set, notification renderers
      * should provide a download link or embedded content reference.
-     * </p>
+     * 
      */
     public String attachmentURL;
     
@@ -61,7 +61,7 @@ public class NotificationDto implements CanonicalObject {
      * This field is required for all notifications and should contain the main
      * notification payload suitable for display in the target channel (email body,
      * in-app notification text, etc.).
-     * </p>
+     * 
      */
     public String message;
     
@@ -70,7 +70,7 @@ public class NotificationDto implements CanonicalObject {
      * <p>
      * When blank or null, {@link #getSubject()} returns "Notification" as the default.
      * Used primarily for email notifications and in-app notification headers.
-     * </p>
+     * 
      */
     public String subject;
     
@@ -80,7 +80,7 @@ public class NotificationDto implements CanonicalObject {
      * Determines how the notification should be rendered and delivered
      * (e.g., EMAIL, IN_APP, SMS). See {@link Notification.NotificationType}
      * for available types.
-     * </p>
+     * 
      */
     public Notification.NotificationType notificationType;
     
@@ -90,7 +90,7 @@ public class NotificationDto implements CanonicalObject {
      * When null, the notification is organization-wide (if organizationId is set)
      * or global (if both userId and organizationId are null). When set, the
      * notification is delivered only to the specified user.
-     * </p>
+     * 
      */
     public Long userId;
     
@@ -100,7 +100,7 @@ public class NotificationDto implements CanonicalObject {
      * When null, the notification is either user-specific (if userId is set)
      * or global (if both are null). When set, the notification is scoped to
      * the specified organization's context.
-     * </p>
+     * 
      */
     public Long organizationId;
     
@@ -111,7 +111,7 @@ public class NotificationDto implements CanonicalObject {
      * recipients. When set, only users with the specified privilege can view
      * the notification content. Format matches {@link com.openkoda.model.Privilege}
      * canonical names.
-     * </p>
+     * 
      */
     public String requiredPrivilege;
     
@@ -121,7 +121,7 @@ public class NotificationDto implements CanonicalObject {
      * When true, the notification may be delivered to related child entities
      * (e.g., child organizations, team members). When false, delivery is
      * restricted to the exact target specified by userId/organizationId.
-     * </p>
+     * 
      */
     public boolean propagate;
 
@@ -131,7 +131,7 @@ public class NotificationDto implements CanonicalObject {
      * Creates an empty NotificationDto with all fields uninitialized. Intended
      * for use by Jackson deserialization, JPA, and other frameworks requiring
      * a default constructor.
-     * </p>
+     * 
      */
     public NotificationDto(){
     }
@@ -141,7 +141,7 @@ public class NotificationDto implements CanonicalObject {
      * <p>
      * Creates an unrestricted, global notification with no organization or user
      * targeting. Suitable for system-wide announcements or maintenance notices.
-     * </p>
+     * 
      *
      * @param message the notification body text (required)
      * @param type the notification delivery channel and type (required)
@@ -157,7 +157,7 @@ public class NotificationDto implements CanonicalObject {
      * Creates a notification visible to all users who possess the specified privilege,
      * regardless of organization membership. Suitable for admin-level announcements
      * or security alerts requiring elevated permissions to view.
-     * </p>
+     * 
      *
      * @param message the notification body text (required)
      * @param type the notification delivery channel and type (required)
@@ -176,7 +176,7 @@ public class NotificationDto implements CanonicalObject {
      * requiredPrivilege is set, the user must possess that privilege to view the
      * notification content. Suitable for personal alerts, task assignments, or
      * user-specific messages.
-     * </p>
+     * 
      *
      * @param message the notification body text (required)
      * @param type the notification delivery channel and type (required)
@@ -197,7 +197,7 @@ public class NotificationDto implements CanonicalObject {
      * When requiredPrivilege is set, only organization members with that privilege
      * can view the notification. Suitable for organization-wide announcements,
      * policy updates, or tenant-specific alerts.
-     * </p>
+     * 
      *
      * @param message the notification body text (required)
      * @param type the notification delivery channel and type (required)
@@ -219,7 +219,7 @@ public class NotificationDto implements CanonicalObject {
      * user-specific delivery. When requiredPrivilege is set, the user must possess that
      * privilege within the organization context to view the notification. Suitable for
      * organization-specific task assignments, role-based alerts, or tenant-user messages.
-     * </p>
+     * 
      *
      * @param message the notification body text (required)
      * @param type the notification delivery channel and type (required)
@@ -243,7 +243,7 @@ public class NotificationDto implements CanonicalObject {
      * privilege restrictions, attachment URL, and propagation flag. Used for
      * transferring notification data from the persistence layer to service or
      * presentation layers.
-     * </p>
+     * 
      *
      * @param notification the source Notification entity to map from (required, must not be null)
      */
@@ -282,7 +282,7 @@ public class NotificationDto implements CanonicalObject {
      * When the subject field is blank or null, this method returns "Notification"
      * as the default subject. This ensures notifications always have a subject
      * for display in email headers and notification summaries.
-     * </p>
+     * 
      *
      * @return the subject line, or "Notification" if subject is blank or null
      */
@@ -404,7 +404,7 @@ public class NotificationDto implements CanonicalObject {
      * Note: This method accepts a Boolean wrapper but assigns to a primitive boolean field.
      * Passing null will cause a NullPointerException during unboxing. Callers should ensure
      * a non-null value is provided.
-     * </p>
+     * 
      *
      * @param propagate true to enable propagation, false to restrict to exact target (must not be null)
      * @throws NullPointerException if propagate is null during unboxing to primitive boolean
@@ -419,7 +419,7 @@ public class NotificationDto implements CanonicalObject {
      * Implements {@link CanonicalObject#notificationMessage()} to produce a formatted
      * string representation suitable for audit logs, system notifications, and debugging.
      * The format varies based on notification targeting:
-     * </p>
+     * 
      * <ul>
      *   <li>User + Organization: "Notification for {userId}(UID), within {organizationId}(OrgID) of type {type}: "{message}""</li>
      *   <li>Other scopes: "Notification of type {type}: "{message}""</li>

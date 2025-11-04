@@ -11,19 +11,19 @@ import java.util.Objects;
  * dynamic widget detection and result storage. The timestamp ensures cache freshness by requiring
  * exact millisecond-level matching between requests. The requestURI enables cache key disambiguation
  * for multiple concurrent requests within the same session.
- * </p>
+ * 
  * <p>
  * Thread-safety: This class has no internal synchronization. Callers must coordinate concurrent
  * mutation if instances are shared across threads. The immutable identifier fields are safe for
  * concurrent reads, but the isWidget flag and cached payload require external synchronization
  * during modification.
- * </p>
+ * 
  * <p>
  * Warning: The equals() implementation uses unchecked cast and String.equals() without null guards.
  * It may throw ClassCastException if compared with objects of incompatible types, or NullPointerException
  * if identifier fields are null. The cached payload (type T) is intentionally excluded from
  * equals/hashCode calculations to maintain cache key identity regardless of stored results.
- * </p>
+ * 
  *
  * @param <T> type of cached payload object
  * @author OpenKoda Team (original author: borowa)
@@ -164,7 +164,7 @@ public class RequestSessionContextMetadata<T> {
      * Warning: This implementation uses unchecked cast without type checking and String.equals()
      * without null guards. May throw ClassCastException if obj is not of type
      * RequestSessionContextMetadata, or NullPointerException if any identifier field is null.
-     * </p>
+     * 
      *
      * @param obj the object to compare with
      * @return true if all identifier fields match (sessionId, externalSessionId, timestamp,

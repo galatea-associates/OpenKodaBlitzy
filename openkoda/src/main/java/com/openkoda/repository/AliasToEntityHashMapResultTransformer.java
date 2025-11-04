@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
  * to provide compatibility across Hibernate versions. It converts tuple/native query rows into 
  * {@code LinkedHashMap<String, Object>} instances where column aliases become map keys and query result values
  * become map values.
- * </p>
+
  * <p>
  * Key features:
  * <ul>
@@ -21,11 +21,11 @@ import java.util.LinkedHashMap;
  *   <li>Thread-safe through immutable singleton pattern with serialization hook</li>
  *   <li>Preserves insertion order via LinkedHashMap for consistent column ordering</li>
  * </ul>
- * </p>
+
  * <p>
  * Primary usage location is {@link NativeQueries#runReadOnly(String)} which applies this transformer
  * to native SQL queries for flexible result mapping without entity class requirements.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
@@ -33,7 +33,7 @@ import java.util.LinkedHashMap;
  * query.setResultTransformer(AliasToEntityHashMapResultTransformer.INSTANCE);
  * List&lt;LinkedHashMap&lt;String, Object&gt;&gt; results = query.list();
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -51,7 +51,7 @@ public class AliasToEntityHashMapResultTransformer implements ResultTransformer<
      * Thread-safe singleton providing centralized access to the transformer.
      * Use this instance instead of creating new instances to minimize memory overhead.
      * Serialization preserves singleton uniqueness via {@link #readResolve()} hook.
-     * </p>
+
      */
     public static final AliasToEntityHashMapResultTransformer INSTANCE = new AliasToEntityHashMapResultTransformer();
 
@@ -59,7 +59,7 @@ public class AliasToEntityHashMapResultTransformer implements ResultTransformer<
      * Disallow instantiation of AliasToEntityMapResultTransformer.
      * <p>
      * Private constructor enforces singleton pattern. Use {@link #INSTANCE} instead.
-     * </p>
+
      */
     private AliasToEntityHashMapResultTransformer() {
     }
@@ -69,7 +69,7 @@ public class AliasToEntityHashMapResultTransformer implements ResultTransformer<
      * <p>
      * This method informs Hibernate that transformation produces {@link LinkedHashMap} instances.
      * Used internally by Hibernate to validate result type compatibility and optimize query execution.
-     * </p>
+
      *
      * @return {@code LinkedHashMap.class} indicating result type is LinkedHashMap
      */
@@ -85,12 +85,12 @@ public class AliasToEntityHashMapResultTransformer implements ResultTransformer<
      * Converts a single row from a Hibernate query result into a map where each column alias
      * maps to its corresponding value from the tuple. Null aliases are skipped to avoid
      * polluting the result map with unnamed or computed columns without aliases.
-     * </p>
+
      * <p>
      * The returned LinkedHashMap preserves insertion order, ensuring columns appear in the
      * same sequence as specified in the original query SELECT clause. Map is pre-sized to
      * tuple length for optimal performance.
-     * </p>
+
      *
      * @param tuple query result row values in column order, must not be null
      * @param aliases column names or aliases corresponding to tuple values, must not be null, may contain null elements
@@ -115,7 +115,7 @@ public class AliasToEntityHashMapResultTransformer implements ResultTransformer<
      * with the canonical singleton {@link #INSTANCE}. This guarantees that only one instance
      * exists in the JVM even after serialization and deserialization cycles, maintaining
      * singleton semantics and enabling identity comparison via {@code ==} operator.
-     * </p>
+
      *
      * @return the singleton instance {@link #INSTANCE}, never a new instance
      */

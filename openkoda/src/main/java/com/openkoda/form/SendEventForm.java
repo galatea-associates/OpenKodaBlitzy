@@ -34,14 +34,14 @@ import org.springframework.validation.BindingResult;
  * The form is designed for event dispatching scenarios where a simple event identifier needs to be validated
  * and transmitted from the client to the server. Event presence is validated via the {@link #validate(BindingResult)}
  * method using {@link StringUtils#isBlank(CharSequence)} check.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * SendEventForm<UserDTO> form = new SendEventForm<>("user.created");
  * form.validate(bindingResult);
  * }</pre>
- * </p>
+
  *
  * @param <T> the DTO type extending {@link CanonicalObject} associated with this form
  * @author OpenKoda Team
@@ -59,7 +59,7 @@ public class SendEventForm<T extends CanonicalObject> extends AbstractForm<T> {
      * This field holds the event name or identifier that triggers server-side processing.
      * Validation is performed via {@link #validate(BindingResult)} using {@link StringUtils#isBlank(CharSequence)}
      * to ensure the event identifier is not null, empty, or whitespace-only.
-     * </p>
+
      */
     String event;
 
@@ -70,7 +70,7 @@ public class SendEventForm<T extends CanonicalObject> extends AbstractForm<T> {
      * {@link FrontendMappingDefinitions#sendEventForm} as the frontend mapping definition.
      * The event field remains null until explicitly set via {@link #setEvent(String)} or
      * another constructor.
-     * </p>
+
      */
     public SendEventForm() {
         super(FrontendMappingDefinitions.sendEventForm);
@@ -82,7 +82,7 @@ public class SendEventForm<T extends CanonicalObject> extends AbstractForm<T> {
      * This constructor initializes the form with a custom {@link FrontendMappingDefinition},
      * providing flexibility for specialized form configurations beyond the standard sendEventForm mapping.
      * The event field remains null until explicitly set.
-     * </p>
+
      *
      * @param frontendMappingDefinition the custom frontend mapping definition for this form
      */
@@ -96,7 +96,7 @@ public class SendEventForm<T extends CanonicalObject> extends AbstractForm<T> {
      * This constructor enables initialization with both a data transfer object and a custom
      * frontend mapping, allowing the form to be pre-populated with entity data while using
      * a specialized form configuration. The event field remains null until explicitly set.
-     * </p>
+
      *
      * @param dto the data transfer object extending {@link CanonicalObject}
      * @param frontendMappingDefinition the frontend mapping definition for this form
@@ -111,7 +111,7 @@ public class SendEventForm<T extends CanonicalObject> extends AbstractForm<T> {
      * This constructor provides complete initialization of all form components: the data transfer object,
      * custom frontend mapping definition, and the event identifier. This is useful when the form needs
      * to be fully configured in a single step.
-     * </p>
+
      *
      * @param dto the data transfer object extending {@link CanonicalObject}
      * @param frontendMappingDefinition the frontend mapping definition for this form
@@ -128,13 +128,13 @@ public class SendEventForm<T extends CanonicalObject> extends AbstractForm<T> {
      * This constructor delegates to the default constructor to set up the standard
      * {@link FrontendMappingDefinitions#sendEventForm} mapping, then immediately sets the event
      * identifier. This is the most common constructor for simple event dispatching scenarios.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * SendEventForm form = new SendEventForm("notification.sent");
      * }</pre>
-     * </p>
+
      *
      * @param eventString the event identifier string to be set
      */
@@ -150,14 +150,14 @@ public class SendEventForm<T extends CanonicalObject> extends AbstractForm<T> {
      * validation. It uses {@link StringUtils#isBlank(CharSequence)} to check if the event identifier
      * is null, empty, or contains only whitespace. If validation fails, a field error with code
      * "not.empty" is added to the provided {@link BindingResult}.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * form.validate(bindingResult);
      * if (bindingResult.hasErrors()) { ... }
      * }</pre>
-     * </p>
+
      *
      * @param br the Spring {@link BindingResult} to which validation errors are added
      * @return this form instance for fluent method chaining
@@ -176,7 +176,7 @@ public class SendEventForm<T extends CanonicalObject> extends AbstractForm<T> {
      * Retrieves the current event identifier that will be used for server-side event dispatching.
      * The returned value may be null if the event has not been set via constructor or
      * {@link #setEvent(String)}.
-     * </p>
+
      *
      * @return the event identifier string, or null if not set
      */
@@ -189,7 +189,7 @@ public class SendEventForm<T extends CanonicalObject> extends AbstractForm<T> {
      * <p>
      * Updates the event identifier that will be validated and used for server-side event processing.
      * The provided value should not be blank if the form will be validated via {@link #validate(BindingResult)}.
-     * </p>
+
      *
      * @param event the event identifier string to set
      */

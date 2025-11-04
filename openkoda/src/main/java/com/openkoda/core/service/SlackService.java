@@ -46,20 +46,20 @@ import java.util.Map;
  * asynchronous delivery via HttpRequestTask queue (default) and synchronous posting 
  * via RestTemplate. Renders message payloads using Thymeleaf templates with support 
  * for CanonicalObject entities.
- * </p>
+
  * <p>
  * Constructs JSON payloads conforming to Slack webhook API specification with text, 
  * channel, and username fields. Escapes double quotes in message content for JSON 
  * safety. Asynchronous messages are enqueued to unsecure repository for background 
  * job delivery without privilege checks.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * slackService.sendToSlackWithCanonical(entity, "slack/notification-template", 
  *     webhookUrl, "#general", "BotName");
  * </pre>
- * </p>
+
  *
  * @see HttpRequestTask
  * @see CanonicalObject
@@ -90,7 +90,7 @@ public class SlackService extends ComponentProvider {
      * <p>
      * Lifecycle callback invoked after dependency injection completes.
      * Creates new RestTemplate without custom configuration or interceptors.
-     * </p>
+
      */
     @PostConstruct
     private void init() {
@@ -104,7 +104,7 @@ public class SlackService extends ComponentProvider {
      * Convenience overload delegating to five-parameter variant with null channel 
      * and username. Renders message from Thymeleaf template with canonicalObject 
      * as model attribute.
-     * </p>
+
      *
      * @param object CanonicalObject entity to include in template model
      * @param templateName Thymeleaf template name for message rendering
@@ -122,7 +122,7 @@ public class SlackService extends ComponentProvider {
      * Template receives PageModelMap containing the entity for property access.
      * Delegates to sendMessageToSlack for asynchronous delivery via HttpRequestTask queue.
      * Returns immediately without waiting for HTTP response.
-     * </p>
+
      *
      * @param object CanonicalObject entity to include in template model
      * @param templateName Thymeleaf template name for message rendering
@@ -145,7 +145,7 @@ public class SlackService extends ComponentProvider {
      * <p>
      * Convenience overload delegating to four-parameter variant with null channel 
      * and username. Message text is escaped and formatted as JSON payload.
-     * </p>
+
      *
      * @param message text content for Slack message
      * @param webHook Slack webhook URL for message delivery
@@ -161,11 +161,11 @@ public class SlackService extends ComponentProvider {
      * Constructs Slack JSON payload using String.format, escaping double quotes in 
      * message text with backslash. Optional channel and username fields are included 
      * only if non-null. Delegates to sendJSONMessageToSlack for asynchronous enqueue.
-     * </p>
+
      * <p>
      * <b>Warning:</b> Message text is escaped for JSON but not validated. 
      * Ensure user input is sanitized to prevent injection attacks.
-     * </p>
+
      *
      * @param message text content for Slack message
      * @param webHook Slack webhook URL for message delivery
@@ -190,11 +190,11 @@ public class SlackService extends ComponentProvider {
      * via unsecure repository for background job delivery. Returns immediately 
      * without waiting for HTTP response. Actual HTTP POST occurs asynchronously 
      * via scheduled job processing HttpRequestTask queue.
-     * </p>
+
      * <p>
      * <b>Note:</b> Uses unsecure repository - delivery not subject to privilege checks.
      * Suitable for system-level notifications.
-     * </p>
+
      *
      * @param requestJson formatted JSON payload conforming to Slack webhook API
      * @param webHook Slack webhook URL for message delivery
@@ -215,11 +215,11 @@ public class SlackService extends ComponentProvider {
      * Performs immediate HTTP POST using RestTemplate.postForEntity, blocking 
      * thread until Slack responds or timeout occurs. Validates webhook URL 
      * not blank before posting.
-     * </p>
+
      * <p>
      * <b>Note:</b> Synchronous method blocks calling thread. Prefer asynchronous 
      * sendMessageToSlack methods to avoid blocking request threads.
-     * </p>
+
      *
      * @param message text content for Slack message
      * @param webHook Slack webhook URL for message delivery
@@ -243,7 +243,7 @@ public class SlackService extends ComponentProvider {
      * Creates Context with current locale from LocaleContextHolder, populates model 
      * entries as template variables, processes template to string. Enables dynamic 
      * message content with entity property access and conditional logic in templates.
-     * </p>
+
      *
      * @param templateName Thymeleaf template name for rendering
      * @param model template variables map for property access

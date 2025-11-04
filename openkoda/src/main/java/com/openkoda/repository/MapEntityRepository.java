@@ -33,13 +33,13 @@ import org.springframework.stereotype.Repository;
  * via JTS library. Supports geospatial queries and coordinate-based searches. Used by map services
  * for location parsing, geocoding, and spatial data visualization. Integrates with JTS Geometry
  * types for PostGIS compatibility.
- * </p>
+
  * <p>
  * This repository extends {@link UnsecuredFunctionalRepositoryWithLongId} to provide standard CRUD
  * operations and query methods for MapEntity objects without additional privilege enforcement.
  * Geographic coordinates are stored using JTS (Java Topology Suite) geometry types compatible with
  * PostGIS spatial database extensions.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -47,7 +47,7 @@ import org.springframework.stereotype.Repository;
  * location.setCoordinates(wktPoint); // WKT format: "POINT(longitude latitude)"
  * mapEntityRepository.save(location);
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1

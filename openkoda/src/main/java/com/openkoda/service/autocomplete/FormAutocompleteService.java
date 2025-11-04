@@ -12,7 +12,7 @@ import java.util.Map;
  * This service provides intelligent code completion suggestions for developers working with
  * OpenKoda's form definition system. It extracts method signatures and documentation from
  * form builder classes to support interactive form design and validation rule editing.
- * </p>
+
  * <p>
  * Form-specific features include:
  * <ul>
@@ -22,7 +22,7 @@ import java.util.Map;
  *   <li>Thymeleaf expressions for dynamic rendering</li>
  *   <li>Form lifecycle methods (populateFrom, validate, populateTo)</li>
  * </ul>
- * </p>
+
  * <p>
  * Primary use cases:
  * <ul>
@@ -30,12 +30,12 @@ import java.util.Map;
  *   <li>Validation Editor - Suggest validation rules and expressions</li>
  *   <li>Binding Editor - Suggest entity property paths for data binding</li>
  * </ul>
- * </p>
+
  * <p>
  * This service is a stateless Spring singleton managed by component scanning via the
  * {@code @Service} annotation. It uses reflection to dynamically extract method information
  * from form builder classes, ensuring suggestions stay current with API changes.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -57,11 +57,11 @@ public class FormAutocompleteService extends GenericAutocompleteService{
      * builder start methods for initiating form field definitions, and builder methods
      * for configuring field properties. The suggestions include method signatures
      * and documentation extracted via reflection.
-     * </p>
+
      * <p>
      * Note: Results are not cached. Each invocation performs reflection to ensure
      * current API method signatures are returned.
-     * </p>
+
      *
      * @return populated FormAutocompleteResponse containing builder start suggestions
      *         and builder configuration suggestions with method documentation
@@ -83,7 +83,7 @@ public class FormAutocompleteService extends GenericAutocompleteService{
      * FormFieldDefinitionBuilderStart class, including method signatures and associated
      * documentation. These methods represent the entry points for creating new form field
      * definitions (e.g., text(), number(), date()).
-     * </p>
+
      *
      * @return Map of FormFieldDefinitionBuilderStart method suggestions where keys are
      *         method signatures and values are documentation strings extracted via reflection
@@ -100,7 +100,7 @@ public class FormAutocompleteService extends GenericAutocompleteService{
      * FormFieldDefinitionBuilder class, including method signatures and associated
      * documentation. These methods represent the configuration options available after
      * initiating a field definition (e.g., validate(), required(), label()).
-     * </p>
+
      *
      * @return Map of FormFieldDefinitionBuilder method suggestions where keys are
      *         method signatures and values are documentation strings extracted via reflection

@@ -62,10 +62,10 @@ import org.springframework.stereotype.Component;
  * Legacy pattern enabling controllers and components to inject a single Services bean instead of many individual 
  * service interfaces. Exposes all application services as public {@code @Inject} fields for programmatic access. 
  * Used extensively in older code and integration points that predate constructor injection patterns.
- * </p>
+
  * <p>
  * This aggregator provides access to:
- * </p>
+
  * <ul>
  * <li><b>Core Services:</b> applicationEvent, transactionalExecutor, validation, sessionService, systemStatus</li>
  * <li><b>User Management:</b> user, role, privilege, apiKey, token, userRole</li>
@@ -84,17 +84,17 @@ import org.springframework.stereotype.Component;
  * <b>Design Pattern:</b>
  * Passive holder with no business logic. All fields are public and non-final for Jakarta {@code @Inject} field 
  * injection. Spring component scanning automatically populates fields at application startup.
- * </p>
+
  * <p>
  * <b>Known Issues:</b>
  * Contains duplicate DatabaseValidationService injection (fields {@code databaseValidationService} and 
  * {@code databaseValidation}) - both reference the same bean. This duplication is maintained for backward 
  * compatibility with existing code.
- * </p>
+
  * <p>
  * <b>Thread Safety:</b>
  * Thread-safe as a stateless Spring singleton. All exposed service beans manage their own thread safety.
- * </p>
+
  * <p>
  * <b>Usage Example:</b>
  * <pre>
@@ -104,12 +104,12 @@ import org.springframework.stereotype.Component;
  * Organization org = services.organization.createOrganization(name);
  * User user = services.user.createUser(email, password);
  * </pre>
- * </p>
+
  * <p>
  * <b>Migration Note:</b>
  * Modern code should inject specific service interfaces directly rather than using this aggregator. 
  * Constructor injection is preferred over field injection for testability.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team

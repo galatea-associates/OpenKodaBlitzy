@@ -40,7 +40,7 @@ import org.springframework.data.domain.Sort;
  * {@link URLConstants} to expose URL constants to all subclasses. The primary purpose is to
  * reduce boilerplate in concrete controller implementations by providing standardized access
  * to services, repositories, and utilities through the injected {@code componentProvider} field.
- * </p>
+ * 
  * <p>
  * Design patterns employed:
  * <ul>
@@ -48,12 +48,11 @@ import org.springframework.data.domain.Sort;
  *   <li><b>Template Method</b>: Subclasses extend and add specific controller behavior</li>
  *   <li><b>Factory Pattern</b>: Provides {@code createPageable} static helper for pagination</li>
  * </ul>
- * </p>
  * <p>
  * Thread-safety: This class maintains no per-request mutable state. Thread-safety depends on
  * the injected {@code componentProvider} implementation, which is typically a singleton or
  * appropriately scoped bean managed by the Spring DI container.
- * </p>
+ * 
  * <p>
  * Example usage in a concrete controller:
  * <pre>{@code
@@ -64,7 +63,6 @@ import org.springframework.data.domain.Sort;
  *     }
  * }
  * }</pre>
- * </p>
  * <p>
  * Important notes:
  * <ul>
@@ -72,7 +70,6 @@ import org.springframework.data.domain.Sort;
  *   <li>Use {@code createPageable} for consistent pagination across controllers</li>
  *   <li>Property names passed to {@code createPageable} must match entity field names exactly</li>
  * </ul>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -91,17 +88,17 @@ public class AbstractController extends ComponentProvider implements URLConstant
      * This field is automatically injected by the Spring DI container using the Jakarta
      * {@code @Inject} annotation. Subclasses access this field to obtain services and
      * repositories without explicit dependency declarations.
-     * </p>
+     * 
      * <p>
      * Scope: Typically a singleton or appropriately scoped bean managed by Spring. The provider
      * implementation must be thread-safe as it is shared across concurrent requests.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
      * UserService userService = componentProvider.services.user;
      * }</pre>
-     * </p>
+     * 
      *
      * @see DefaultComponentProvider
      */
@@ -114,18 +111,18 @@ public class AbstractController extends ComponentProvider implements URLConstant
      * This static helper method encapsulates {@link PageRequest#of(int, int, Sort.Direction, String...)}
      * semantics to reduce boilerplate in controller methods. It configures zero-based page indexing
      * (page 0 = first page) with single-property sorting in the specified direction.
-     * </p>
+     * 
      * <p>
      * Controllers typically accept page, size, and sort parameters from HTTP requests and use this
      * method to construct a {@code Pageable} for passing to repository or service layer methods.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>{@code
      * Pageable pageable = createPageable(0, 20, Sort.Direction.DESC, "createdDate");
      * Page<Organization> orgs = organizationRepository.findAll(pageable);
      * }</pre>
-     * </p>
+     * 
      * <p>
      * Important notes:
      * <ul>
@@ -133,7 +130,7 @@ public class AbstractController extends ComponentProvider implements URLConstant
      *   <li>Incorrect property names result in Spring Data exceptions</li>
      *   <li>For multi-property sorting, construct {@link PageRequest} directly</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param page Zero-based page index (0 = first page). Must be &gt;= 0
      * @param size Page size (number of records per page). Must be &gt; 0

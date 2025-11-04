@@ -28,11 +28,11 @@ package com.openkoda.service.export.converter;
  * and classpath scanners to translate IO errors into a semantic exception type. It indicates
  * that a required resource file (such as a YAML configuration or entity definition) could not
  * be located or read from the classpath during the export/import process.
- * </p>
+ * 
  * <p>
  * Typical usage occurs when {@code YamlToEntityConverter} implementations attempt to load
  * resource files and encounter file system or classpath access issues.
- * </p>
+ * 
  *
  * @since 1.7.1
  * @author OpenKoda Team
@@ -45,7 +45,7 @@ public class ResourceLoadingException extends RuntimeException{
      * <p>
      * The message should describe which resource failed to load and provide context
      * for troubleshooting the classpath configuration issue.
-     * </p>
+     * 
      *
      * @param message the detail message explaining the resource loading failure
      */

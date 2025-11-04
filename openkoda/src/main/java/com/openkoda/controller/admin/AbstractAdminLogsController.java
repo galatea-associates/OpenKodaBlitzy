@@ -35,21 +35,21 @@ import java.util.stream.Collectors;
  * This stateless abstract controller implements log viewing functionality ({@code getLogsFlow}, {@code getSettingsFlow})
  * and logger configuration persistence ({@code saveSettings}). It is designed for reuse by concrete controllers that
  * handle HTTP bindings and view resolution. All methods use the Flow pipeline pattern for composing PageModelMap results.
- * </p>
+ * 
  * <p>
  * Implementing classes should take over HTTP binding and forming a result whereas this controller takes care of
- * actual implementation by delegating to {@link com.openkoda.service.log.LogConfigService} for log buffer access
+ * actual implementation by delegating to {@link com.openkoda.core.service.LogConfigService} for log buffer access
  * and configuration persistence.
- * </p>
+ * 
  * <p>
  * Thread-safety: This controller is stateless and thread-safe. All data is passed via Flow execution context.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see AdminLogsController for concrete HTTP endpoint implementation
- * @see com.openkoda.service.log.LogConfigService for log configuration service
+ * @see com.openkoda.core.service.LogConfigService for log configuration service
  * @see LoggerForm for logger configuration form binding
  */
 public class AbstractAdminLogsController extends AbstractController {
@@ -61,7 +61,7 @@ public class AbstractAdminLogsController extends AbstractController {
      * The model is populated with key {@code logsEntryList} containing debug entries retrieved from
      * {@code services.logConfig.getDebugEntriesAsList()}. Used by concrete controllers to retrieve
      * the in-memory debug log buffer for display in admin UI.
-     * </p>
+     * 
      *
      * @return PageModelMap with model key {@code logsEntryList} populated with log entries list
      * @see com.openkoda.service.log.LogConfigService#getDebugEntriesAsList()
@@ -80,7 +80,7 @@ public class AbstractAdminLogsController extends AbstractController {
      * Returns a PageModelMap containing the current logger configuration populated into a LoggerForm.
      * The model is populated with key {@code loggerForm} containing current debug loggers and max entries
      * retrieved from {@code services.logConfig}. Used to display logger configuration UI with current settings.
-     * </p>
+     * 
      *
      * @return PageModelMap with model key {@code loggerForm} populated with current logger configuration
      * @see LoggerForm
@@ -101,11 +101,11 @@ public class AbstractAdminLogsController extends AbstractController {
      * The method returns a PageModelMap with validation results and available logger class names. Model keys
      * include {@code loggerForm} (input form data) and {@code logClassNamesList} (available logger class names
      * from {@code services.logConfig.getAvailableLoggers()}).
-     * </p>
+     * 
      * <p>
      * Execution flow: Validates form via {@code services.validation.validate()}, then saves configuration
      * via {@code services.logConfig.saveConfig()} with buffer size and logging class names from the form DTO.
-     * </p>
+     * 
      *
      * @param loggerFormData the logger configuration form containing buffer size and logging class names
      * @param br the Spring validation binding result for capturing validation errors

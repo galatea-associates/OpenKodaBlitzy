@@ -28,7 +28,7 @@ package com.openkoda.integration.model.dto;
  * This DTO is used to transfer Jira integration configuration data between
  * the web layer and service layer. It contains the essential project and
  * organization identifiers required for Jira Cloud API integration.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

@@ -33,20 +33,20 @@ import java.net.URISyntaxException;
  * intentionally mutable with a public field design to support reflection-based mappers and
  * serialization frameworks (such as Jackson). It contains no validation, synchronization, or
  * defensive copying by design.
- * </p>
+ * 
  * <p>
  * The class is used by controllers, service layers, mapping frameworks, and serializers to
  * transport web page URL information across application boundaries. The static {@link #getDomain(String)}
  * utility method provides basic URL parsing for extracting domain names.
- * </p>
+ * 
  * <p>
  * <strong>Thread Safety:</strong> This class is not thread-safe. No synchronization is provided
  * for the public mutable field.
- * </p>
+ * 
  * <p>
  * <strong>Binary Compatibility:</strong> Changes to the public field name or type are breaking
  * changes for serialization and reflection-based mapping frameworks.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -62,11 +62,11 @@ public class WebPage implements CanonicalObject {
      * This field is intentionally public and mutable to enable direct field access by
      * reflection-based mapping frameworks and serializers. No validation or normalization
      * is performed on assignment.
-     * </p>
+     * 
      * <p>
      * <strong>Warning:</strong> Changing this field's name or type is a breaking change for
      * binary and serialization compatibility with existing clients and mappers.
-     * </p>
+     * 
      */
     public String url;
 
@@ -74,7 +74,7 @@ public class WebPage implements CanonicalObject {
      * Constructs a WebPage with the specified URL.
      * <p>
      * Assigns the URL directly to the public field without validation or normalization.
-     * </p>
+     * 
      *
      * @param url the URL string for the web page, may be null
      */
@@ -87,7 +87,7 @@ public class WebPage implements CanonicalObject {
      * <p>
      * This no-argument constructor is required by frameworks that use reflection to
      * instantiate objects, such as Jackson and other serialization libraries.
-     * </p>
+     * 
      */
     public WebPage() {
     }
@@ -98,17 +98,17 @@ public class WebPage implements CanonicalObject {
      * This static helper method normalizes URLs without an explicit {@code http://} or {@code https://}
      * scheme by prefixing {@code http://}. It then uses {@link URI} for parsing and returns the
      * host portion via {@link URI#getHost()}.
-     * </p>
+     * 
      * <p>
      * The method is side-effect-free and performs no validation beyond the normalization. If the
      * URL cannot be parsed, the method catches {@link URISyntaxException} and returns {@code null}.
-     * </p>
+     * 
      * <p>
      * Example usage:
      * <pre>
      * String domain = WebPage.getDomain("example.com");  // Returns "example.com"
      * </pre>
-     * </p>
+     * 
      *
      * @param url the URL string to parse, may lack a scheme prefix
      * @return the host portion from the URI, or {@code null} if parsing fails
@@ -136,7 +136,7 @@ public class WebPage implements CanonicalObject {
      * <p>
      * Implements the {@link CanonicalObject} contract by formatting the URL in the
      * standard form {@code "Page: <url>"}.
-     * </p>
+     * 
      *
      * @return a formatted notification message string with the URL, or {@code "Page: null"} if URL is null
      */

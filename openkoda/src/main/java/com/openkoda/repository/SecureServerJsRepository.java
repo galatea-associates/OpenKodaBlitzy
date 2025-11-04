@@ -33,23 +33,23 @@ import static com.openkoda.controller.common.URLConstants.SERVERJS;
  * Extends SecureRepository&lt;ServerJs&gt; to provide privilege-enforced repository operations for server-side
  * JavaScript code entities. This interface adds metadata capabilities for code search and GraalVM script indexing
  * through the {@code @SearchableRepositoryMetadata} annotation.
- * </p>
+
  * <p>
  * The repository enables secure management of JavaScript code fragments that are executed by the GraalVM
  * JavaScript engine. It supports both storage and retrieval of server-side scripts while enforcing
  * organization-scoped access control through the privilege system.
- * </p>
+
  * <p>
  * This repository is primarily used by JsFlowRunner for loading JavaScript flows and by FileSystemImpl
  * for providing polyglot filesystem access to JavaScript contexts.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * SecureServerJsRepository repo = secureRepositories.serverJs;
  * Optional&lt;ServerJs&gt; script = repo.findOne(scriptId);
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1

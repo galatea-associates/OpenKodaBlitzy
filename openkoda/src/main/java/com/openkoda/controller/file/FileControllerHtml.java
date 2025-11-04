@@ -52,7 +52,6 @@ import static com.openkoda.core.controller.generic.AbstractController._HTML;
  * Provides file management UI with upload form, file listing with thumbnails, and download links.
  * Routes under /html/{organizationId}/file and /html/file paths. Extends AbstractFileController
  * with HTML response handling using Spring MVC ModelAndView and Thymeleaf fragments.
- * </p>
  * <p>
  * Key endpoints:
  * <ul>
@@ -67,7 +66,6 @@ import static com.openkoda.core.controller.generic.AbstractController._HTML;
  *   <li>POST /files/new/upload - Handle chunked file upload (FineUploader protocol)</li>
  *   <li>POST /files/{id}/remove - Soft-delete file</li>
  * </ul>
- * </p>
  * <p>
  * File upload flow example:
  * <pre>
@@ -76,18 +74,16 @@ import static com.openkoda.core.controller.generic.AbstractController._HTML;
  * // Server processes chunks and returns fileId
  * POST /files/new/upload-done?qquuid=abc-123
  * </pre>
- * </p>
  * <p>
  * Security requirements: Authentication required for all operations. File ownership
  * verified via secureFileRepository. File type whitelist and size limits enforced
  * in FileService layer.
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see AbstractFileController
- * @see com.openkoda.service.file.FileService
+ * @see com.openkoda.core.service.FileService
  * @see FileForm
  */
 @Controller
@@ -99,7 +95,7 @@ public class FileControllerHtml extends AbstractFileController {
      * <p>
      * Processes file content update and returns success/failure message. Uses Flow
      * pipeline from AbstractFileController.updateFile() for transactional execution.
-     * </p>
+
      *
      * @param content File content as string for text-based files
      * @param organizationId Optional organization ID for multi-tenant access control (nullable)
@@ -124,7 +120,7 @@ public class FileControllerHtml extends AbstractFileController {
      * Processes image rescaling operation via FileService. Automatically calculates
      * height to preserve aspect ratio. Returns "Done." on success or error message
      * on failure.
-     * </p>
+
      *
      * @param organizationId Optional organization context for multi-tenant filtering (nullable)
      * @param fileId Target image file ID, must be a valid image file type
@@ -151,13 +147,13 @@ public class FileControllerHtml extends AbstractFileController {
      * Returns paginated file listing with optional search term filtering. Renders
      * Thymeleaf fragment "file-all" with file metadata, thumbnails, and action links.
      * Organization-scoped for multi-tenant filtering.
-     * </p>
+
      *
      * @param organizationId Organization scope for multi-tenant filtering (nullable for global context)
      * @param filePageable Pagination parameters (page number, size, sort) with qualifier "file"
      * @param search Optional search term for filename filtering, defaults to empty string
      * @return ModelAndView with file listing fragment "file-all"
-     * @see AbstractFileController#searchFile(Long, String, String, Pageable)
+     * @see AbstractFileController#searchFile(Long, String, Specification, Pageable)
      */
     @GetMapping(_ALL)
     public Object getAll(
@@ -175,11 +171,11 @@ public class FileControllerHtml extends AbstractFileController {
      * Renders empty file settings form for creating new file. Uses fileId=-1 to
      * indicate new file creation mode. Returns Thymeleaf fragment "file-settings"
      * with FileForm bound to form inputs.
-     * </p>
+
      *
      * @param organizationId Organization context for multi-tenant file ownership (nullable)
      * @return ModelAndView with "file-settings" fragment containing empty FileForm
-     * @see AbstractFileController#findFile(Long, Long)
+     * @see AbstractFileController#findFile(Long, long)
      * @see FileForm
      */
     @GetMapping(_NEW_SETTINGS)
@@ -197,7 +193,7 @@ public class FileControllerHtml extends AbstractFileController {
      * Validates FileForm via Jakarta Bean Validation and persists new file entity.
      * Returns success fragment on valid submission or error fragment with validation
      * messages on failure. Uses Flow pipeline for transactional file creation.
-     * </p>
+
      *
      * @param organizationId Organization context for file ownership assignment (nullable)
      * @param fileForm File form data with validation constraints (@Valid annotation)
@@ -223,12 +219,12 @@ public class FileControllerHtml extends AbstractFileController {
      * Retrieves file entity via secureFileRepository (enforcing ownership/privilege)
      * and populates FileForm. Renders "file-settings" fragment with bound form data
      * for metadata editing.
-     * </p>
+
      *
      * @param organizationId Organization context for multi-tenant access verification (nullable)
      * @param fileId File entity ID to edit, must exist and be accessible to current user
      * @return ModelAndView with "file-settings" fragment containing populated FileForm
-     * @see AbstractFileController#findFile(Long, Long)
+     * @see AbstractFileController#findFile(Long, long)
      */
     @GetMapping(_ID_SETTINGS)
     public Object settings(
@@ -245,7 +241,7 @@ public class FileControllerHtml extends AbstractFileController {
      * Validates updated FileForm and persists changes to file entity. Returns success
      * fragment on valid update or error fragment with validation messages. Uses Flow
      * pipeline for transactional update with privilege verification.
-     * </p>
+
      *
      * @param organizationId Organization context for access verification (nullable)
      * @param fileId File entity ID to update, must exist and be accessible
@@ -253,7 +249,7 @@ public class FileControllerHtml extends AbstractFileController {
      * @param br Validation binding result containing field errors if validation fails
      * @return ModelAndView with success fragment "file-entity-form::file-settings-form-success"
      *         or error fragment "file-entity-form::file-settings-form-error"
-     * @see AbstractFileController#updateFile(Long, Long, FileForm, BindingResult)
+     * @see AbstractFileController#updateFile(Long, long, FileForm, BindingResult)
      */
     @PostMapping(_ID_SETTINGS)
     public Object save(
@@ -271,13 +267,13 @@ public class FileControllerHtml extends AbstractFileController {
      * <p>
      * Marks file as removed without physical deletion. Verifies user has delete privilege
      * via secureFileRepository. Returns boolean response indicating operation success.
-     * </p>
+
      *
      * @param organizationId Organization context for multi-tenant access control (nullable)
      * @param fileId File entity ID to remove, must exist and be owned by user or accessible via privilege
      * @return Boolean response: true on successful deletion, false on failure
      * @throws org.springframework.security.access.AccessDeniedException if user lacks delete privilege
-     * @see AbstractFileController#removeFile(Long)
+     * @see AbstractFileController#removeFile(long)
      */
     @PostMapping(_ID_REMOVE)
     @ResponseBody
@@ -295,7 +291,7 @@ public class FileControllerHtml extends AbstractFileController {
      * Encapsulates upload operation result with error message, success flag, file metadata,
      * and persisted file ID. Used by upload() endpoint to communicate with FineUploader
      * JavaScript component.
-     * </p>
+
      * <p>
      * Fields:
      * <ul>
@@ -304,7 +300,7 @@ public class FileControllerHtml extends AbstractFileController {
      *   <li>file - Complete FileDto with file metadata</li>
      *   <li>fileId - Persisted file entity ID for subsequent operations</li>
      * </ul>
-     * </p>
+
      *
      * @see FileDto
      * @see #upload(Long, MultipartFile, String, String, long, int, int, long)
@@ -344,18 +340,18 @@ public class FileControllerHtml extends AbstractFileController {
      * reads binary content, sets content-type and content-disposition headers, and
      * streams bytes to HttpServletResponse. Supports inline display and download.
      * Read-only transaction for efficient file access.
-     * </p>
+
      * <p>
      * Security: Enforces file ownership or admin privilege via secureFileRepository.
      * Unauthorized access returns 403 Forbidden.
-     * </p>
+
      *
      * @param organizationId Organization context for multi-tenant filtering (nullable)
      * @param fileId File entity ID to stream, must exist and be accessible
      * @param response HttpServletResponse for streaming binary content and setting headers
      * @throws IOException if file read or stream write fails
      * @throws SQLException if database BLOB access fails
-     * @see com.openkoda.service.file.FileService#getFileContentAndPrepareResponse(File, boolean, boolean, HttpServletResponse)
+     * @see com.openkoda.core.service.FileService#getFileContentAndPrepareResponse(File, boolean, boolean, HttpServletResponse)
      */
     @Transactional(readOnly = true)
     @GetMapping(_ID + _CONTENT)
@@ -375,11 +371,11 @@ public class FileControllerHtml extends AbstractFileController {
      * creates File entity with uploadUuid. Subsequent chunks are correlated via uuid.
      * Uses unsecureFileRepository for initial persistence (security applied post-upload).
      * Transactional to ensure file entity consistency across chunk uploads.
-     * </p>
+
      * <p>
      * FineUploader protocol: Chunked uploads have partByteOffset, partIndex, totalParts &gt;= 0.
      * Single file uploads have all chunk parameters = -1.
-     * </p>
+
      *
      * @param organizationId Organization context for file ownership assignment (nullable)
      * @param file Uploaded multipart file chunk from FineUploader client
@@ -425,10 +421,10 @@ public class FileControllerHtml extends AbstractFileController {
      * Called by FineUploader client after all chunks uploaded successfully via upload()
      * method. Retrieves File entity by uploadUuid and returns file ID with FileDto.
      * Signals upload session completion.
-     * </p>
+
      * <p>
      * Note: This endpoint confirms all chunks received and file entity persisted.
-     * </p>
+
      *
      * @param uuid Upload session UUID matching uuid from upload() calls
      * @return ResponseEntity with DefaultMapEntry containing file ID (key) and FileDto (value)

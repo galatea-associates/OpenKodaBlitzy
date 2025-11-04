@@ -41,23 +41,19 @@ import java.util.stream.Collectors;
  * with automatic fallback to human-readable label generation from field names. When a message key is not found
  * in the properties files, the component generates default labels by splitting camelCase field names into
  * capitalized words (e.g., "userName" becomes "User Name").
- * </p>
  * <p>
  * The Messages component uses Spring's {@link MessageSourceAccessor} for message resolution, which automatically
  * loads messages from src/main/resources/messages_*.properties files. The implementation uses a hard-coded
  * English locale for consistency.
- * </p>
  * <p>
  * Usage example:
  * <pre>
  * String label = messages.getFieldLabel("user.name.label", "userName");
  * String placeholder = messages.getFieldPlaceholder("user.name.placeholder", "userName");
  * </pre>
- * </p>
  * <p>
  * Thread-safety: This component is thread-safe. The underlying {@link MessageSourceAccessor} is thread-safe
  * and safe for concurrent use across multiple threads.
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -84,7 +80,7 @@ public class Messages {
      * This is useful during development to identify which fields lack proper i18n message definitions.
      * <p>
      * Configured via application property: show.message.key.for.default.field.label (default: false)
-     * </p>
+     * 
      */
     @Value("${show.message.key.for.default.field.label:false}")
     private boolean showMessageKeyForDefaultFieldLabel;
@@ -107,7 +103,7 @@ public class Messages {
      * <p>
      * This method supports parameterized messages using standard MessageFormat syntax.
      * Arguments are substituted into placeholders like {0}, {1}, etc.
-     * </p>
+     * 
      *
      * @param code the message key to look up in messages_*.properties files
      * @param args optional arguments for parameterized messages (substituted into {0}, {1}, etc. placeholders)
@@ -124,12 +120,12 @@ public class Messages {
      * This method first attempts to resolve the message key from the properties files. If the key is not found,
      * it automatically generates a default label by splitting the camelCase field name into capitalized words.
      * For example, "userName" becomes "User Name", and "userEmailAddress" becomes "User Email Address".
-     * </p>
+     * 
      * <p>
      * When debug mode is enabled (showMessageKeyForDefaultFieldLabel = true), the message key is appended
      * to the generated default label in parentheses, helping developers identify fields that lack proper
      * i18n message definitions (e.g., "User Name (user.name.label)").
-     * </p>
+     * 
      *
      * @param code the message key to look up in messages_*.properties files
      * @param fieldName the field name in camelCase format, used for generating the default label if the message key is not found
@@ -156,7 +152,7 @@ public class Messages {
      *   <li>Joining words with spaces</li>
      *   <li>Filtering out dot characters that may appear in nested field names</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Examples:
      * <ul>
@@ -164,7 +160,7 @@ public class Messages {
      *   <li>"userEmailAddress" → "User Email Address"</li>
      *   <li>"organizationName" → "Organization Name"</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param fieldName the field name in camelCase format
      * @return a capitalized, space-separated label suitable for display in user interfaces
@@ -183,7 +179,7 @@ public class Messages {
      * a default label from the field name. For nested entity fields (containing dots), it applies special logic
      * to remove redundant parts. For example, if a field name is "user.userName", and the second part contains
      * the first part, it simplifies to just "userName" to avoid redundancy in the header label.
-     * </p>
+     * 
      * <p>
      * Examples of redundancy removal:
      * <ul>
@@ -191,10 +187,10 @@ public class Messages {
      *   <li>"organization.organizationName" → "organizationName" → "Organization Name"</li>
      *   <li>"user.email" → "user.email" → "User Email" (no redundancy, kept as-is)</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * When debug mode is enabled, the message key is appended to the generated label.
-     * </p>
+     * 
      *
      * @param code the message key to look up in messages_*.properties files
      * @param fieldName the field name, potentially with nested entity notation (e.g., "user.userName")
@@ -223,10 +219,10 @@ public class Messages {
      * This method first attempts to resolve the placeholder message key from the properties files. If not found,
      * it generates a default placeholder by retrieving the field label and appending "..." to create a typical
      * input placeholder format (e.g., "User Name...").
-     * </p>
+     * 
      * <p>
      * Placeholder messages are typically used in HTML input fields to provide hints about the expected input format.
-     * </p>
+     * 
      *
      * @param code the message key to look up in messages_*.properties files for the placeholder text
      * @param fieldName the field name in camelCase format, used for generating the default placeholder if the message key is not found
@@ -246,7 +242,7 @@ public class Messages {
      * Tooltips are optional UI hints that provide additional context or help text for form fields.
      * If no tooltip message is configured for the given key, an empty string is returned, indicating
      * that no tooltip should be displayed.
-     * </p>
+     * 
      *
      * @param code the message key to look up in messages_*.properties files for the tooltip text
      * @param fieldName the field name (currently unused but kept for API consistency with other methods)
@@ -266,7 +262,7 @@ public class Messages {
      * This method is specifically designed for database column names, which typically use snake_case convention.
      * It first attempts to resolve the message key from the properties files. If not found, it generates
      * a default label by replacing underscores with spaces and capitalizing the result.
-     * </p>
+     * 
      * <p>
      * Examples of snake_case to label conversion:
      * <ul>
@@ -274,10 +270,10 @@ public class Messages {
      *   <li>"email_address" → "Email Address"</li>
      *   <li>"created_at" → "Created At"</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * When debug mode is enabled, the column name is appended to the generated label in parentheses.
-     * </p>
+     * 
      *
      * @param columnName the database column name in snake_case format
      * @return the resolved message or a capitalized label generated by replacing underscores with spaces

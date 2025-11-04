@@ -34,17 +34,14 @@ import org.springframework.http.HttpStatus;
  * both a validation result indicator and a human-readable suggestion message. The unique dual-purpose design
  * enables the exception to communicate validation outcomes (pass with warnings vs. critical failure) alongside
  * actionable feedback for correcting FrontendResource issues.
- * </p>
  * <p>
  * Common validation scenarios include JavaScript code syntax validation, template syntax errors, security checks
  * for malicious code patterns, and resource configuration validation. The suggestion field provides specific
  * guidance for resolving detected issues, such as syntax error locations or security violation descriptions.
- * </p>
  * <p>
  * Both the {@code result} and {@code suggestion} fields are immutable (final), ensuring consistent exception
  * state throughout exception handling workflows. This immutability supports thread-safe exception propagation
  * in concurrent validation scenarios.
- * </p>
  * <p>
  * Example usage in FrontendResource validation:
  * <pre>
@@ -52,7 +49,6 @@ import org.springframework.http.HttpStatus;
  *     throw new FrontendResourceValidationException(false, "JavaScript syntax error at line 42");
  * }
  * </pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -67,7 +63,7 @@ public class FrontendResourceValidationException extends HttpStatusException {
      * Use this field to distinguish between non-blocking warnings (true) and blocking validation errors (false).
      * When true, the FrontendResource may be saved with warnings displayed to the developer. When false,
      * the resource should be rejected until validation issues are resolved.
-     * </p>
+     * 
      */
     public final boolean result;
     
@@ -77,7 +73,7 @@ public class FrontendResourceValidationException extends HttpStatusException {
      * This message provides actionable feedback for frontend developers, including specific error locations,
      * violation descriptions, and guidance for resolution. The suggestion is displayed in validation error
      * responses and development tools to facilitate rapid issue correction.
-     * </p>
+     * 
      */
     public final String suggestion;
 
@@ -87,7 +83,7 @@ public class FrontendResourceValidationException extends HttpStatusException {
      * This constructor sets the HTTP status to 500 (INTERNAL_SERVER_ERROR) and stores the validation state
      * for later retrieval. The exception can be caught and processed to display validation feedback to
      * frontend developers through the UI or API responses.
-     * </p>
+     * 
      *
      * @param result validation outcome indicator; true if validation passed with non-blocking warnings,
      *               false if validation failed with critical errors that prevent resource acceptance
@@ -106,7 +102,7 @@ public class FrontendResourceValidationException extends HttpStatusException {
      * Use this method to determine if validation passed with warnings (true) or failed with critical
      * errors (false). This distinction enables conditional handling where warnings allow resource
      * acceptance with developer notification, while errors block resource persistence.
-     * </p>
+     * 
      *
      * @return true if validation passed with non-blocking warnings, false if validation failed critically
      */
@@ -121,7 +117,7 @@ public class FrontendResourceValidationException extends HttpStatusException {
      * including specific error locations, violation descriptions, and resolution guidance. The suggestion
      * is typically displayed in validation error responses to help developers quickly identify and fix
      * problems with JavaScript code, templates, or resource configuration.
-     * </p>
+     * 
      *
      * @return human-readable suggestion describing the validation issue and recommended corrective action
      */

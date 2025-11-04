@@ -36,13 +36,13 @@ import static com.openkoda.repository.specifications.GlobalSearchSpecifications.
  * This controller implements platform-wide search features using GlobalEntitySearch entities.
  * It executes full-text search queries across indexed entities, filters results by user privileges,
  * and returns paginated search results. The search functionality supports both HTML and JSON response formats.
- * </p>
+ * 
  * <p>
  * Subclasses implement concrete search endpoints with specific request mappings. The search uses
  * Lucene/Hibernate Search integration for efficient full-text queries across entity content.
  * All search results are automatically filtered to include only entities the current user has
  * permission to view based on their assigned privileges.
- * </p>
+ * 
  * <p>
  * Typical Flow pipeline pattern used in search:
  * <pre>{@code
@@ -51,12 +51,11 @@ import static com.openkoda.repository.specifications.GlobalSearchSpecifications.
  *     .thenSet(filtered, a -> filterByPrivileges(searchResults))
  *     .execute();
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
- * @see com.openkoda.model.common.GlobalEntitySearch
+ * @see com.openkoda.model.GlobalEntitySearch
  * @see GlobalSearchController
  */
 public abstract class AbstractGlobalSearchController extends AbstractController {
@@ -69,7 +68,7 @@ public abstract class AbstractGlobalSearchController extends AbstractController 
      * search query string. It applies pagination parameters to limit result sets, executes the search
      * using Hibernate Search specifications, and assembles a PageModelMap containing search results
      * and pagination metadata.
-     * </p>
+     * 
      * <p>
      * The search implementation uses Flow pipeline pattern to compose the search operation:
      * <ol>
@@ -77,13 +76,13 @@ public abstract class AbstractGlobalSearchController extends AbstractController 
      *   <li>Execute repository search with JPA Specification from GlobalSearchSpecifications</li>
      *   <li>Return PageModelMap with 'searchTerm' and 'searchPage' attributes</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Search results include only entities visible to the current user based on their assigned
      * read privileges. The underlying repository (repositories.unsecure.search) performs the search,
      * while privilege filtering occurs at the entity level based on required permissions stored
      * in GlobalEntitySearch records.
-     * </p>
+     * 
      *
      * @param searchPageable Pagination parameters (page number, page size, sort direction) 
      *                       injected with @Qualifier("search") for custom page size configuration

@@ -20,12 +20,12 @@ import static com.openkoda.model.common.ModelConstants.*;
  * Each dynamic privilege has unique name (primary identity), computed read/write privilege requirements via @Formula, 
  * and database-generated indexString and removable flag. Used in advanced scenarios requiring customer-specific permissions 
  * beyond predefined Privilege enum.
- * </p>
+
  * <p>
  * Implements same PrivilegeBase contract as Privilege enum, enabling polymorphic privilege handling in Role.privilegesSet 
  * and authorization logic. Supports categorization via category and group fields, with database index on name for 
  * efficient lookups.
- * </p>
+
  * <p>
  * Computed fields via @Formula:
  * <ul>
@@ -34,7 +34,7 @@ import static com.openkoda.model.common.ModelConstants.*;
  *   <li>requiredReadPrivilege: Constant '_canReadBackend' for read access control</li>
  *   <li>requiredWritePrivilege: Constant '_canManageBackend' for write access control</li>
  * </ul>
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -42,7 +42,7 @@ import static com.openkoda.model.common.ModelConstants.*;
  * customPriv.setName("custom_action");
  * customPriv.setLabel("Custom Action");
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -78,7 +78,7 @@ public class DynamicPrivilege implements PrivilegeBase, SearchableEntity, LongId
      * <p>
      * Must be unique across dynamic_privilege table. @NotNull constraint enforced at database level.
      * Used as primary identity for privilege lookups and authorization checks. Implements PrivilegeBase.name() contract.
-     * </p>
+
      */
     @Column(unique = true, nullable = false)
     private String name;
@@ -96,7 +96,7 @@ public class DynamicPrivilege implements PrivilegeBase, SearchableEntity, LongId
      * <p>
      * Computed via @Formula (default empty string). Non-insertable field managed by database.
      * Used for full-text search indexing of privilege metadata. Implements SearchableEntity contract.
-     * </p>
+
      */
     @Column(name = INDEX_STRING_COLUMN, length = INDEX_STRING_COLUMN_LENGTH, insertable = false)
     @ColumnDefault("''")
@@ -107,7 +107,7 @@ public class DynamicPrivilege implements PrivilegeBase, SearchableEntity, LongId
      * <p>
      * Database default value set via columnDefinition (default true). System privileges created during initialization 
      * may have removable set to false to prevent accidental deletion.
-     * </p>
+
      */
     @Column(columnDefinition = "boolean default true")
     private Boolean removable;
@@ -117,7 +117,7 @@ public class DynamicPrivilege implements PrivilegeBase, SearchableEntity, LongId
      * <p>
      * Computed via @Formula expression evaluating to PrivilegeNames._canReadBackend constant.
      * Implements EntityWithRequiredPrivilege.getRequiredReadPrivilege() contract for privilege-based access control.
-     * </p>
+
      */
     @Formula("( '" + PrivilegeNames._canReadBackend + "' )")
     private String requiredReadPrivilege;
@@ -127,7 +127,7 @@ public class DynamicPrivilege implements PrivilegeBase, SearchableEntity, LongId
      * <p>
      * Computed via @Formula expression evaluating to PrivilegeNames._canManageBackend constant.
      * Implements EntityWithRequiredPrivilege.getRequiredWritePrivilege() contract for privilege-based access control.
-     * </p>
+
      */
     @Formula("( '" + PrivilegeNames._canManageBackend + "' )")
     private String requiredWritePrivilege;

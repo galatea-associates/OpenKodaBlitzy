@@ -39,19 +39,19 @@ import static jakarta.persistence.EnumType.STRING;
  * This class provides the foundation for implementing scheduled and asynchronous tasks within OpenKoda.
  * Tasks support automatic retry logic with exponential backoff, multi-tenant isolation, and polymorphic
  * task types through JPA single-table inheritance.
- * </p>
+ * 
  *
- * <h3>JPA Mapping</h3>
+ * <b>JPA Mapping</b>
  * <p>
  * Persisted to {@code tasks} table using {@code @Inheritance(strategy=SINGLE_TABLE)} with
  * {@code @DiscriminatorColumn(name="type")} for polymorphic task types. Concrete subclasses include
  * {@link Email} and {@link HttpRequestTask}, differentiated by discriminator values.
- * </p>
+ * 
  *
- * <h3>Task Lifecycle</h3>
+ * <b>Task Lifecycle</b>
  * <p>
  * Tasks progress through the following state transitions:
- * </p>
+ * 
  * <pre>
  * NEW → DOING → DONE (successful completion)
  *           ↓
@@ -60,7 +60,7 @@ import static jakarta.persistence.EnumType.STRING;
  *     FAILED_PERMANENTLY (max attempts exceeded)
  * </pre>
  *
- * <h3>Execution Workflow</h3>
+ * <b>Execution Workflow</b>
  * <ol>
  *   <li>Task created with state=NEW and scheduled startAfter time</li>
  *   <li>Background worker queries for tasks where {@code canBeStarted=true}</li>
@@ -70,34 +70,34 @@ import static jakarta.persistence.EnumType.STRING;
  *   <li>On failure: {@link #fail()} transitions to FAILED (retriable) or FAILED_PERMANENTLY</li>
  * </ol>
  *
- * <h3>Retry Logic</h3>
+ * <b>Retry Logic</b>
  * <p>
  * Failed tasks automatically retry up to {@code MAX_ATTEMPTS_DEFAULT} (5 attempts) times. After each
  * failure, the task transitions to FAILED state and becomes eligible for retry when {@code canBeStarted}
  * evaluates to true. Tasks exceeding maximum retry attempts transition to FAILED_PERMANENTLY and will
  * not be retried.
- * </p>
+ * 
  *
- * <h3>Multi-Tenancy</h3>
+ * <b>Multi-Tenancy</b>
  * <p>
  * Implements {@link AuditableEntityOrganizationRelated} for organization-scoped task isolation. Tasks
  * are associated with an {@link Organization} via {@code organizationId} field for write operations
  * and {@code organization} relation for read operations.
- * </p>
+ * 
  *
- * <h3>Task Scheduling</h3>
+ * <b>Task Scheduling</b>
  * <p>
  * The {@code startAfter} field controls execution timing. Tasks become eligible for execution when
  * {@code current_timestamp > startAfter} and state is NEW or FAILED. This eligibility is computed
  * via {@code @Formula} for efficient database-side filtering.
- * </p>
+ * 
  *
- * <h3>Thread Safety</h3>
+ * <b>Thread Safety</b>
  * <p>
  * State mutations ({@link #start()}, {@link #fail()}, {@link #complete()}) are not synchronized and
  * rely on JPA transaction isolation. Concurrent execution of the same task should be prevented by
  * background worker coordination mechanisms.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -118,7 +118,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Uses {@code DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA} to generate a computed
      * audit reference string for cross-entity indexing and tracking. This formula is applied
      * via {@code @Formula} annotation on the {@link #referenceString} field.
-     * </p>
+     * 
      *
      * @see #referenceString
      */
@@ -131,7 +131,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * set to {@code INITIAL_ORGANIZATION_RELATED_VALUE} and {@code allocationSize=10} for batch
      * allocation optimization. This allocation size allows JPA to pre-fetch 10 sequence values,
      * reducing database round-trips during bulk task creation.
-     * </p>
+     * 
      *
      * @see ModelConstants#INITIAL_ORGANIZATION_RELATED_VALUE
      */
@@ -146,7 +146,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Tasks failing during execution will retry up to this limit (5 attempts). After exceeding
      * this threshold, the task transitions to {@code FAILED_PERMANENTLY} state and will not be
      * retried. Subclasses can override {@link #getMaxAttempts()} to customize retry behavior.
-     * </p>
+     * 
      *
      * @see #getMaxAttempts()
      * @see TaskState#FAILED_PERMANENTLY
@@ -158,7 +158,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * Defines the possible states a task can be in during its execution lifecycle, from creation
      * through completion or permanent failure.
-     * </p>
+     * 
      */
     public enum TaskState {
         /**
@@ -198,7 +198,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Initialized to 0 in constructor. Incremented each time {@link #start()} is called.
      * Compared against {@link #getMaxAttempts()} to determine if task should transition to
      * {@code FAILED_PERMANENTLY} state after a failure.
-     * </p>
+     * 
      *
      * @see #start()
      * @see #fail()
@@ -212,11 +212,11 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Tasks become eligible for execution when {@code current_timestamp > startAfter} and state
      * is {@code NEW} or {@code FAILED}. This allows for delayed task execution and scheduled jobs.
      * Persisted to {@code start_after} database column.
-     * </p>
+     * 
      * <p>
      * Default value: {@link LocalDateTime#now()} (immediate execution) when using no-arg constructor.
      * Can be set to future time for delayed execution via {@link #Task(LocalDateTime)} constructor.
-     * </p>
+     * 
      *
      * @see #canBeStarted
      * @see LocalDateTime
@@ -230,7 +230,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Persisted as {@code @Enumerated(STRING)} for human-readable database values. State transitions
      * are managed by {@link #start()}, {@link #fail()}, and {@link #complete()} methods. Initial
      * state is {@code NEW}, set in constructor.
-     * </p>
+     * 
      *
      * @see TaskState
      * @see #start()
@@ -245,10 +245,10 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * Calculated via {@code @Formula} for efficient database-side filtering:
      * {@code (current_timestamp > start_after AND (state = 'NEW' OR state = 'FAILED'))}
-     * </p>
+     * 
      * <p>
      * Returns {@code true} when:
-     * </p>
+     * 
      * <ul>
      *   <li>Current database timestamp is after the {@code startAfter} scheduled time, AND</li>
      *   <li>Task state is either {@code NEW} (not yet started) or {@code FAILED} (ready for retry)</li>
@@ -256,7 +256,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * This computed field enables background workers to efficiently query for executable tasks
      * using a single database filter without loading task entities into memory.
-     * </p>
+     * 
      *
      * @see #startAfter
      * @see TaskState#NEW
@@ -272,11 +272,11 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Marked {@code @JsonIgnore} to prevent circular serialization. Join column {@code organization_id}
      * is marked {@code insertable=false, updatable=false} because writes are performed via the
      * {@link #organizationId} scalar field.
-     * </p>
+     * 
      * <p>
      * <strong>Note:</strong> TODO Rule 4.4 indicates this should be marked with {@code FetchType.LAZY}
      * for performance optimization to avoid unnecessary eager loading of organization data.
-     * </p>
+     * 
      *
      * @see Organization
      * @see #organizationId
@@ -294,10 +294,10 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Scalar organization identifier used for write operations (inserts and updates). The corresponding
      * {@link #organization} relation is used for read operations. Both fields map to the same database
      * column {@code organization_id} but serve different purposes in the entity lifecycle.
-     * </p>
+     * 
      * <p>
      * Nullable to support tasks not scoped to a specific organization (system-wide tasks).
-     * </p>
+     * 
      *
      * @see #organization
      * @see AuditableEntityOrganizationRelated#getOrganizationId()
@@ -312,11 +312,11 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * {@code DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA}. This provides a consistent
      * reference identifier used by the auditing subsystem for tracking entity changes and
      * establishing relationships across entity types.
-     * </p>
+     * 
      * <p>
      * This field is read-only and computed by the database on each entity load. It is not
      * persisted as a physical column but generated dynamically via SQL formula.
-     * </p>
+     * 
      *
      * @see #REFERENCE_FORMULA
      * @see AuditableEntityOrganizationRelated#getReferenceString()
@@ -328,7 +328,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Creates a new task with default settings for immediate execution.
      * <p>
      * Initializes the task with:
-     * </p>
+     * 
      * <ul>
      *   <li>{@code attempts = 0} - No prior execution attempts</li>
      *   <li>{@code state = NEW} - Ready for first execution</li>
@@ -337,7 +337,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * Use this constructor when creating tasks that should be executed as soon as a background
      * worker becomes available.
-     * </p>
+     * 
      *
      * @see LocalDateTime#now()
      * @see TaskState#NEW
@@ -352,7 +352,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Creates a new task with custom scheduled execution time.
      * <p>
      * Initializes the task with:
-     * </p>
+     * 
      * <ul>
      *   <li>{@code attempts = 0} - No prior execution attempts</li>
      *   <li>{@code state = NEW} - Ready for first execution</li>
@@ -362,7 +362,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Use this constructor when creating tasks that should execute at a specific future time,
      * such as scheduled jobs or delayed processing. The task becomes eligible for execution
      * when {@code current_timestamp > startAfter}.
-     * </p>
+     * 
      *
      * @param startAfter the scheduled execution time; must not be null
      * @see #canBeStarted
@@ -378,7 +378,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Transitions the task to executing state and increments the attempt counter.
      * <p>
      * This method should be called by background workers when beginning task execution. It performs:
-     * </p>
+     * 
      * <ol>
      *   <li>Increments {@code attempts} counter to track retry count</li>
      *   <li>Transitions {@code state} to {@code DOING} to mark task as executing</li>
@@ -387,12 +387,12 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <strong>Thread Safety:</strong> This method is not synchronized and relies on JPA transaction
      * isolation to prevent concurrent execution. Background worker coordination should ensure only
      * one worker calls this method per task at a time.
-     * </p>
+     * 
      * <p>
      * <strong>Usage:</strong> Call this method within a transaction context before executing the
      * task's business logic. Follow with either {@link #complete()} on success or {@link #fail()}
      * on failure.
-     * </p>
+     * 
      *
      * @see #complete()
      * @see #fail()
@@ -407,7 +407,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Handles task execution failure with automatic retry logic.
      * <p>
      * Transitions the task state based on remaining retry attempts:
-     * </p>
+     * 
      * <ul>
      *   <li>If {@code attempts >= getMaxAttempts()}: transitions to {@code FAILED_PERMANENTLY}
      *       (terminal state, no further retries)</li>
@@ -419,12 +419,12 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * This should be done within a transaction context to ensure atomic state updates. The task
      * will automatically become eligible for retry when in {@code FAILED} state and {@code canBeStarted}
      * evaluates to true.
-     * </p>
+     * 
      * <p>
      * <strong>Recovery:</strong> Tasks in {@code FAILED_PERMANENTLY} state require manual intervention
      * to reset or investigate the underlying issue. Consider logging detailed failure information
      * before calling this method.
-     * </p>
+     * 
      *
      * @see #getMaxAttempts()
      * @see TaskState#FAILED
@@ -444,12 +444,12 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * Sets {@code state} to {@code DONE}, marking the task as successfully completed. This is a
      * terminal state - the task will not be processed again by background workers.
-     * </p>
+     * 
      * <p>
      * <strong>Usage:</strong> Call this method after successfully executing the task's business logic,
      * within the same transaction context. This ensures atomic completion and prevents the task from
      * being picked up by other workers.
-     * </p>
+     * 
      *
      * @see TaskState#DONE
      * @see #start()
@@ -464,12 +464,12 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Default implementation returns {@code MAX_ATTEMPTS_DEFAULT} (5 attempts). Subclasses can
      * override this method to implement custom retry policies based on task type, priority, or
      * other business requirements.
-     * </p>
+     * 
      * <p>
      * This value is compared against {@code attempts} in the {@link #fail()} method to determine
      * whether the task should transition to {@code FAILED} (retriable) or {@code FAILED_PERMANENTLY}
      * (terminal) state.
-     * </p>
+     * 
      *
      * @return the maximum retry attempts; default is 5
      * @see #MAX_ATTEMPTS_DEFAULT
@@ -485,7 +485,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * The task ID is generated using the {@code ORGANIZATION_RELATED_ID_GENERATOR} sequence
      * with batch allocation optimization ({@code allocationSize=10}).
-     * </p>
+     * 
      *
      * @return the task primary key, or null if not yet persisted
      */
@@ -499,7 +499,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * This value is incremented each time {@link #start()} is called. It is compared against
      * {@link #getMaxAttempts()} to determine retry eligibility after failures.
-     * </p>
+     * 
      *
      * @return the number of execution attempts for this task (0 for new tasks)
      * @see #start()
@@ -514,7 +514,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * State progresses through: NEW → DOING → DONE/FAILED/FAILED_PERMANENTLY.
      * State transitions are managed by {@link #start()}, {@link #complete()}, and {@link #fail()}.
-     * </p>
+     * 
      *
      * @return the current task state (never null)
      * @see TaskState
@@ -531,10 +531,10 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * This value is computed via {@code @Formula} on the database side using the expression:
      * {@code (current_timestamp > start_after AND (state = 'NEW' OR state = 'FAILED'))}.
-     * </p>
+     * 
      * <p>
      * Returns {@code true} when the task meets all conditions:
-     * </p>
+     * 
      * <ul>
      *   <li>Current database time is after the scheduled {@code startAfter} time</li>
      *   <li>Task state is either {@code NEW} (not yet executed) or {@code FAILED} (ready for retry)</li>
@@ -542,7 +542,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * Background workers use this field to efficiently filter executable tasks in database queries
      * without loading entities into memory.
-     * </p>
+     * 
      *
      * @return true if the task is eligible for execution; false otherwise
      * @see #canBeStarted
@@ -559,7 +559,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * <p>
      * Tasks become eligible for execution when the current database timestamp exceeds this value.
      * Used in combination with task state to determine {@link #canBeStarted} eligibility.
-     * </p>
+     * 
      *
      * @return the scheduled execution time (never null)
      * @see #setStartAfter(LocalDateTime)
@@ -575,7 +575,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Use this method to reschedule a task for delayed or future execution. The task will become
      * eligible when the current database timestamp exceeds this value and the task state is
      * {@code NEW} or {@code FAILED}.
-     * </p>
+     * 
      *
      * @param startAfter the scheduled execution time; must not be null
      * @see #getStartAfter()
@@ -591,11 +591,11 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * This method provides manual control over the attempt count, useful for custom retry logic
      * or debugging scenarios. Unlike {@link #start()}, this method does not transition the task
      * to {@code DOING} state.
-     * </p>
+     * 
      * <p>
      * <strong>Note:</strong> In normal operation, use {@link #start()} which both increments
      * attempts and updates state atomically.
-     * </p>
+     * 
      *
      * @see #start()
      * @see #getAttempts()
@@ -610,7 +610,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Implements {@link AuditableEntityOrganizationRelated#getOrganizationId()} to provide
      * tenant isolation. Tasks scoped to a specific organization use this ID for filtering
      * and authorization checks.
-     * </p>
+     * 
      *
      * @return the organization ID, or null for system-wide tasks
      * @see #setOrganizationId(Long)
@@ -628,7 +628,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Implements {@link AuditableEntityOrganizationRelated#getReferenceString()} to provide
      * a consistent identifier used by the auditing subsystem. This value is computed dynamically
      * via {@code @Formula} using {@link #REFERENCE_FORMULA}.
-     * </p>
+     * 
      *
      * @return the computed reference string (read-only, database-generated)
      * @see #REFERENCE_FORMULA
@@ -645,7 +645,7 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Assigns this task to a specific organization for tenant isolation. This scalar field is
      * used for write operations (inserts and updates), while the {@link #organization} relation
      * is used for read operations.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID, or null for system-wide tasks
      * @see #getOrganizationId()
@@ -661,11 +661,11 @@ public abstract class Task extends TimestampedEntity implements AuditableEntityO
      * Provides access to the full {@link Organization} entity via {@code @ManyToOne} relation.
      * This is a read-only association - updates should use {@link #setOrganizationId(Long)} to
      * modify the organization assignment.
-     * </p>
+     * 
      * <p>
      * <strong>Note:</strong> This association may be lazy-loaded depending on fetch strategy.
      * Accessing this field outside of an active transaction may result in {@code LazyInitializationException}.
-     * </p>
+     * 
      *
      * @return the associated organization entity, or null if not scoped to an organization or not yet loaded
      * @see #getOrganizationId()

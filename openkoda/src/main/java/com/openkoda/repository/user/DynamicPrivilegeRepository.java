@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
  * This interface extends {@link UnsecuredFunctionalRepositoryWithLongId} and implements {@link HasSecurityRules}
  * to provide runtime privilege definitions beyond the canonical Privilege enum. It enables plugin-based
  * privilege systems where modules can register custom privileges at runtime without modifying core enum.
- * </p>
+
  * <p>
  * Key features:
  * <ul>
@@ -45,10 +45,10 @@ import org.springframework.transaction.annotation.Transactional;
  *   <li>Used by privilege system for dynamic privilege resolution alongside Privilege enum</li>
  *   <li>Supports extensibility via {@link com.openkoda.core.customisation.CustomisationService} module registration</li>
  * </ul>
- * </p>
+
  * <p>
  * Persists to 'dynamic_privilege' table with columns: id (PK), name (unique), category, removable (boolean).
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -66,7 +66,7 @@ public interface DynamicPrivilegeRepository extends UnsecuredFunctionalRepositor
      * <p>
      * Uses Spring Data query derivation to generate query: {@code SELECT * FROM dynamic_privilege WHERE name = ?}.
      * Name must match exactly (case-sensitive).
-     * </p>
+
      *
      * @param name Unique privilege name to search for, must not be null
      * @return DynamicPrivilege with matching name, null if not found
@@ -78,7 +78,7 @@ public interface DynamicPrivilegeRepository extends UnsecuredFunctionalRepositor
      * <p>
      * This guarded bulk delete operation executes JPQL:
      * {@code DELETE FROM DynamicPrivilege WHERE id = :id AND removable = true AND CHECK_CAN_MANAGE_ROLES_JPQL}
-     * </p>
+
      * <p>
      * Security enforcement:
      * <ul>
@@ -87,10 +87,10 @@ public interface DynamicPrivilegeRepository extends UnsecuredFunctionalRepositor
      *   <li>Returns 0 if privilege not found, not removable, or user lacks privilege</li>
      *   <li>Annotated with @Modifying and @Transactional for write operation lifecycle</li>
      * </ul>
-     * </p>
+
      * <p>
      * Note: Bulk delete bypasses JPA entity lifecycle callbacks (no @PreRemove execution).
-     * </p>
+
      *
      * @param aLong DynamicPrivilege entity ID to delete, must not be null
      * @return Number of deleted rows (0 or 1)

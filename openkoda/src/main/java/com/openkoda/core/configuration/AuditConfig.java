@@ -44,7 +44,7 @@ import java.util.Optional;
  * {@link org.springframework.data.annotation.LastModifiedDate},
  * {@link org.springframework.data.annotation.CreatedBy}, and
  * {@link org.springframework.data.annotation.LastModifiedBy} annotations on entities.
- * </p>
+ * 
  * <p>
  * Registers three beans:
  * <ul>
@@ -53,10 +53,9 @@ import java.util.Optional;
  * <li>{@link #hibernatePropertiesCustomizer(PropertyChangeInterceptor)} for injecting
  * PropertyChangeInterceptor into Hibernate SessionFactory</li>
  * </ul>
- * </p>
  * <p>
  * Enables comprehensive entity change tracking and audit trail generation throughout the application.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -75,10 +74,10 @@ public class AuditConfig {
      * Uses {@link SecurityContextHolder} to access the current {@link Authentication}. Casts principal
      * to {@link OrganizationUser} and retrieves UID containing username and user ID. Returns UNKNOWN
      * UID sentinel if security context is not available or principal is not of OrganizationUser type.
-     * </p>
+     * 
      * <p>
      * Thread-safe as SecurityContext is thread-local storage managed by Spring Security.
-     * </p>
+     * 
      *
      * @author OpenKoda Team
      * @version 1.7.1
@@ -97,11 +96,11 @@ public class AuditConfig {
          * Extracts {@link Authentication} from {@link SecurityContextHolder}, verifies authentication
          * is valid, and casts principal to {@link OrganizationUser}. Returns UID containing username
          * and user ID for population of @CreatedBy and @LastModifiedBy entity fields.
-         * </p>
+         * 
          * <p>
          * Always returns {@link Optional#of(Object)} with either authenticated user UID or UNKNOWN
          * sentinel UID to ensure auditing fields are never null.
-         * </p>
+         * 
          *
          * @return Optional containing UID of authenticated user or UNKNOWN UID if no valid security context
          */
@@ -134,11 +133,11 @@ public class AuditConfig {
      * {@link SecurityContextHolder} Authentication to UID. Extracts {@link OrganizationUser}
      * from principal and returns UID containing username and user ID. Supplies UNKNOWN UID
      * sentinel if security context is not initialized.
-     * </p>
+     * 
      * <p>
      * Always returns Optional.of(UID) for auditing to ensure @CreatedBy and @LastModifiedBy
      * fields are never null.
-     * </p>
+     * 
      *
      * @return AuditorAware&lt;UID&gt; implementation for JPA @CreatedBy and @LastModifiedBy population
      * @see SpringSecurityAuditorAware
@@ -156,7 +155,7 @@ public class AuditConfig {
      * Returns {@link DebugLogsDecoratorWithRequestId} for request-scoped logging with trace IDs.
      * Used by audit interceptors for diagnostic logging to correlate audit events with HTTP
      * requests and background jobs.
-     * </p>
+     * 
      *
      * @return DebugLogsDecoratorWithRequestId for audit logging with request correlation
      * @see DebugLogsDecoratorWithRequestId
@@ -172,7 +171,7 @@ public class AuditConfig {
      * Writes interceptor under hibernate.session_factory.interceptor property key. Interceptor is
      * bound at SessionFactory creation to capture onSave/onFlushDirty/onDelete events for audit
      * trail generation. Enables property-level change detection for auditable entities.
-     * </p>
+     * 
      *
      * @param interceptor Hibernate interceptor for entity property change capture and audit record creation
      * @return HibernatePropertiesCustomizer that configures SessionFactory with audit interceptor

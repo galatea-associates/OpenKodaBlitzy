@@ -23,9 +23,9 @@ import static java.nio.file.Paths.get;
  * This class provides template methods and helper utilities for converting domain entities to exportable 
  * YAML configuration files plus optional content files. Subclasses implement entity-specific logic by 
  * overriding abstract methods for path construction, content extraction, and DTO conversion.
- * </p>
  * 
- * <h2>Core Responsibilities</h2>
+ * 
+ * <b>Core Responsibilities</b>
  * <ol>
  *   <li><b>YAML Serialization:</b> Serializes DTOs to YAML using SnakeYAML with deterministic formatting 
  *       (DOUBLE_QUOTED scalar style, pretty flow enabled for readable output)</li>
@@ -37,20 +37,20 @@ import static java.nio.file.Paths.get;
  *   <li><b>File Cleanup:</b> Removes exported files while pruning empty parent folders during cleanup operations</li>
  * </ol>
  * 
- * <h2>SnakeYAML Configuration</h2>
+ * <b>SnakeYAML Configuration</b>
  * <p>
  * Uses DumperOptions with DOUBLE_QUOTED scalar style and {@code setPrettyFlow(true)} to ensure consistent, 
  * readable YAML output. Double-quoting avoids ambiguity with special characters and ensures deterministic 
  * serialization across environments.
- * </p>
  * 
- * <h2>Exception Handling</h2>
+ * 
+ * <b>Exception Handling</b>
  * <p>
  * IOExceptions from file operations are converted to unchecked RuntimeException, simplifying error propagation 
  * for callers. Subclasses should document specific exception scenarios.
- * </p>
  * 
- * <h2>Template Methods (Must Implement)</h2>
+ * 
+ * <b>Template Methods (Must Implement)</b>
  * <ul>
  *   <li>{@link #getPathToContentFile(Object)} - Returns absolute filesystem path for entity's content file, 
  *       or null if no content file</li>
@@ -60,7 +60,7 @@ import static java.nio.file.Paths.get;
  *   <li>{@link #getConversionDto(Object)} - Converts entity to DTO for YAML serialization</li>
  * </ul>
  * 
- * <h2>Helper Methods (Provided)</h2>
+ * <b>Helper Methods (Provided)</b>
  * <ul>
  *   <li>{@link #addToZip(Object, ZipOutputStream, Set)} - Packages entity files into zip</li>
  *   <li>{@link #saveToFile(Object)} - Persists entity files to filesystem</li>
@@ -71,11 +71,11 @@ import static java.nio.file.Paths.get;
  *       optional organization suffix</li>
  * </ul>
  * 
- * <h2>Thread Safety</h2>
+ * <b>Thread Safety</b>
  * <p>
  * Concurrency safety depends on callers coordinating access to the shared zipEntries Set and the thread-safety 
  * of {@link ZipUtils}. This class itself maintains no mutable state beyond the autowired ZipUtils dependency.
- * </p>
+ * 
  * 
  * @param <T> the domain entity type (e.g., Form, ControllerEndpoint, FrontendResource)
  * @param <D> the conversion DTO type (e.g., FormConversionDto, ControllerEndpointConversionDto)
@@ -117,19 +117,19 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      *   </li>
      *   <li>Return the conversion DTO</li>
      * </ol>
-     * </p>
      * 
-     * <h3>Duplicate Prevention</h3>
+     * 
+     * <b>Duplicate Prevention</b>
      * <p>
      * Checks zipEntries Set before adding each file to prevent duplicate zip entries. Updates zipEntries 
      * after successful addition. This enables multiple entities to share the same zip without conflicts.
-     * </p>
      * 
-     * <h3>Null Handling</h3>
+     * 
+     * <b>Null Handling</b>
      * <p>
      * Null paths or null content are silently skipped (no zip entry added). This allows converters to 
      * export YAML-only (no content file) or content-only (no YAML component) as needed.
-     * </p>
+     * 
      * 
      * @param entity the domain entity to export (must not be null)
      * @param zipOut the ZipOutputStream to write entries to (must not be null, managed by caller)
@@ -163,9 +163,9 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      * If {@link #getPathToContentFile(Object)} returns a non-null path, this method saves the content 
      * returned by {@link #getContent(Object)} to that path. If {@link #getPathToYamlComponentFile(Object)} 
      * returns a non-null path, this method serializes the conversion DTO to YAML and saves it to that path.
-     * </p>
      * 
-     * <h3>File Creation Behavior</h3>
+     * 
+     * <b>File Creation Behavior</b>
      * <p>
      * For each file path:
      * <ul>
@@ -173,11 +173,11 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      *   <li>Creates the file if it does not exist</li>
      *   <li>Writes content bytes to the file</li>
      * </ul>
-     * </p>
+     * 
      * 
      * <p>
      * This method delegates to the private {@link #saveToFile(String, String)} helper for actual I/O operations.
-     * </p>
+     * 
      * 
      * @param entity the domain entity to export (must not be null)
      * @return the entity unchanged, enabling method chaining
@@ -201,18 +201,18 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      * <p>
      * If {@link #getPathToContentFile(Object)} returns a non-null path, this method removes that file. 
      * If {@link #getPathToYamlComponentFile(Object)} returns a non-null path, this method removes that file.
-     * </p>
      * 
-     * <h3>Folder Pruning Behavior</h3>
+     * 
+     * <b>Folder Pruning Behavior</b>
      * <p>
      * After deleting each file, this method checks if the parent folder is empty (no remaining files). 
      * If the parent folder is empty, it deletes the parent folder as well. This prevents accumulation 
      * of empty directory structures during cleanup operations.
-     * </p>
+     * 
      * 
      * <p>
      * This method delegates to the private {@link #removeFileIfExists(String)} helper for actual deletion logic.
-     * </p>
+     * 
      * 
      * @param entity the domain entity whose exported files to remove (must not be null)
      * @return the entity unchanged, enabling method chaining
@@ -245,13 +245,13 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      *   </li>
      *   <li>If content is non-null, write content bytes to file via {@link Files#write(Path, byte[], java.nio.file.OpenOption...)}</li>
      * </ol>
-     * </p>
      * 
-     * <h3>Exception Handling</h3>
+     * 
+     * <b>Exception Handling</b>
      * <p>
      * Any IOException encountered during directory creation, file creation, or write operations is wrapped 
      * in an unchecked RuntimeException and re-thrown.
-     * </p>
+     * 
      * 
      * @param pathToFile absolute file path string (must not be null)
      * @param content file content string (may be null - creates an empty file if null)
@@ -285,13 +285,13 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      *   <li>Check if parent folder is empty by listing directory contents via {@link Files#list(Path)}</li>
      *   <li>If parent folder is empty (list returns no entries), delete the parent folder</li>
      * </ol>
-     * </p>
      * 
-     * <h3>Exception Handling</h3>
+     * 
+     * <b>Exception Handling</b>
      * <p>
      * Any IOException encountered during file deletion or directory listing is wrapped in an unchecked 
      * RuntimeException and re-thrown.
-     * </p>
+     * 
      * 
      * @param pathToFile absolute file path string (must not be null)
      * @throws RuntimeException wrapping IOException if file deletion or directory listing fails
@@ -314,13 +314,13 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      * Converts an absolute filesystem path to a relative resource path by removing the EXPORT_PATH prefix.
      * <p>
      * This method performs the transformation: {@link #getPathToContentFile(Object)}.replace(EXPORT_PATH, "")
-     * </p>
      * 
-     * <h3>Use Case</h3>
+     * 
+     * <b>Use Case</b>
      * <p>
      * Resource paths are stored in DTOs for import operations. Relative paths are portable across 
      * environments with different filesystem layouts, enabling export from one system and import to another.
-     * </p>
+     * 
      * 
      * @param entity the domain entity (must not be null)
      * @return relative resource path string with EXPORT_PATH prefix removed
@@ -335,7 +335,7 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      * Template method - subclasses implement to return the absolute filesystem path for the entity's content file.
      * <p>
      * Returns null if the entity has no content file (YAML-only export).
-     * </p>
+     * 
      * 
      * @param entity the domain entity (must not be null)
      * @return absolute filesystem path to content file, or null if no content file
@@ -347,7 +347,7 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      * Template method - subclasses implement to return the entity's content string.
      * <p>
      * Returns null if the entity has no content (YAML-only export).
-     * </p>
+     * 
      * 
      * @param entity the domain entity (must not be null)
      * @return content string (JavaScript, HTML, CSS, etc.), or null if no content
@@ -359,7 +359,7 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      * Template method - subclasses implement to return the absolute filesystem path for the entity's YAML component file.
      * <p>
      * Returns null if the entity has no YAML component (content-only export, which is rare).
-     * </p>
+     * 
      * 
      * @param entity the domain entity (must not be null)
      * @return absolute filesystem path to YAML file, or null if no YAML component
@@ -384,14 +384,14 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      *   <li><b>DumperOptions.ScalarStyle.DOUBLE_QUOTED:</b> All scalar values are enclosed in double quotes</li>
      *   <li><b>setPrettyFlow(true):</b> Enables readable flow style formatting</li>
      * </ul>
-     * </p>
      * 
-     * <h3>Rationale</h3>
+     * 
+     * <b>Rationale</b>
      * <p>
      * Double-quoting ensures consistent YAML output across all platforms and avoids ambiguity with special 
      * characters. This produces deterministic serialization that is safe for version control and 
      * environment portability.
-     * </p>
+     * 
      * 
      * @param object the DTO object to serialize (typically a conversion DTO instance)
      * @return YAML string representation of the object
@@ -414,14 +414,14 @@ public abstract class AbstractEntityToYamlConverter<T,D> implements EntityToYaml
      *   <li>If organizationId is null: {@code "{filePath}{entityName}.yaml"}</li>
      *   <li>If organizationId is non-null: {@code "{filePath}{entityName}_{organizationId}.yaml"}</li>
      * </ul>
-     * </p>
      * 
-     * <h3>Use Case</h3>
+     * 
+     * <b>Use Case</b>
      * <p>
      * Generates consistent filenames for both tenant-scoped and global entities. The organization 
      * suffix enables multiple organizations to export entities with the same name without filename 
      * collisions.
-     * </p>
+     * 
      * 
      * @param filePath directory path prefix (typically EXPORT_CONFIG_PATH_ + entity type constant)
      * @param entityName entity name for filename (must not be null)

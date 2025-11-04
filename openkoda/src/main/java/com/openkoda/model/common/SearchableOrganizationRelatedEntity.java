@@ -28,10 +28,10 @@ package com.openkoda.model.common;
  * a unified contract for entities that require both tenant isolation and search indexing functionality.
  * Entities implementing this interface support organization-scoped data access (multi-tenancy) and 
  * full-text search through indexed string fields.
- * </p>
+ * 
  * <p>
  * <b>Inherited Functionality:</b>
- * </p>
+ * 
  * <ul>
  *   <li>From {@link OrganizationRelatedEntity}: Provides {@code getOrganizationId()} for tenant isolation
  *       and {@code getReferenceString()} for human-readable organization context</li>
@@ -41,33 +41,33 @@ package com.openkoda.model.common;
  * <p>
  * <b>Usage Pattern:</b><br>
  * Domain entities that need to be scoped to specific organizations and searchable via text queries should
- * implement this interface. The primary implementer is {@link com.openkoda.model.OpenkodaEntity}, which
+ * implement this interface. The primary implementer is {@link com.openkoda.model.common.OpenkodaEntity}, which
  * serves as the base class for most organization-scoped, searchable entities in the system.
- * </p>
+ * 
  * <p>
  * <b>Implementation Requirements:</b>
- * </p>
+ * 
  * <ul>
  *   <li>Implementers must provide organization-scoped data isolation by maintaining a valid organization ID</li>
  *   <li>Implementers must maintain an {@code indexString} field containing all searchable content for
  *       full-text search functionality</li>
  *   <li>The {@code indexString} should be updated automatically when searchable fields change</li>
- *   <li>Repositories for implementing entities should leverage {@link com.openkoda.repository.SearchableRepositoryMetadata}
+ *   <li>Repositories for implementing entities should leverage {@link com.openkoda.model.common.SearchableRepositoryMetadata}
  *       for search index configuration</li>
  * </ul>
  * <p>
  * This is a marker interface with no additional methods beyond those inherited from its parent interfaces.
  * All behavior is provided through the combination of {@link OrganizationRelatedEntity} and 
  * {@link SearchableEntity} contracts.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
  * @since 1.7.1
- * @see OrganizationRelatedEntity
+ * // OrganizationRelatedEntity
  * @see SearchableEntity
- * @see com.openkoda.model.OpenkodaEntity
- * @see com.openkoda.repository.SearchableRepositoryMetadata
+ * @see com.openkoda.model.common.OpenkodaEntity
+ * @see com.openkoda.model.common.SearchableRepositoryMetadata
  */
 public interface SearchableOrganizationRelatedEntity extends OrganizationRelatedEntity, SearchableEntity {
 

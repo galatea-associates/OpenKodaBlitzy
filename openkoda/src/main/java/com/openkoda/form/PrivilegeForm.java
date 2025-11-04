@@ -37,17 +37,17 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * Expects {@code PrivilegeBase} instances that are {@link DynamicPrivilege} at runtime. The form
  * performs safe field merging via {@code getSafeValue} in {@link #populateTo(PrivilegeBase)} to
  * conditionally update entity fields based on DTO presence.
- * </p>
+ * 
  * <p>
  * Extends {@link AbstractEntityForm} with generic types {@code PrivilegeDto} and {@code PrivilegeBase},
  * implementing {@link TemplateFormFieldNames} for field name constants. Follows the standard form
  * lifecycle: {@code populateFrom} (entity → DTO), {@code validate} (custom validation logic),
  * {@code populateTo} (DTO → entity).
- * </p>
+ * 
  * <p>
  * <b>Runtime Type Requirement:</b> The {@code populateTo} method casts {@code PrivilegeBase} to
  * {@code DynamicPrivilege}, so the entity parameter must be a {@code DynamicPrivilege} instance.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -67,7 +67,7 @@ public class PrivilegeForm extends AbstractEntityForm<PrivilegeDto, PrivilegeBas
      * Initializes the form with the provided {@link PrivilegeDto}, {@link PrivilegeBase} entity,
      * and custom {@link FrontendMappingDefinition}. Use this constructor when you need full control
      * over all three form components.
-     * </p>
+     * 
      *
      * @param dto the {@link PrivilegeDto} instance for form data binding
      * @param entity the {@link PrivilegeBase} entity to populate from or populate to
@@ -83,7 +83,7 @@ public class PrivilegeForm extends AbstractEntityForm<PrivilegeDto, PrivilegeBas
      * Creates a new {@link PrivilegeDto} instance and uses the provided {@link PrivilegeBase} entity
      * along with the standard {@link FrontendMappingDefinitions#privilegeForm} mapping. Use this
      * constructor when populating from an existing privilege entity.
-     * </p>
+     * 
      *
      * @param entity the {@link PrivilegeBase} entity to populate from (must be a {@link DynamicPrivilege} instance for populateTo)
      */
@@ -98,7 +98,7 @@ public class PrivilegeForm extends AbstractEntityForm<PrivilegeDto, PrivilegeBas
      * {@link FrontendMappingDefinitions#privilegeForm} mapping. Use this constructor when
      * creating a new privilege from scratch; you'll need to set the DTO and entity before
      * using the form lifecycle methods.
-     * </p>
+     * 
      */
     public PrivilegeForm() {
         super(null, null, FrontendMappingDefinitions.privilegeForm);
@@ -111,11 +111,11 @@ public class PrivilegeForm extends AbstractEntityForm<PrivilegeDto, PrivilegeBas
      * {@code label}, {@code category}, and {@code privilegeGroup} from the {@link PrivilegeBase}
      * entity to the corresponding DTO fields. This method is typically called when editing an
      * existing privilege.
-     * </p>
+     * 
      *
      * @param entity the {@link PrivilegeBase} entity to populate from (must not be {@code null})
      * @return this form instance for fluent chaining
-     * @see AbstractEntityForm#populateFrom(Object)
+     * @see com.openkoda.core.form.AbstractEntityForm#populateFrom(com.openkoda.model.common.LongIdEntity)
      */
     @Override
     public PrivilegeForm populateFrom(PrivilegeBase entity) {
@@ -134,15 +134,15 @@ public class PrivilegeForm extends AbstractEntityForm<PrivilegeDto, PrivilegeBas
      * {@code getSafeValue} for safe merging. This method conditionally updates entity fields
      * only when corresponding DTO values are present, preserving existing entity values for
      * absent DTO fields.
-     * </p>
+     * 
      * <p>
      * <b>Runtime Requirement:</b> The entity parameter must be a {@link DynamicPrivilege} instance.
      * This method performs an unchecked cast from {@code PrivilegeBase} to {@code DynamicPrivilege}.
-     * </p>
+     * 
      * <p>
      * Transfers: {@code id}, {@code name}, {@code label}, {@code category}, and {@code group}
      * using field name constants ({@link #ID_}, {@link #NAME_}, {@link #LABEL_}, "category", "group").
-     * </p>
+     * 
      *
      * @param entity the {@link PrivilegeBase} entity to populate (must be a {@link DynamicPrivilege} instance)
      * @return the updated {@link DynamicPrivilege} entity
@@ -165,7 +165,7 @@ public class PrivilegeForm extends AbstractEntityForm<PrivilegeDto, PrivilegeBas
      * Validates form data using custom logic for privilege creation and editing.
      * <p>
      * Performs validation checks on the {@link PrivilegeDto} fields:
-     * </p>
+     * 
      * <ul>
      *   <li>Validates {@code name} is not blank - rejects with error code "not.empty" if blank</li>
      *   <li>Validates {@code label} is not blank - rejects with error code "not.empty" if blank</li>
@@ -176,7 +176,7 @@ public class PrivilegeForm extends AbstractEntityForm<PrivilegeDto, PrivilegeBas
      * Uses Apache Commons {@code StringUtils.isBlank} for string validation and direct null checks
      * for the privilege group enum. All validation errors are recorded in the provided
      * {@link BindingResult}.
-     * </p>
+     * 
      *
      * @param br the {@link BindingResult} for collecting validation errors
      * @return this form instance for fluent chaining

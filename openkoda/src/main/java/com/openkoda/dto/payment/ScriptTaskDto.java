@@ -30,11 +30,11 @@ import com.openkoda.dto.OrganizationRelatedObject;
  * This mutable POJO conveys script execution results and implements both {@link CanonicalObject}
  * and {@link OrganizationRelatedObject} contracts to support notification generation and
  * multi-tenant organization scoping.
- * </p>
+ * 
  * <p>
  * Used in background workers, script orchestration workflows, and notification flows to
  * transport script execution results to designated result handlers for further processing.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -49,7 +49,7 @@ public class ScriptTaskDto implements CanonicalObject, OrganizationRelatedObject
      * <p>
      * Contains the outcome of the script execution, typically a string representation
      * of the script's return value or processing result.
-     * </p>
+     * 
      */
     public String result;
 
@@ -58,7 +58,7 @@ public class ScriptTaskDto implements CanonicalObject, OrganizationRelatedObject
      * <p>
      * Identifies which result handler should be invoked to handle the script outcome,
      * enabling dynamic routing of results to appropriate processing components.
-     * </p>
+     * 
      */
     public String resultHandlerName;
 
@@ -67,7 +67,7 @@ public class ScriptTaskDto implements CanonicalObject, OrganizationRelatedObject
      * <p>
      * Associates this script task with a specific organization for tenant isolation
      * and organization-scoped operations.
-     * </p>
+     * 
      */
     public Long organizationId;
 
@@ -76,7 +76,7 @@ public class ScriptTaskDto implements CanonicalObject, OrganizationRelatedObject
      * <p>
      * Implements {@link CanonicalObject#notificationMessage()} to provide a fixed
      * literal notification message describing the script execution result.
-     * </p>
+     * 
      *
      * @return the fixed notification message "Script execution result"
      */
@@ -126,7 +126,7 @@ public class ScriptTaskDto implements CanonicalObject, OrganizationRelatedObject
      * <p>
      * Implements {@link OrganizationRelatedObject#getOrganizationId()} to provide
      * the multi-tenant organization identifier for this script task.
-     * </p>
+     * 
      *
      * @return the organization identifier, may be null
      */

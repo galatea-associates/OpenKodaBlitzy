@@ -18,13 +18,13 @@ import com.openkoda.core.service.email.EmailConfigJavaMailSender;
  * This configuration is activated conditionally based on the presence of the {@code spring.mail.host}
  * property. It provides a production-ready JavaMail sender implementation configured with SMTP
  * credentials, connection settings, and additional mail properties from Spring Boot's auto-configuration.
- * </p>
+ * 
  * <p>
  * The class is annotated with {@code @Configuration(proxyBeanMethods=false)} for optimized bean creation
  * without CGLIB proxies, improving startup performance. It binds {@link MailProperties} from Spring Boot's
  * mail auto-configuration and constructs a {@link JavaMailSenderImpl} bean with SMTP host, port, username,
  * password, protocol, default encoding, and additional properties from {@code spring.mail.properties.*}.
- * </p>
+ * 
  * <p>
  * Configuration is driven by application properties:
  * <pre>
@@ -34,7 +34,6 @@ import com.openkoda.core.service.email.EmailConfigJavaMailSender;
  * spring.mail.password=secret
  * spring.mail.properties.mail.smtp.auth=true
  * </pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -58,11 +57,11 @@ public class MailSenderConfiguration {
      * to the JavaMailSender implementation. Additional SMTP properties from {@code spring.mail.properties.*}
      * are converted from a map to {@link Properties} format via the {@link #asProperties(Map)} helper
      * and applied to the mail sender.
-     * </p>
+     * 
      * <p>
      * The returned bean serves as the primary mail sender used across the application for email operations,
      * including notifications, password resets, and administrative communications.
-     * </p>
+     * 
      *
      * @param properties the Spring Boot mail configuration properties bound from application configuration
      * @return configured {@link JavaMailSenderImpl} instance wrapped as {@link EmailConfigJavaMailSender}
@@ -85,13 +84,13 @@ public class MailSenderConfiguration {
      * {@link JavaMailSenderImpl} instance. It configures the SMTP host (required), port
      * (optional, defaults to protocol standard), username and password for authentication,
      * mail protocol (typically "smtp" or "smtps"), and default character encoding for email content.
-     * </p>
+     * 
      * <p>
      * Additional JavaMail-specific properties from {@code spring.mail.properties.*} (such as
      * {@code mail.smtp.auth}, {@code mail.smtp.starttls.enable}, {@code mail.smtp.timeout})
      * are converted to {@link Properties} format via {@link #asProperties(Map)} and applied
      * to enable advanced SMTP features like authentication, TLS, and connection timeouts.
-     * </p>
+     * 
      *
      * @param properties the mail configuration properties from Spring Boot auto-configuration
      * @param sender the JavaMailSender instance to configure with SMTP settings
@@ -119,7 +118,7 @@ public class MailSenderConfiguration {
      * (with String keys and String values) into a {@link Properties} object compatible with
      * the JavaMail API's {@link JavaMailSenderImpl#setJavaMailProperties(Properties)} method.
      * The conversion iterates over map entries and transfers them via {@link Properties#putAll(Map)}.
-     * </p>
+     * 
      * <p>
      * Example properties transferred include:
      * <ul>
@@ -128,7 +127,7 @@ public class MailSenderConfiguration {
      *   <li>{@code mail.smtp.timeout} - Connection timeout in milliseconds</li>
      *   <li>{@code mail.smtp.connectiontimeout} - Initial connection timeout</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param source the map of mail properties from Spring Boot configuration (typically from
      *               {@code spring.mail.properties.*} keys)

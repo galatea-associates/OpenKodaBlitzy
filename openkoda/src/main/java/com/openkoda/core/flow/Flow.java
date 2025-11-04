@@ -38,17 +38,14 @@ import java.util.function.Supplier;
  * Flow provides a builder pattern for request handling in OpenKoda controllers. It enables functional composition
  * of business logic steps, where each step can access previous results and store values in a shared model map.
  * The pipeline supports transactional execution, comprehensive error handling, and automatic model population.
- * </p>
  * <p>
  * The core concept is: {@code Flow.init(services).thenSet(key, lambda).then(lambda).execute()}. Each step receives
  * a {@link ResultAndModel} containing the previous step's result, the shared {@link PageModelMap}, service beans,
  * and additional parameters. Results can be stored in the model using {@code thenSet()} variants, making them
  * available to subsequent steps and the final view.
- * </p>
  * <p>
  * Flow is immutable - each builder method returns a new Flow instance with the composed function, preserving the
  * original pipeline. This enables safe reuse and composition of flow fragments.
- * </p>
  * <p>
  * Example usage:
  * <pre>
@@ -56,7 +53,6 @@ import java.util.function.Supplier;
  *     .thenSet(entity, a -&gt; repository.findById(entityId))
  *     .execute();
  * </pre>
- * </p>
  * <p>
  * With transactional execution:
  * <pre>
@@ -64,7 +60,6 @@ import java.util.function.Supplier;
  *     .thenSet(entity, a -&gt; repository.save(a.result))
  *     .execute();
  * </pre>
- * </p>
  *
  * @param <I> input result type - the type of result expected from previous pipeline steps
  * @param <O> output result type - the type of result produced by this pipeline stage
@@ -87,7 +82,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * Applies this Flow's composed function to the given result and model.
      * <p>
      * This method executes the pipeline function, propagating the input result through the composed transformation.
-     * </p>
+     * 
      *
      * @param iResultAndModel the input result and model containing previous step's result, shared model, and services
      * @return the output result after applying this pipeline stage's transformation
@@ -103,7 +98,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * This function encapsulates all previous pipeline steps composed via {@code then()}, {@code thenSet()}, and
      * related builder methods. Each builder operation wraps this function with additional logic, creating a new
      * Flow instance with the extended pipeline.
-     * </p>
+     * 
      */
     protected final Function <ResultAndModel<I, CP>, O> f;
     
@@ -112,7 +107,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * When set, the entire Flow execution runs within a transaction boundary. Lazily initialized from
      * {@link #transactionalExecutorProvider} if not directly set.
-     * </p>
+     * 
      */
     private TransactionalExecutor transactionalExecutor = null;
     
@@ -122,7 +117,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * Provides deferred transactional executor creation, typically supplying a Spring TransactionTemplate.
      * The executor is instantiated only when {@link #execute()} is called, enabling transaction context
      * to be properly established at execution time.
-     * </p>
+     * 
      */
     protected Supplier<TransactionalExecutor> transactionalExecutorProvider = null;
     
@@ -131,7 +126,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Invoked by builder methods to copy transactional executor configuration from parent flows to child flows,
      * ensuring transaction boundaries are preserved across pipeline composition.
-     * </p>
+     * 
      */
     protected Consumer<Function> onThen = null;
 
@@ -150,7 +145,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Typically an aggregator bean (e.g., Services) exposing repositories, business services, and utilities.
      * Available to all pipeline steps via {@link ResultAndModel#services}.
-     * </p>
+     * 
      */
     public final CP services;
 
@@ -159,7 +154,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Immutable map of parameters available to all pipeline steps. Can be used for passing request-scoped
      * data like HTTP parameters, user context, or feature flags.
-     * </p>
+     * 
      */
     public final Map<String, Object> params;
 
@@ -168,7 +163,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * When true, full stack traces are included in error messages stored in the model. When false, only
      * exception class names are included. Defaults to true for comprehensive error diagnostics.
-     * </p>
+     * 
      */
     public static boolean FULL_STACKTRACE_IN_ERROR = true;
 
@@ -177,7 +172,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Returns an empty immutable map if the input is null, otherwise wraps the provided map in an
      * unmodifiable view. This prevents accidental parameter modification during pipeline execution.
-     * </p>
+     * 
      *
      * @param params the parameters map to initialize, may be null
      * @return an immutable map containing the parameters, or an empty map if input is null
@@ -194,7 +189,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Used internally by builder methods to create new Flow instances with composed functions while
      * preserving transactional executor configuration and parameter context.
-     * </p>
+     * 
      *
      * @param <II> input result type for the new flow
      * @param <IO> output result type for the new flow
@@ -216,7 +211,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Creates a carrier object encapsulating the current model, step result, services, and parameters.
      * This carrier is passed to each pipeline step function.
-     * </p>
+     * 
      *
      * @param <IR> result type
      * @param <ICP> context/services type
@@ -269,7 +264,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * Ensures that transactional boundaries are preserved when composing flows. If the next step in the pipeline
      * is also a Flow, copies its transactional executor provider. Invokes the {@link #onThen} hook to propagate
      * additional configuration.
-     * </p>
+     * 
      *
      * @param <N> type parameter (unused)
      * @param after the next function in the pipeline, potentially a Flow with transactional configuration
@@ -288,7 +283,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * The next step receives null as its result, effectively starting fresh while maintaining access to the
      * shared model, services, and parameters. Useful for independent operations that don't depend on prior results.
-     * </p>
+     * 
      *
      * @param <N> type parameter (unused)
      * @param <OI> input type for the next step (typically Object)
@@ -310,7 +305,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * The next step receives the output of the current step as its input result. This is the primary composition
      * method for building sequential pipelines where each step processes the previous step's output.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>
@@ -319,7 +314,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      *     .then(a -&gt; enrichEntity(a.result))
      *     .execute();
      * </pre>
-     * </p>
+     * 
      *
      * @param <N> output type for the next step
      * @param after the function to execute, receiving the current step's result
@@ -337,7 +332,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Uses the PageAttr's constructor to create the default value and stores it in the model under the
      * PageAttr's key. Useful for initializing model attributes with default instances.
-     * </p>
+     * 
      *
      * @param <N> value type
      * @param pageAttr the page attribute defining the model key and default constructor
@@ -352,7 +347,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * Composes a step that stores two default values in the model.
      * <p>
      * Creates default values using each PageAttr's constructor and stores them in the model as a Tuple2.
-     * </p>
+     * 
      *
      * @param <N1> first value type
      * @param <N2> second value type
@@ -478,7 +473,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * Executes the function using the previous step's result, then stores the returned value in the model under
      * the specified PageAttr key. The value becomes available to subsequent steps and the final view template.
      * This is the primary method for populating model attributes.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>
@@ -486,7 +481,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      *     .thenSet(entity, a -&gt; repository.findById(id))
      *     .execute();
      * </pre>
-     * </p>
+     * 
      *
      * @param <N> value type
      * @param pageAttr the page attribute defining the model key
@@ -610,7 +605,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Creates a minimal Flow that returns its input result unchanged. Useful as a starting point for
      * pipelines that don't require service access.
-     * </p>
+     * 
      *
      * @param <A> result type
      * @param <CP> context/services type
@@ -625,7 +620,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Creates a Flow with access to service beans, typically a Services aggregator providing repositories
      * and business services. This is the most common initialization pattern for controller flows.
-     * </p>
+     * 
      *
      * @param <A> result type
      * @param <CP> context/services type
@@ -654,7 +649,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Creates a Flow that executes within a transaction boundary. The transactional executor is lazily
      * created from the provider when {@link #execute()} is called.
-     * </p>
+     * 
      *
      * @param <A> result type
      * @param <CP> context/services type
@@ -696,7 +691,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * Initializes a Flow with services and an initial value.
      * <p>
      * The flow immediately returns the specified initial value, ignoring any input result.
-     * </p>
+     * 
      *
      * @param <A> result type
      * @param <CP> context/services type
@@ -917,11 +912,11 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * This is the terminal operation that triggers pipeline execution. Creates a new empty {@link PageModelMap},
      * executes all composed steps in sequence, and returns the populated model containing all values stored via
      * {@code thenSet()} operations. The model is suitable for rendering in view templates.
-     * </p>
+     * 
      * <p>
      * If a {@link TransactionalExecutor} is configured, the entire pipeline executes within a transaction
      * boundary. Exceptions are caught and handled according to type, with error information stored in the model.
-     * </p>
+     * 
      *
      * @return the populated page model map containing all stored values and error state
      */
@@ -936,7 +931,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Executes the pipeline using a pre-populated model, allowing values to be passed in and accumulated across
      * multiple flow executions. Useful for chaining flows or providing initial model state.
-     * </p>
+     * 
      *
      * @param model the existing page model map to populate
      * @return the same page model map with additional values from pipeline execution
@@ -951,7 +946,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Deprecated in favor of {@link #execute()} which returns only the model. The result value is typically
      * not needed as relevant values are stored in the model via {@code thenSet()} operations.
-     * </p>
+     * 
      *
      * @return a carrier containing both the final result and populated model
      * @deprecated Use {@link #execute()} instead. This method will be removed in a future version.
@@ -967,7 +962,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * Executes the pipeline with comprehensive exception handling and post-processing.
      * <p>
      * This method orchestrates the complete execution flow:
-     * </p>
+     * 
      * <ol>
      * <li>Provisions the {@link TransactionalExecutor} from the provider if configured</li>
      * <li>Executes the pipeline function, optionally within a transaction boundary</li>
@@ -976,7 +971,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * </ol>
      * <p>
      * Exception handling hierarchy:
-     * </p>
+     * 
      * <ul>
      * <li>{@link HttpStatusException} - HTTP-aware exceptions: logged, model populated with error, rethrown</li>
      * <li>{@link ValidationException} - Validation failures: logged, model populated with error, NOT rethrown</li>
@@ -986,11 +981,11 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Error information stored in model includes: {@code isError=true}, error message, full stack trace (if
      * {@link #FULL_STACKTRACE_IN_ERROR} is true), and exception object.
-     * </p>
+     * 
      * <p>
      * Post-execute processors: After successful execution, iterates through model values and invokes
      * {@link PostExecuteProcessablePageAttr#process()} for any attributes implementing that interface.
-     * </p>
+     * 
      *
      * @param model the page model map to populate
      * @return a carrier containing the final result, populated model, services, and parameters
@@ -1044,7 +1039,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Logs the exception message and the first two stack trace elements to provide context without excessive
      * verbosity. Uses the {@link LoggingComponent#error} method for consistent logging.
-     * </p>
+     * 
      *
      * @param e the exception to log
      */
@@ -1060,7 +1055,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * Extracts a simple error message from an exception.
      * <p>
      * Returns the exception's message string, or "N/A" if the message is null.
-     * </p>
+     * 
      *
      * @param e the exception to extract message from
      * @return the exception message or "N/A" if null
@@ -1075,7 +1070,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * Iterates through all model values and invokes {@link PostExecuteProcessablePageAttr#process()} on any
      * attributes implementing that interface. This allows attributes to perform cleanup, validation, or
      * transformation after the pipeline completes successfully.
-     * </p>
+     * 
      *
      * @param model the page model map containing attributes to process
      */
@@ -1092,7 +1087,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * If {@link #FULL_STACKTRACE_IN_ERROR} is true, returns the complete stack trace as a string. Otherwise,
      * returns only the exception class simple name. Used for populating error information in the model.
-     * </p>
+     * 
      *
      * @param e the exception to format
      * @return formatted error message with or without full stack trace
@@ -1112,7 +1107,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Configures the executor that will wrap pipeline execution in a transaction. Returns this Flow instance
      * for method chaining.
-     * </p>
+     * 
      *
      * @param transactionalExecutor the transactional executor to use
      * @return this Flow instance for chaining
@@ -1127,7 +1122,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Configures a supplier that will lazily create the transactional executor when {@link #execute()} is called.
      * Returns this Flow instance for method chaining.
-     * </p>
+     * 
      *
      * @param transactionalExecutorProvider the supplier for transactional executor
      * @return this Flow instance for chaining
@@ -1142,7 +1137,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Configures a consumer that will be invoked when builder methods compose new flows, allowing custom
      * configuration to be propagated through the pipeline chain. Returns this Flow instance for chaining.
-     * </p>
+     * 
      *
      * @param onThen the configuration propagation consumer
      * @return this Flow instance for chaining
@@ -1156,7 +1151,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * Returns a string representation of this Flow for debugging.
      * <p>
      * Format: "Flow-N" where N is the unique flow number assigned during construction.
-     * </p>
+     * 
      *
      * @return debug string identifying this Flow instance
      */
@@ -1170,7 +1165,7 @@ public class Flow<I, O, CP> implements Function <ResultAndModel<I, CP>, O>, Base
      * <p>
      * Similar to {@link #thenSet(PageAttr, Function)} but uses a plain string key instead of a PageAttr.
      * Useful for dynamic model keys not defined as PageAttr constants.
-     * </p>
+     * 
      *
      * @param modelKey the string key for storing the value in the model
      * @param after the function to compute the value

@@ -47,10 +47,10 @@ import java.util.stream.Collectors;
  * JPQL, including PostgreSQL array operations and aggregation functions. The registered
  * functions can be called directly from HQL queries and are translated to native
  * PostgreSQL SQL during query execution.
- * </p>
+ * 
  * <p>
  * Three custom functions are registered:
- * </p>
+ * 
  * <ul>
  *   <li><b>string_agg</b> - PostgreSQL string aggregation function</li>
  *   <li><b>arrays_overlap</b> - Checks if two PostgreSQL arrays have common elements</li>
@@ -60,12 +60,12 @@ import java.util.stream.Collectors;
  * <b>Thread Safety:</b> This class is instantiated by Hibernate during bootstrap and
  * should be treated as a singleton. The inner function descriptor classes are stateless
  * and thread-safe for concurrent query execution.
- * </p>
+ * 
  * <p>
  * <b>PostgreSQL Dependency:</b> All functions assume PostgreSQL database backend and
- * use PostgreSQL-specific syntax including array operators (&&) and type casting
+ * use PostgreSQL-specific syntax including array operators (&amp;&amp;) and type casting
  * (::varchar[], ::bigint[]).
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -80,14 +80,14 @@ public class CustomFunctionContributor implements FunctionContributor {
      * <p>
      * This method is called during Hibernate SessionFactory initialization to register
      * three custom functions that can be used in HQL queries:
-     * </p>
+     * 
      * <ol>
      *   <li><b>string_agg</b> - PostgreSQL's built-in string aggregation function that
      *       concatenates values with a delimiter. Returns a STRING type.</li>
      *   <li><b>arrays_suffix</b> - Custom function that appends a suffix to each element
      *       in a PostgreSQL array field.</li>
      *   <li><b>arrays_overlap</b> - Custom function that checks if two PostgreSQL arrays
-     *       share any common elements using the && operator.</li>
+     *       share any common elements using the &amp;&amp; operator.</li>
      * </ol>
      *
      * @param functionContributions the Hibernate function contributions registry where
@@ -102,42 +102,42 @@ public class CustomFunctionContributor implements FunctionContributor {
 
     /**
      * Custom Hibernate function descriptor that implements PostgreSQL array overlap checking
-     * using the && operator to determine if two arrays share any common elements.
+     * using the &amp;&amp; operator to determine if two arrays share any common elements.
      * <p>
      * This function enables server-side security checks by comparing arrays of organization IDs
      * or privilege tokens. For example, it can verify if a user's organizations (represented as
      * an array) overlap with the organizations related to a specific entity, allowing efficient
      * privilege-based filtering directly in SQL queries.
-     * </p>
+     * 
      * <p>
      * The function accepts two parameters:
-     * </p>
+     * 
      * <ul>
      *   <li><b>arg1</b> - A database column containing a PostgreSQL array (typically bigint[] or varchar[])</li>
      *   <li><b>arg2</b> - A Java collection (ArrayList&lt;String&gt; or HashSet&lt;Long&gt;) from HQL query parameters</li>
      * </ul>
      * <p>
      * The implementation converts the Java collection into a PostgreSQL array literal and uses
-     * the PostgreSQL && (overlap) operator for comparison. Returns true if arrays have at least
+     * the PostgreSQL &amp;&amp; (overlap) operator for comparison. Returns true if arrays have at least
      * one element in common.
-     * </p>
+     * 
      * <p>
      * <b>HQL Usage Example:</b>
-     * </p>
+     * 
      * <pre>
      * SELECT e FROM Entity e WHERE arrays_overlap(e.organizationIds, :userOrgIds) = true
      * </pre>
      * <p>
      * <b>Generated SQL Pattern:</b>
-     * </p>
+     * 
      * <pre>
-     * (ARRAY['org1','org2']::varchar[] && entity.organization_ids)
+     * (ARRAY['org1','org2']::varchar[] &amp;&amp; entity.organization_ids)
      * </pre>
      * <p>
      * <b>Security Use Case:</b> This function is critical for multi-tenant security,
      * allowing row-level access control based on organization membership without
      * requiring expensive application-side filtering.
-     * </p>
+     * 
      *
      * @see org.hibernate.query.sqm.function.AbstractSqmSelfRenderingFunctionDescriptor
      */
@@ -148,23 +148,23 @@ public class CustomFunctionContributor implements FunctionContributor {
          * <p>
          * Initializes the function with the name "arrays_overlap" and configures Hibernate's
          * argument validator to ensure exactly two parameters are provided in HQL queries.
-         * </p>
+         * 
          */
         public StringArraysOverlapFunction() {
             super("arrays_overlap", StandardArgumentsValidators.exactly(2), null, null);
         }
 
         /**
-         * Renders the arrays_overlap function as native PostgreSQL SQL using the && operator.
+         * Renders the arrays_overlap function as native PostgreSQL SQL using the &amp;&amp; operator.
          * <p>
          * This method translates the HQL function call into PostgreSQL-specific SQL syntax:
-         * </p>
+         * 
          * <pre>
-         * (ARRAY[values]::type[] && column_name)
+         * (ARRAY[values]::type[] &amp;&amp; column_name)
          * </pre>
          * <p>
          * The method handles two types of Java collections for the second argument:
-         * </p>
+         * 
          * <ul>
          *   <li>ArrayList&lt;String&gt; - Converted to varchar[] array with single-quoted values</li>
          *   <li>HashSet&lt;Long&gt; - Converted to bigint[] array with numeric values</li>
@@ -198,8 +198,8 @@ public class CustomFunctionContributor implements FunctionContributor {
          * Appends a PostgreSQL varchar array literal from an ArrayList of strings to the SQL.
          * <p>
          * Converts the ArrayList into PostgreSQL array syntax with type casting:
-         * {@code ['value1','value2']::varchar[] &&}
-         * </p>
+         * {@code ['value1','value2']::varchar[] &amp;&amp;}
+         * 
          *
          * @param sqlAppender the SQL string builder for appending generated SQL
          * @param arg2 the query literal containing an ArrayList&lt;String&gt; to be converted
@@ -214,8 +214,8 @@ public class CustomFunctionContributor implements FunctionContributor {
          * Appends a PostgreSQL bigint array literal from a HashSet of longs to the SQL.
          * <p>
          * Converts the HashSet into PostgreSQL array syntax with type casting:
-         * {@code [1,2,3]::bigint[] &&}
-         * </p>
+         * {@code [1,2,3]::bigint[] &amp;&amp;}
+         * 
          *
          * @param sqlAppender the SQL string builder for appending generated SQL
          * @param arg2 the query literal containing a HashSet&lt;Long&gt; to be converted
@@ -230,7 +230,7 @@ public class CustomFunctionContributor implements FunctionContributor {
          * Converts a HashSet of Long values into a comma-separated string for PostgreSQL array syntax.
          * <p>
          * Example: {1L, 2L, 3L} becomes "1,2,3"
-         * </p>
+         * 
          *
          * @param values the HashSet of Long values to convert
          * @return comma-separated string representation of the numeric values
@@ -244,7 +244,7 @@ public class CustomFunctionContributor implements FunctionContributor {
          * for PostgreSQL varchar array syntax.
          * <p>
          * Example: ["org1", "org2"] becomes "'org1','org2'"
-         * </p>
+         * 
          *
          * @param values the ArrayList of String values to convert
          * @return comma-separated string with each value wrapped in single quotes
@@ -264,26 +264,26 @@ public class CustomFunctionContributor implements FunctionContributor {
      * prefixes or suffixes to privilege tokens, organization identifiers, or other
      * array-stored data. The operation is performed entirely on the database server
      * using PostgreSQL's array manipulation capabilities.
-     * </p>
+     * 
      * <p>
      * The function accepts two parameters:
-     * </p>
+     * 
      * <ul>
      *   <li><b>arg1</b> - A PostgreSQL array column or expression (varchar[] or text[])</li>
      *   <li><b>arg2</b> - A string value to append as suffix to each array element</li>
      * </ul>
      * <p>
      * <b>HQL Usage Example:</b>
-     * </p>
+     * 
      * <pre>
      * SELECT arrays_suffix(e.tags, '_archived') FROM Entity e
      * </pre>
      * <p>
      * <b>SQL Pattern Explanation:</b>
-     * </p>
+     * 
      * <p>
      * The function generates SQL that:
-     * </p>
+     * 
      * <ol>
      *   <li><b>Unnests</b> the array into individual rows: {@code unnest(array_column)}</li>
      *   <li><b>Concatenates</b> suffix to each element: {@code unnest(array) || suffix}</li>
@@ -292,14 +292,14 @@ public class CustomFunctionContributor implements FunctionContributor {
      * </ol>
      * <p>
      * <b>Generated SQL Example:</b>
-     * </p>
+     * 
      * <pre>
      * (array(select (unnest(tags) || '_archived')::varchar))
      * </pre>
      * <p>
      * This approach leverages PostgreSQL's set-returning functions and array constructors
      * for efficient array transformation without requiring application-side processing.
-     * </p>
+     * 
      *
      * @see org.hibernate.query.sqm.function.AbstractSqmSelfRenderingFunctionDescriptor
      */
@@ -311,7 +311,7 @@ public class CustomFunctionContributor implements FunctionContributor {
          * Initializes the function with the name "arrays_suffix" and configures Hibernate's
          * argument validator to ensure exactly two parameters (array column and suffix string)
          * are provided in HQL queries.
-         * </p>
+         * 
          */
         public ArraysSuffixFunction(){
             super("arrays_suffix", StandardArgumentsValidators.exactly(2), null, null);
@@ -321,7 +321,7 @@ public class CustomFunctionContributor implements FunctionContributor {
          * Renders the arrays_suffix function as native PostgreSQL SQL using array manipulation.
          * <p>
          * This method translates the HQL function call into a PostgreSQL SQL pattern that:
-         * </p>
+         * 
          * <ol>
          *   <li>Uses {@code unnest()} to expand the array into rows</li>
          *   <li>Applies the concatenation operator (||) to append the suffix</li>
@@ -330,14 +330,14 @@ public class CustomFunctionContributor implements FunctionContributor {
          * </ol>
          * <p>
          * <b>Generated SQL Pattern:</b>
-         * </p>
+         * 
          * <pre>
          * (array(select (unnest(array_column) || suffix_value)::varchar))
          * </pre>
          * <p>
          * Both arguments are rendered using the Hibernate SQL AST walker to properly
          * handle column references, bind parameters, and nested expressions.
-         * </p>
+         * 
          *
          * @param sqlAppender the SQL string builder where generated SQL fragments are appended
          * @param sqlAstArguments the list of SQL AST nodes representing function arguments

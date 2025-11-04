@@ -41,35 +41,35 @@ import java.time.LocalDateTime;
  * Each public static final field represents a distinct event type with associated payload Class for compile-time type safety.
  * All event descriptors are instantiated during static class initialization and registered in AbstractApplicationEvent.eventList,
  * providing a centralized registry of all available application events.
- * </p>
+
  * <p>
  * <b>Architecture:</b> Event constants are used with ApplicationEventService.emitEvent() for publishing events and 
  * EventListenerService.registerEventListener() for subscribing to events. The typed payload ensures type safety at compile time
  * while the event name provides runtime identification.
- * </p>
+
  * <p>
  * <b>Thread Safety:</b> Static initialization is thread-safe per Java specification. Some non-final fields 
  * (NOTIFICATION_CREATED, BACKUP_CREATED, SCHEDULER_EXECUTED) allow controlled replacement in test scenarios.
- * </p>
+
  * <p>
  * Example usage - Event publishing:
  * <pre>{@code
  * services.applicationEvent.emitEvent(ApplicationEvent.USER_CREATED, basicUser);
  * }</pre>
- * </p>
+
  * <p>
  * Example usage - Listener registration:
  * <pre>{@code
  * services.eventListener.registerListener(ApplicationEvent.ORGANIZATION_CREATED, this::handleOrgCreated);
  * }</pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
  * @since 1.7.1
- * @see AbstractApplicationEvent
- * @see com.openkoda.core.service.ApplicationEventService
- * @see com.openkoda.core.service.event.EventListenerService
+ * See {@code AbstractApplicationEvent}
+ * See {@code com.openkoda.core.service.ApplicationEventService}
+ * See {@code com.openkoda.core.service.event.EventListenerService}
  */
 public class ApplicationEvent<T> extends AbstractApplicationEvent<T> {
 
@@ -202,11 +202,11 @@ public class ApplicationEvent<T> extends AbstractApplicationEvent<T> {
      * <p>
      * This constructor delegates to the superclass to register the event descriptor in the global event registry,
      * associating the event name with its typed payload class for runtime validation and type-safe event handling.
-     * </p>
+
      *
      * @param eventClass Runtime Class representing typed payload for compile-time type safety and runtime validation
      * @param eventName Unique canonical event identifier matching constant name convention (e.g., 'USER_CREATED')
-     * @see AbstractApplicationEvent for superclass constructor documentation and registry mechanism
+     * See {@code AbstractApplicationEvent} for superclass constructor documentation and registry mechanism
      */
     protected ApplicationEvent(Class<T> eventClass, String eventName) {
         super(eventClass, eventName);

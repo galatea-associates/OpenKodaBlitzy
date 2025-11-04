@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * This utility service provides functionality for creating CSV files from entity collections
  * with database-backed file storage integration. The service generates CSV-formatted content
  * from structured data and persists it as File entities using SerialBlob for binary storage.
- * </p>
+
  * <p>
  * Core functionality includes:
  * <ul>
@@ -50,24 +50,24 @@ import java.util.stream.Collectors;
  *   <li>Database-backed storage via SerialBlob for generated content</li>
  *   <li>File model integration with MIME type and size tracking</li>
  * </ul>
- * </p>
+
  * <p>
  * Thread-safety notes: This service is stateless and thread-safe at the service level.
  * However, the createCSVByte method mutates the input data list by inserting headers
  * at index 0, requiring callers to be aware of this side-effect when sharing data
  * structures across threads.
- * </p>
+
  * <p>
  * Use cases: Data export workflows, report downloads, bulk data operations, and
  * administrative data extraction.
- * </p>
+
  * <p>
  * Current limitations: This implementation provides basic CSV generation without
  * RFC 4180 compliance. Special characters (commas, quotes, newlines) within cell
  * values are not escaped or quoted, which may result in malformed CSV output for
  * complex data. Null values are skipped in output. Character encoding uses platform
  * default via String.getBytes() without explicit charset specification.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -85,19 +85,19 @@ public class CsvService implements LoggingComponentWithRequestId {
      * automatically appending the .csv extension if not present in the filename. The
      * generated content is stored as a SerialBlob for database persistence, with the
      * File entity configured for database storage type and text/csv MIME type.
-     * </p>
+
      * <p>
      * The method delegates to createCSVByte for CSV serialization, which inserts the
      * provided headers as the first row in the data list. The resulting byte array
      * is wrapped in a SerialBlob and attached to the File entity along with size metadata.
-     * </p>
+
      * <p>
      * Example usage in a controller:
      * <pre>{@code
      * List<List<Object>> data = Arrays.asList(Arrays.asList("John", 30), Arrays.asList("Jane", 25));
      * File csvFile = csvService.createCSV("users", data, "Name", "Age");
      * }</pre>
-     * </p>
+
      *
      * @param filename the CSV filename (automatically appends .csv extension if missing)
      * @param data mutable list of rows where each row is a List of Object cell values;
@@ -133,22 +133,22 @@ public class CsvService implements LoggingComponentWithRequestId {
      *   <li>Joining rows with newline separators (\n)</li>
      *   <li>Encoding the resulting CSV string to bytes using platform default charset</li>
      * </ol>
-     * </p>
+
      * <p>
      * Important side-effect: This method modifies the input data list by inserting
      * headers at index 0. Callers should be aware that the data parameter is mutated
      * during execution and will contain the header row upon return.
-     * </p>
+
      * <p>
      * Error handling: IOException during ByteArrayOutputStream operations is caught
      * and logged, with an empty byte array returned as fallback. This ensures the
      * method always returns a valid byte array even in failure scenarios.
-     * </p>
+
      * <p>
      * Character encoding note: Uses String.getBytes() without explicit charset parameter,
      * relying on the platform default encoding. For cross-platform compatibility,
      * UTF-8 encoding should be considered in future enhancements.
-     * </p>
+
      *
      * @param data mutable list of rows where each row is a List of Object cell values;
      *             this list is modified by inserting headers at index 0 as a side-effect
@@ -180,12 +180,12 @@ public class CsvService implements LoggingComponentWithRequestId {
      * values with comma separators. Each cell value is converted to its string
      * representation via Object.toString(), with null values skipped entirely
      * (resulting in empty cells between commas).
-     * </p>
+
      * <p>
      * The algorithm iterates through the row data, prepending a comma before each
      * cell value except the first, and appending non-null cell values to a
      * StringBuilder for efficient string construction.
-     * </p>
+
      * <p>
      * Important limitations of this implementation:
      * <ul>
@@ -195,11 +195,11 @@ public class CsvService implements LoggingComponentWithRequestId {
      *   <li>Newlines within cell values will create malformed CSV output</li>
      *   <li>Null values are skipped, resulting in empty cells in output</li>
      * </ul>
-     * </p>
+
      * <p>
      * For production use with complex data containing special characters, consider
      * using a standards-compliant CSV library such as Apache Commons CSV or OpenCSV.
-     * </p>
+
      *
      * @param rowData list of cell values for one CSV row, where each Object is
      *                converted to string via toString() method; null values are

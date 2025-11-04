@@ -42,7 +42,7 @@ import static com.openkoda.controller.common.PageAttributes.errorMessage;
  * This service processes both named templates and ad-hoc HTML string templates, providing defensive 
  * error-to-text behavior for template processing failures. It implements 
  * {@link LoggingComponentWithRequestId} for request correlation and debugging.
- * </p>
+
  * <p>
  * The service supports two rendering modes:
  * <ul>
@@ -51,17 +51,17 @@ import static com.openkoda.controller.common.PageAttributes.errorMessage;
  *   <li>Ad-hoc HTML string rendering via {@link #prepareContentForHtml(String, Map)} for dynamic 
  *       template evaluation</li>
  * </ul>
- * </p>
+
  * <p>
  * Usage example:
  * <pre>{@code
  * String html = service.prepareContent("email/welcome", Map.of("userName", "John"));
  * }</pre>
- * </p>
+
  * <p>
  * <b>Warning:</b> Error messages are exposed in rendered output. Ensure user-facing error messages 
  * are safe for display.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -79,7 +79,7 @@ public class ThymeleafService implements LoggingComponentWithRequestId {
      * <p>
      * Configured by Spring with classpath and file-based template resolvers. Used for standard 
      * template rendering operations.
-     * </p>
+
      */
     private TemplateEngine templateEngine;
     
@@ -89,7 +89,7 @@ public class ThymeleafService implements LoggingComponentWithRequestId {
      * Injected but not added to the primary templateEngine (see commented line in constructor). 
      * Used on-demand in {@link #prepareContentForHtml(String, Map)} with a dedicated 
      * TemplateEngine instance for each invocation.
-     * </p>
+
      */
     private StringTemplateResolver stringTemplateResolver;
 
@@ -100,7 +100,7 @@ public class ThymeleafService implements LoggingComponentWithRequestId {
      * {@link StringTemplateResolver}. Note that the stringTemplateResolver is not added to the 
      * templateEngine (commented line preserved for reference), as it is used on-demand in separate 
      * TemplateEngine instances for ad-hoc HTML processing.
-     * </p>
+
      *
      * @param templateEngine the primary template engine for named template processing, configured 
      *                       by Spring with appropriate template resolvers
@@ -118,7 +118,7 @@ public class ThymeleafService implements LoggingComponentWithRequestId {
      * <p>
      * Delegates to {@link #prepareContent(String, String, Map)} with a null fragment parameter, 
      * causing the entire template to be processed and rendered.
-     * </p>
+
      *
      * @param templateName the name of the template to render, resolved by the configured template 
      *                     resolvers (e.g., "email/welcome" or "admin/dashboard")
@@ -136,12 +136,12 @@ public class ThymeleafService implements LoggingComponentWithRequestId {
      * Constructs a Thymeleaf {@link Context} with the current locale from 
      * {@link LocaleContextHolder} and populates it with the provided model variables. Processes 
      * the template using the configured {@link TemplateEngine} with optional fragment selection.
-     * </p>
+
      * <p>
      * Fragment selection allows rendering only a specific portion of the template (e.g., a 
      * particular div or section marked with th:fragment). If fragment is null, the entire template 
      * is rendered.
-     * </p>
+
      *
      * @param templateName the name of the template to render, resolved by the configured template 
      *                     resolvers (e.g., "email/welcome" or "admin/dashboard")
@@ -149,7 +149,7 @@ public class ThymeleafService implements LoggingComponentWithRequestId {
      *                 th:fragment="content" sections), or null to render the entire template
      * @param model map of variable names to values to populate the template context
      * @return the rendered HTML string for the specified template or fragment
-     * @see TemplateEngine#process(String, Set, Context)
+     * @see TemplateEngine#process(String, Set, org.thymeleaf.context.IContext)
      * @see Context
      * @see LocaleContextHolder#getLocale()
      */
@@ -170,7 +170,7 @@ public class ThymeleafService implements LoggingComponentWithRequestId {
      * Processes ad-hoc HTML string templates with defensive error handling.
      * <p>
      * This method provides special handling for dynamic template evaluation:
-     * </p>
+
      * <ul>
      *   <li>If the model contains an "errorMessage" attribute, replaces the HTML with an error 
      *       display span</li>
@@ -184,14 +184,14 @@ public class ThymeleafService implements LoggingComponentWithRequestId {
      * <b>Performance Note:</b> This method creates a new TemplateEngine per call and is not 
      * optimized for high-volume use. It is designed for dynamic template evaluation in scenarios 
      * where template content is constructed at runtime.
-     * </p>
+
      * <p>
      * <b>Security Warning:</b> Error messages are exposed in rendered output. Ensure error messages 
      * are safe for display to end users.
-     * </p>
+
      *
      * @param html raw HTML template string containing Thymeleaf expressions (e.g., 
-     *             "<div th:text=\"${userName}\"></div>")
+     *             {@code <div th:text="${userName}"></div>})
      * @param model map of variable names to values to populate the template context
      * @return the rendered HTML string, an error message string if template processing fails, or 
      *         empty string if input is blank

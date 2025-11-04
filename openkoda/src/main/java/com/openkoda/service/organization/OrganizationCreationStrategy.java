@@ -28,15 +28,15 @@ package com.openkoda.service.organization;
  * It is used in DTOs, controllers, services, and persisted payloads where enum serialization is supported. The enum provides
  * a clear semantic distinction between two fundamental organization operations: creating a brand new tenant with full provisioning
  * versus associating a user or resource with an existing tenant without any new tenant creation.
- * </p>
+ * 
  * <p>
  * Thread Safety: This enum contains only immutable constants and is inherently thread-safe. All constants are initialized
  * at class loading time and share no mutable state.
- * </p>
+ * 
  * <p>
  * Runtime Characteristics: The enum has minimal runtime footprint with no additional fields or behavior beyond the standard
  * enum mechanics. Changing this enum's public API or removing constants will break callers and serialized consumers.
- * </p>
+ * 
  *
  * @see com.openkoda.service.organization.OrganizationService
  * @see com.openkoda.model.Organization
@@ -53,12 +53,12 @@ public enum OrganizationCreationStrategy {
      * and persisted, tenant resources should be provisioned (including dedicated schema or tables depending on the
      * multitenancy configuration), and organization creation events should be emitted for listeners to perform additional
      * initialization tasks such as creating default roles, privileges, and admin users.
-     * </p>
+     * 
      * <p>
      * Usage: Selected when registering a new tenant, creating organizations via admin interface, or provisioning new
      * customer accounts. This operation is typically more resource-intensive and may involve database schema creation
      * and infrastructure provisioning.
-     * </p>
+     * 
      */
     CREATE,
     
@@ -68,12 +68,12 @@ public enum OrganizationCreationStrategy {
      * This strategy indicates that a user or resource should be associated with an existing {@link com.openkoda.model.Organization}
      * entity without triggering any new tenant provisioning. No new schemas, tables, or tenant infrastructure are created.
      * This operation simply establishes relationships between entities and an already-provisioned organization.
-     * </p>
+     * 
      * <p>
      * Usage: Selected when adding users to existing organizations, assigning resources to established tenants, or creating
      * entity records that belong to a pre-existing organization context. This is a lightweight operation focused on
      * relationship creation rather than tenant provisioning.
-     * </p>
+     * 
      */
     ASSIGN
 }

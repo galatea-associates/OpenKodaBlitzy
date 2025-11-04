@@ -44,7 +44,6 @@ import java.util.stream.Stream;
  * This service implements a schema-per-tenant multitenancy strategy where each organization receives its own PostgreSQL schema (org_[id]).
  * The service manages the complete tenant lifecycle including schema creation, initialization, and deletion, while providing high-level
  * primitives for executing operations across all active tenants in parallel.
- * </p>
  * <p>
  * Configuration is driven by Spring properties:
  * <ul>
@@ -53,11 +52,9 @@ import java.util.stream.Stream;
  *   <li>{@code tenant.initialization.scripts.commaseparated} - Comma-separated classpath paths to SQL initialization scripts</li>
  * </ul>
  * All schema operations are guarded as no-ops when {@code is.multitenancy=false}.
- * </p>
  * <p>
  * Thread Pool Execution Model: Per-tenant operations execute in parallel using a bounded thread pool (MAX_THREADS=16) to prevent
  * resource exhaustion. Each task receives isolated thread-local context via {@link TenantResolver}.
- * </p>
  * <p>
  * Execution Patterns:
  * <ul>
@@ -67,7 +64,6 @@ import java.util.stream.Stream;
  *   <li>QueryExecutor methods: Provide QueryExecutor parameter to operation</li>
  *   <li>EntityManager methods: Provide EntityManager via QueryExecutor wrapper with optional transaction support</li>
  * </ul>
- * </p>
  * <p>
  * Tenant Lifecycle Workflow:
  * <ol>
@@ -76,19 +72,16 @@ import java.util.stream.Stream;
  *   <li>Normal operations - automatic schema routing via {@code SchemaSupportingConnectionProvider}</li>
  *   <li>Delete organization: {@link #markSchemaAsDeleted(long, int)} → {@link #dropSchemaConstraints(long, String, int)} → manual schema drop</li>
  * </ol>
- * </p>
  * <p>
  * State Management:
  * <ul>
  *   <li>{@code tenantedTables} - Immutable list from configuration property (configured tables)</li>
  *   <li>{@code dynamicTenantedTables} - Mutable HashSet for runtime table registration (UNSYNCHRONIZED - caller coordination required)</li>
  * </ul>
- * </p>
  * <p>
  * Thread Safety: Class is stateless except for configuration which is immutable after construction. The {@code dynamicTenantedTables}
  * field requires caller coordination for concurrent modifications. Thread pool creates isolated execution contexts with per-thread
  * {@link TenantResolver} propagation.
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch)
  * @author OpenKoda Team
@@ -105,7 +98,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Bounds thread pool creation to prevent resource exhaustion on systems with many tenants.
      * Used by {@link #executeTasks(long, boolean, List)} to create fixed thread pools.
-     * </p>
+     * 
      */
     private static final int MAX_THREADS = 16;
 
@@ -114,10 +107,10 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Guards all schema operations - when false, operations like {@link #createTenant(long)},
      * {@link #markSchemaAsDeleted(long, int)}, and {@link #dropSchemaConstraints(long, String, int)} return immediately as no-ops.
-     * </p>
+     * 
      * <p>
      * Configured via Spring property: {@code is.multitenancy} (default: false)
-     * </p>
+     * 
      */
     @Value("${is.multitenancy:false}")
     private boolean isMultitenancy;
@@ -127,7 +120,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Enables checking multitenancy mode without Spring context via {@link #isMultitenancy()}.
      * Thread-safe after initialization.
-     * </p>
+     * 
      */
     private static boolean isMultitenancyStatic;
 
@@ -136,7 +129,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Used by {@link #runForAllTenants(long, boolean, boolean, Function, BiFunction, BiFunction)}
      * to enumerate all tenants for batch operations via {@code findActiveOrganizationIdsAsList()}.
-     * </p>
+     * 
      */
     @Inject
     OrganizationRepository organizationRepository;
@@ -145,14 +138,14 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * Immutable list of table names to clone into tenant schemas during initialization.
      * <p>
      * Populated from Spring property: {@code tenant.initialization.table.names.commaseparated}
-     * </p>
+     * 
      * <p>
      * Used by {@link #createTenant(long)} to generate CREATE TABLE statements via
      * {@code CREATE TABLE schema.table (LIKE public.table INCLUDING ALL EXCLUDING CONSTRAINTS EXCLUDING INDEXES)}.
-     * </p>
+     * 
      * <p>
      * Thread-safe: Immutable after construction.
-     * </p>
+     * 
      */
     List<String> tenantedTables = Collections.emptyList();
     
@@ -161,11 +154,11 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Modified via {@link #addTenantedTables(List)} and {@link #removeTenantedTables(List)} for runtime table registration.
      * Merged with {@code tenantedTables} during tenant creation.
-     * </p>
+     * 
      * <p>
      * Thread-safety: UNSYNCHRONIZED HashSet - callers must coordinate concurrent modifications.
      * Typically modified by {@code DynamicEntityRegistrationService} for dynamic entity tables.
-     * </p>
+     * 
      */
     Set<String> dynamicTenantedTables = new HashSet<>();
     
@@ -173,14 +166,14 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * Immutable list of classpath SQL script paths for tenant initialization.
      * <p>
      * Populated from Spring property: {@code tenant.initialization.scripts.commaseparated}
-     * </p>
+     * 
      * <p>
      * Used by {@link #createTenant(long)} to execute initialization scripts after schema and table creation.
      * Scripts run in order via {@link QueryExecutor#runQueriesInTransaction(String)}.
-     * </p>
+     * 
      * <p>
      * Thread-safe: Immutable after construction.
-     * </p>
+     * 
      */
     List<String> tenantInitializationScripts = Collections.emptyList();
     
@@ -189,10 +182,10 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Used by all schema mutation operations including {@link #createTenant(long)},
      * {@link #markSchemaAsDeleted(long, int)}, and {@link #dropSchemaConstraints(long, String, int)}.
-     * </p>
+     * 
      * <p>
      * Provides transactional DDL execution and EntityManager operation wrappers.
-     * </p>
+     * 
      */
     QueryExecutor queryExecutor;
     
@@ -202,7 +195,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * Used to propagate organization ID context to database connection provider for automatic schema routing.
      * Each tenant operation sets {@code TenantResolver.setTenantedResource(new TenantResolver.TenantedResource(orgId))}
      * before execution.
-     * </p>
+     * 
      */
     @Inject
     TenantResolver tenantResolver;
@@ -212,7 +205,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Parses comma-separated Spring properties into lists of table names and script paths.
      * Whitespace is trimmed from each element after splitting.
-     * </p>
+     * 
      *
      * @param queryExecutor QueryExecutor for SQL execution (constructor-injected)
      * @param tables Comma-separated table names for tenant schema initialization (property: {@code tenant.initialization.table.names.commaseparated})
@@ -237,10 +230,10 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Enables fast static access to multitenancy mode via {@link #isMultitenancy()} without requiring Spring context.
      * Called once by Spring container after dependency injection and before bean exposure.
-     * </p>
+     * 
      * <p>
      * Thread-safety: Executed by single thread during bean initialization before any concurrent access.
-     * </p>
+     * 
      */
     @PostConstruct
     void init() {
@@ -252,7 +245,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Returns the current multitenancy configuration without requiring Spring context access.
      * Safe to call from static contexts after Spring container initialization.
-     * </p>
+     * 
      *
      * @return true if schema-per-tenant multitenancy is enabled, false for single-schema mode
      */
@@ -265,7 +258,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Iterates through all Futures and blocks until each result is available. Results maintain
      * the same order as the input Future list.
-     * </p>
+     * 
      *
      * @param r List of Future objects to collect results from (null-safe, returns empty list if null)
      * @param <T> Result type
@@ -292,14 +285,14 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Tables added via this method will be included in future calls to {@link #createTenant(long)},
      * ensuring they are cloned into new tenant schemas alongside configured tables.
-     * </p>
+     * 
      * <p>
      * Use case: Dynamic entity generation via {@code DynamicEntityRegistrationService} adds generated
      * table names to ensure they are replicated in tenant schemas.
-     * </p>
+     * 
      * <p>
      * Thread-safety: UNSYNCHRONIZED - caller must coordinate concurrent calls to avoid race conditions.
-     * </p>
+     * 
      *
      * @param tableNames List of table names to add to dynamic tenant table registry
      */
@@ -311,10 +304,10 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * Removes table names from {@code dynamicTenantedTables}.
      * <p>
      * Removed tables will no longer be cloned into tenant schemas during subsequent {@link #createTenant(long)} calls.
-     * </p>
+     * 
      * <p>
      * Thread-safety: UNSYNCHRONIZED - caller must coordinate concurrent calls to avoid race conditions.
-     * </p>
+     * 
      *
      * @param tableNames List of table names to remove from dynamic tenant table registry
      */
@@ -327,7 +320,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Enumerates all active organizations via {@code OrganizationRepository.findActiveOrganizationIdsAsList()}
      * and executes the provided function for each in parallel using a bounded thread pool.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tenant operations
      * @param operation Function accepting organizationId and returning result
@@ -343,7 +336,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Enumerates all active organizations and executes the provided function for each in parallel,
      * then blocks via {@link #collect(List)} until all operations complete.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tenant operations
      * @param operation Function accepting organizationId and returning result
@@ -360,7 +353,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Provides {@link QueryExecutor} parameter to operation for low-level SQL execution and schema operations.
      * Useful for per-tenant SQL queries or schema introspection.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tenant operations
      * @param operation BiFunction accepting QueryExecutor and organizationId, returning result
@@ -375,7 +368,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * Executes {@link QueryExecutor} operation for all active tenants synchronously.
      * <p>
      * Blocks until all tenant operations complete. Each operation receives QueryExecutor for SQL execution.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tenant operations
      * @param operation BiFunction accepting QueryExecutor and organizationId, returning result
@@ -392,7 +385,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Provides EntityManager via {@link QueryExecutor#runEntityManagerOperationForOrg(Long, boolean, BiFunction)}
      * with transactional=false. Operations execute in auto-commit mode.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tenant operations
      * @param operation BiFunction accepting EntityManager and organizationId, returning result
@@ -407,7 +400,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * Executes {@link EntityManager} operation for all active tenants synchronously without transaction.
      * <p>
      * Blocks until all tenant operations complete. Operations execute in auto-commit mode.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tenant operations
      * @param operation BiFunction accepting EntityManager and organizationId, returning result
@@ -424,7 +417,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Each tenant operation is wrapped in a separate transaction via {@link QueryExecutor#runEntityManagerOperationForOrg(Long, boolean, BiFunction)}
      * with transactional=true.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tenant operations
      * @param operation BiFunction accepting EntityManager and organizationId, returning result
@@ -439,7 +432,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * Executes {@link EntityManager} operation for all active tenants synchronously in transactions.
      * <p>
      * Blocks until all tenant transactions complete. Each tenant operation runs in its own transaction.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tenant operations
      * @param operation BiFunction accepting EntityManager and organizationId, returning result
@@ -455,7 +448,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * Executes function for specific tenants synchronously, blocking until completion.
      * <p>
      * Convenience method for batch operations on a subset of tenants rather than all active organizations.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all specified tenant operations
      * @param orgIds Collection of organization IDs to process
@@ -473,7 +466,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Convenience wrapper around {@link #runForTenants(long, boolean, boolean, Stream, Function, BiFunction, BiFunction)}
      * for single organization operations.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time
      * @param orgId Organization ID to process
@@ -490,7 +483,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * Executes {@link QueryExecutor} operation for single tenant synchronously.
      * <p>
      * Convenience method for single-tenant schema operations or SQL execution with QueryExecutor access.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time
      * @param orgId Organization ID to process
@@ -516,16 +509,16 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      *       {@code CREATE TABLE schema.table (LIKE public.table INCLUDING ALL EXCLUDING CONSTRAINTS EXCLUDING INDEXES)}</li>
      *   <li>Executes tenant initialization scripts from {@code tenantInitializationScripts} in order</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Database: PostgreSQL-specific DDL (CREATE SCHEMA, LIKE INCLUDING ALL syntax).
-     * </p>
+     * 
      * <p>
      * Thread-safety: Sets thread-local TenantResolver context before schema operations.
-     * </p>
+     * 
      * <p>
-     * Error handling: Transaction rollback via {@link QueryExecutor#runQueriesInTransaction(String)} on failure.
-     * </p>
+     * Error handling: Transaction rollback via {@link QueryExecutor#runQueriesInTransaction(String...)} on failure.
+     * 
      *
      * @param organizationId Newly created organization ID requiring tenant setup
      * @return true if tenant created successfully, false if multitenancy disabled (no-op)
@@ -565,14 +558,14 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * First step in organization deletion workflow. Schema is preserved but isolated from active tenants.
      * Calls database procedure {@code rename_schema(old_name, new_name)} to perform rename.
-     * </p>
+     * 
      * <p>
      * Thread-safety: Sets {@link TenantResolver} context with datasource hint before operation.
-     * </p>
+     * 
      * <p>
      * Use case: Organization deletion workflow - schema preserved for audit/recovery before final removal.
      * Follow with {@link #dropSchemaConstraints(long, String, int)} to prepare for schema drop.
-     * </p>
+     * 
      *
      * @param organizationId Organization ID being marked for deletion
      * @param assignedDatasource Datasource index where schema exists (for multi-datasource setups)
@@ -601,13 +594,13 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * Second step in organization deletion after {@link #markSchemaAsDeleted(long, int)}.
      * Calls database procedure {@code remove_all_constraints_in_schema(schema_name)} to drop foreign key
      * and check constraints, enabling subsequent schema drop without dependency violations.
-     * </p>
+     * 
      * <p>
      * Thread-safety: Sets {@link TenantResolver} context with datasource hint before operation.
-     * </p>
+     * 
      * <p>
      * Purpose: Removes foreign key constraints that would prevent schema drop, allowing clean removal.
-     * </p>
+     * 
      *
      * @param organizationId Organization ID (for logging and context)
      * @param schemaName Schema name to drop constraints from (typically {@code deleted_[id]} after soft delete)
@@ -632,7 +625,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Creates a fixed thread pool with {@code min(tasks.size(), MAX_THREADS)} threads and executes all tasks
      * with specified timeout. Thread pool is shut down after task submission.
-     * </p>
+     * 
      * <p>
      * Lifecycle:
      * <ol>
@@ -641,10 +634,10 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      *   <li>Immediately call {@code shutdown()} to prevent new task submissions</li>
      *   <li>If wait=true, call {@code awaitTermination} to block until completion or timeout</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Error handling: Empty task list logged as warning and returns empty list.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tasks
      * @param wait If true, blocks until all tasks complete; if false, returns Futures immediately
@@ -673,7 +666,7 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      * <p>
      * Queries {@link OrganizationRepository#findActiveOrganizationIdsAsList()} to enumerate all active
      * organizations, then delegates to runForTenants for parallel execution.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tenant operations
      * @param transactional If true, EntityManager operations wrapped in transactions via QueryExecutor
@@ -700,13 +693,13 @@ public class MultitenancyService implements LoggingComponentWithRequestId, Reada
      *   <li>Invokes {@code queryExecutor.runEntityManagerOperationForOrg(orgId, transactional, emf)} if emf provided</li>
      * </ol>
      * All tasks execute in parallel via {@link #executeTasks(long, boolean, List)}.
-     * </p>
+     * 
      * <p>
      * Error handling: Catches all exceptions, logs error, wraps in RuntimeException.
-     * </p>
+     * 
      * <p>
      * Thread-safety: Each task sets its own thread-local {@link TenantResolver} context for isolation.
-     * </p>
+     * 
      *
      * @param timeoutInMilliseconds Maximum execution time for all tenant operations
      * @param transactional If true, EntityManager operations execute in transactions

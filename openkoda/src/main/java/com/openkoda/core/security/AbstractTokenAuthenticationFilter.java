@@ -45,7 +45,6 @@ import reactor.util.function.Tuple2;
  * request, lookup Token entity in database, validate token, create RequestTokenAuthenticationToken, and 
  * delegate to AuthenticationManager. Concrete subclasses implement {@code extractTokenFromRequest()} for 
  * transport-specific token extraction.
- * </p>
  * <p>
  * Three concrete implementations exist:
  * <ul>
@@ -53,7 +52,6 @@ import reactor.util.function.Tuple2;
  * <li>{@code ApiTokenHeaderAuthenticationFilter} - extracts token from {@code X-API-Token} HTTP header</li>
  * <li>{@code TokenPathPrefixAuthenticationFilter} - extracts token from {@code /__t_/{token}/...} URL path prefix</li>
  * </ul>
- * </p>
  * <p>
  * Authentication flow:
  * <ol>
@@ -64,16 +62,13 @@ import reactor.util.function.Tuple2;
  * <li>{@code authenticationManager.authenticate(requestToken)} - delegates to LoginByPasswordOrTokenAuthenticationProvider</li>
  * <li>{@link #afterAuthentication(HttpServletRequest, HttpServletResponse, Token)} - extension hook for subclass post-authentication logic</li>
  * </ol>
- * </p>
  * <p>
  * This class extends Spring Security {@link AbstractAuthenticationProcessingFilter}, integrating with the 
  * filter chain and SecurityContext management.
- * </p>
  * <p>
  * Example usage: API client sends {@code X-API-Token: abc123}, ApiTokenHeaderAuthenticationFilter extracts 
  * "abc123", base class validates Token entity, creates RequestTokenAuthenticationToken, 
  * LoginByPasswordOrTokenAuthenticationProvider applies privilege narrowing.
- * </p>
  *
  * @see RequestTokenAuthenticationToken
  * @see com.openkoda.repository.user.TokenRepository#findByBase64UserIdTokenIsValidTrue(String)
@@ -97,11 +92,11 @@ public abstract class AbstractTokenAuthenticationFilter extends AbstractAuthenti
      * <p>
      * Delegates to {@link AbstractAuthenticationProcessingFilter} superclass constructor, setting 
      * the matcher that defines URL patterns requiring token authentication.
-     * </p>
+     * 
      * <p>
      * Concrete subclasses provide RequestMatcher via Spring configuration, typically using 
      * {@code @Configuration} class with FilterRegistrationBean.
-     * </p>
+     * 
      *
      * @param requiresAuthenticationRequestMatcher Spring Security RequestMatcher defining URL patterns 
      *        requiring token authentication (e.g., {@code AntPathRequestMatcher("/api/**")})
@@ -120,7 +115,7 @@ public abstract class AbstractTokenAuthenticationFilter extends AbstractAuthenti
      * <li>{@code RequestParameterTokenAuthenticationFilter}: return request.getParameter("token")</li>
      * <li>{@code TokenPathPrefixAuthenticationFilter}: extract from request.getRequestURI() path segment</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param request HttpServletRequest containing token in header, parameter, or path
      * @return String token value extracted from request, null if token not present
@@ -133,7 +128,7 @@ public abstract class AbstractTokenAuthenticationFilter extends AbstractAuthenti
      * <p>
      * Default implementation is no-op (empty method body). Subclasses can override to perform 
      * additional validation or prepare request context.
-     * </p>
+     * 
      *
      * @param request HttpServletRequest for accessing request details
      * @param response HttpServletResponse for writing errors if needed
@@ -147,7 +142,7 @@ public abstract class AbstractTokenAuthenticationFilter extends AbstractAuthenti
      * <p>
      * RequestParameterTokenAuthenticationFilter overrides this to call token.invalidateIfSingleUse() 
      * and tokenRepository.saveAndFlush(), invalidating one-time tokens.
-     * </p>
+     * 
      *
      * @param request HttpServletRequest for accessing request details
      * @param response HttpServletResponse for writing response if needed
@@ -161,11 +156,11 @@ public abstract class AbstractTokenAuthenticationFilter extends AbstractAuthenti
      * Extracts userId from token.getUser().getId(), email from token.getUser().getEmail(), 
      * privileges from token.getPrivilegesSet() (Set&lt;PrivilegeBase&gt;), and singleRequest flag 
      * from token.isSingleRequest().
-     * </p>
+     * 
      * <p>
      * LoginByPasswordOrTokenAuthenticationProvider will apply privilege narrowing via 
      * OrganizationUser.retainPrivileges() using token.privileges.
-     * </p>
+     * 
      *
      * @param token Token entity loaded from database with user, privileges, singleRequest flag
      * @return RequestTokenAuthenticationToken - Unauthenticated authentication request with userId, 
@@ -197,14 +192,14 @@ public abstract class AbstractTokenAuthenticationFilter extends AbstractAuthenti
      * <li>Calls afterAuthentication(request, response, token) extension hook</li>
      * <li>Returns authenticated Authentication with OrganizationUser principal</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Token validation: findByBase64UserIdTokenIsValidTrue() checks Token.valid=true, 
      * Token.expirationDate &gt; now, User.enabled=true.
-     * </p>
+     * 
      * <p>
      * Logging: debug logs request.servletPath, warn logs failed authentication attempts with error messages.
-     * </p>
+     * 
      *
      * @param request HttpServletRequest to extract token from
      * @param response HttpServletResponse for error handling
@@ -239,11 +234,9 @@ public abstract class AbstractTokenAuthenticationFilter extends AbstractAuthenti
      * <p>
      * Delegates to superclass setAuthenticationManager() connecting filter to authentication 
      * provider chain.
-     * </p>
      * <p>
-     * @Lazy breaks circular dependency: filter needs AuthenticationManager, security config needs 
+     * {@code @Lazy} breaks circular dependency: filter needs AuthenticationManager, security config needs 
      * filter for chain construction.
-     * </p>
      *
      * @param authenticationManager AuthenticationManager containing LoginByPasswordOrTokenAuthenticationProvider 
      *        for processing RequestTokenAuthenticationToken

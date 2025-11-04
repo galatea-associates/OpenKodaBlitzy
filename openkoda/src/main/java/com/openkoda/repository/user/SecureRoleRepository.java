@@ -31,12 +31,12 @@ import static com.openkoda.controller.common.URLConstants.ROLE;
 /**
  * Secure marker repository interface for privilege-enforced Role operations with searchable metadata.
  * <p>
- * This interface extends {@link SecureRepository} to provide privilege-checked repository operations for
+ * This interface extends {@link com.openkoda.repository.SecureRepository} to provide privilege-checked repository operations for
  * Role entities (supporting single-table inheritance: GlobalRole, OrganizationRole, GlobalOrganizationRole).
  * All inherited methods (findOne, findAll, save, delete) enforce privilege checks based on entity
  * requiredReadPrivilege and requiredWritePrivilege formulas. Operations throw
  * {@link org.springframework.security.access.AccessDeniedException} if user lacks required privileges.
- * </p>
+
  * <p>
  * Searchable metadata configuration via {@link SearchableRepositoryMetadata} annotation:
  * <ul>
@@ -46,12 +46,12 @@ import static com.openkoda.controller.common.URLConstants.ROLE;
  *   <li><b>entityClass:</b> Role.class - Entity type for repository operations</li>
  * </ul>
  * Used by search/autocomplete features to index and retrieve roles by name and type.
- * </p>
+
  * <p>
  * Note: This is a marker interface with no custom methods - all operations inherited from SecureRepository.
  * Instantiated by Spring Data as runtime proxy with security advice. Works across all Role subtypes in
  * single-table inheritance hierarchy.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1

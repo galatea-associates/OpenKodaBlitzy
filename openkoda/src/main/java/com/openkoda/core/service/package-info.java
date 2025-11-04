@@ -26,12 +26,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * auditing, file persistence, template rendering, validation, messaging, session management,
  * backup orchestration, logging configuration, frontend resource lifecycle, and ZIP assembly.
  * Services are organized into specialized subpackages by functional domain.
- * </p>
+ * 
  *
- * <h2>Architecture</h2>
+ * <b>Architecture</b>
  * <p>
  * Services in this package follow consistent architectural patterns:
- * </p>
+ * 
  * <ul>
  *   <li>Extend {@code ComponentProvider} for convenient access to repositories and services aggregators</li>
  *   <li>Implement {@code LoggingComponentWithRequestId} for request-scoped diagnostic logging with correlation IDs</li>
@@ -40,34 +40,34 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Generally do not declare {@code @Transactional} - transaction boundaries managed by controllers or explicit {@code TransactionalExecutorImpl}</li>
  * </ul>
  *
- * <h2>Key Service Categories</h2>
+ * <b>Key Service Categories</b>
  *
- * <h3>Storage Services</h3>
+ * <b>Storage Services</b>
  * <ul>
  *   <li>{@code FileService}: Multi-backend file persistence supporting filesystem, database, and S3 storage with resilient I/O operations</li>
  *   <li>{@code BackupService}: Database and application backup orchestration using pg_dump, tar, gpg encryption, and scp transfer</li>
  * </ul>
  *
- * <h3>Template Services</h3>
+ * <b>Template Services</b>
  * <ul>
  *   <li>{@code ThymeleafService}: Server-side template rendering with locale support for email and webhook content generation</li>
  *   <li>{@code FrontendResourceService}: Frontend resource lifecycle management with Jsoup-based HTML validation</li>
  * </ul>
  *
- * <h3>Messaging Services</h3>
+ * <b>Messaging Services</b>
  * <ul>
  *   <li>{@code GenericWebhookService}: Asynchronous webhook delivery with template-based payload generation</li>
  *   <li>{@code SlackService}: Slack integration supporting both async queued and synchronous message delivery</li>
  *   <li>{@code WebsocketService}: WebSocket messaging using STOMP protocol for real-time updates</li>
  * </ul>
  *
- * <h3>Validation Services</h3>
+ * <b>Validation Services</b>
  * <ul>
  *   <li>{@code ValidationService}: Form validation with Spring {@code BindingResult} integration and entity population</li>
  *   <li>CAPTCHA enforcement for bot prevention</li>
  * </ul>
  *
- * <h3>Infrastructure Services</h3>
+ * <b>Infrastructure Services</b>
  * <ul>
  *   <li>{@code AuditService}: Audit trail creation with static helper methods for system-level operations</li>
  *   <li>{@code SessionService}: HTTP session management using Spring {@code RequestContextHolder} for request-scoped data</li>
@@ -75,13 +75,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>{@code ZipService}: In-memory ZIP archive assembly for batch file downloads</li>
  * </ul>
  *
- * <h3>Helper Services</h3>
+ * <b>Helper Services</b>
  * <ul>
  *   <li>{@code RestClientService}: RestTemplate wrapper for synchronous HTTP client operations</li>
  *   <li>{@code SitemapEntry/Index}: DTOs for XML sitemap generation</li>
  * </ul>
  *
- * <h2>Subpackages</h2>
+ * <b>Subpackages</b>
  * <dl>
  *   <dt>backup/</dt>
  *   <dd>Backup infrastructure including {@code BackupWriter} and {@code BackupOption} for platform command execution</dd>
@@ -108,7 +108,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <dd>{@code DatabaseValidationService} and {@code SystemHealthStatusService} for platform health monitoring</dd>
  * </dl>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <ul>
  *   <li><strong>Static Instance Pattern</strong>: {@code AuditService.getInstance()} and {@code SessionService.getInstance()} 
  *       with {@code @PostConstruct} initialization for global access</li>
@@ -121,7 +121,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       with 10-second CompletableFuture timeout for storage operations</li>
  * </ul>
  *
- * <h2>Integration Technologies</h2>
+ * <b>Integration Technologies</b>
  * <dl>
  *   <dt>Thymeleaf</dt>
  *   <dd>{@code TemplateEngine} for email, webhook, and frontend templates with {@code ThymeleafEvaluationContext} 
@@ -146,17 +146,17 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <dd>MD5 resource hashing in {@code FrontendResourceService} for cache invalidation</dd>
  * </dl>
  *
- * <h2>Transaction Boundaries</h2>
+ * <b>Transaction Boundaries</b>
  * <p>
  * Most services in this package do not declare {@code @Transactional} annotations. Transaction management
  * is delegated to controller layers or explicitly handled via {@code TransactionalExecutorImpl} for
  * programmatic control with rollback support.
- * </p>
+ * 
  *
- * <h2>Security Considerations</h2>
+ * <b>Security Considerations</b>
  * <p>
  * Several services use {@code repositories.unsecure} to bypass privilege checks for system-level operations:
- * </p>
+ * 
  * <ul>
  *   <li>{@code AuditService}: System audit trail creation</li>
  *   <li>{@code GenericWebhookService}: Background webhook task persistence</li>
@@ -165,16 +165,16 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ul>
  * <p>
  * This pattern is intentional for infrastructure operations that must succeed regardless of user privileges.
- * </p>
+ * 
  *
- * <h2>Common Utilities</h2>
+ * <b>Common Utilities</b>
  * <ul>
  *   <li>{@code LoggingComponentWithRequestId}: Provides debug/info/warn/error logging with request correlation IDs</li>
  *   <li>{@code ComponentProvider}: Exposes repositories and services aggregators for convenient access</li>
  *   <li>{@code ReadableCode}: Provides {@code not()} method for readable boolean negation</li>
  * </ul>
  *
- * <h2>Usage Examples</h2>
+ * <b>Usage Examples</b>
  * <pre>{@code
  * // Audit logging
  * AuditService.createErrorAuditForException(exception, message);
@@ -186,24 +186,24 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * thymeleafService.prepareContent(templateName, model);
  * }</pre>
  *
- * <h2>Thread Safety</h2>
+ * <b>Thread Safety</b>
  * <p>
  * Most services are Spring singletons that are either stateless or use request-scoped data:
- * </p>
+ * 
  * <ul>
  *   <li>{@code SessionService}: Thread-safe via {@code RequestContextHolder}</li>
  *   <li>{@code AuditService}: Thread-safe via {@code RequestIdHolder}</li>
  *   <li>{@code FileService}: {@code RestTemplate} is not thread-safe for concurrent S3 requests</li>
  * </ul>
  *
- * <h2>Performance Considerations</h2>
+ * <b>Performance Considerations</b>
  * <ul>
  *   <li>{@code FileService} uses 10-second timeout for I/O operations which may be insufficient for large files over slow storage</li>
  *   <li>{@code ThymeleafService.prepareContentForHtml()} creates new {@code TemplateEngine} per call - not optimized for high volume</li>
  *   <li>{@code ZipService} loads entire archive into {@code ByteArrayOutputStream} - memory-intensive for large archives</li>
  * </ul>
  *
- * <h2>Best Practices</h2>
+ * <b>Best Practices</b>
  * <ul>
  *   <li>Use async webhook methods ({@code GenericWebhookService}, {@code SlackService.sendJSONMessageToSlack()}) 
  *       over synchronous ({@code SlackService.postMessageToSlackWebhook()}) to avoid blocking request threads</li>

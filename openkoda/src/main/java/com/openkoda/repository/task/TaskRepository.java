@@ -44,11 +44,11 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
  * Provides queries by task type, status, priority, and scheduled execution. Used by JobsScheduler
  * for asynchronous task execution. Concrete implementations include EmailRepository and
  * HttpRequestTaskRepository.
- * </p>
+ * 
  * <p>
  * The {@code @NoRepositoryBean} annotation prevents Spring Data from creating a repository bean
  * for this abstract interface, allowing only concrete subtype repositories to be instantiated.
- * </p>
+ * 
  *
  * @param <T> Task subtype (Email, HttpRequestTask, or other Task derivatives)
  * @author OpenKoda Team
@@ -67,7 +67,7 @@ public interface TaskRepository<T extends Task> extends FunctionalRepositoryWith
      * Pageable preset for selecting the single oldest task sorted by startAfter timestamp ascending.
      * <p>
      * Used for sequential task processing.
-     * </p>
+     * 
      */
     Pageable OLDEST_1 = PageRequest.of(0, 1, Sort.Direction.ASC, "startAfter");
 
@@ -75,7 +75,7 @@ public interface TaskRepository<T extends Task> extends FunctionalRepositoryWith
      * Pageable preset for selecting 10 oldest tasks sorted by startAfter timestamp ascending.
      * <p>
      * Commonly used batch size for background job processing.
-     * </p>
+     * 
      */
     Pageable OLDEST_10 = PageRequest.of(0, 10, Sort.Direction.ASC, "startAfter");
 
@@ -83,7 +83,7 @@ public interface TaskRepository<T extends Task> extends FunctionalRepositoryWith
      * Pageable preset for selecting 100 oldest tasks sorted by startAfter timestamp ascending.
      * <p>
      * Used for bulk task processing operations.
-     * </p>
+     * 
      */
     Pageable OLDEST_100 = PageRequest.of(0, 100, Sort.Direction.ASC, "startAfter");
 
@@ -93,11 +93,11 @@ public interface TaskRepository<T extends Task> extends FunctionalRepositoryWith
      * This JPQL bulk update bypasses entity lifecycle callbacks and may desynchronize managed
      * entity state across persistence contexts. The {@code updatedOn} field is automatically
      * set to {@code CURRENT_TIMESTAMP} for audit trail purposes.
-     * </p>
+     * 
      * <p>
      * The {@code @Modifying} annotation indicates this query modifies database state and requires
      * transaction context. Ensure this method is called within an active transaction.
-     * </p>
+     * 
      *
      * @param tasks List of Task entities to update with new state
      * @param taskState Target state to apply (typically {@code Task.TaskState.DOING})
@@ -115,7 +115,7 @@ public interface TaskRepository<T extends Task> extends FunctionalRepositoryWith
      * This method executes in a new transaction ({@code REQUIRES_NEW}) to ensure atomic claim across
      * clustered nodes. The supplied query MUST acquire a {@code PESSIMISTIC_WRITE} lock to prevent
      * two or more nodes from processing the same tasks simultaneously.
-     * </p>
+     * 
      * <p>
      * Usage example:
      * <pre>{@code
@@ -123,11 +123,11 @@ public interface TaskRepository<T extends Task> extends FunctionalRepositoryWith
      *     () -> emailRepository.findByCanBeStartedTrue(OLDEST_10)
      * );
      * }</pre>
-     * </p>
+     * 
      * <p>
      * This pattern provides concurrency control for distributed background task processing,
      * ensuring each task is executed exactly once across multiple application instances.
-     * </p>
+     * 
      *
      * @param query Supplier providing a Page of tasks with {@code PESSIMISTIC_WRITE} lock
      *              (e.g., {@code () -> findByCanBeStartedTrue(OLDEST_10)})

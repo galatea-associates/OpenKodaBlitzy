@@ -27,7 +27,7 @@ package com.openkoda.integration.model.dto;
  * Mutable JavaBean used in controllers and services for Basecamp API endpoint configuration.
  * This DTO carries Basecamp API URLs between web layer, service layer, and persistence.
  * Instances are not thread-safe; callers must enforce concurrency control.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -39,7 +39,7 @@ public class IntegrationBasecampDto {
      * Basecamp API URL for to-do list operations.
      * <p>
      * Format example: {@code https://3.basecampapi.com/{account}/buckets/{project}/todolists/{list}/todos.json}
-     * </p>
+     * 
      */
     public String toDoListUrl;
 

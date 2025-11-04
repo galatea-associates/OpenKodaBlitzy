@@ -37,11 +37,11 @@ import java.util.Set;
  * read/unread status tracking via subqueries. Uses {@link Subquery} to filter out notifications that
  * appear in the ReadNotification join table. These specifications are composable via {@code and()}/{@code or()}
  * operators for building complex notification retrieval queries.
- * </p>
+ * 
  * <p>
  * Note: The filename contains a typo ('Sepcifications' instead of 'Specifications'). Uses string-based
  * attribute names which are fragile to entity refactoring.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -63,10 +63,10 @@ public class NotificationSepcifications {
      * notifications targeted to the specific user (userId matches, organizationId null),
      * notifications scoped to user's organizations (userId null, organizationId in set), and
      * global notifications (both userId and organizationId null).
-     * </p>
+     * 
      * <p>
      * Usage example: {@code allUnreadForUser(userId, orgIds).and(additionalFilters)}
-     * </p>
+     * 
      *
      * @param id the user ID to retrieve unread notifications for. Must not be null
      * @param organizationIds set of organization IDs the user belongs to. If empty, only user-specific
@@ -102,7 +102,7 @@ public class NotificationSepcifications {
      * (4) Optionally includes organization-scoped notifications (userId null, organizationId in
      * provided set) when organizationIds is non-empty. All predicates are combined with OR logic
      * for inclusion, wrapped with the hiddenFromAuthor exclusion using AND.
-     * </p>
+     * 
      *
      * @param root the Criteria API Root for Notification entity
      * @param cb the CriteriaBuilder for constructing predicates

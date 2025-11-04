@@ -34,11 +34,11 @@ import java.time.LocalDateTime;
  * to provide standardized notification messaging and multi-tenant organization association.
  * It represents a mutable POJO design optimized for mapping and serialization between
  * payment service layers and external billing systems.
- * </p>
+
  * <p>
  * The class uses {@link BigDecimal} for monetary values (value and tax fields) to ensure
  * precision in financial calculations without floating-point rounding errors.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -47,7 +47,7 @@ import java.time.LocalDateTime;
  * invoice.setBuyerCompanyName("Acme Corp");
  * invoice.setValue(new BigDecimal("1500.00"));
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -167,7 +167,7 @@ public class InvoiceDto implements CanonicalObject, OrganizationRelatedObject {
      * Returns the invoice issue date.
      * <p>
      * In this implementation, the issue date is the same as the creation timestamp.
-     * </p>
+
      *
      * @return the invoice issue date as {@link LocalDateTime}, returns {@code createdOn} value
      */
@@ -179,7 +179,7 @@ public class InvoiceDto implements CanonicalObject, OrganizationRelatedObject {
      * Returns the invoice sell date.
      * <p>
      * In this implementation, the sell date is the same as the creation timestamp.
-     * </p>
+
      *
      * @return the invoice sell date as {@link LocalDateTime}, returns {@code createdOn} value
      */
@@ -200,7 +200,7 @@ public class InvoiceDto implements CanonicalObject, OrganizationRelatedObject {
      * Sets the invoice issue date.
      * <p>
      * This method updates the {@code createdOn} field which serves as both issue date and sell date.
-     * </p>
+
      *
      * @param createdOn the issue date to set
      */
@@ -212,7 +212,7 @@ public class InvoiceDto implements CanonicalObject, OrganizationRelatedObject {
      * Sets the invoice sell date.
      * <p>
      * This method updates the {@code createdOn} field which serves as both issue date and sell date.
-     * </p>
+
      *
      * @param createdOn the sell date to set
      */
@@ -494,7 +494,7 @@ public class InvoiceDto implements CanonicalObject, OrganizationRelatedObject {
      * Returns the multi-tenant organization identifier.
      * <p>
      * Implements {@link OrganizationRelatedObject#getOrganizationId()} contract.
-     * </p>
+
      *
      * @return the organization identifier
      */
@@ -526,7 +526,7 @@ public class InvoiceDto implements CanonicalObject, OrganizationRelatedObject {
      * <p>
      * Implements {@link CanonicalObject#notificationMessage()} contract.
      * The message includes buyer company name, issue date, invoice value, and identifier.
-     * </p>
+
      *
      * @return formatted summary string containing buyer company name, issue date, value, and invoice identifier
      */

@@ -42,24 +42,24 @@ import org.springframework.stereotype.Component;
  * All repositories apply USER security scope by default, validating that the current user possesses required read or write
  * privileges before executing queries or modifications. Operations throw {@code AccessDeniedException} if the user lacks
  * the necessary privileges as defined by entity {@code @Formula} annotations (requiredReadPrivilege, requiredWritePrivilege).
- * </p>
+
  * <p>
  * The class is annotated with {@code @Component("SecureRepositories")} for Spring bean registration and uses field injection
  * to aggregate repository instances. Each repository field wraps a corresponding domain repository with the SecureRepository
  * interface, providing privilege-checked alternatives to standard Spring Data JPA repository operations.
- * </p>
+
  * <p>
  * Typical usage pattern:
  * <pre>{@code
  * repositories.secure.user.findOne(userId); // finds user only if current user has read privilege
  * repositories.secure.organization.save(org); // saves only if current user has write privilege
  * }</pre>
- * </p>
+
  * <p>
  * Access this aggregator via the {@code Repositories.secure} field for privilege-checked entity access throughout the application.
  * Privilege requirements are computed from entity annotations and enforced at the repository layer, providing a centralized
  * access control mechanism that integrates with OpenKoda's Role-Based Access Control (RBAC) system.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -76,7 +76,7 @@ public class SecureRepositories {
      * Secure FrontendResource repository with privilege checks for UI component access.
      * <p>
      * Enforces privilege requirements for accessing frontend resource definitions used in visual development tools.
-     * </p>
+
      */
     @Inject public SecureFrontendResourceRepository frontendResource;
 
@@ -85,7 +85,7 @@ public class SecureRepositories {
      * <p>
      * Validates privileges before allowing role entity queries or modifications, ensuring proper access control
      * over role definitions and privilege assignments.
-     * </p>
+
      */
     @Inject public SecureRoleRepository role;
 
@@ -94,7 +94,7 @@ public class SecureRepositories {
      * <p>
      * Enforces privilege checks on dynamic privilege entities, controlling who can view or modify
      * runtime-generated privilege definitions.
-     * </p>
+
      */
     @Inject public SecureDynamicPrivilegeRepository privilege;
 
@@ -103,7 +103,7 @@ public class SecureRepositories {
      * <p>
      * Applies access control to event listener entity operations, restricting access to event configuration
      * based on user privileges.
-     * </p>
+
      */
     @Inject public SecureEventListenerRepository eventListener;
 
@@ -112,7 +112,7 @@ public class SecureRepositories {
      * <p>
      * Validates privileges before allowing access to scheduler entity data, controlling who can view or
      * modify scheduled job configurations.
-     * </p>
+
      */
     @Inject public SecureSchedulerRepository scheduler;
 
@@ -121,7 +121,7 @@ public class SecureRepositories {
      * <p>
      * Enforces access control on UserRole association entities, ensuring only authorized users can
      * query or modify user-role assignments.
-     * </p>
+
      */
     @Inject public SecureUserRoleRepository userRole;
 
@@ -130,7 +130,7 @@ public class SecureRepositories {
      * <p>
      * Applies privilege validation to all user entity access, restricting queries and modifications
      * based on the current user's privileges and organizational scope.
-     * </p>
+
      */
     @Inject public SecureUserRepository user;
 
@@ -139,7 +139,7 @@ public class SecureRepositories {
      * <p>
      * Validates privileges before allowing access to organization (tenant) entities, ensuring proper
      * multi-tenancy isolation and access control.
-     * </p>
+
      */
     @Inject public SecureOrganizationRepository organization;
 
@@ -148,7 +148,7 @@ public class SecureRepositories {
      * <p>
      * Enforces access control on notification entities, restricting who can view or modify
      * notification records based on privilege requirements.
-     * </p>
+
      */
     @Inject public SecureNotificationRepository notification;
 
@@ -157,7 +157,7 @@ public class SecureRepositories {
      * <p>
      * Applies privilege validation to audit log queries, ensuring only authorized users can
      * access audit trail data for security and compliance monitoring.
-     * </p>
+
      */
     @Inject public SecureAuditRepository audit;
 
@@ -166,7 +166,7 @@ public class SecureRepositories {
      * <p>
      * Validates privileges before allowing access to file entity records, controlling who can
      * view or modify file metadata and storage references.
-     * </p>
+
      */
     @Inject public SecureFileRepository file;
 
@@ -175,7 +175,7 @@ public class SecureRepositories {
      * <p>
      * Enforces access control on ServerJs entities containing GraalVM JavaScript code definitions,
      * restricting access to server-side script management based on user privileges.
-     * </p>
+
      */
     @Inject public SecureServerJsRepository serverJs;
 
@@ -184,7 +184,7 @@ public class SecureRepositories {
      * <p>
      * Applies privilege checks to form entity operations, controlling who can view or modify
      * dynamic form definitions used in the visual development environment.
-     * </p>
+
      */
     @Inject public SecureFormRepository form;
 
@@ -193,7 +193,7 @@ public class SecureRepositories {
      * <p>
      * Validates privileges before allowing access to QueryReport entities, restricting who can
      * view or execute AI-generated report definitions.
-     * </p>
+
      */
     @Inject public SecureQueryReportRepository queryReport;
 

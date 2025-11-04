@@ -35,14 +35,13 @@ import org.springframework.stereotype.Component;
  * Provides single {@code @Autowired} field instead of multiple controller injections. Contains
  * {@link HtmlCRUDControllerConfigurationMap} and {@link ApiCRUDControllerConfigurationMap} for generic
  * controller lookup. Used by controllers needing inter-controller communication or configuration access.
- * </p>
+ * 
  * <p>
  * Example usage:
  * <pre>
  * {@code @Autowired Controllers controllers;
  * CRUDControllerConfiguration config = controllers.htmlCrudControllerConfigurationMap.get("users");}
  * </pre>
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -59,7 +58,7 @@ public class Controllers {
      * <p>
      * Handles organization CRUD operations, tenant provisioning, and organization-scoped operations
      * via Spring MVC endpoints.
-     * </p>
+     * 
      *
      * @see OrganizationControllerHtml
      */
@@ -71,7 +70,7 @@ public class Controllers {
      * <p>
      * Handles user CRUD operations, authentication, role assignments, and user profile management
      * via Spring MVC endpoints.
-     * </p>
+     * 
      *
      * @see UserControllerHtml
      */
@@ -83,7 +82,7 @@ public class Controllers {
      * <p>
      * Provides access to audit records captured by the auditing subsystem, including entity changes,
      * user actions, and system events.
-     * </p>
+     * 
      *
      * @see AuditController
      */
@@ -95,7 +94,7 @@ public class Controllers {
      * <p>
      * Handles frontend resource operations including custom UI components, templates, and
      * frontend mapping definitions.
-     * </p>
+     * 
      *
      * @see FrontendResourceControllerHtml
      */
@@ -107,7 +106,7 @@ public class Controllers {
      * <p>
      * Maps entity names to their CRUD controller configuration, enabling dynamic lookup of HTML
      * controller configurations for generic entity operations.
-     * </p>
+     * 
      *
      * @see HtmlCRUDControllerConfigurationMap
      * @see CRUDControllerHtml
@@ -120,10 +119,10 @@ public class Controllers {
      * <p>
      * Maps entity names to their CRUD controller configuration, enabling dynamic lookup of REST API
      * controller configurations for generic entity operations.
-     * </p>
+     * 
      *
      * @see ApiCRUDControllerConfigurationMap
-     * @see CRUDApiController
+     * @see com.openkoda.controller.api.CRUDApiController
      */
     @Inject
     public ApiCRUDControllerConfigurationMap apiCrudControllerConfigurationMap;

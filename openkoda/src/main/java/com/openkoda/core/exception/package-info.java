@@ -27,9 +27,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * {@link com.openkoda.core.flow.HttpStatusException} from the core.flow package, enabling
  * programmatic status inspection. The architecture integrates with Spring MVC to provide
  * consistent error responses and request-correlated logging.
- * </p>
+ * 
  *
- * <h2>Key Components</h2>
+ * <b>Key Components</b>
  * <ul>
  *   <li><b>NotFoundException</b>: HTTP 404 exception for missing resources, invalid entity IDs,
  *       or non-existent records. Use when repository lookups fail or requested items don't exist.</li>
@@ -45,10 +45,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       and redirects to the /error endpoint with status and requestId parameters.</li>
  * </ul>
  *
- * <h2>Architecture</h2>
+ * <b>Architecture</b>
  * <p>
  * The exception hierarchy follows this structure:
- * </p>
+ * 
  * <pre>
  * HttpStatusException (from core.flow)
  *   ├── NotFoundException (@ResponseStatus HTTP 404)
@@ -61,17 +61,17 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * mapping. This allows Spring MVC to automatically convert exceptions into appropriate HTTP
  * responses without additional configuration. The ErrorLoggingExceptionResolver serves as
  * a catch-all for uncaught exceptions, ensuring consistent error handling across the application.
- * </p>
+ * 
  * <p>
  * The resolver integrates with RequestIdHolder from the core.tracker package to correlate
  * exceptions with specific requests. All error redirects include both HTTP status and request ID,
  * enabling efficient troubleshooting and log correlation.
- * </p>
+ * 
  *
- * <h2>Usage Patterns</h2>
+ * <b>Usage Patterns</b>
  * <p>
  * <b>When to throw each exception type:</b>
- * </p>
+ * 
  * <ul>
  *   <li><b>NotFoundException</b>: Repository methods that fail to find entities by ID, service
  *       layer lookups for non-existent resources, or API endpoints accessing missing data.</li>
@@ -84,7 +84,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ul>
  * <p>
  * <b>Exception resolution flow:</b>
- * </p>
+ * 
  * <ol>
  *   <li>Controller or Flow pipeline throws typed exception</li>
  *   <li>Spring MVC invokes ErrorLoggingExceptionResolver</li>
@@ -96,40 +96,40 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </ol>
  * <p>
  * <b>Logging strategy:</b>
- * </p>
+ * 
  * <p>
  * ErrorLoggingExceptionResolver applies conditional logging to reduce noise. It suppresses
  * logging for configured user agent substrings (e.g., health check bots) and Tomcat
  * ClientAbortException cases (client disconnects). All suppressed exceptions emit DEBUG-level
  * diagnostics for troubleshooting. This balances operational visibility with log cleanliness.
- * </p>
+ * 
  *
- * <h2>Integration Notes</h2>
+ * <b>Integration Notes</b>
  * <p>
  * ErrorLoggingExceptionResolver must be registered in the Spring MVC exception resolver chain,
  * typically via {@code MvcConfig#configureHandlerExceptionResolvers}. The resolver extends
  * {@code SimpleMappingExceptionResolver} and implements {@code LoggingComponentWithRequestId}
  * for request-correlated logging.
- * </p>
+ * 
  * <p>
  * All typed exceptions coordinate with {@link com.openkoda.core.flow.HttpStatusException} to
  * enable status inspection via {@code getStatus()} method. Spring Security's
  * {@code AccessDeniedException} is automatically mapped to HTTP 401 (UNAUTHORIZED) by the
  * resolver, providing seamless integration with privilege enforcement.
- * </p>
+ * 
  * <p>
  * The resolver constructor accepts a {@code userAgentExcludedFromErrorLog} parameter for
  * configuring user agent filtering. Pass a substring to suppress ERROR-level logging for
  * matching User-Agent headers (e.g., "ELB-HealthChecker" for AWS load balancers). This
  * prevents log pollution from automated health checks and monitoring probes.
- * </p>
+ * 
  * <p>
  * Client abort detection recognizes Tomcat's ClientAbortException wrapping IOException,
  * automatically suppressing ERROR logs when clients disconnect during response streaming.
  * This pattern reduces noise from mobile clients with intermittent connectivity.
- * </p>
+ * 
  *
- * <h2>Best Practices</h2>
+ * <b>Best Practices</b>
  * <ul>
  *   <li><b>Use typed exceptions for HTTP semantics</b>: Throw NotFoundException for missing
  *       resources (404), UnauthorizedException for authentication failures (401), and
@@ -144,10 +144,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       with access logs and distributed traces. Use this for troubleshooting production issues.</li>
  * </ul>
  *
- * <h2>Example Usage</h2>
+ * <b>Example Usage</b>
  * <p>
  * <b>Repository layer throwing NotFoundException:</b>
- * </p>
+ * 
  * <pre>
  * public Organization findById(Long id) {
  *     return repository.findById(id)
@@ -156,7 +156,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </pre>
  * <p>
  * <b>Service layer handling internal errors:</b>
- * </p>
+ * 
  * <pre>
  * try {
  *     externalApiClient.fetchData();
@@ -166,7 +166,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * </pre>
  * <p>
  * <b>ErrorLoggingExceptionResolver processing exceptions:</b>
- * </p>
+ * 
  * <pre>
  * // Configured in MvcConfig
  * &#64;Override

@@ -28,16 +28,16 @@ package com.openkoda.core.repository.common;
  * that are displayed and edited on custom settings pages. It allows the settings customization
  * framework to remain agnostic of specific entity types while enabling type-safe form bindings.
  * The repository typically returns an entity with a 1-to-1 relationship to the User entity.
- * </p>
+ * 
  * <p>
  * Implementations of this interface are registered with the customization framework via
  * {@link com.openkoda.core.customisation.BasicCustomisationService#registerSettingsForm}.
  * The framework invokes {@link #findOneForUserId(Long)} to populate form data and bind
  * user-specific settings to the settings page UI.
- * </p>
+ * 
  * <p>
  * Implementation responsibilities:
- * </p>
+ * 
  * <ul>
  *   <li>Define null-handling semantics (return null vs. throw exception for missing settings)</li>
  *   <li>Manage transaction boundaries for settings retrieval</li>
@@ -58,12 +58,12 @@ public interface ProfileSettingsRepository<T> {
      * This method performs a lookup to find the user-specific settings entity that is displayed
      * and edited on the settings page. The returned entity is typically bound to a form and
      * populated with the user's current settings values.
-     * </p>
+     * 
      * <p>
      * Note: Null-handling semantics are implementation-dependent. Some implementations may return
      * {@code null} if no settings exist for the given user, while others may throw an exception
      * or create default settings on-demand.
-     * </p>
+     * 
      *
      * @param id the user ID to find settings for
      * @return the settings entity associated with the user, or {@code null} if no settings exist

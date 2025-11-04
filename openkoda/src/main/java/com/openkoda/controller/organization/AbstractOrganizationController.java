@@ -53,17 +53,16 @@ import static com.openkoda.model.Privilege.readUserData;
  *   <li>Member management (add/remove users with role assignment)</li>
  *   <li>Organization deletion with cascade cleanup</li>
  * </ul>
- * </p>
  * <p>
  * Enforces organization-scoped privileges via secure repositories. Subclasses provide concrete endpoint mappings
  * for different access types (HTML, API). This abstract controller handles the actual business logic implementation
  * using Flow pipelines for transactional orchestration.
- * </p>
+ * 
  * <p>
  * Uses {@link com.openkoda.service.organization.OrganizationService} for tenant provisioning and schema management,
  * {@link com.openkoda.service.user.UserService} for member operations, and secure repositories for
  * privilege-enforced data access.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -81,7 +80,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * Performs a paginated search across organizations using the provided search term and specification.
      * Default sort order is by createdOn descending if no sort is specified. All results are filtered
      * through secure repositories to enforce organization-scoped read privileges.
-     * </p>
+     * 
      *
      * @param aSearchTerm search string applied to organization name and properties, may be null
      * @param aSpecification JPA Specification for additional filtering criteria, may be null
@@ -108,7 +107,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * <p>
      * Retrieves the organization entity using unsecure repository (privilege checks handled by caller)
      * and populates an OrganizationForm with the entity data. Returns a Flow for further chaining.
-     * </p>
+     * 
      *
      * @param id organization identifier
      * @return Flow containing 'organizationEntity' and 'organizationForm' for further processing
@@ -125,7 +124,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * <p>
      * Provides a base Flow for loading organization data, intended to be extended
      * with additional settings retrieval in calling methods.
-     * </p>
+     * 
      *
      * @param id organization identifier
      * @return Flow containing organization entity and form for settings operations
@@ -139,7 +138,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * Executes the organization settings flow and returns the complete PageModelMap.
      * <p>
      * Retrieves organization entity and form by executing findOrganizationWithSettingsFlow.
-     * </p>
+     * 
      *
      * @param id organization identifier
      * @return PageModelMap with organization entity and form data
@@ -156,7 +155,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * Loads organization data, searches for users with organization-scoped filtering, prepares
      * invitation forms, and retrieves global organization roles. Results include paginated
      * user list for member management.
-     * </p>
+     * 
      *
      * @param organizationId organization identifier
      * @param userSearch search term for filtering users, may be null
@@ -177,7 +176,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * <p>
      * Initializes empty organization form with ID -1, loads user list with empty search,
      * and prepares invitation form for adding initial members during organization creation.
-     * </p>
+     * 
      *
      * @param userPageable pagination parameters for user list
      * @return PageModelMap containing empty organizationForm, userPage, and inviteUserForm
@@ -194,7 +193,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * <p>
      * Performs soft or hard delete based on repository configuration. Does not handle
      * schema cleanup - use {@link #removeOrganization(long)} for complete removal.
-     * </p>
+     * 
      *
      * @param id organization identifier to delete
      * @return PageModelMap with deletion result
@@ -214,7 +213,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * both existing and new user scenarios. For existing users, associates them with the organization.
      * For new users, creates account and sends invitation. Uses tuple resolution to load
      * user and organization entities concurrently.
-     * </p>
+     * 
      *
      * @param form InviteUserForm containing user email and role assignment details
      * @param organizationId target organization identifier
@@ -240,7 +239,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * Retrieves all global roles and current user roles for the organization, then
      * updates organization membership to match the selected global roles from the form.
      * Synchronizes role assignments with the organization's current configuration.
-     * </p>
+     * 
      *
      * @param form GlobalOrgRoleForm containing selected global organization roles
      * @param organizationId organization identifier for role assignment
@@ -260,7 +259,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * <p>
      * Deletes the UserRole entity, effectively removing the user's role within the associated
      * organization. Does not delete the user account itself.
-     * </p>
+     * 
      *
      * @param userRoleId identifier of the UserRole association to remove
      * @return PageModelMap with deletion result
@@ -282,7 +281,7 @@ public class AbstractOrganizationController extends AbstractController implement
      *   <li>Removes the organization entity and all associated data</li>
      * </ol>
      * This operation is irreversible and cascades to all organization-scoped data.
-     * </p>
+     * 
      *
      * @param organizationId organization identifier to remove
      * @return PageModelMap with removal completion status
@@ -303,7 +302,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * Validates the OrganizationForm, populates changes to the existing organization entity,
      * persists updates, and emits ORGANIZATION_MODIFIED event for downstream listeners.
      * Property bag customizations are preserved and merged.
-     * </p>
+     * 
      *
      * @param organizationId identifier of the organization to update
      * @param form OrganizationForm containing updated organization data
@@ -331,7 +330,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * {@link com.openkoda.service.organization.OrganizationService} for organization entity creation.
      * The service handles tenant schema provisioning, initial admin user creation, and default
      * privilege assignment. Form is reset to default state after successful creation.
-     * </p>
+     * 
      *
      * @param form OrganizationForm containing organization name and datasource assignment
      * @param br BindingResult for validation error accumulation
@@ -356,7 +355,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * Loads organization entity and queries audit log entries scoped to the organization.
      * Supports search term filtering across audit event details. Results are paginated
      * for performance with large audit trails.
-     * </p>
+     * 
      *
      * @param organizationId organization identifier for audit history
      * @param auditPageable pagination parameters for audit entries
@@ -380,7 +379,7 @@ public class AbstractOrganizationController extends AbstractController implement
      * Executes a transactional flow that loads the user by ID and updates their role assignment
      * for the specified organization. Role change is performed by the user service which handles
      * privilege reconciliation and user role entity updates.
-     * </p>
+     * 
      *
      * @param organizationId organization identifier where role change occurs
      * @param userId user identifier whose role is being changed

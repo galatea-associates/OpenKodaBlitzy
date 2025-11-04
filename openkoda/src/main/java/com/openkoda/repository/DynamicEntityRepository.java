@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
  * helper method {@code getDynamicTablesColumnNames()} that converts List&lt;Object[]&gt; results
  * to a Map&lt;String,String&gt; via stream collectors. The native query uses PostgreSQL system
  * catalogs (pg_tables and information_schema.columns) and is not portable across database dialects.
- * </p>
+ * 
  * <p>
  * This repository is used by DynamicEntityRegistrationService during Byte Buddy entity generation
  * to discover existing dynamic table schemas and synchronize runtime JPA entity definitions with
  * database structures.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -40,7 +40,7 @@ public interface DynamicEntityRepository extends UnsecuredFunctionalRepositoryWi
      * Executes a JPQL projection query that extracts the {@code tableName} field values
      * from all DynamicEntity records. This method is used to identify which database tables
      * correspond to runtime-generated entities.
-     * </p>
+     * 
      *
      * @return list of table name strings from DynamicEntity tableName field
      */
@@ -53,12 +53,12 @@ public interface DynamicEntityRepository extends UnsecuredFunctionalRepositoryWi
      * catalogs to retrieve table and column name pairs for all tables referenced in DynamicEntity
      * records. Results are aggregated using {@code string_agg()} to produce comma-separated
      * column lists per table.
-     * </p>
+     * 
      * <p>
      * <b>Warning:</b> This query uses PostgreSQL-specific system catalog tables (pg_tables and
      * information_schema.columns) and is not portable to other database dialects. Migration to
      * Oracle, MySQL, or SQL Server requires dialect-specific rewrites.
-     * </p>
+     * 
      *
      * @return list of Object[] arrays where [0] is table name (String) and [1] is comma-separated
      *         column names (String) from information_schema
@@ -79,7 +79,7 @@ public interface DynamicEntityRepository extends UnsecuredFunctionalRepositoryWi
      * them into a Map where keys are table names and values are comma-separated column lists.
      * This default method implementation uses {@code Collectors.toMap()} to group column names
      * by table name for convenient lookup during dynamic entity registration.
-     * </p>
+     * 
      *
      * @return map of table names (String) to comma-separated column names (String)
      */

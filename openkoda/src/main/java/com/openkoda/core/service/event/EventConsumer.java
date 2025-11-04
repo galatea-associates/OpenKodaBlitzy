@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  * This class provides a uniform {@code accept()} method that abstracts the underlying consumer type,
  * enabling ApplicationEventService to dispatch events without knowledge of consumer implementation details.
  * The wrapper supports three consumer modalities:
- * </p>
+
  * <ol>
  *   <li>Functional {@code Consumer<T>} for lambda or method reference consumers</li>
  *   <li>Functional {@code BiConsumer<T,String[]>} for parameterized consumers with static configuration</li>
@@ -50,7 +50,7 @@ import java.util.function.Consumer;
  * All fields are final after construction, making instances thread-safe for concurrent event dispatch.
  * Instances are created by EventListenerService.registerEventConsumer() and stored in the
  * ApplicationEventService listener registry.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
@@ -61,7 +61,7 @@ import java.util.function.Consumer;
  * Method method = UserService.class.getMethod("handleUserEvent", User.class);
  * EventConsumer&lt;User&gt; reflective = new EventConsumer&lt;&gt;(method, User.class, 0, "User handler", INTEGRATION);
  * </pre>
- * </p>
+
  *
  * @param <T> Event payload type consumed by this wrapper
  * @see ApplicationEventService for event dispatch using wrapped consumers
@@ -129,7 +129,7 @@ public class EventConsumer<T> implements LoggingComponentWithRequestId {
      * <p>
      * This constructor is suitable for simple event handlers that only require the event payload
      * and do not need additional static configuration parameters.
-     * </p>
+
      *
      * @param consumer Functional Consumer&lt;T&gt; for lambda or method reference event handling
      */
@@ -149,7 +149,7 @@ public class EventConsumer<T> implements LoggingComponentWithRequestId {
      * <p>
      * This constructor is used by EventListenerService for persisted EventListenerEntry instances.
      * The method will be invoked on a Spring-managed bean retrieved via ApplicationContext.
-     * </p>
+
      *
      * @param method Reflective Method to invoke on Spring-managed bean for event handling
      * @param eventClass Runtime Class of event payload type for type-safe verification
@@ -174,7 +174,7 @@ public class EventConsumer<T> implements LoggingComponentWithRequestId {
      * <p>
      * This is the primary constructor for persisted EventListenerEntry instances. It includes
      * human-friendly description and category for UI presentation and domain-based filtering.
-     * </p>
+
      *
      * @param method Reflective Method to invoke on Spring-managed bean
      * @param eventClass Runtime Class of event payload type
@@ -203,7 +203,7 @@ public class EventConsumer<T> implements LoggingComponentWithRequestId {
      * <p>
      * This constructor is suitable for event handlers that require additional static configuration
      * parameters passed alongside the event payload.
-     * </p>
+
      *
      * @param consumerWithStaticData Functional BiConsumer accepting event and static configuration parameters
      */
@@ -226,10 +226,10 @@ public class EventConsumer<T> implements LoggingComponentWithRequestId {
      * parameterized consumer with static data, then reflective method via Spring bean lookup.
      * Exceptions during reflective invocation are caught and logged with request correlation,
      * and the method returns true even on failure to prevent event dispatch interruption.
-     * </p>
+
      * <p>
      * Thread-safe for concurrent invocation from ApplicationEventService executor.
-     * </p>
+
      *
      * @param eventObject Event payload to consume
      * @param staticParameter Variable-length static configuration parameters (0-4 String values supported)
@@ -269,7 +269,7 @@ public class EventConsumer<T> implements LoggingComponentWithRequestId {
      * <p>
      * This method supports up to 4 String parameters via overload pattern, dispatching to the
      * appropriate method signature based on the staticParameter array length.
-     * </p>
+
      *
      * @param consumerMethod Method to invoke reflectively
      * @param consumerObj Spring bean instance owning the method
@@ -317,7 +317,7 @@ public class EventConsumer<T> implements LoggingComponentWithRequestId {
      * This method is used by EventListenerService for consumer lookup, verifying that the
      * consumer's method matches the class, method name, compatible event type, and parameter count.
      * Event type compatibility is checked via assignability rather than exact match.
-     * </p>
+
      *
      * @param className Fully-qualified class name to match against consumerMethod.getDeclaringClass()
      * @param methodName Method name to match

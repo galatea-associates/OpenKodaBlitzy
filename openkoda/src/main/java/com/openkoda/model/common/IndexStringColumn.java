@@ -28,17 +28,17 @@ package com.openkoda.model.common;
  * to configure SQL expressions used for computing searchable content. The specified SQL
  * fragment is used by indexing jobs or database triggers to populate the annotated field
  * with concatenated searchable text from multiple entity columns.
- * </p>
+
  * <p>
  * Note: This annotation does not declare {@code @Target} or {@code @Retention} meta-annotations.
  * By Java defaults, it can be applied to any program element (though typically used on FIELD)
  * and has CLASS retention (not available at runtime unless consumers compile with explicit retention).
  * Typical usage should specify: {@code @Target(ElementType.FIELD), @Retention(RetentionPolicy.RUNTIME)}.
- * </p>
+
  * <p>
  * This annotation provides an alternative to repository-level {@link SearchableRepository}
  * and {@link SearchableRepositoryMetadata} annotations, allowing per-field index configuration.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -47,14 +47,14 @@ package com.openkoda.model.common;
  * @IndexStringColumn(indexUpdateSql = "(first_name||' '||last_name||' '||email)")
  * private String indexString;
  * }</pre>
- * </p>
+
  * <p>
  * Indexing jobs or application logic must interpret this annotation via reflection
  * to build UPDATE statements populating the search index. The typical UPDATE pattern is:
  * <pre>{@code
  * UPDATE entity_table SET index_string = (first_name||' '||last_name||' '||email) WHERE ...
  * }</pre>
- * </p>
+
  *
  * @see SearchableEntity#getIndexString()
  * @see SearchableRepository
@@ -72,10 +72,10 @@ public @interface IndexStringColumn {
      * The SQL fragment is used in UPDATE statements by indexing jobs or database triggers
      * to populate the search index with searchable content. The expression uses PostgreSQL's
      * {@code ||} operator for string concatenation.
-     * </p>
+
      * <p>
      * Common usage patterns:
-     * </p>
+
      * <ul>
      *   <li><b>Simple ID indexing (default):</b> {@code "(''||id)"} - concatenates empty string with entity ID</li>
      *   <li><b>Multiple field concatenation:</b> {@code "(name||' '||description)"} - combines name and description</li>
@@ -84,7 +84,7 @@ public @interface IndexStringColumn {
      * </ul>
      * <p>
      * The resulting index string is accessed at query time via {@link SearchableEntity#getIndexString()}.
-     * </p>
+
      *
      * @return SQL fragment for index value computation
      */

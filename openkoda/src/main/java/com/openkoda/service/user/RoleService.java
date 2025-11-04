@@ -42,10 +42,10 @@ import java.util.Set;
  * Manages role definitions and assignments across the OpenKoda platform. Creates new roles with privilege sets,
  * updates existing roles, assigns roles to users, and synchronizes role-privilege relationships. Supports three
  * role types with different scoping rules for multi-tenant environments.
- * </p>
+
  * <p>
  * Role types and hierarchy:
- * </p>
+
  * <ul>
  * <li>{@link GlobalRole} - Applies across all organizations (e.g., SYSTEM_ADMIN, GLOBAL_USER)</li>
  * <li>{@link OrganizationRole} - Scoped to a single organization (e.g., ORG_ADMIN, ORG_USER)</li>
@@ -53,18 +53,18 @@ import java.util.Set;
  * </ul>
  * <p>
  * Role hierarchy: SYSTEM_ADMIN (global) &gt; ORG_ADMIN (per org) &gt; ORG_USER (per org)
- * </p>
+
  * <p>
  * Privilege aggregation: A user's effective privileges are the union of all assigned role privileges.
  * Privileges are stored as a serialized string in the database and deserialized using {@code PrivilegeHelper}.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * Set&lt;PrivilegeBase&gt; privileges = Set.of(Privilege.READ_USERS, Privilege.WRITE_USERS);
  * GlobalRole adminRole = roleService.createOrUpdateGlobalRole("ADMIN", privileges, true);
  * </pre>
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -87,7 +87,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Organization roles apply only within a single tenant context and are the most common role type.
      * Used when creating or validating {@link OrganizationRole} instances.
-     * </p>
+
      */
     public static final String ROLE_TYPE_ORG = "ORG";
     
@@ -96,7 +96,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Global roles apply across all organizations and typically grant system-wide administrative privileges.
      * Used when creating or validating {@link GlobalRole} instances.
-     * </p>
+
      */
     public static final String ROLE_TYPE_GLOBAL = "GLOBAL";
     
@@ -105,7 +105,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Global-organization roles provide cross-tenant access for special cases requiring organization context
      * with global reach. Used when creating or validating {@link GlobalOrganizationRole} instances.
-     * </p>
+
      */
     public static final String ROLE_TYPE_GLOBAL_ORG = "GLOBAL_ORG";
     
@@ -114,7 +114,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * Used to publish {@link PrivilegeChangeEvent} after role modifications, triggering privilege cache
      * invalidation and security context updates across the application.
-     * </p>
+
      */
     @Inject private ApplicationEventPublisher applicationEventPublisher;
     
@@ -125,7 +125,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * functions. If a role with the given name already exists, its privileges and removability flag are updated.
      * Otherwise, a new {@link GlobalRole} is created. Publishes a {@link PrivilegeChangeEvent} to trigger
      * privilege cache synchronization.
-     * </p>
+
      *
      * @param name the unique name for the global role (e.g., "SYSTEM_ADMIN")
      * @param privileges the set of {@link PrivilegeBase} enums to assign to the role
@@ -151,7 +151,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * This is a convenience method that delegates to {@link #createOrUpdateOrgRole(Long, String, Set, boolean)}
      * with a null organization ID, allowing the role to be discovered by name across organizations.
-     * </p>
+
      *
      * @param name the unique name for the organization role (e.g., "ORG_ADMIN")
      * @param privileges the set of {@link PrivilegeBase} enums to assign to the role
@@ -170,7 +170,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * context. If a role with the given name exists, its privileges and removability flag are updated.
      * The organization ID is stored for reference but role lookup is name-based. Publishes a
      * {@link PrivilegeChangeEvent} to trigger privilege cache synchronization.
-     * </p>
+
      *
      * @param id the organization ID for reference (nullable, not used for role lookup)
      * @param name the unique name for the organization role
@@ -197,7 +197,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * <p>
      * This is a convenience method that delegates to {@link #createOrUpdateGlobalOrgRole(Long, String, Set, boolean)}
      * with a null organization ID.
-     * </p>
+
      *
      * @param name the unique name for the global-organization role
      * @param privileges the set of {@link PrivilegeBase} enums to assign to the role
@@ -216,7 +216,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * context. This role type is rarely used and typically reserved for special administrative scenarios.
      * If a role with the given name exists, its privileges and removability flag are updated. Publishes a
      * {@link PrivilegeChangeEvent} to trigger privilege cache synchronization.
-     * </p>
+
      *
      * @param id the organization ID for reference (nullable, not used for role lookup)
      * @param name the unique name for the global-organization role
@@ -245,7 +245,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * Supports three role types: {@code ROLE_TYPE_GLOBAL}, {@code ROLE_TYPE_ORG}, and {@code ROLE_TYPE_GLOBAL_ORG}.
      * All roles created through this method are marked as removable by default. Requires {@code CHECK_CAN_MANAGE_ROLES}
      * privilege to execute.
-     * </p>
+
      *
      * @param name the unique name for the role
      * @param type the role type discriminator ({@link #ROLE_TYPE_GLOBAL}, {@link #ROLE_TYPE_ORG}, or {@link #ROLE_TYPE_GLOBAL_ORG})
@@ -274,7 +274,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * Checks the appropriate repository based on the role type discriminator. If a duplicate role is found,
      * adds a validation error to the {@link BindingResult} with the error code "name.exists". This method
      * is typically used during form validation before role creation.
-     * </p>
+
      *
      * @param name the role name to check for uniqueness
      * @param type the role type discriminator ({@link #ROLE_TYPE_GLOBAL}, {@link #ROLE_TYPE_ORG}, or {@link #ROLE_TYPE_GLOBAL_ORG})
@@ -305,7 +305,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * and persists the updated role. Privileges are serialized as a comma-separated string in the database
      * using {@code PrivilegeHelper}. Publishes a {@link PrivilegeChangeEvent} to trigger cache invalidation.
      * If the role is not found, returns null.
-     * </p>
+
      *
      * @param roleName the unique name of the role to update
      * @param privileges the set of {@link PrivilegeBase} enums to add (duplicates are ignored)
@@ -333,7 +333,7 @@ public class RoleService extends ComponentProvider implements HasSecurityRules {
      * Only roles that have been modified are persisted. Publishes a {@link PrivilegeChangeEvent} to trigger
      * privilege cache synchronization across the application. This method is typically used when deprecating
      * or removing privilege definitions from the system.
-     * </p>
+
      *
      * @param privileges the set of {@link PrivilegeBase} enums to remove from all roles
      */

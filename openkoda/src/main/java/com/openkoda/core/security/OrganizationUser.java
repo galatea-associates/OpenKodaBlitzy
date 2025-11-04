@@ -42,12 +42,10 @@ import java.util.stream.Collectors;
  * global privileges (Set), organization-scoped privileges (Map from organizationId to privilege Set), global roles,
  * and organization-scoped roles. This design enables Role-Based Access Control (RBAC) evaluation in a multi-tenant environment
  * where users can have different privilege sets in different organizations.
- * </p>
  * <p>
  * The collections are wrapped with {@link UnmodifiableSetWithRemove} and {@link UnmodifiableMapWithRemove} for thread-safety
  * while allowing privilege narrowing via {@code retainAll} operations. This immutability pattern prevents privilege escalation
  * while supporting token-based authentication that requires privilege subset restrictions.
- * </p>
  * <p>
  * Special flags tracked by this class include:
  * <ul>
@@ -55,14 +53,12 @@ import java.util.stream.Collectors;
  *   <li>{@code isSingleRequestAuth} - Marks single-use token authentication where token is invalidated after use</li>
  *   <li>{@code authMethod} - Tracks authentication method (PASSWORD, TOKEN, or OAUTH)</li>
  * </ul>
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
  * OrganizationUser user = OrganizationUserDetailsService.loadUser(email);
  * boolean canRead = user.hasGlobalOrOrgPrivilege(Privilege.readData, orgId);
  * }</pre>
- * </p>
  *
  * @see OrganizationUserDetailsService
  * @see UserProvider
@@ -131,7 +127,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * collected from UserRole associations. The privilege and role collections are wrapped with unmodifiable
      * wrappers that support removal (for privilege narrowing) but block addition operations. A sentinel value
      * is added to privilege sets to ensure JPQL IN queries work correctly with empty collections.
-     * </p>
+     * 
      *
      * @param username User email used as Spring Security username
      * @param password Encrypted password (BCrypt hash from database)
@@ -166,7 +162,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * Each Set value in the map is wrapped with {@link #prepareImmutableSet(Set, String)} to allow
      * removal operations (for privilege narrowing) while blocking addition of new elements. This pattern
      * prevents privilege escalation while supporting token-based authentication with restricted privileges.
-     * </p>
+     * 
      *
      * @param map Map from organizationId to Set of privilege or role names
      * @param additionalValue Optional sentinel value to add to each Set (null to skip)
@@ -190,7 +186,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * The wrapped Set allows removal operations via {@code retainAll} (for privilege narrowing) but blocks
      * {@code add} and {@code addAll} operations to prevent privilege escalation. If additionalValue is provided,
      * it is added to the Set before wrapping (typically a sentinel value like nonExistingPrivilege).
-     * </p>
+     * 
      *
      * @param set Set of privilege or role names to wrap
      * @param additionalValue Optional sentinel value to add before wrapping (null to skip)
@@ -212,7 +208,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * This static convenience method delegates to {@link UserProvider#getFromContext()} to extract
      * the authenticated principal from SecurityContextHolder.
-     * </p>
+     * 
      *
      * @return Optional containing OrganizationUser if authenticated, empty Optional otherwise
      * @see UserProvider#getFromContext()
@@ -226,7 +222,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * Global privileges apply across all organizations and are typically granted to administrators
      * or system-wide roles.
-     * </p>
+     * 
      *
      * @param p Privilege name to check
      * @return true if user has the global privilege, false otherwise
@@ -240,7 +236,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * Organization-scoped privileges are tenant-specific and only apply within the context of
      * a particular organization.
-     * </p>
+     * 
      *
      * @param p Privilege name to check
      * @param orgId Organization ID to check privilege for
@@ -255,7 +251,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * This method accepts a Privilege enum value instead of a String name for type-safe
      * privilege checking.
-     * </p>
+     * 
      *
      * @param p Privilege enum to check
      * @return true if user has the global privilege, false otherwise
@@ -270,7 +266,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * This method accepts a Privilege enum value for type-safe privilege checking within
      * a specific organization context.
-     * </p>
+     * 
      *
      * @param p Privilege enum to check
      * @param orgId Organization ID to check privilege for
@@ -287,7 +283,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * This compound check returns true if the user has the privilege as a global privilege
      * OR as an organization-scoped privilege for the specified organization. This is commonly
      * used for authorization checks where either global or organization-level access is sufficient.
-     * </p>
+     * 
      *
      * @param privilege Privilege enum to check
      * @param orgId Organization ID to check organization-scoped privilege for
@@ -302,7 +298,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * This compound check returns true if the user has the privilege as a global privilege
      * OR as an organization-scoped privilege for the specified organization.
-     * </p>
+     * 
      *
      * @param privilegeName Privilege name to check
      * @param orgId Organization ID to check organization-scoped privilege for
@@ -318,7 +314,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * This method returns the keyset from organizationPrivileges map. If the user has no
      * organization-scoped privileges, returns a sentinel set containing nonExistingOrganizationId
      * to prevent JPQL IN operator crashes on empty collections.
-     * </p>
+     * 
      *
      * @return Set of organization IDs where user has privileges, or sentinel set if none
      */
@@ -334,7 +330,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * This method filters organizationPrivileges to find only organizations where the user
      * has the specified privilege name. Used for queries that need to restrict results to
      * organizations where the user has specific access rights.
-     * </p>
+     * 
      *
      * @param privilegeName Privilege name to filter by
      * @return Set of organization IDs where user has the specified privilege, or sentinel set if none
@@ -352,7 +348,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * the user has in that organization. The resulting strings are used in JPA Criteria API queries
      * for efficient multi-value filtering. Returns a list containing an empty string if the user
      * has no organization privileges.
-     * </p>
+     * 
      *
      * @return List of "orgId+privilegeName" concatenations for JPA IN predicates
      */
@@ -376,7 +372,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * This method returns the first organization ID from organizationNames map, or
      * nonExistingOrganizationId sentinel if the user has no organization associations.
      * Used as a fallback organization context when no specific organization is specified.
-     * </p>
+     * 
      *
      * @return First organization ID or nonExistingOrganizationId sentinel
      */
@@ -389,7 +385,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * This method returns a list with two elements: the globalRoles Set and the
      * organizationRoles Map. Used for displaying role information in administrative interfaces.
-     * </p>
+     * 
      *
      * @return Collection containing [globalRoles Set, organizationRoles Map]
      */
@@ -402,7 +398,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * This method returns the User entity that was loaded during authentication. May return null
      * for synthetic principals like the anonymous user or OAuth-only authentication flows.
-     * </p>
+     * 
      *
      * @return User entity or null if no persistent user exists
      * @see com.openkoda.model.User
@@ -417,7 +413,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * This method returns the ID from the User entity, or nonExistingUserId sentinel if
      * the user reference is null. The sentinel value prevents null pointer exceptions and
      * enables safe usage in JPQL queries.
-     * </p>
+     * 
      *
      * @return User database ID or nonExistingUserId sentinel
      */
@@ -430,7 +426,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * This map contains the names of all organizations where the user has any privileges.
      * Used for display purposes in user interfaces and organization selection dropdowns.
-     * </p>
+     * 
      *
      * @return Unmodifiable Map from organizationId to organization name
      */
@@ -450,7 +446,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * When a user is spoofed, an administrator is impersonating them to diagnose issues
      * or perform operations on their behalf.
-     * </p>
+     * 
      *
      * @return true if user is being impersonated, false otherwise
      * @see RunAsService
@@ -473,7 +469,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * When token-based authentication restricts privileges to a subset, this field stores
      * the PrivilegeBase instances that were retained via {@link #retainPrivileges(Set)}.
-     * </p>
+     * 
      *
      * @return Set of retained PrivilegeBase instances or null if no narrowing occurred
      */
@@ -486,7 +482,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * Single-request authentication is used for temporary tokens that are invalidated
      * immediately after use, such as password reset tokens or email verification links.
-     * </p>
+     * 
      *
      * @return true if token is single-use, false otherwise
      */
@@ -507,7 +503,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * Returns the authentication method used for this session.
      * <p>
      * Possible values: PASSWORD (form login), TOKEN (API token or temporary token), OAUTH (OAuth2 provider).
-     * </p>
+     * 
      *
      * @return Authentication method enum value
      */
@@ -537,7 +533,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * Sets the global roles for this user.
      * <p>
      * Used by {@link UserProvider} when reloading privileges after database changes.
-     * </p>
+     * 
      *
      * @param globalRoles Set of global role names to assign
      */
@@ -558,7 +554,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * Sets the organization-scoped privileges for this user.
      * <p>
      * Used by {@link UserProvider} when reloading privileges after database changes.
-     * </p>
+     * 
      *
      * @param organizationPrivileges Map from organizationId to Set of privilege names
      */
@@ -579,7 +575,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * Sets the organization-scoped roles for this user.
      * <p>
      * Used by {@link UserProvider} when reloading privileges after database changes.
-     * </p>
+     * 
      *
      * @param organizationRoles Map from organizationId to Set of role names
      */
@@ -591,7 +587,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * Sets the global privileges for this user.
      * <p>
      * Used by {@link UserProvider} when reloading privileges after database changes.
-     * </p>
+     * 
      *
      * @param globalPrivileges Set of global privilege names to assign
      */
@@ -606,7 +602,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * (like API tokens with limited scope) require privilege narrowing. This method uses {@code retainAll}
      * on the unmodifiable collections that support removal operations to restrict privileges to the
      * specified subset. The collections block addition of new privileges to prevent escalation.
-     * </p>
+     * 
      *
      * @param privilegesToLeave Set of PrivilegeBase instances to retain (null to skip narrowing)
      */
@@ -627,7 +623,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * This instance has username "_anonymous_", empty password, all account flags set to true,
      * and a single "void privilege" that cannot match any real privilege. Used as a safe default
      * principal when no authenticated user is present.
-     * </p>
+     * 
      */
     public static final OrganizationUser empty = new OrganizationUser(
             "_anonymous_",
@@ -645,7 +641,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * This method implements the {@link OAuth2User} interface and delegates to the oauth2User
      * field. Returns attributes provided by the OAuth2 provider (e.g., email, name, profile picture).
-     * </p>
+     * 
      *
      * @return Map of OAuth2 attribute names to values
      * @throws NullPointerException if oauth2User is null
@@ -660,7 +656,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * This method implements the {@link OAuth2User} interface and retrieves the "name" attribute
      * from the OAuth2 provider's user info response.
-     * </p>
+     * 
      *
      * @return User name from OAuth2 provider
      * @throws NullPointerException if oauth2User is null
@@ -675,7 +671,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * <p>
      * This method is called by the OAuth2 authentication success handler to attach the
      * OAuth2User data to the OrganizationUser principal.
-     * </p>
+     * 
      *
      * @param oauth2User OAuth2User instance from authentication provider
      */
@@ -689,7 +685,7 @@ public class OrganizationUser extends User implements OAuth2User, HasSecurityRul
      * This method is used by {@link UserProvider} to reload privileges after database changes
      * (e.g., role assignment modifications). Unlike setters for individual maps, this method
      * replaces all four privilege/role structures atomically.
-     * </p>
+     * 
      *
      * @param globalPrivileges New Set of global privilege names
      * @param globalRoles New Set of global role names

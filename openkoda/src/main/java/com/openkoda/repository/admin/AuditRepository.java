@@ -42,12 +42,12 @@ import org.springframework.transaction.annotation.Transactional;
  * session-scoped audit capture. The repository extends {@link UnsecuredFunctionalRepositoryWithLongId}
  * to inherit base CRUD operations and implements {@link HasSecurityRules} to provide security
  * rule constants for method-level authorization.
- * </p>
  * 
- * <h2>Audit Trail Capabilities</h2>
+ * 
+ * <b>Audit Trail Capabilities</b>
  * <p>
  * This repository supports:
- * </p>
+ * 
  * <ul>
  *   <li>Dynamic filtering with JPA Specifications</li>
  *   <li>Organization-scoped and user-scoped audit queries</li>
@@ -55,22 +55,22 @@ import org.springframework.transaction.annotation.Transactional;
  *   <li>Independent transaction handling for audit persistence</li>
  * </ul>
  * 
- * <h2>Security Integration</h2>
+ * <b>Security Integration</b>
  * <p>
  * Repository methods are protected by Spring Security {@code @PreAuthorize} annotations
  * using constants from {@link HasSecurityRules}:
- * </p>
+ * 
  * <ul>
  *   <li>{@code CHECK_CAN_READ_SUPPORT_DATA} - For specification-based queries</li>
  *   <li>{@code CHECK_CAN_READ_ORG_AUDIT_JPQL} - For organization-scoped JPQL queries</li>
  * </ul>
  * 
- * <h2>Transaction Management</h2>
+ * <b>Transaction Management</b>
  * <p>
  * The {@link #saveAudit(Audit)} method uses {@code REQUIRES_NEW} propagation to ensure
  * audit records persist even when the calling transaction rolls back, maintaining audit
  * trail integrity.
- * </p>
+ * 
  * 
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -89,7 +89,7 @@ public interface AuditRepository extends UnsecuredFunctionalRepositoryWithLongId
      * This method enables dynamic filtering of audit records based on arbitrary criteria
      * using Spring Data JPA Specifications. Access is restricted to users with support
      * data read privileges.
-     * </p>
+     * 
      * 
      * @param specification the JPA Specification defining filter criteria for audit records,
      *                     can combine multiple predicates for entity type, timestamp ranges,
@@ -112,15 +112,15 @@ public interface AuditRepository extends UnsecuredFunctionalRepositoryWithLongId
      * This method retrieves audit records filtered by organization ID, current user ID (via SpEL),
      * and a case-insensitive search term. The query automatically enforces user-level security
      * by binding {@code principal.user.id} and applies organization-level audit read privileges.
-     * </p>
+     * 
      * 
      * <p>
      * The search term is matched against the audit record's {@code indexString} field using
      * case-insensitive LIKE with wildcard wrapping. Records with {@code organizationId = null}
      * are included in results (global audit entries).
-     * </p>
      * 
-     * <h3>Search Behavior</h3>
+     * 
+     * <b>Search Behavior</b>
      * <ul>
      *   <li>Search is case-insensitive via {@code LOWER()} function</li>
      *   <li>Wildcards automatically prepended and appended to search term</li>
@@ -149,12 +149,12 @@ public interface AuditRepository extends UnsecuredFunctionalRepositoryWithLongId
      * propagation, ensuring the audit record is committed independently of the calling
      * transaction. This guarantees audit trail integrity even when the caller's transaction
      * rolls back due to errors.
-     * </p>
      * 
-     * <h3>Transaction Isolation Rationale</h3>
+     * 
+     * <b>Transaction Isolation Rationale</b>
      * <p>
      * The independent transaction behavior is critical for audit compliance:
-     * </p>
+     * 
      * <ul>
      *   <li>Audit records survive application transaction rollbacks</li>
      *   <li>Failed operations are still logged in the audit trail</li>
@@ -164,7 +164,7 @@ public interface AuditRepository extends UnsecuredFunctionalRepositoryWithLongId
      * <p>
      * This method is typically invoked by {@link com.openkoda.core.audit.AuditInterceptor}
      * during Hibernate flush operations to capture entity changes.
-     * </p>
+     * 
      * 
      * @param a the Audit entity to persist, must have all required fields populated including
      *         entityKey, entityId, change description, and timestamp

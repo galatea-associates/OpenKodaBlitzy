@@ -27,7 +27,7 @@ package com.openkoda.core.service.email;
  * This interface provides an abstraction for email attachments used by MIME builders
  * and mail composition code within the email subsystem. Implementations supply both
  * the attachment filename and the binary content payload.
- * </p>
+
  * <p>
  * Typical implementations include:
  * <ul>
@@ -35,17 +35,17 @@ package com.openkoda.core.service.email;
  *   <li>In-memory byte arrays for dynamically generated content</li>
  *   <li>Database-backed attachments streaming from BLOB columns</li>
  * </ul>
- * </p>
+
  * <p>
  * <b>Memory Considerations:</b> Since {@link #getData()} returns the full byte array,
  * all attachment content is loaded into memory. For large attachments (e.g., multi-megabyte
  * PDFs or high-resolution images), this can result in significant heap pressure. Consider
  * attachment size limits and memory capacity when implementing this interface.
- * </p>
+
  * <p>
  * Used by {@link SmtpEmailSender}, {@link MailgunEmailSender}, and other email sender
  * implementations to attach files to outgoing email messages.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @since 1.7.1
@@ -61,7 +61,7 @@ public interface EmailAttachment {
     * (e.g., Content-Disposition: attachment; filename="report.pdf"). The returned
     * value should include the file extension to ensure proper handling by email
     * clients.
-    * </p>
+
     *
     * @return the attachment filename (e.g., "invoice-2023.pdf", "logo.png"),
     *         should not be null or empty
@@ -74,7 +74,7 @@ public interface EmailAttachment {
     * This method provides the complete binary payload of the attachment. The returned
     * byte array is used directly by MIME message builders to construct the attachment
     * part of the email.
-    * </p>
+
     * <p>
     * <b>In-Memory Payload Implications:</b> Since this method returns a full byte array
     * rather than a stream, the entire attachment content must fit in memory. For large
@@ -86,7 +86,7 @@ public interface EmailAttachment {
     * </ul>
     * Implementations should consider imposing size limits or providing streaming
     * alternatives for large file support.
-    * </p>
+
     *
     * @return the attachment binary content, should not be null
     */

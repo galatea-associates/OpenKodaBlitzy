@@ -38,7 +38,7 @@ import org.springframework.validation.BindingResult;
  * This controller implements the template pattern where concrete subclasses (such as {@link SchedulerControllerHtml})
  * handle HTTP request binding, security annotations, and response formatting, while this abstract base provides
  * the core business logic for scheduler CRUD operations and cluster-aware task management.
- * </p>
+ * 
  * <p>
  * Key responsibilities include:
  * <ul>
@@ -49,12 +49,11 @@ import org.springframework.validation.BindingResult;
  *   <li>Cluster-aware scheduler operations ensuring task consistency across distributed application instances</li>
  *   <li>Component export functionality for version control and deployment of scheduler configurations</li>
  * </ul>
- * </p>
  * <p>
  * This controller leverages the Flow pipeline architecture for composable request handling, providing a functional
  * programming style with {@link Flow#init()}, {@code thenSet()}, {@code then()}, and {@code execute()} operations
  * that build a {@link PageModelMap} containing model attributes for view rendering.
- * </p>
+ * 
  * <p>
  * Integration points:
  * <ul>
@@ -66,12 +65,11 @@ import org.springframework.validation.BindingResult;
  *   <li>Delegates to {@code services.componentExport} for file-based export and cleanup operations</li>
  *   <li>Delegates to {@code services.scheduler} for cluster-aware scheduler lifecycle management</li>
  * </ul>
- * </p>
  * <p>
  * Cluster-aware operations utilize {@link com.openkoda.core.service.event.ClusterEventSenderService} to ensure
  * that scheduler registration, updates, and removals are propagated across all application instances in a
  * distributed environment, maintaining consistency for scheduled task execution.
- * </p>
+ * 
  * <p>
  * Typical usage pattern:
  * <pre>
@@ -83,7 +81,6 @@ import org.springframework.validation.BindingResult;
  *     }
  * }
  * </pre>
- * </p>
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
@@ -102,7 +99,7 @@ public class AbstractSchedulerController extends ComponentProvider implements Ha
      * This method constructs a Flow pipeline that queries the secure scheduler repository using Spring Data JPA
      * Specification and Pageable parameters. The secure repository enforces privilege checks to ensure the current
      * user has appropriate read access to scheduler data.
-     * </p>
+     * 
      * <p>
      * The Flow pipeline pattern used here follows:
      * <pre>
@@ -111,7 +108,7 @@ public class AbstractSchedulerController extends ComponentProvider implements Ha
      *     .execute()
      * </pre>
      * This returns a {@link PageModelMap} containing the "schedulerPage" model attribute for view rendering.
-     * </p>
+     * 
      *
      * @param schedulerSearchTerm search string for name-based filtering of schedulers; supports partial matching
      *                           and is applied to the scheduler name field; may be null or empty for unfiltered results
@@ -140,7 +137,7 @@ public class AbstractSchedulerController extends ComponentProvider implements Ha
      * This method constructs a Flow pipeline that first fetches the scheduler entity using the secure repository
      * (enforcing privilege checks), then initializes a SchedulerForm pre-populated with the entity's current data.
      * The form is ready for display in update/edit views.
-     * </p>
+     * 
      * <p>
      * Flow pipeline composition:
      * <pre>
@@ -149,7 +146,7 @@ public class AbstractSchedulerController extends ComponentProvider implements Ha
      *     .thenSet(schedulerForm, -&gt; new SchedulerForm with entity)
      *     .execute()
      * </pre>
-     * </p>
+     * 
      *
      * @param schedulerId database primary key identifier ({@code id} column) of the {@link Scheduler} entity to retrieve;
      *                   must correspond to an existing scheduler record or the secure repository will return empty result
@@ -185,11 +182,11 @@ public class AbstractSchedulerController extends ComponentProvider implements Ha
      *       {@link com.openkoda.core.service.event.ClusterEventSenderService} for distributed coordination</li>
      *   <li>Form reset: Initializes a fresh empty {@link SchedulerForm} for potential next creation operation</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Validation errors are recorded in the {@link BindingResult} and will prevent entity creation. The calling
      * controller should check {@code br.hasErrors()} to determine success or failure for appropriate view rendering.
-     * </p>
+     * 
      *
      * @param schedulerFormData validated {@link SchedulerForm} containing scheduler configuration including name,
      *                         cron expression (validated against cron syntax rules), event code to execute, and
@@ -231,11 +228,11 @@ public class AbstractSchedulerController extends ComponentProvider implements Ha
      *       application instances via {@code services.scheduler.reloadClusterAware()}, utilizing
      *       {@link com.openkoda.core.service.event.ClusterEventSenderService} to propagate changes</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Validation errors are recorded in the {@link BindingResult}. If validation fails, the entity is not updated
      * and the calling controller should render an error view based on {@code br.hasErrors()}.
-     * </p>
+     * 
      *
      * @param schedulerId database primary key identifier of the {@link Scheduler} entity to update; must correspond
      *                   to an existing scheduler record or the Flow will fail
@@ -276,12 +273,12 @@ public class AbstractSchedulerController extends ComponentProvider implements Ha
      *       application instances via {@code services.scheduler.removeClusterAware()}, utilizing
      *       {@link com.openkoda.core.service.event.ClusterEventSenderService} to propagate the removal operation</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * This operation is irreversible and immediately stops the scheduler's execution across the entire distributed
      * application. Any running tasks triggered by this scheduler will complete their current execution but will not
      * be scheduled again.
-     * </p>
+     * 
      *
      * @param schedulerId database primary key identifier of the {@link Scheduler} entity to delete; must correspond
      *                   to an existing scheduler record or the secure repository retrieval will fail

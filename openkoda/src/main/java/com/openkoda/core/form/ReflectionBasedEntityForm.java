@@ -58,7 +58,6 @@ import static com.openkoda.model.Privilege.readOrgData;
  * access without requiring manual getter/setter calls. Supports common type conversions via a static
  * converters map (BigDecimal, LocalDate/Time, Long/Integer/Boolean) and resolves custom converters
  * from field definitions.
- * </p>
  * <p>
  * Key features:
  * <ul>
@@ -70,7 +69,6 @@ import static com.openkoda.model.Privilege.readOrgData;
  *   <li>Partial updates via singleFieldToUpdate mechanism</li>
  *   <li>Static utility methods for table rendering with privilege checks</li>
  * </ul>
- * </p>
  * <p>
  * Usage example:
  * <pre>{@code
@@ -84,11 +82,9 @@ import static com.openkoda.model.Privilege.readOrgData;
  *     repository.save(entity);
  * }
  * }</pre>
- * </p>
  * <p>
  * Thread Safety: This class is NOT thread-safe. Instances are request-scoped and intended for
  * single-threaded use only.
- * </p>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -118,10 +114,10 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      *   <li>Integer/int.class: parses integer values, null for blank (boxed), 0 for blank (primitive)</li>
      *   <li>Boolean/boolean.class: parses boolean values, null for blank (boxed), false for blank (primitive)</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * Used as fallback converters when no custom converter is specified on field definition.
-     * </p>
+     * 
      */
     public static final Map<Class, Function> converters = new HashMap<>();
 
@@ -142,7 +138,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * <p>
      * This constructor is used when creating forms for new entities that haven't been persisted yet.
      * The DTO will be empty and must be populated from HTTP request parameters via Spring MVC binding.
-     * </p>
+     * 
      *
      * @param frontendMappingDefinition the form field definitions and validation rules
      */
@@ -157,7 +153,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * field privileges for the specified organization. Automatically calls populateFrom() to
      * extract entity properties into the DTO map, and initializes computed fields via
      * populateSuppliedValuesFrom().
-     * </p>
+     * 
      *
      * @param frontendMappingDefinition the form field definitions and validation rules
      * @param organizationId the organization context for privilege evaluation (null for global entities)
@@ -175,7 +171,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * configured valueSupplier functions. These are typically computed fields that derive
      * their values from other form fields or entity state rather than being directly editable.
      * Called automatically by the constructor after entity population.
-     * </p>
+     * 
      */
     private void populateSuppliedValuesFrom() {
         for (FrontendMappingFieldDefinition f : frontendMappingDefinition.getFields()) {
@@ -191,7 +187,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * This form relies on AbstractForm's validation infrastructure via validateField() and
      * field validators configured in FrontendMappingDefinition. This method exists to satisfy
      * the Form interface contract but delegates all actual validation to the parent class.
-     * </p>
+     * 
      *
      * @param br the Spring MVC BindingResult for collecting validation errors (unused)
      * @return null (validation handled by parent class)
@@ -212,10 +208,10 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      *   <li>If the field has an entityToDtoValueConverter, the converter is applied to transform the entity value</li>
      *   <li>Otherwise, the raw entity property value is copied directly to the DTO</li>
      * </ul>
-     * </p>
+     * 
      * <p>
      * This method enables automatic form population without manual getter calls for each field.
-     * </p>
+     * 
      *
      * @param entity the entity to extract properties from
      * @return this form instance for method chaining
@@ -254,7 +250,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      *   <li>Otherwise, all fields in the form definition are processed</li>
      * </ul>
      * For each field, setEntityValue() is called to apply type conversion and privilege checks.
-     * </p>
+     * 
      *
      * @param entity the entity to update with DTO values
      * @return the updated entity instance
@@ -283,7 +279,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      *   <li>Applies getSafeValue() to enforce write privileges and convert the DTO value</li>
      *   <li>Sets the converted value on the entity via PropertyUtils.setProperty()</li>
      * </ol>
-     * </p>
+     * 
      *
      * @param entity the entity to update
      * @param f the field definition with type, name, and privilege information
@@ -309,7 +305,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * This override ensures DTO values are properly converted before field validators are applied.
      * Returns the raw DTO value if entity is null (new entity case), otherwise applies the
      * resolved converter function.
-     * </p>
+     * 
      *
      * @param ffd the field definition containing converter information
      * @param dtoValue the raw value from the DTO map
@@ -332,10 +328,10 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      *   <li>Static converters map lookup by field type (BigDecimal, dates, numbers, booleans)</li>
      *   <li>Function.identity() as final fallback (no conversion)</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Uses reflection to inspect the target entity field type via ReflectionUtils.findField().
-     * </p>
+     * 
      *
      * @param entity the target entity for field type inspection
      * @param f the field definition with converter configuration
@@ -380,7 +376,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * Returns true because ReflectionBasedEntityForm uses OrganizationRelatedMap (extends HashMap)
      * as its DTO. This affects HTML form input naming conventions - fields should be rendered as
      * {@code <input name="dto[fieldName]">} for proper Spring MVC binding via RenamingProcessor.
-     * </p>
+     * 
      *
      * @return true to indicate Map-based DTO binding
      */
@@ -400,7 +396,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * </ul>
      * Creates placeholder text field definitions for field names not found in the form definition.
      * Used by table rendering utilities to build column headers that respect user privileges.
-     * </p>
+     * 
      *
      * @param fd the form definition containing field metadata
      * @param fieldNames array of field names to include as columns
@@ -436,11 +432,11 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * applying per-field read privilege checks. Fields the user cannot read are masked with NO_ACCESS.
      * Also determines column-level visibility: columns where all values are NO_ACCESS are flagged for
      * hiding in fieldColumnVisibility map and removed from result rows.
-     * </p>
+     * 
      * <p>
      * Resolves datalist values for dropdown/multiselect fields by looking up values in preloaded
      * dictionaries (from field datalistSupplier).
-     * </p>
+     * 
      *
      * @param fd the form definition containing field metadata and datalist suppliers
      * @param entities the list of entities to extract data from
@@ -499,12 +495,12 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      *   <li>Resolves datalist display values for dropdown/foreign key fields</li>
      *   <li>Updates fieldColumnVisibility map to track if any row has readable value</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Supports nested property access (e.g., "role.name") for many-to-one relationships.
      * Creates default field definitions with readOrgData privilege for fields not in form definition
      * (typically audit fields like createdOn, updatedOn).
-     * </p>
+     * 
      *
      * @param fd the form definition containing field metadata
      * @param entity the entity to extract field values from
@@ -569,7 +565,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * Convenience method that iterates over a Spring Data Page of entities and extracts each
      * entity's field values into a Map using calculateFieldValuesWithReadPrivilegesAsMap().
      * Used for JSON API responses where map structure is preferred over list structure.
-     * </p>
+     * 
      *
      * @param fd the form definition containing field metadata
      * @param entities the page of entities to extract data from
@@ -590,7 +586,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * For each requested field name, checks read privilege and extracts the property value via
      * PropertyUtils.getProperty(). Fields the user cannot read are set to empty string instead of
      * NO_ACCESS (suitable for API responses where empty is preferred over error markers).
-     * </p>
+     * 
      *
      * @param fd the form definition containing field metadata
      * @param entity the entity to extract field values from
@@ -622,7 +618,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      *   <li>Merges request parameters into DTO (only for fields in form definition)</li>
      * </ol>
      * Used for AJAX partial form updates where only specific fields are being modified.
-     * </p>
+     * 
      *
      * @param params map of request parameters from HTTP request
      * @param entity the existing entity for privilege evaluation
@@ -642,7 +638,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * also includes the referenced datalist field definition (the dictionary field that provides
      * the dropdown options). This enables proper filter rendering with both the filter field and
      * its associated datalist.
-     * </p>
+     * 
      *
      * @param fd the form definition containing field metadata
      * @param fieldNames array of field names to use as filters
@@ -672,7 +668,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * Retrieves field names for field types that support filtering: text, checkbox, dropdown,
      * number, date, datetime, and many_to_one. These types have meaningful filter operations
      * (equals, contains, range, etc.) unlike file uploads or code editors.
-     * </p>
+     * 
      *
      * @param fd the form definition to extract filterable fields from
      * @return collection of field names suitable for filtering
@@ -695,7 +691,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * </ul>
      * This enables table columns to show related entity properties (foreign key attributes)
      * alongside the main entity's properties.
-     * </p>
+     * 
      *
      * @param fd the form definition to extract table columns from
      * @return collection of field names (including nested properties) for table columns
@@ -724,7 +720,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      *   <li>T3: Filter value (the search term)</li>
      * </ul>
      * Used by specification builders to construct type-aware JPA criteria queries.
-     * </p>
+     * 
      *
      * @param fd the form definition for field lookup
      * @param filters map of filter parameter name → filter value
@@ -744,7 +740,7 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * setEntityValue(), it will throw an exception if attempting to update a field the user
      * cannot write. By nulling these fields preemptively, we avoid the exception and ensure
      * only authorized fields are updated.
-     * </p>
+     * 
      *
      * @param entity the entity for privilege evaluation
      */
@@ -764,11 +760,11 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * For each request parameter, checks if it corresponds to a field in the form definition.
      * Only parameters with matching field definitions are copied to the DTO. Fields with
      * valueSupplier are skipped (these are computed fields that shouldn't be updated directly).
-     * </p>
+     * 
      * <p>
      * Note: This method does NOT enforce write privileges - that is done by nullNonWriteableDtoFields()
      * before this method is called, and by getSafeValue() during populateTo().
-     * </p>
+     * 
      *
      * @param params map of request parameters from HTTP request
      */
@@ -791,11 +787,11 @@ public class ReflectionBasedEntityForm extends AbstractOrganizationRelatedEntity
      * ClassCastException if DTO values are non-String objects (e.g., enums, numbers). This method
      * explicitly calls toString() on all DTO values to ensure validators receive String inputs.
      * Null values are preserved as null.
-     * </p>
+     * 
      * <p>
      * Example: FrontendResource.Type enum values are converted to their string names before
      * validation.
-     * </p>
+     * 
      *
      * @see FormFieldDefinitionBuilder#validate(Function)
      * @see FrontendResource.Type

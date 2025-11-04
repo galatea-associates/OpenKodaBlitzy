@@ -27,7 +27,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * administration operations. Controllers in this package handle both HTML-based user interfaces and
  * RESTful API endpoints for user-related operations.</p>
  * 
- * <h2>Key Controller Classes</h2>
+ * <b>Key Controller Classes</b>
  * <ul>
  *   <li>{@code AbstractUserController} - Base controller providing common user management functionality
  *       and shared Flow pipeline operations for user-related requests</li>
@@ -37,7 +37,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       generation, email delivery, and password change operations</li>
  * </ul>
  * 
- * <h2>User Lifecycle Operations</h2>
+ * <b>User Lifecycle Operations</b>
  * <p>Controllers in this package support the following user lifecycle stages:</p>
  * <ol>
  *   <li><b>Creation</b> - New user account registration with role assignment and organization association</li>
@@ -47,7 +47,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>Deactivation/Deletion</b> - Account suspension and permanent removal operations</li>
  * </ol>
  * 
- * <h2>Relationships with Other Modules</h2>
+ * <b>Relationships with Other Modules</b>
  * <p>User controllers integrate with multiple system components:</p>
  * <ul>
  *   <li><b>Services</b> - Delegates business logic to {@code UserService} for user operations and
@@ -60,7 +60,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       user impersonation and privilege validation</li>
  * </ul>
  * 
- * <h2>Typical User Operations</h2>
+ * <b>Typical User Operations</b>
  * <p>Common user management workflows include:</p>
  * <ul>
  *   <li><b>Listing Users</b> - Display paginated user lists with filtering and search capabilities</li>
@@ -70,7 +70,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>Profile Updates</b> - Modify user details, contact information, and preferences</li>
  * </ul>
  * 
- * <h2>Usage Example</h2>
+ * <b>Usage Example</b>
  * <pre>{@code
  * // Flow pipeline pattern for user creation
  * return Flow.init()
@@ -78,7 +78,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     .then(a -> services.email.sendVerificationEmail(a.result(user)));
  * }</pre>
  * 
- * <h2>Package Guidelines</h2>
+ * <b>Package Guidelines</b>
  * <p><b>Should I put a class into this package?</b></p>
  * <p>Place a controller in this package if it:</p>
  * <ul>

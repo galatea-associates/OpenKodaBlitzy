@@ -24,15 +24,15 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <p>
  * This package manages scheduled background jobs for email delivery, webhook delivery, search index maintenance,
  * and system health monitoring. Jobs run automatically on configurable schedules using Spring's @Scheduled mechanism.
- * </p>
+ * 
  *
- * <h2>Package Architecture</h2>
+ * <b>Package Architecture</b>
  * <p>
  * The JobsScheduler orchestrates four job implementations using Spring @Scheduled annotations. Each job processes
  * tasks from the database in a stateless manner with atomic task claiming and transactional execution.
- * </p>
+ * 
  *
- * <h2>Key Components</h2>
+ * <b>Key Components</b>
  * <ul>
  * <li><b>JobsScheduler</b>: Central scheduling orchestrator that uses @Scheduled annotations to trigger job execution
  *     at configured intervals</li>
@@ -46,10 +46,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     Runs daily at 4:00 AM by default using cron scheduling</li>
  * </ul>
  *
- * <h2>Scheduling Patterns</h2>
+ * <b>Scheduling Patterns</b>
  * <p>
  * Jobs use two scheduling patterns:
- * </p>
+ * 
  * <ul>
  * <li><b>Fixed Delay</b>: Jobs wait for a specified delay after the previous execution completes before starting again.
  *     Used for EmailSenderJob and PostMessagesToWebhookJob (5 second delay) and SearchIndexUpdaterJob (10 second delay)</li>
@@ -57,25 +57,25 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *     (default: 0 0 4 * * ? for daily 4:00 AM execution)</li>
  * </ul>
  *
- * <h2>Design Patterns</h2>
+ * <b>Design Patterns</b>
  * <p>
  * <b>Atomic Task Claiming</b>: Jobs use repository-based findTasksAndSetStateDoing() methods to atomically claim tasks
  * and set their state to DOING. This prevents duplicate processing when multiple application instances run concurrently.
- * </p>
+ * 
  * <p>
  * <b>Transactional Execution</b>: All job methods are marked @Transactional, ensuring that database changes either
  * commit together or roll back together. If a job throws an exception, the transaction rolls back and tasks remain
  * ready for retry.
- * </p>
+ * 
  * <p>
  * <b>Request Tracing</b>: All jobs implement LoggingComponentWithRequestId for request-id-aware logging, enabling
  * trace correlation across distributed operations.
- * </p>
+ * 
  *
- * <h2>Configuration Properties</h2>
+ * <b>Configuration Properties</b>
  * <p>
  * Spring configuration requirements:
- * </p>
+ * 
  * <ul>
  * <li><code>@EnableScheduling</code> must be enabled in application configuration</li>
  * <li><code>scheduled.systemHealth.check</code>: Cron expression for system health checks (default: 0 0 4 * * ?)</li>
@@ -84,7 +84,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * <li><code>max.cpu.percentage</code>: CPU usage threshold percentage (default: 75)</li>
  * </ul>
  *
- * <h2>Usage Example</h2>
+ * <b>Usage Example</b>
  * <pre>{@code
  * // Jobs execute automatically via Spring scheduler
  * // Manual execution example (for testing):
@@ -92,21 +92,21 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * tasks.forEach(email -> emailSender.sendEmail(email));
  * }</pre>
  *
- * <h2>Thread Safety</h2>
+ * <b>Thread Safety</b>
  * <p>
  * Jobs are stateless Spring beans with no instance variables. The Spring scheduler uses a default single-threaded
  * executor, preventing concurrent execution of the same job. Database-level locking via findTasksAndSetStateDoing()
  * prevents task duplication across multiple application instances.
- * </p>
+ * 
  *
- * <h2>Error Handling</h2>
+ * <b>Error Handling</b>
  * <p>
  * When a job throws an exception, Spring's scheduler propagates the exception causing the transaction to roll back.
  * Failed tasks remain in a ready state and are retried on the next scheduled execution. This ensures no task is lost
  * due to transient failures.
- * </p>
+ * 
  *
- * <h2>Related Packages</h2>
+ * <b>Related Packages</b>
  * <ul>
  * <li>{@link com.openkoda.core.service.email} - EmailSender service for email delivery</li>
  * <li>{@link com.openkoda.repository.task} - Task repository interfaces for Email and HttpRequestTask entities</li>

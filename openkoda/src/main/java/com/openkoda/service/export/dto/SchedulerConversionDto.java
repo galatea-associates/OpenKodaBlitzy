@@ -28,13 +28,13 @@ package com.openkoda.service.export.dto;
  * and organization scope, and maps the Scheduler domain entity for scheduled job export/import. 
  * The onMasterOnly flag controls cluster master-node-only execution for distributed deployments. 
  * This DTO is used by job scheduler configuration pipelines and is not thread-safe.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see ComponentDto for inherited module and organizationId fields
- * @see com.openkoda.model.Scheduler domain entity
+ * @see com.openkoda.model.component.Scheduler
  */
 public class SchedulerConversionDto extends ComponentDto {
 

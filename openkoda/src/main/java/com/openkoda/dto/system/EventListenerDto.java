@@ -32,11 +32,11 @@ import com.openkoda.model.component.event.Event;
  * This DTO captures the mapping between event types and their designated consumers, including static configuration
  * parameters and tenant-scoped authorization. It is used by event routing systems to determine which consumer should
  * handle a specific event within an organization's context.
- * </p>
+
  * <p>
  * The class implements {@link CanonicalObject} to provide notification messages for logging and audit trails,
  * and {@link OrganizationRelatedObject} for multi-tenant authorization and scoping.
- * </p>
+
  * <p>
  * <b>Design Notes:</b>
  * <ul>
@@ -46,11 +46,11 @@ import com.openkoda.model.component.event.Event;
  * <li>The {@code notificationMessage()} method may throw NPE if fields are null</li>
  * <li>Four static data slots (staticData1-4) provide extensibility for consumer-specific configuration</li>
  * </ul>
- * </p>
+
  * <p>
  * Usage by event routing systems, mappers, and persistence layers. Compatible with Jackson/Gson serialization
  * via public fields and JavaBean accessors.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -67,7 +67,7 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * <p>
      * This string-based identifier should match event names registered in the system's event catalog.
      * May be null if not yet initialized.
-     * </p>
+
      */
     public String event;
     
@@ -76,7 +76,7 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * <p>
      * This identifier references a registered consumer in the system's consumer registry.
      * May be null if not yet initialized.
-     * </p>
+
      */
     public String consumer;
     
@@ -85,7 +85,7 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * <p>
      * Used for consumer classification and administrative purposes.
      * May be null if not yet initialized.
-     * </p>
+
      */
     public String consumerCategory;
     
@@ -94,7 +94,7 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * <p>
      * Provides extensibility for consumer-specific configuration without modifying the DTO structure.
      * May be null if not required by the consumer.
-     * </p>
+
      */
     public String staticData1;
     
@@ -103,7 +103,7 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * <p>
      * Provides additional extensibility for consumer-specific configuration.
      * May be null if not required by the consumer.
-     * </p>
+
      */
     public String staticData2;
     
@@ -112,7 +112,7 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * <p>
      * Provides additional extensibility for consumer-specific configuration.
      * May be null if not required by the consumer.
-     * </p>
+
      */
     public String staticData3;
     
@@ -122,7 +122,7 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * Provides additional extensibility for consumer-specific configuration.
      * Four slots ensure sufficient configuration capacity for most consumers.
      * May be null if not required by the consumer.
-     * </p>
+
      */
     public String staticData4;
     
@@ -132,7 +132,7 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * Links this event listener configuration to a specific organization, ensuring tenant isolation
      * and enabling organization-scoped event routing. Required by {@link OrganizationRelatedObject}.
      * May be null for global event listeners not scoped to a specific organization.
-     * </p>
+
      */
     public Long organizationId;
     
@@ -142,10 +142,10 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * <b>WARNING:</b> This field violates Rule 5.1 - DTOs should not embed domain types as it creates
      * tight coupling between the DTO and persistence layers, violating separation of concerns.
      * Consider replacing with an event identifier or dedicated event DTO.
-     * </p>
+
      * <p>
      * May be null if only the string identifier is available.
-     * </p>
+
      * 
      * @see Event
      */
@@ -158,10 +158,10 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * <b>WARNING:</b> This field violates Rule 5.1 - DTOs should not embed domain types as it creates
      * tight coupling between the DTO and persistence layers, violating separation of concerns.
      * Consider replacing with a consumer identifier or dedicated consumer DTO.
-     * </p>
+
      * <p>
      * May be null if only the string identifier is available.
-     * </p>
+
      * 
      * @see Consumer
      */
@@ -353,15 +353,15 @@ public class EventListenerDto implements CanonicalObject, OrganizationRelatedObj
      * <p>
      * Generates a human-readable template string suitable for logging and audit trails,
      * showing the event-to-consumer routing and associated static configuration parameters.
-     * </p>
+
      * <p>
      * <b>Warning:</b> This method may throw {@link NullPointerException} if {@code event}, {@code consumer},
      * or any {@code staticData} fields are null when {@link String#format(String, Object...)} is invoked.
      * Callers should ensure fields are initialized before invoking this method.
-     * </p>
+
      * <p>
      * Output format: "Event listener on %s forwarded to %s. Static data: %s, %s, %s, %s."
-     * </p>
+
      *
      * @return formatted notification message for logging and audit trails
      * @throws NullPointerException if any referenced field is null during string formatting

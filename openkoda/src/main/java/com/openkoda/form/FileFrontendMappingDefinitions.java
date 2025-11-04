@@ -36,12 +36,12 @@ import static com.openkoda.model.PrivilegeNames._readOrgData;
  * content type, and public file checkbox. Includes security expression constants using organization 
  * privileges for read and write access control. Used by FileForm implementations and file management 
  * controllers to enforce consistent file entity mapping and privilege-based security checks.
- * </p>
+ * 
  * <p>
  * The {@link #fileForm} definition creates a form with text fields for filename and content type, 
  * plus a checkbox for public file status. Security expressions combine attribute editing checks 
  * with organization-scoped privilege predicates to control form access.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -56,7 +56,7 @@ public interface FileFrontendMappingDefinitions {
      * Form identifier constant for file entity forms.
      * <p>
      * Used as the form name when creating the {@link #fileForm} FrontendMappingDefinition.
-     * </p>
+     * 
      */
     String FILE_FORM = "FileForm";
     
@@ -64,7 +64,7 @@ public interface FileFrontendMappingDefinitions {
      * Field name constant for file name property.
      * <p>
      * Maps to the filename attribute in file entity forms.
-     * </p>
+     * 
      */
     String FILENAME_ = "filename";
     
@@ -72,7 +72,7 @@ public interface FileFrontendMappingDefinitions {
      * Field name constant for content type property.
      * <p>
      * Maps to the contentType attribute (MIME type) in file entity forms.
-     * </p>
+     * 
      */
     String CONTENT_TYPE_ = "contentType";
     
@@ -80,7 +80,7 @@ public interface FileFrontendMappingDefinitions {
      * Field name constant for file content property.
      * <p>
      * Maps to the content attribute in file entity forms.
-     * </p>
+     * 
      */
     String CONTENT_ = "content";
     
@@ -88,7 +88,7 @@ public interface FileFrontendMappingDefinitions {
      * Field name constant for public file flag.
      * <p>
      * Maps to the publicFile boolean attribute controlling file visibility in forms.
-     * </p>
+     * 
      */
     String PUBLIC_FILE_ = "publicFile";
 
@@ -97,7 +97,7 @@ public interface FileFrontendMappingDefinitions {
      * <p>
      * Set to {@code readOrgData} privilege, allowing users with organization data read 
      * permissions to view file forms.
-     * </p>
+     * 
      *
      * @see com.openkoda.model.Privilege#readOrgData
      */
@@ -108,7 +108,7 @@ public interface FileFrontendMappingDefinitions {
      * <p>
      * Set to {@code readOrgData} privilege, allowing users with organization data read 
      * permissions to modify file forms.
-     * </p>
+     * 
      *
      * @see com.openkoda.model.Privilege#readOrgData
      */
@@ -119,7 +119,7 @@ public interface FileFrontendMappingDefinitions {
      * <p>
      * Resolves to the string representation of {@code readOrgData} privilege name, 
      * used in SpEL security expressions for runtime privilege evaluation.
-     * </p>
+     * 
      *
      * @see com.openkoda.model.PrivilegeNames#_readOrgData
      */
@@ -130,7 +130,7 @@ public interface FileFrontendMappingDefinitions {
      * <p>
      * Resolves to the string representation of {@code readOrgData} privilege name, 
      * used in SpEL security expressions for runtime privilege evaluation.
-     * </p>
+     * 
      *
      * @see com.openkoda.model.PrivilegeNames#_readOrgData
      */
@@ -143,11 +143,11 @@ public interface FileFrontendMappingDefinitions {
      * read access. Expression evaluates to true if user can edit attributes OR possesses 
      * the organization-scoped read privilege. Used in controller security annotations and 
      * form visibility rules.
-     * </p>
+     * 
      * <p>
      * Expression format: {@code "[[" + CHECK_CAN_EDIT_ATTRIBUTES + " or " + 
      * HAS_ORG_PRIVILEGE + "(" + readPrivilege + ")" + "]]"}
-     * </p>
+     * 
      *
      * @see com.openkoda.core.security.HasSecurityRules#CHECK_CAN_EDIT_ATTRIBUTES
      * @see com.openkoda.core.security.HasSecurityRules#HAS_ORG_PRIVILEGE_OPEN
@@ -161,11 +161,11 @@ public interface FileFrontendMappingDefinitions {
      * write access. Expression evaluates to true if user can edit attributes OR possesses 
      * the organization-scoped write privilege. Used in controller security annotations and 
      * form modification rules.
-     * </p>
+     * 
      * <p>
      * Expression format: {@code "[[" + CHECK_CAN_EDIT_ATTRIBUTES + " or " + 
      * HAS_ORG_PRIVILEGE + "(" + writePrivilege + ")" + "]]"}
-     * </p>
+     * 
      *
      * @see com.openkoda.core.security.HasSecurityRules#CHECK_CAN_EDIT_ATTRIBUTES
      * @see com.openkoda.core.security.HasSecurityRules#HAS_ORG_PRIVILEGE_OPEN
@@ -178,10 +178,10 @@ public interface FileFrontendMappingDefinitions {
      * Creates a form with three fields: filename text input, publicFile checkbox, and 
      * contentType text input. Form access is controlled by {@link #readPrivilege} and 
      * {@link #writePrivilege}, both set to {@code readOrgData} organization privilege.
-     * </p>
+     * 
      * <p>
      * Field definitions:
-     * </p>
+     * 
      * <ul>
      *   <li>{@code text(FILENAME_)} - Text field for file name entry</li>
      *   <li>{@code checkbox(PUBLIC_FILE_)} - Checkbox controlling public visibility</li>
@@ -189,7 +189,7 @@ public interface FileFrontendMappingDefinitions {
      * </ul>
      * <p>
      * Usage example:
-     * </p>
+     * 
      * <pre>{@code
      * FrontendMappingDefinition form = FileFrontendMappingDefinitions.fileForm;
      * form.createNewOrEditForm(organizationId, fileEntity);

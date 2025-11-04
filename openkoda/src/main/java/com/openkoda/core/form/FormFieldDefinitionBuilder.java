@@ -42,12 +42,10 @@ import static com.openkoda.core.helper.PrivilegeHelper.valueOfString;
  * Provides methods to add CSS classes, configure privileges, add validators, set value converters,
  * and attach actions to fields. Extends FormFieldDefinitionBuilderStart to inherit field creation
  * methods, enabling a complete fluent API for declarative form construction.
- * </p>
  * <p>
  * This builder allows chaining configuration methods after creating a field. Once a field is created
  * via FormFieldDefinitionBuilderStart methods (like text(), dropdown(), etc.), this class provides
  * continuation methods to configure that field's behavior, appearance, and validation rules.
- * </p>
  * <p>
  * Example usage:
  * <pre>{@code
@@ -61,11 +59,9 @@ import static com.openkoda.core.helper.PrivilegeHelper.valueOfString;
  *     .searchable()
  *     .withPreselectedValue("IT");
  * }</pre>
- * </p>
  * <p>
  * Thread-safety: Not thread-safe. Instances should be used in a single-threaded context during
  * form definition construction.
- * </p>
  *
  * @param <V> the field value type for type-safe validation functions. Can be changed via
  *           {@link #valueType(Class)} or {@link #valueConverters(Function, Function)} methods
@@ -85,7 +81,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * This method is typically called internally by {@link FrontendMappingDefinition} to retrieve
      * the complete set of field definitions after the builder chain completes. The returned array
      * contains all fields added via text(), dropdown(), manyToOne(), and other field creation methods.
-     * </p>
+     * 
      *
      * @return array of FrontendMappingFieldDefinition instances representing all defined form fields
      * @see FrontendMappingDefinition#createFrontendMappingDefinition(String, PrivilegeBase, PrivilegeBase, Function)
@@ -101,11 +97,11 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * are added via the {@link #validate(Function)} method. During form validation, each validator
      * is executed against the corresponding field value, returning null for valid values or an
      * error code string for invalid values.
-     * </p>
+     * 
      *
      * @return array of Tuple2 pairs containing field definitions and their validator functions
      * @see #validate(Function)
-     * @see AbstractForm#validateField(FrontendMappingFieldDefinition, Function, Object, org.springframework.validation.BindingResult)
+     * @see com.openkoda.core.form.AbstractForm#validateField(FrontendMappingFieldDefinition, Function, org.springframework.validation.BindingResult)
      */
     @Autocomplete
     public Tuple2<FrontendMappingFieldDefinition, Function<?, String>>[] getFieldValidatorsAsArray() {
@@ -119,7 +115,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * {@link #validateForm(Function)} method. Each validator function receives the form instance
      * and returns a map of field names to error code strings, allowing validation errors to be
      * associated with specific fields.
-     * </p>
+     * 
      *
      * @return array of form-level validator functions returning field-to-error-code maps
      * @see #validateForm(Function)
@@ -134,7 +130,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * The formName is used as a prefix for i18n key generation (e.g., formName.fieldName.label).
      * Default privileges are applied to all fields unless overridden via
      * {@link #additionalPrivileges(PrivilegeBase, PrivilegeBase)} for specific fields.
-     * </p>
+     * 
      *
      * @param formName the form identifier used for i18n key prefixing and form lookup
      * @param defaultReadPrivilege the privilege required to view fields by default
@@ -150,13 +146,13 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * CSS classes are applied to the field's HTML input element for styling purposes. Multiple
      * classes can be specified separated by spaces (e.g., "form-control input-lg"). This method
      * modifies the most recently created field definition and returns this builder for method chaining.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * builder.text("email").additionalCss("form-control required");
      * }</pre>
-     * </p>
+     * 
      *
      * @param additionalCss CSS class names to add to the field's HTML element
      * @return this builder for method chaining
@@ -174,7 +170,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * This is typically used for fields that should support user-driven filtering in data tables
      * or listing pages. The field will appear in the filter UI, allowing users to narrow down
      * displayed records based on this field's value.
-     * </p>
+     * 
      *
      * @return this builder for method chaining
      * @see FieldType
@@ -192,13 +188,13 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * expressions. This is used when generating dynamic entity table schemas via
      * DynamicEntityService. The formula is stored in field metadata and applied during DDL
      * generation. For example, a formula might compute a full name from first and last name fields.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * builder.text("fullName").sqlFormula("first_name || ' ' || last_name");
      * }</pre>
-     * </p>
+     * 
      *
      * @param sqlFormula the SQL expression for the computed column
      * @return this builder for method chaining
@@ -217,14 +213,14 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * specific fields. These field-level privileges override the default privileges set in the
      * constructor. During form rendering, fields are hidden or disabled based on the current
      * user's privileges evaluated via PrivilegeHelper.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * builder.text("salary")
      *     .additionalPrivileges(Privilege.canViewSalary, Privilege.canEditSalary);
      * }</pre>
-     * </p>
+     * 
      *
      * @param readPrivilege the privilege required to view this field
      * @param writePrivilege the privilege required to edit this field
@@ -242,7 +238,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * This is a convenience overload that accepts privilege names as strings and resolves them
      * via PrivilegeHelper.valueOfString(). Privilege names should match enum constant names from
      * the Privilege enum (e.g., "canReadBackend", "canManageOrgData").
-     * </p>
+     * 
      *
      * @param readPrivilege the privilege name required to view this field
      * @param writePrivilege the privilege name required to edit this field
@@ -262,7 +258,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * context. The predicate functions receive the current OrganizationUser and the entity being
      * edited, returning true if the operation is permitted. This enables context-sensitive access
      * control that goes beyond static privilege-based checks.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
@@ -272,7 +268,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      *         (user, entity) -> entity.getStatus() == Status.DRAFT
      *     );
      * }</pre>
-     * </p>
+     * 
      *
      * @param canReadCheck predicate function determining if the user can view the field
      * @param canWriteCheck predicate function determining if the user can edit the field
@@ -291,14 +287,14 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * When the predicate returns false, the field is completely hidden from the UI. Sets strict
      * read access mode, meaning the field will not be rendered at all if access is denied (rather
      * than being rendered but disabled).
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * builder.text("internalNotes")
      *     .visible((user, entity) -> user.hasPrivilege(Privilege.canReadInternalData));
      * }</pre>
-     * </p>
+     * 
      *
      * @param canReadCheck predicate function determining if the field should be visible
      * @return this builder for method chaining
@@ -320,7 +316,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * predicate returns false, the field is rendered but disabled (read-only). Sets strict write
      * access mode, meaning write access denial is enforced more strictly in the backend (attempts
      * to update the field will be rejected even if the form is submitted).
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
@@ -328,7 +324,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      *     .enabled((user, entity) -> entity.getStatus() == Status.DRAFT 
      *                              && user.hasPrivilege(Privilege.canApprove));
      * }</pre>
-     * </p>
+     * 
      *
      * @param canWriteCheck predicate function determining if the field should be editable
      * @return this builder for method chaining
@@ -349,14 +345,14 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * Adds an action button (typically rendered next to or below the field) that triggers a specific
      * URL when clicked. The action is only visible to users with the specified privilege. This is
      * useful for field-related operations like "Generate Password", "Clear Value", or "Preview".
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * builder.text("apiKey")
      *     .additionalAction("generate.key.label", "/api/generate-key", Privilege.canManageApiKeys);
      * }</pre>
-     * </p>
+     * 
      *
      * @param actionLabelKey i18n key for the action button label
      * @param actionUrl the URL to invoke when the action button is clicked
@@ -374,7 +370,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * Convenience overload that accepts the privilege name as a string and resolves it via
      * PrivilegeHelper.valueOfString(). The privilege name should match an enum constant name
      * from the Privilege enum.
-     * </p>
+     * 
      *
      * @param actionLabelKey i18n key for the action button label
      * @param actionUrl the URL to invoke when the action button is clicked
@@ -395,14 +391,14 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * are not stored directly in the DTO or entity. This is useful for computed or derived fields
      * that display information but don't correspond to a specific database column. The function
      * receives the form instance and returns the value to display.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * builder.text("fullName")
      *     .valueSupplier(form -> form.getDto().getFirstName() + " " + form.getDto().getLastName());
      * }</pre>
-     * </p>
+     * 
      *
      * @param valueSupplier function computing the field value from the form instance
      * @return this builder for method chaining
@@ -420,11 +416,11 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * (form representation) versus the entity (database representation). The toEntityValue
      * converter is applied when populating the entity from the DTO (form submission). The
      * toDtoValue converter is applied when populating the DTO from the entity (form display).
-     * </p>
+     * 
      * <p>
      * This method also changes the builder's type parameter to V2, enabling type-safe validation
      * function chaining after conversion.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
@@ -434,13 +430,13 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      *         bd -> bd.toPlainString()         // entity (BigDecimal) to DTO (String)
      *     );
      * }</pre>
-     * </p>
+     * 
      *
      * @param <V2> the new value type after conversion
      * @param toEntityValue converter from DTO value (type V) to entity value (type V2)
      * @param toDtoValue converter from entity value to DTO value for display
      * @return builder with updated type parameter V2 for method chaining
-     * @see ReflectionBasedEntityForm#getConverter(FrontendMappingFieldDefinition)
+     * @see com.openkoda.core.form.ReflectionBasedEntityForm#getConverter(com.openkoda.model.common.SearchableOrganizationRelatedEntity, FrontendMappingFieldDefinition)
      */
     @Autocomplete
     public <V2> FormFieldDefinitionBuilder<V2> valueConverters(Function<V, V2> toEntityValue, Function<Object, Object> toDtoValue) {
@@ -455,7 +451,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * typically refers to a field name like "name" or "description" from the referenced entity.
      * This modifies the datalist field (created immediately before the current field) to use the
      * specified source for display labels.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
@@ -463,12 +459,12 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      *     .dropdown("departmentId", "departments")
      *     .referenceDescriptionSource("departmentName");
      * }</pre>
-     * </p>
+     * 
      *
      * @param source the field name from the referenced entity to use as display label
      * @return this builder for method chaining
-     * @see #dropdown(String, String)
-     * @see #many_to_one(String, String)
+     * @see com.openkoda.core.form.FormFieldDefinitionBuilderStart#dropdown(String, String)
+     * @see com.openkoda.core.form.FormFieldDefinitionBuilderStart#manyToOne(String, String)
      */
     @Autocomplete
     public FormFieldDefinitionBuilder<V> referenceDescriptionSource(String source) {
@@ -484,7 +480,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * The validator function receives the field value and returns null if the value is valid, or
      * an error code string if validation fails. The error code is used to look up the localized
      * error message for display to the user.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
@@ -492,13 +488,13 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      *     .validate(Validator.notBlank())
      *     .validate(val -> val.contains("@") ? null : "invalid.email.format");
      * }</pre>
-     * </p>
+     * 
      *
      * @param validatorReturningErrorCode validation function returning null for valid values
      *                                    or an error code string for invalid values
      * @return this builder for method chaining
-     * @see Validator
-     * @see AbstractForm#validateField(FrontendMappingFieldDefinition, Function, Object, org.springframework.validation.BindingResult)
+     * @see com.openkoda.core.form.Validator
+     * @see com.openkoda.core.form.AbstractForm#validateField(FrontendMappingFieldDefinition, Function, org.springframework.validation.BindingResult)
      */
     @Autocomplete
     public FormFieldDefinitionBuilder<V> validate(Function<V, String> validatorReturningErrorCode) {
@@ -512,14 +508,14 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * set a default selection. This is useful for dropdown fields where a sensible default should
      * be pre-selected, reducing user effort. The value should match one of the keys from the
      * datalist options.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
      * builder.dropdown("country", "countries")
      *     .withPreselectedValue("US");
      * }</pre>
-     * </p>
+     * 
      *
      * @param preselectedValue the default value to pre-select in the dropdown
      * @return this builder for method chaining
@@ -537,7 +533,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * checked together. The validator function receives the entire form instance and returns a
      * map of field names to error code strings. If the map is empty or null, validation passes.
      * Otherwise, the error codes are associated with the corresponding fields for display.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
@@ -549,7 +545,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      *     return errors;
      * });
      * }</pre>
-     * </p>
+     * 
      *
      * @param validatorReturningRejectedFieldToErrorCodeMap validator function returning a map
      *                                                       of field names to error codes, or
@@ -568,7 +564,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      * without actually modifying any field configuration. It's useful when the field's actual
      * type differs from the initial type parameter, enabling subsequent validate() calls to
      * receive correctly-typed arguments.
-     * </p>
+     * 
      * <p>
      * Example:
      * <pre>{@code
@@ -576,7 +572,7 @@ public class FormFieldDefinitionBuilder<V> extends FormFieldDefinitionBuilderSta
      *     .valueType(Integer.class)
      *     .validate(age -> age >= 0 && age <= 150 ? null : "invalid.age.range");
      * }</pre>
-     * </p>
+     * 
      *
      * @param <VT> the new value type parameter
      * @param c the class representing the new value type (used for type inference)

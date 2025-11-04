@@ -27,13 +27,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * integration, and security rule definitions. Built on Spring Framework, Spring Security, Jakarta Servlet APIs,
  * and OpenKoda's domain model (User, Token, ApiKey, Role, Privilege), this package enables enterprise-grade
  * security for multi-tenant applications with fine-grained access control.
- * </p>
+ * 
  *
- * <h2>Architecture</h2>
+ * <b>Architecture</b>
  * <p>
  * The security architecture integrates with Spring Security's filter chain, authentication providers, and
  * authorization infrastructure. Key architectural components include:
- * </p>
+ * 
  * <ul>
  *   <li><b>Authentication Layer:</b> Multiple authentication mechanisms (token-based, form-based, impersonation)
  *       implemented as Spring Security filters and authentication providers</li>
@@ -47,15 +47,15 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       predicates, and programmatic checks for consistent security enforcement</li>
  * </ul>
  *
- * <h2>Authentication</h2>
+ * <b>Authentication</b>
  * <p>
  * This package implements multiple authentication mechanisms to support different client types and use cases:
- * </p>
+ * 
  *
- * <h3>Token-Based Authentication</h3>
+ * <b>Token-Based Authentication</b>
  * <p>
  * Three filter implementations provide token-based authentication for API clients and embedded resources:
- * </p>
+ * 
  * <ul>
  *   <li><b>ApiTokenHeaderAuthenticationFilter:</b> Authenticates requests with API_TOKEN header for REST API clients.
  *       Validates token against Token entity in database and establishes SecurityContext.</li>
@@ -66,10 +66,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       target resource.</li>
  * </ul>
  *
- * <h3>Form-Based Authentication</h3>
+ * <b>Form-Based Authentication</b>
  * <p>
  * LoginAndPasswordAuthenticationFilter extends Spring Security's UsernamePasswordAuthenticationFilter to provide:
- * </p>
+ * 
  * <ul>
  *   <li>Traditional username/password login form authentication</li>
  *   <li>Legacy login identifier mapping to canonical email usernames</li>
@@ -77,10 +77,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Integration with CustomAuthenticationSuccessHandler and CustomAuthenticationFailureHandler</li>
  * </ul>
  *
- * <h3>Impersonation</h3>
+ * <b>Impersonation</b>
  * <p>
  * RunAsService allows privileged users to impersonate other users for support and testing scenarios:
- * </p>
+ * 
  * <ul>
  *   <li><b>startRunAsUser(userId):</b> Creates spoofed OrganizationUser with restricted privileges and replaces
  *       current SecurityContext. Original context preserved for restoration.</li>
@@ -88,7 +88,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Impersonation flag tracked in OrganizationUser for audit logging and UI indicators.</li>
  * </ul>
  *
- * <h3>Authentication Providers</h3>
+ * <b>Authentication Providers</b>
  * <ul>
  *   <li><b>LoginByPasswordOrTokenAuthenticationProvider:</b> Validates passwords via BCrypt and processes token
  *       authentication. Extends DaoAuthenticationProvider with dual authentication mode support.</li>
@@ -96,7 +96,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       authentication scenarios with pre-validated credentials.</li>
  * </ul>
  *
- * <h3>Authentication Tokens</h3>
+ * <b>Authentication Tokens</b>
  * <ul>
  *   <li><b>RequestTokenAuthenticationToken:</b> Carries raw token string, userId, privilege set, and single-use flag
  *       through authentication pipeline.</li>
@@ -104,10 +104,10 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       when roles or privileges change.</li>
  * </ul>
  *
- * <h3>Filter Base Class</h3>
+ * <b>Filter Base Class</b>
  * <p>
  * AbstractTokenAuthenticationFilter provides centralized token authentication lifecycle:
- * </p>
+ * 
  * <ul>
  *   <li>Token extraction from various sources (header, parameter, path)</li>
  *   <li>TokenRepository lookup and validation</li>
@@ -115,13 +115,13 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Extension hooks for custom token processing</li>
  * </ul>
  *
- * <h2>Authorization</h2>
+ * <b>Authorization</b>
  * <p>
  * The authorization model enforces privilege-based access control at multiple layers using OpenKoda's
  * flexible privilege system with global and organization-scoped privileges.
- * </p>
+ * 
  *
- * <h3>Privilege-Based Authorization Model</h3>
+ * <b>Privilege-Based Authorization Model</b>
  * <ul>
  *   <li><b>OrganizationUser principal:</b> Custom UserDetails implementation storing global privileges
  *       (Set&lt;PrivilegeBase&gt;) and per-organization privileges (Map&lt;Long, Set&lt;PrivilegeBase&gt;&gt;).
@@ -134,7 +134,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       visibility and UI element rendering.</li>
  * </ul>
  *
- * <h3>Privilege Enforcement</h3>
+ * <b>Privilege Enforcement</b>
  * <ul>
  *   <li><b>HasSecurityRules interface:</b> Central security rule surface defining CHECK_* constants for
  *       {@literal @}PreAuthorize expressions, JPQL predicates for repository queries, and programmatic BiFunction
@@ -147,7 +147,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       constants to prevent unauthorized method invocation.</li>
  * </ul>
  *
- * <h3>Authorization Scopes</h3>
+ * <b>Authorization Scopes</b>
  * <ul>
  *   <li><b>GLOBAL:</b> User has privilege globally across all organizations. Used for platform administration.</li>
  *   <li><b>ORGANIZATION:</b> User has privilege within specific organization context. Most common scope for
@@ -158,7 +158,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>ALL:</b> No privilege restrictions. Used for public access endpoints and unauthenticated resources.</li>
  * </ul>
  *
- * <h2>Key Classes</h2>
+ * <b>Key Classes</b>
  * <ul>
  *   <li><b>OrganizationUser:</b> Custom Spring Security principal implementing UserDetails and HasSecurityRules.
  *       Stores global and organization-scoped privileges, role membership, organization names, and impersonation
@@ -197,9 +197,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       use in {@literal @}PreAuthorize expressions and repository {@literal @}Query predicates.</li>
  * </ul>
  *
- * <h2>Security Architecture</h2>
+ * <b>Security Architecture</b>
  *
- * <h3>Spring Security Integration</h3>
+ * <b>Spring Security Integration</b>
  * <ul>
  *   <li>Filters registered in SecurityConfiguration filter chain with specific order and URL patterns</li>
  *   <li>AuthenticationManager delegates to provider chain (LoginByPasswordOrTokenAuthenticationProvider,
@@ -208,7 +208,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>SecurityContextRepository persists SecurityContext to HTTP session for subsequent requests</li>
  * </ul>
  *
- * <h3>Authentication Flow</h3>
+ * <b>Authentication Flow</b>
  * <ol>
  *   <li>Filter extracts credentials: token from header/parameter/path OR username/password from form</li>
  *   <li>Filter creates Authentication token: RequestTokenAuthenticationToken OR UsernamePasswordAuthenticationToken</li>
@@ -223,7 +223,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li>Success/failure handler performs redirect or error rendering based on authentication result</li>
  * </ol>
  *
- * <h3>Authorization Flow</h3>
+ * <b>Authorization Flow</b>
  * <ol>
  *   <li>{@literal @}PreAuthorize annotation on method specifies security expression
  *       (e.g., {@literal @}PreAuthorize(CHECK_CAN_READ_ORG_DATA))</li>
@@ -235,9 +235,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       for entity filtering based on privilege and organization membership</li>
  * </ol>
  *
- * <h2>Usage Patterns</h2>
+ * <b>Usage Patterns</b>
  *
- * <h3>Common Security Patterns</h3>
+ * <b>Common Security Patterns</b>
  * <ul>
  *   <li><b>REST API authentication:</b> Client sends API_TOKEN header, ApiTokenHeaderAuthenticationFilter
  *       authenticates request, SecurityContext available for entire request lifecycle</li>
@@ -264,7 +264,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       current privileges</li>
  * </ul>
  *
- * <h3>Example Usage</h3>
+ * <b>Example Usage</b>
  * <pre>
  * // Example: Service method with privilege check
  * {@literal @}PreAuthorize(HasSecurityRules.CHECK_CAN_MANAGE_BASIC_DATA)
@@ -284,9 +284,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * }
  * </pre>
  *
- * <h2>Package Relationships</h2>
+ * <b>Package Relationships</b>
  *
- * <h3>Dependencies</h3>
+ * <b>Dependencies</b>
  * <p>This package depends on:</p>
  * <ul>
  *   <li><b>com.openkoda.model:</b> User, Token, ApiKey, Role, Privilege, Organization entities for authentication
@@ -299,7 +299,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *   <li><b>com.openkoda.controller.common:</b> URLConstants defining authentication path patterns and endpoint URLs</li>
  * </ul>
  *
- * <h3>Dependents</h3>
+ * <b>Dependents</b>
  * <p>Packages depending on this package:</p>
  * <ul>
  *   <li><b>com.openkoda.service:</b> Service layer uses {@literal @}PreAuthorize annotations with HasSecurityRules
@@ -312,7 +312,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       in request processing</li>
  * </ul>
  *
- * <h2>Thread Safety</h2>
+ * <b>Thread Safety</b>
  * <ul>
  *   <li><b>SecurityContext storage:</b> SecurityContext stored in ThreadLocal via SecurityContextHolder provides
  *       thread-safe per-request isolation. Each thread has independent SecurityContext.</li>
@@ -330,7 +330,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *       context not shared across threads. Impersonation state per-thread only.</li>
  * </ul>
  *
- * <h2>Common Pitfalls</h2>
+ * <b>Common Pitfalls</b>
  * <ul>
  *   <li><b>Circular dependency during SecurityConfiguration:</b> Use {@literal @}Lazy annotation on AuthenticationManager
  *       injection in filter bean definitions to break circular dependency during Spring context initialization.</li>
@@ -360,7 +360,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @see org.springframework.security.access.prepost.PreAuthorize
  * @see com.openkoda.model.User
  * @see com.openkoda.model.Privilege
- * @see com.openkoda.core.repository.SecureRepository
+ * @see com.openkoda.repository.SecureRepository
  * @since 1.7.1
  * @author OpenKoda Team
  */

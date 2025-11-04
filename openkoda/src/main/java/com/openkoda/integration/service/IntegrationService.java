@@ -56,9 +56,9 @@ import org.springframework.web.client.RestTemplate;
  * <p>
  * This service acts as the primary entry point for all integration-related operations in OpenKoda. It manages
  * the complete lifecycle of third-party integrations including GitHub, Jira, Basecamp, Trello, Slack, and MS Teams.
- * </p>
  * 
- * <h3>Key Responsibilities:</h3>
+ * 
+ * <b>Key Responsibilities:</b>
  * <ul>
  *   <li>Registers notification consumers (Trello, GitHub, Jira, Basecamp) for event-driven integration workflows</li>
  *   <li>Performs OAuth token exchanges with external providers using authorization codes</li>
@@ -67,10 +67,10 @@ import org.springframework.web.client.RestTemplate;
  *   <li>Provides error handling helpers for HTTP responses and JSON string preparation</li>
  * </ul>
  * 
- * <h3>OAuth Flow:</h3>
+ * <b>OAuth Flow:</b>
  * <p>
  * The standard OAuth flow managed by this service follows these steps:
- * </p>
+ * 
  * <ol>
  *   <li>User initiates OAuth by navigating to provider-specific authorization URL (e.g., {@code gitHubOAuthUrl})</li>
  *   <li>Provider redirects back with authorization code</li>
@@ -78,20 +78,20 @@ import org.springframework.web.client.RestTemplate;
  *   <li>Token is stored in {@link IntegrationModuleOrganizationConfiguration} via repository</li>
  * </ol>
  * 
- * <h3>Token Refresh:</h3>
+ * <b>Token Refresh:</b>
  * <p>
  * When API calls return 401 Unauthorized, the service can refresh expired tokens using refresh tokens.
  * For example, {@link #refreshBasecampToken(Long)} obtains a new access token using the stored refresh token.
- * </p>
  * 
- * <h3>Configuration Management:</h3>
+ * 
+ * <b>Configuration Management:</b>
  * <p>
  * Configuration is scoped per organization. {@link #getOrganizationConfiguration(Long)} retrieves the
  * configuration entity containing tokens, API keys, and provider-specific settings for a given organization.
  * The {@link #cleanOrgConfig(String, Long)} method clears configuration when disconnecting an integration.
- * </p>
  * 
- * <h3>Example Usage:</h3>
+ * 
+ * <b>Example Usage:</b>
  * <pre>
  * // Exchange GitHub authorization code for token
  * integrationService.getGitHubToken(organizationId, authorizationCode);
@@ -146,7 +146,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This method is called automatically after dependency injection is complete. It performs two
      * critical setup tasks: registering integration privileges with the privilege system and
      * registering notification consumers for event-driven integration workflows.
-     * </p>
+     * 
      * 
      * @see IntegrationPrivilege
      * @see #registerConsumers()
@@ -163,7 +163,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This helper method checks if the response status code indicates success (2xx range).
      * If the response is not successful, it logs the error with the provided message and
      * throws an exception to halt processing.
-     * </p>
+     * 
      * 
      * @param response the HTTP response entity to validate
      * @param errorMessage the error message template to log if response indicates failure
@@ -184,7 +184,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * with appropriate field mappings based on whether a GitHub token exists.
      * If no token is present, the form is created in a disabled state requiring
      * OAuth authorization first.
-     * </p>
+     * 
      * 
      * @param organizationId the ID of the organization for which to prepare the form
      * @return a configured GitHub integration form, either enabled or disabled based on token presence
@@ -204,7 +204,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * <p>
      * This method retrieves the organization's configuration and creates a form
      * populated with existing Trello settings such as API key, API token, board name, and list name.
-     * </p>
+     * 
      * 
      * @param organizationId the ID of the organization for which to prepare the form
      * @return a configured Trello integration form with current organization settings
@@ -220,7 +220,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * with appropriate field mappings based on whether a Basecamp refresh token exists.
      * If no refresh token is present, the form is created in a disabled state requiring
      * OAuth authorization first.
-     * </p>
+     * 
      * 
      * @param organizationId the ID of the organization for which to prepare the form
      * @return a configured Basecamp integration form, either enabled or disabled based on token presence
@@ -240,7 +240,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * <p>
      * This method retrieves the organization's configuration and creates a form
      * populated with existing Slack settings such as webhook URL for push notifications.
-     * </p>
+     * 
      * 
      * @param organizationId the ID of the organization for which to prepare the form
      * @return a configured Slack integration form with current organization settings
@@ -254,7 +254,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * <p>
      * This method retrieves the organization's configuration and creates a form
      * populated with existing MS Teams settings such as webhook URL for push notifications.
-     * </p>
+     * 
      * 
      * @param organizationId the ID of the organization for which to prepare the form
      * @return a configured MS Teams integration form with current organization settings
@@ -270,7 +270,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * with appropriate field mappings based on whether a Jira access token exists.
      * If no token is present, the form is created in a disabled state requiring
      * OAuth authorization first.
-     * </p>
+     * 
      * 
      * @param organizationId the ID of the organization for which to prepare the form
      * @return a configured Jira integration form, either enabled or disabled based on token presence
@@ -291,11 +291,11 @@ public class IntegrationService extends IntegrationComponentProvider {
      * It makes a POST request to GitHub's token endpoint with the client credentials and code,
      * then extracts the access token from the response and persists it in the organization's
      * configuration for future API calls.
-     * </p>
+     * 
      * <p>
      * <strong>OAuth Flow Step:</strong> This is step 3 of the OAuth flow - exchanging the
      * authorization code for an access token.
-     * </p>
+     * 
      * 
      * @param orgId the organization ID for which to store the token
      * @param temporaryCode the authorization code received from GitHub's OAuth callback
@@ -328,11 +328,11 @@ public class IntegrationService extends IntegrationComponentProvider {
      * It makes a POST request to Jira's token endpoint with the client credentials and code,
      * then extracts both the access token and refresh token from the response and persists them
      * in the organization's configuration. The refresh token enables automatic token renewal.
-     * </p>
+     * 
      * <p>
      * <strong>OAuth Flow Step:</strong> This is step 3 of the OAuth flow - exchanging the
      * authorization code for access and refresh tokens.
-     * </p>
+     * 
      * 
      * @param orgId the organization ID for which to store the tokens
      * @param temporaryCode the authorization code received from Jira's OAuth callback
@@ -364,7 +364,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * <p>
      * This helper method constructs a JSON payload containing the client ID, client secret,
      * and authorization code required by GitHub's token endpoint.
-     * </p>
+     * 
      * 
      * @param temporaryCode the authorization code received from GitHub
      * @return a JSON string formatted for GitHub's token exchange API
@@ -381,7 +381,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * <p>
      * This helper method constructs a JSON payload containing the grant type, client ID,
      * client secret, authorization code, and redirect URI required by Jira's token endpoint.
-     * </p>
+     * 
      * 
      * @param temporaryCode the authorization code received from Jira
      * @param orgId the organization ID used to construct the redirect URI
@@ -407,11 +407,11 @@ public class IntegrationService extends IntegrationComponentProvider {
      * It makes a POST request to Basecamp's token endpoint with the client credentials and code,
      * then extracts both the access token and refresh token from the response and persists them
      * in the organization's configuration. The refresh token enables automatic token renewal.
-     * </p>
+     * 
      * <p>
      * <strong>OAuth Flow Step:</strong> This is step 3 of the OAuth flow - exchanging the
      * authorization code for access and refresh tokens.
-     * </p>
+     * 
      * 
      * @param orgId the organization ID for which to store the tokens
      * @param code the authorization code received from Basecamp's OAuth callback
@@ -448,11 +448,11 @@ public class IntegrationService extends IntegrationComponentProvider {
      * indicating the access token has expired. It uses the stored refresh token to obtain
      * a new access token from Basecamp and updates the organization's configuration with
      * the new token.
-     * </p>
+     * 
      * <p>
      * <strong>Token Lifecycle:</strong> Access tokens expire after a certain period. This method
      * enables seamless token renewal without requiring user re-authentication.
-     * </p>
+     * 
      * 
      * @param orgId the organization ID for which to refresh the token
      * @return {@code true} if the token was successfully refreshed, {@code false} if the refresh failed
@@ -486,7 +486,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This method fetches the per-organization configuration entity containing OAuth tokens,
      * API keys, and provider-specific settings. Each organization has its own configuration
      * allowing independent integration setups across tenants.
-     * </p>
+     * 
      * 
      * @param organizationId the ID of the organization whose configuration to retrieve
      * @return the organization's integration configuration, or {@code null} if not found
@@ -501,7 +501,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * <p>
      * This is an internal alias for {@link #getOrganizationConfiguration(Long)} used within
      * the integration module for consistency with naming conventions.
-     * </p>
+     * 
      * 
      * @param organizationId the ID of the organization whose configuration to retrieve
      * @return the organization's integration configuration, or {@code null} if not found
@@ -518,7 +518,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * The global configuration contains OAuth client IDs and secrets for external providers
      * that are configured at the application level rather than per-organization. These settings
      * are typically managed by administrators and used across all tenant organizations.
-     * </p>
+     * 
      * 
      * @return the global integration configuration injected at service initialization
      */
@@ -533,11 +533,11 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This URL redirects the user to GitHub's authorization page where they grant permissions
      * to the OpenKoda application. After authorization, GitHub redirects back to the callback URL
      * with an authorization code that can be exchanged for an access token.
-     * </p>
+     * 
      * <p>
      * <strong>OAuth Flow Step:</strong> This is step 1 of the OAuth flow - redirecting the user
      * to the provider's authorization page.
-     * </p>
+     * 
      * 
      * @param orgId the organization ID to include in the callback URL for token storage
      * @return the complete GitHub OAuth authorization URL
@@ -555,11 +555,11 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This URL redirects the user to Atlassian's authorization page where they grant permissions
      * to the OpenKoda application. After authorization, Jira redirects back to the callback URL
      * with an authorization code that can be exchanged for access and refresh tokens.
-     * </p>
+     * 
      * <p>
      * <strong>OAuth Flow Step:</strong> This is step 1 of the OAuth flow - redirecting the user
      * to the provider's authorization page.
-     * </p>
+     * 
      * 
      * @param orgId the organization ID to include in the callback URL and state parameter
      * @return the complete Jira OAuth authorization URL
@@ -580,11 +580,11 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This URL redirects the user to Basecamp's (37signals) authorization page where they grant
      * permissions to the OpenKoda application. After authorization, Basecamp redirects back to
      * the callback URL with an authorization code that can be exchanged for access and refresh tokens.
-     * </p>
+     * 
      * <p>
      * <strong>OAuth Flow Step:</strong> This is step 1 of the OAuth flow - redirecting the user
      * to the provider's authorization page.
-     * </p>
+     * 
      * 
      * @param orgId the organization ID to include in the callback URL and state parameter
      * @return the complete Basecamp OAuth authorization URL
@@ -601,7 +601,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * <p>
      * This helper method constructs standard HTTP headers that accept and send JSON content.
      * Used for OAuth token exchange requests that require JSON payloads.
-     * </p>
+     * 
      * 
      * @return HTTP headers configured for application/json content type
      */
@@ -618,7 +618,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This helper method constructs a complete URL with query parameters containing
      * the client ID, redirect URI, client secret, and authorization code required
      * by Basecamp's token endpoint.
-     * </p>
+     * 
      * 
      * @param code the authorization code received from Basecamp
      * @param orgId the organization ID used to construct the redirect URI
@@ -636,7 +636,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This helper method constructs a complete URL with query parameters containing
      * the refresh token, client ID, redirect URI, and client secret required
      * by Basecamp's token refresh endpoint.
-     * </p>
+     * 
      * 
      * @param refreshToken the refresh token stored in the organization's configuration
      * @param orgId the organization ID used to construct the redirect URI
@@ -654,10 +654,10 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This method is called when disconnecting an integration. It removes all provider-specific
      * settings including OAuth tokens, API keys, and configuration parameters, then persists
      * the cleaned configuration to the database.
-     * </p>
+     * 
      * <p>
      * Supported applications: Trello, GitHub, Slack, MS Teams, Jira, and Basecamp.
-     * </p>
+     * 
      * 
      * @param application the provider identifier (e.g., "_trello", "_github", "_jira")
      * @param orgId the organization ID whose configuration to clear
@@ -708,7 +708,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This utility method prepares strings for inclusion in JSON payloads by escaping
      * double quote characters. This prevents JSON parsing errors when strings contain
      * quotes that would otherwise break the JSON structure.
-     * </p>
+     * 
      * 
      * @param message the string to escape
      * @return the string with all double quotes escaped with backslashes
@@ -723,7 +723,7 @@ public class IntegrationService extends IntegrationComponentProvider {
      * This method creates a Flow that prepares forms for all supported integrations
      * (Trello, GitHub, Slack, MS Teams, Jira, and Basecamp) and stores them in the
      * Flow's result map. Controllers use this Flow to render the integration configuration page.
-     * </p>
+     * 
      * 
      * @param organizationId the organization ID for which to prepare integration forms
      * @param request the HTTP servlet request (not currently used but available for future enhancements)
@@ -748,10 +748,10 @@ public class IntegrationService extends IntegrationComponentProvider {
      * and create corresponding items in external systems (Trello cards, GitHub issues,
      * Jira issues, Basecamp to-dos). Each consumer is registered with the application
      * event system and categorized as an INTEGRATION consumer.
-     * </p>
+     * 
      * <p>
      * Registered consumers:
-     * </p>
+     * 
      * <ul>
      *   <li>Trello - Creates cards on specified board and list</li>
      *   <li>GitHub - Creates issues in specified repository</li>

@@ -30,15 +30,15 @@ import org.springframework.session.web.context.AbstractHttpSessionApplicationIni
  * class on the classpath activates Spring Session automatic configuration hooks through the Servlet 3.0+
  * WebApplicationInitializer SPI. The parent class handles all initialization logic including registration of the
  * springSessionRepositoryFilter and the SessionEventHttpSessionListenerAdapter.
- * </p>
+ * 
  * <p>
  * Removing this class disables Spring Session and breaks distributed session behavior in clustered deployments.
  * No custom logic is required as the parent class handles all initialization through the onStartup() method.
- * </p>
+ * 
  * <p>
  * <strong>Important:</strong> Required for Spring Session WebApplicationInitializer SPI detection. Must be present
  * for distributed session support to function correctly.
- * </p>
+ * 
  *
  * @since 1.7.1
  * @author OpenKoda Team

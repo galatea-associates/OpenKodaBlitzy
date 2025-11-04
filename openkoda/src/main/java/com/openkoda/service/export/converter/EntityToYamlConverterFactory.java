@@ -42,7 +42,7 @@ import java.util.zip.ZipOutputStream;
  * list of all available converters and builds an immutable map keyed by entity Class. Entity types
  * are determined via reflective inspection using {@code getGenericSuperclass()} and parameterized type
  * resolution to extract the first generic type argument from each converter's superclass.
- * </p>
+
  * <p>
  * The factory provides three main operations:
  * <ul>
@@ -51,21 +51,21 @@ import java.util.zip.ZipOutputStream;
  *   <li>Removing previously exported files</li>
  * </ul>
  * All operations delegate to the appropriate converter instance based on the entity's runtime class.
- * </p>
+
  * <p>
  * <b>Thread Safety:</b> The converter map is final and immutable after construction. All lookups
  * are thread-safe. However, thread safety of export operations depends on the underlying converter
  * implementations.
- * </p>
+
  * <p>
  * <b>Error Handling:</b> If no converter is registered for a given entity class, methods throw
  * {@link IllegalArgumentException} with a descriptive message identifying the unregistered entity type.
- * </p>
+
  * <p>
  * <b>Type Safety:</b> Due to Java type erasure, unchecked casts are required when retrieving converters
  * from the map. These casts are safe because the map is constructed to guarantee type correspondence
  * between entity classes and their converters.
- * </p>
+
  *
  * @since 1.7.1
  * @author OpenKoda Team
@@ -84,7 +84,7 @@ public class EntityToYamlConverterFactory implements LoggingComponent {
      * to determine the entity class it handles by inspecting the generic superclass and extracting
      * the first parameterized type argument. The resulting map provides O(1) lookup of converters
      * by entity class during export operations.
-     * </p>
+
      *
      * @param converters the list of all EntityToYamlConverter beans discovered by Spring, must not be null
      * @throws IllegalStateException if multiple converters are registered for the same entity class (map key collision)
@@ -102,11 +102,11 @@ public class EntityToYamlConverterFactory implements LoggingComponent {
      * then delegates to the converter's {@code addToZip()} method to serialize the entity as YAML and add it
      * to the provided ZIP output stream. If {@code dbUpgradeEntries} is non-null, the method also invokes
      * the converter's {@code getUpgradeScript()} to generate database migration SQL statements.
-     * </p>
+
      * <p>
      * The {@code zipEntries} set tracks which entries have already been written to the ZIP archive to prevent
      * duplicate entries across multiple export operations on the same stream.
-     * </p>
+
      *
      * @param entity the entity to export, must not be null
      * @param zipOut the ZIP output stream to write to, must not be null
@@ -140,7 +140,7 @@ public class EntityToYamlConverterFactory implements LoggingComponent {
      * This is a convenience overload that delegates to
      * {@link #exportToZip(Object, ZipOutputStream, List, Set)} with {@code dbUpgradeEntries} set to null.
      * Use this method when only entity serialization is needed without corresponding SQL migration statements.
-     * </p>
+
      *
      * @param entity the entity to export, must not be null
      * @param zipOut the ZIP output stream to write to, must not be null
@@ -160,7 +160,7 @@ public class EntityToYamlConverterFactory implements LoggingComponent {
      * invokes {@code saveToFile()} to serialize the entity as YAML and persist it to disk. The converter
      * determines the target file path and naming convention. This operation is typically used for exporting
      * individual components during development or for version control integration.
-     * </p>
+
      *
      * @param entity the component entity to export, must not be null
      * @return the same entity instance for method chaining
@@ -185,7 +185,7 @@ public class EntityToYamlConverterFactory implements LoggingComponent {
      * delegates to {@code removeExportedFiles()} to delete the corresponding YAML file(s). This is typically
      * used during component deletion or when cleaning up exported artifacts. The converter determines
      * which files to remove based on the entity's identity and configured export paths.
-     * </p>
+
      *
      * @param entity the component entity whose exported files should be removed, must not be null
      * @return the same entity instance for method chaining
@@ -211,7 +211,7 @@ public class EntityToYamlConverterFactory implements LoggingComponent {
      * </ul>
      * This reflection-based approach enables automatic discovery of entity-to-converter mappings without
      * requiring explicit registration.
-     * </p>
+
      *
      * @param converter the converter instance to inspect, must not be null
      * @return the Class object representing the entity type handled by this converter

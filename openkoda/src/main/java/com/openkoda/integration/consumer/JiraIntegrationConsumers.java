@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
  * Supports both Jira Cloud and Jira Server deployments via OAuth 2.0 authentication.
  * <p>
  * This service manages the complete OAuth 2.0 authentication flow with automatic token refresh:
- * </p>
+ * 
  * <ul>
  *   <li>Initial authentication uses authorization code exchange to obtain access and refresh tokens</li>
  *   <li>Access tokens are automatically refreshed on 401 responses using stored refresh tokens</li>
@@ -46,7 +46,7 @@ import org.springframework.web.client.RestTemplate;
  * </ul>
  * <p>
  * <b>OAuth Flow:</b>
- * </p>
+ * 
  * <ol>
  *   <li>User authorizes application via Jira OAuth consent screen</li>
  *   <li>OAuth callback receives authorization code</li>
@@ -57,10 +57,10 @@ import org.springframework.web.client.RestTemplate;
  * <p>
  * <b>Issue Creation:</b> Issues are created via Jira REST API v2 using POST /rest/api/2/issue
  * with project ID, issue type ID, summary, and description fields.
- * </p>
+ * 
  * <p>
  * Example usage:
- * </p>
+ * 
  * <pre>
  * NotificationDto notification = ...;
  * jiraConsumers.createJiraIssueFromOrgNotification(notification);
@@ -154,7 +154,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * Orchestrates Jira issue creation from organization notification with automatic token refresh.
      * <p>
      * This method performs the complete workflow for creating a Jira issue:
-     * </p>
+     * 
      * <ol>
      *   <li>Validates notification is organizational and propagation is enabled</li>
      *   <li>Retrieves organization configuration with refresh token</li>
@@ -166,7 +166,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * </ol>
      * <p>
      * <b>Required Configuration:</b> Organization configuration must contain:
-     * </p>
+     * 
      * <ul>
      *   <li>{@code jiraRefreshToken} - OAuth refresh token for token renewal</li>
      *   <li>{@code jiraOrganizationName} - Jira organization/workspace name</li>
@@ -174,7 +174,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * </ul>
      * <p>
      * <b>Error Handling:</b>
-     * </p>
+     * 
      * <ul>
      *   <li>400 Bad Request - Invalid issue payload or missing required fields</li>
      *   <li>401 Unauthorized - Token expired (automatically refreshed)</li>
@@ -221,10 +221,10 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * <p>
      * Constructs JSON payload with issue fields (summary, description, project, issue type)
      * and sends POST request with Bearer token authentication.
-     * </p>
+     * 
      * <p>
      * <b>JSON Payload Structure:</b>
-     * </p>
+     * 
      * <pre>
      * {
      *   "fields": {
@@ -261,7 +261,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * <p>
      * Uses the configured {@code JIRA_CREATE_ISSUE_API} template URL and replaces
      * the cloud ID placeholder with the provided value.
-     * </p>
+     * 
      *
      * @param cloudId the Atlassian cloud instance ID
      * @return formatted URL string for Jira issue creation endpoint
@@ -275,7 +275,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * Constructs JSON payload for Jira issue creation request.
      * <p>
      * Uses {@link #JIRA_CREATE_ISSUE_REQUEST_JSON} template and formats it with:
-     * </p>
+     * 
      * <ul>
      *   <li>Summary: Fixed text "New notification from Jira"</li>
      *   <li>Description: Sanitized notification message (JSON-escaped via {@code integrationService.prepareJsonString()})</li>
@@ -298,7 +298,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * Refreshes Jira OAuth access token using the stored refresh token.
      * <p>
      * Implements OAuth 2.0 refresh token flow by posting to Atlassian token endpoint:
-     * </p>
+     * 
      * <ol>
      *   <li>Retrieves refresh token from organization configuration</li>
      *   <li>Constructs JSON payload with grant_type, client credentials, and refresh token</li>
@@ -309,7 +309,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * </ol>
      * <p>
      * <b>Required Configuration:</b>
-     * </p>
+     * 
      * <ul>
      *   <li>{@code config.jiraRefreshToken} - Valid OAuth refresh token</li>
      *   <li>{@code globalConfig.jiraClientId} - OAuth client ID</li>
@@ -317,7 +317,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * </ul>
      * <p>
      * <b>JSON Payload:</b> {@code {"grant_type":"refresh_token","client_id":"...","client_secret":"...","refresh_token":"..."}}
-     * </p>
+     * 
      *
      * @param config the organization configuration containing refresh token (will be updated with new access token)
      * @param globalConfig the global configuration containing OAuth client credentials
@@ -349,7 +349,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * Queries Jira REST API v2 issue types endpoint and iterates through returned
      * issue types to find a match by name. Commonly used to resolve "Task", "Bug",
      * "Story", or custom issue type names to their corresponding IDs.
-     * </p>
+     * 
      *
      * @param token the Jira OAuth access token for authentication
      * @param cloudId the Atlassian cloud instance ID
@@ -381,7 +381,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * Queries Jira REST API v2 projects endpoint and iterates through accessible
      * projects to find a match by exact name. The project must be accessible
      * to the authenticated user with the provided access token.
-     * </p>
+     * 
      *
      * @param token the Jira OAuth access token for authentication
      * @param cloudId the Atlassian cloud instance ID
@@ -414,7 +414,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * instances accessible to the authenticated user, then matches by organization
      * name to obtain the corresponding cloud ID. The cloud ID is required for
      * all subsequent Jira REST API v2 calls.
-     * </p>
+     * 
      *
      * @param token the Jira OAuth access token for authentication
      * @param organizationName the Jira organization/workspace name to search for
@@ -441,7 +441,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * Executes HTTP GET request to Atlassian accessible-resources API endpoint.
      * <p>
      * Returns JSON array of accessible Jira cloud resources, each containing:
-     * </p>
+     * 
      * <ul>
      *   <li>{@code id} - Cloud instance identifier</li>
      *   <li>{@code name} - Organization/workspace name</li>
@@ -464,7 +464,7 @@ public class JiraIntegrationConsumers extends IntegrationComponentProvider {
      * <p>
      * Creates new {@link HttpHeaders} instance and sets Authorization header
      * with format: {@code Bearer <access_token>}
-     * </p>
+     * 
      *
      * @param token the Jira OAuth access token
      * @return HttpHeaders configured with Authorization: Bearer header

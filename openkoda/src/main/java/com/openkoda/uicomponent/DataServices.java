@@ -33,12 +33,12 @@ import com.openkoda.uicomponent.annotation.Autocomplete;
  * This interface defines methods for retrieving security-scoped repositories by entity name or key,
  * supporting form-to-entity persistence with validation and mapping, providing form retrieval by
  * frontend mapping name (new or entity-populated), and offering user registration with duplicate detection.
- * </p>
+
  * <p>
  * All methods are annotated with {@link Autocomplete} to provide UI tooling metadata for code completion
  * and documentation hints. Implementations handle tenant scoping, security enforcement, and transactional
  * semantics to ensure data integrity and access control.
- * </p>
+
  * <p>
  * Key capabilities:
  * <ul>
@@ -47,7 +47,7 @@ import com.openkoda.uicomponent.annotation.Autocomplete;
  * <li>Form creation and population for new entity and edit workflows</li>
  * <li>Idempotent user registration with email-based duplicate detection</li>
  * </ul>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -64,13 +64,13 @@ public interface DataServices {
      * Resolves repository from SearchableRepositories.getSearchableRepository(entityName) with default
      * security scope. Repository enforces read and write privileges per logged-in user and organization context.
      * Thread-safe and stateless.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * ScopedSecureRepository<?> repo = getRepository("user");
      * }</pre>
-     * </p>
+
      *
      * @param entityName Entity name or key for repository lookup (e.g., "organization", "user", "dynamicEntity")
      * @return ScopedSecureRepository instance with privilege enforcement for the entity type
@@ -85,13 +85,13 @@ public interface DataServices {
      * Resolves repository from SearchableRepositories.getSearchableRepository(entityKey) and applies
      * securityScope via PrivilegeScopeEnum.valueOf(securityScope). Allows explicit control of privilege
      * checking level. Security scope affects which entity records are visible and modifiable.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * ScopedSecureRepository<?> repo = getRepository("role", "GLOBAL");
      * }</pre>
-     * </p>
+
      *
      * @param entityKey Entity name or key for repository lookup
      * @param securityScope Security scope name (e.g., "USER_IN_ORGANIZATION", "GLOBAL", "ORGANIZATION")
@@ -108,13 +108,13 @@ public interface DataServices {
      * populates fields from form, resolves organization ID via TenantResolver, persists via
      * SecureRepository.saveOne with privilege enforcement. Returns persisted entity with generated ID
      * and timestamps. Form must pass validation and organization context must be available.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * SearchableOrganizationRelatedEntity entity = saveForm(organizationForm);
      * }</pre>
-     * </p>
+
      *
      * @param form Form containing user input and validation rules
      * @return Persisted SearchableOrganizationRelatedEntity with generated ID and timestamps
@@ -129,13 +129,13 @@ public interface DataServices {
      * Validates form, populates entity fields from form via populateTo, persists via
      * SecureRepository.saveOne. Preserves entity ID, updates timestamp. Enforces update privileges.
      * Entity must exist and be accessible to current user per security scope.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * SearchableOrganizationRelatedEntity updated = saveForm(userForm, existingUser);
      * }</pre>
-     * </p>
+
      *
      * @param form Form containing user input and validation rules
      * @param entity Existing entity to update (must have ID)
@@ -151,13 +151,13 @@ public interface DataServices {
      * Resolves form builder from CRUDControllerConfiguration.getBuilder(frontendMappingName), creates
      * form with default constructor. Form is ready for user input, validation, and entity creation.
      * Used for new entity creation workflows.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * AbstractOrganizationRelatedEntityForm form = getForm("organizationForm");
      * }</pre>
-     * </p>
+
      *
      * @param frontendMappingName Form identifier (e.g., "organizationForm", "userForm")
      * @return AbstractOrganizationRelatedEntityForm instance initialized with default values
@@ -172,13 +172,13 @@ public interface DataServices {
      * Creates form via CRUDControllerConfiguration.getBuilder, calls form.populateFrom(entity) to
      * transfer entity fields to form fields. Form is ready for display, modification, validation,
      * and update. Used for entity edit workflows where form reflects current entity state.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * AbstractOrganizationRelatedEntityForm form = getForm("userForm", user);
      * }</pre>
-     * </p>
+
      *
      * @param frontendMappingName Form identifier matching entity type
      * @param entity Entity to populate form from
@@ -195,13 +195,13 @@ public interface DataServices {
      * email exists, returns existing User. If not, creates User with email, first name, last name,
      * generates default login, persists and returns new User. Idempotent operation with email uniqueness
      * constraint preventing duplicates. Transaction ensures consistency.
-     * </p>
+
      * <p>
      * Example usage:
      * <pre>{@code
      * User user = registerUserOrReturnExisting("test@example.com", "John", "Doe");
      * }</pre>
-     * </p>
+
      *
      * @param email User email address (unique identifier, case-insensitive)
      * @param firstName User's first name

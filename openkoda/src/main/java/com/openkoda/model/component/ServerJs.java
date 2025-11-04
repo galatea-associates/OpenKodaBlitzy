@@ -46,19 +46,19 @@ import java.util.List;
  * to Java APIs and can be executed without requiring Java code deployment. The entity is
  * organization-scoped through {@link ComponentEntity} inheritance, providing multi-tenancy
  * support.
- * </p>
+
  * <p>
  * JavaScript execution is performed by {@code JsFlowRunner} and UIComponent services at runtime.
  * Common use cases include data transformation, dynamic business logic, and API integrations
  * that need to be modified without redeploying the application.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * ServerJs script = new ServerJs("console.log('Hello');", "{}", "arg1\narg2");
  * PageModelMap model = script.getModelMap(); // Parses JSON model
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -192,7 +192,7 @@ public class ServerJs extends ComponentEntity {
      * This method parses the JSON model string via {@link JsonHelper#fromDebugJson(String)}
      * and adds the arguments as a list to the {@link PageAttributes#arguments} key. Arguments
      * are split by newline character. If the arguments field is blank, an empty list is added.
-     * </p>
+
      *
      * @return the PageModelMap initialized with model data and arguments
      * @throws IOException if JSON parsing of the model string fails due to malformed JSON

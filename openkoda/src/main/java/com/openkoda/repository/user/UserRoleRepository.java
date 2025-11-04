@@ -42,7 +42,7 @@ import java.util.Set;
  * This interface extends {@link UnsecuredFunctionalRepositoryWithLongId} and implements {@link HasSecurityRules}
  * to provide repository operations for UserRole associations. UserRole is the join entity in the many-to-many
  * relationship between User and Role, with additional organizationId field for multi-tenant scoping.
- * </p>
+
  * <p>
  * Key features:
  * <ul>
@@ -53,15 +53,15 @@ import java.util.Set;
  *   <li>Modification tracking: wasModifiedSince, getLastUpdatedOn for optimistic locking</li>
  *   <li>Distinction between user-specific roles (userId NOT NULL) and default organization roles (userId NULL)</li>
  * </ul>
- * </p>
+
  * <p>
  * Security: Most queries use CHECK_CAN_MANAGE_USER_ROLES_JPQL or CHECK_CAN_READ_ROLES_JPQL fragments
  * for privilege enforcement. SpEL expressions (?#{principal.organizationIds}) used for dynamic scope filtering.
- * </p>
+
  * <p>
  * Persists to 'user_role' table with columns: id (PK), user_id (FK, nullable for default org roles),
  * role_id (FK), organization_id (FK, nullable for global roles), created_on, updated_on.
- * </p>
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @version 1.7.1
@@ -89,7 +89,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes guarded JPQL: {@code DELETE FROM UserRole WHERE CHECK_CAN_MANAGE_USER_ROLES_JPQL AND id = :id}
      * Returns 0 if UserRole not found or user lacks privilege.
-     * </p>
+
      *
      * @param aLong UserRole entity ID to delete, must not be null
      * @return Number of deleted rows (0 or 1)
@@ -105,7 +105,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL: {@code DELETE FROM UserRole WHERE CHECK_CAN_MANAGE_USER_ROLES_JPQL AND roleId IN (SELECT r.id FROM Role r WHERE r.id = :id AND r.removable = true)}
      * Only deletes if Role has removable=true flag (protects system roles). Returns 0 if role not removable or user lacks privilege.
-     * </p>
+
      *
      * @param aLong Role entity ID whose UserRole associations should be deleted, must not be null
      * @return Number of deleted UserRole rows
@@ -121,7 +121,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL: {@code DELETE FROM UserRole WHERE CHECK_CAN_MANAGE_USER_ROLES_JPQL AND userId IS NULL AND organizationId = :id AND roleId IN (SELECT r.id FROM Role WHERE r.name IN :role_names)}
      * Only deletes default organization roles (userId NULL), not user-specific assignments. Returns 0 if none match or user lacks privilege.
-     * </p>
+
      *
      * @param aLong Organization ID to delete default roles in, must not be null
      * @param roleNames Set of role names to delete (e.g., {"ROLE_ORG_USER", "ROLE_ORG_ADMIN"}), must not be null or empty
@@ -137,7 +137,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * Deletes UserRole by exact role, user, and organization ID match.
      * <p>
      * Uses Spring Data derived delete method. No security fragment - assumes pre-authorized context.
-     * </p>
+
      *
      * @param roleId Role ID, must be positive
      * @param userId User ID, must be positive
@@ -151,7 +151,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * Finds UserRole by exact role, user, and organization ID match.
      * <p>
      * Uses Spring Data derived finder. No security fragment - assumes pre-authorized context.
-     * </p>
+
      *
      * @param roleId Role ID, must be positive
      * @param userId User ID, must be positive
@@ -165,7 +165,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL: {@code SELECT ur FROM UserRole ur WHERE CHECK_CAN_MANAGE_USER_ROLES_JPQL AND organizationId = :id}
      * Includes both user-specific (userId NOT NULL) and default organization roles (userId NULL).
-     * </p>
+
      *
      * @param aLong Organization ID to query roles in, must not be null
      * @return List of UserRole entities in organization, empty list if none or user lacks privilege
@@ -179,7 +179,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL: {@code SELECT ur FROM UserRole ur WHERE CHECK_CAN_MANAGE_USER_ROLES_JPQL AND userId IS NOT NULL AND organizationId = :id AND role.name IN :role_names}
      * Only returns user-specific roles (userId NOT NULL), excludes default organization roles.
-     * </p>
+
      *
      * @param aLong Organization ID to query, must not be null
      * @param roleNames Set of role names to filter by, must not be null or empty
@@ -194,7 +194,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL: {@code SELECT ur FROM UserRole ur WHERE CHECK_CAN_MANAGE_USER_ROLES_JPQL AND userId = :user_id AND role.name IN :role_names}
      * Returns roles across all organizations and global roles (organizationId NULL or NOT NULL).
-     * </p>
+
      *
      * @param aLong User ID to query roles for, must not be null
      * @param roleNames Set of role names to filter by, must not be null or empty
@@ -209,7 +209,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL: {@code SELECT ur FROM UserRole ur WHERE CHECK_CAN_MANAGE_USER_ROLES_JPQL AND userId IS NULL AND organizationId = :id AND role.name IN :role_names}
      * Only returns default organization roles (userId NULL) that all organization members inherit.
-     * </p>
+
      *
      * @param aLong Organization ID to query default roles in, must not be null
      * @param roleNames Set of role names to filter by, must not be null or empty
@@ -224,7 +224,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL: {@code SELECT DISTINCT userId FROM UserRole WHERE CHECK_CAN_MANAGE_USER_ROLES_JPQL AND organizationId = :id}
      * Returns Set to eliminate duplicates (users may have multiple roles in same organization).
-     * </p>
+
      *
      * @param aLong Organization ID to query user IDs in, must not be null
      * @return Set of unique User IDs in organization, empty set if none or user lacks privilege
@@ -238,7 +238,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL: {@code SELECT DISTINCT userId FROM UserRole WHERE CHECK_CAN_MANAGE_USER_ROLES_JPQL AND organizationId = :id AND role.name = :role_name}
      * Filters to users with specific role. Uses DISTINCT to eliminate duplicates.
-     * </p>
+
      *
      * @param aLong Organization ID to query, must not be null
      * @param roleName Role name to filter by (e.g., 'ROLE_ORG_ADMIN'), must not be null
@@ -253,7 +253,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL: {@code SELECT DISTINCT ur.user FROM UserRole ur WHERE organizationId = :id AND CHECK_CAN_READ_ROLES_JPQL}
      * Returns Set of User entities (not just IDs). Enforces READ privilege (less restrictive than MANAGE).
-     * </p>
+
      *
      * @param organizationId Organization ID to query users in, must not be null
      * @return Set of unique User entities in organization, empty set if none or user lacks privilege
@@ -268,7 +268,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL: {@code SELECT DISTINCT ur.user FROM UserRole ur WHERE organizationId = :id AND role.name = :role_name AND CHECK_CAN_READ_ROLES_JPQL}
      * Returns Set of User entities with specific role. Enforces READ privilege.
-     * </p>
+
      *
      * @param organizationId Organization ID to query, must not be null
      * @param roleName Role name to filter by, must not be null
@@ -284,7 +284,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL with SpEL: {@code SELECT count(*) > 0 FROM UserRole WHERE (userId = :id OR organizationId IN ?#{principal.organizationIds}) AND updatedOn > :since}
      * Uses SpEL expression for dynamic organization scope. Returns Boolean comparison wrapped in Optional.
-     * </p>
+
      *
      * @param userId User ID to check modifications for, must not be null
      * @param since Timestamp to compare against, must not be null
@@ -298,7 +298,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Executes JPQL with SpEL: {@code SELECT max(ur.updatedOn) FROM UserRole WHERE userId = :id OR organizationId IN ?#{principal.organizationIds}}
      * Uses SpEL for dynamic organization scope. Returns null if no related UserRoles.
-     * </p>
+
      *
      * @param userId User ID to query latest modification for, must not be null
      * @return Most recent updatedOn timestamp, null if no related UserRoles exist
@@ -310,7 +310,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * Finds all UserRole entities matching exact user, organization, and role ID combination.
      * <p>
      * Uses Spring Data derived finder. May return multiple results if duplicates exist (database constraint should prevent).
-     * </p>
+
      *
      * @param userId User ID, must not be null
      * @param organizationId Organization ID, must not be null
@@ -324,7 +324,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * <p>
      * Uses Spring Data derived exists query. Searches role.privileges string for privilege substring.
      * Privileges stored as joined string: '(PRIVILEGE1)(PRIVILEGE2)'.
-     * </p>
+
      *
      * @param organizationId Organization ID to check, must not be null
      * @param privilege Privilege name to search for, must not be null
@@ -336,7 +336,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * Finds default organization roles (userId NULL) for specified organization.
      * <p>
      * Uses Spring Data derived finder. Returns roles inherited by all organization members.
-     * </p>
+
      *
      * @param organizationId Organization ID to query default roles for, must not be null
      * @return List of default UserRole entities (userId NULL), empty list if none configured
@@ -347,7 +347,7 @@ public interface UserRoleRepository extends UnsecuredFunctionalRepositoryWithLon
      * Finds all UserRole associations for specific user in organization.
      * <p>
      * Uses Spring Data derived finder. Returns user-specific organization roles.
-     * </p>
+
      *
      * @param organizationId Organization ID, must not be null
      * @param userId User ID, must not be null

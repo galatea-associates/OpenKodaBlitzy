@@ -41,19 +41,19 @@ import org.springframework.validation.BindingResult;
  * {@code validate()}, and {@code populateTo()} methods. It extracts editable content fragments from
  * the resource content using marker-based delimiters defined in {@link FrontendResourceService}
  * (CONTENT_EDITABLE_BEGIN and CONTENT_EDITABLE_END) with {@link StringUtils#substringBetween}.
- * </p>
+
  * <p>
  * The form extends {@link AbstractOrganizationRelatedEntityForm} to inherit organization-scoped entity
  * handling and integrates with the {@link FrontendMappingDefinitions#frontendResourceForm} definition
  * for frontend rendering and validation.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * FrontendResourceForm form = new FrontendResourceForm(orgId, entity);
  * form.populateFrom(entity).validate(bindingResult);
  * </pre>
- * </p>
+
  *
  * @param <CD> the concrete FrontendResourceDto type or subclass
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
@@ -74,7 +74,7 @@ public class FrontendResourceForm<CD extends FrontendResourceDto> extends Abstra
      * Initializes the form with a new {@link FrontendResourceDto} instance and the standard
      * {@link FrontendMappingDefinitions#frontendResourceForm} definition. Organization and entity
      * are null, suitable for creating new resources.
-     * </p>
+
      */
     public FrontendResourceForm() {
         super(null, (CD)new FrontendResourceDto(), null, FrontendMappingDefinitions.frontendResourceForm);
@@ -85,7 +85,7 @@ public class FrontendResourceForm<CD extends FrontendResourceDto> extends Abstra
      * <p>
      * Allows customization of the form's field definitions and rendering behavior
      * by providing a specific {@link FrontendMappingDefinition}.
-     * </p>
+
      *
      * @param frontendMappingDefinition the custom mapping definition for form structure and validation
      */
@@ -99,7 +99,7 @@ public class FrontendResourceForm<CD extends FrontendResourceDto> extends Abstra
      * Initializes the form with the provided DTO instance, using the standard
      * {@link FrontendMappingDefinitions#frontendResourceForm} definition. Suitable for
      * scenarios where the DTO is pre-populated.
-     * </p>
+
      *
      * @param dto the pre-populated FrontendResourceDto to bind to this form
      */
@@ -113,7 +113,7 @@ public class FrontendResourceForm<CD extends FrontendResourceDto> extends Abstra
      * Initializes the form with the specified organization ID and entity, using the standard
      * {@link FrontendMappingDefinitions#frontendResourceForm} definition. The entity's data
      * will be populated into the form's DTO via {@link #populateFrom(FrontendResource)}.
-     * </p>
+
      *
      * @param organizationId the organization ID for tenant-scoped operations
      * @param entity the FrontendResource entity to edit
@@ -127,7 +127,7 @@ public class FrontendResourceForm<CD extends FrontendResourceDto> extends Abstra
      * <p>
      * Provides full control over the form initialization with explicit organization ID, entity,
      * and custom {@link FrontendMappingDefinition}.
-     * </p>
+
      *
      * @param organizationId the organization ID for tenant-scoped operations
      * @param entity the FrontendResource entity to edit
@@ -143,7 +143,7 @@ public class FrontendResourceForm<CD extends FrontendResourceDto> extends Abstra
      * Master constructor providing complete control over all form components: organization ID,
      * pre-populated DTO, entity, and custom mapping definition. Useful for advanced scenarios
      * requiring fine-grained initialization.
-     * </p>
+
      *
      * @param organizationId the organization ID for tenant-scoped operations
      * @param dto the pre-populated FrontendResourceDto to bind
@@ -164,14 +164,14 @@ public class FrontendResourceForm<CD extends FrontendResourceDto> extends Abstra
      * {@link FrontendResourceService#CONTENT_EDITABLE_END} markers using 
      * {@link StringUtils#substringBetween}, wrapping the extracted fragment in the same markers
      * for the {@code dto.contentEditable} field.
-     * </p>
+
      * <p>
      * Example marker extraction:
      * <pre>
      * Content: "static &lt;!--editable--&gt;changeable&lt;!--/editable--&gt; static"
      * Result: dto.contentEditable = "&lt;!--editable--&gt;changeable&lt;!--/editable--&gt;"
      * </pre>
-     * </p>
+
      *
      * @param entity the FrontendResource entity to populate from
      * @return this form instance for method chaining
@@ -197,7 +197,7 @@ public class FrontendResourceForm<CD extends FrontendResourceDto> extends Abstra
      * Maps {@link FrontendResource.Type} enum values to corresponding {@link FieldType} constants
      * for syntax highlighting and editor configuration. Returns {@code code_html} as the default
      * when the input is null or unrecognized.
-     * </p>
+
      *
      * @param e the frontend resource type (typically a FrontendResource.Type enum value), may be null
      * @return the corresponding FieldType (code_js for JS, code_css for CSS, code_html otherwise)
@@ -223,10 +223,10 @@ public class FrontendResourceForm<CD extends FrontendResourceDto> extends Abstra
      * (NAME_, ORGANIZATION_ID_, CONTENT_, TYPE_, INCLUDE_IN_SITEMAP_, EMBEDDABLE_, ACCESS_LEVEL,
      * REQUIRED_PRIVILEGE_) to safely handle null or blank values. The content is saved as draft content,
      * and the resource type is explicitly set to {@link FrontendResource.ResourceType#RESOURCE}.
-     * </p>
+
      * <p>
      * This method is typically called after successful validation to persist form changes to the entity.
-     * </p>
+
      *
      * @param entity the FrontendResource entity to populate with DTO values
      * @return the updated entity instance
@@ -252,7 +252,7 @@ public class FrontendResourceForm<CD extends FrontendResourceDto> extends Abstra
      * Performs validation of the form's DTO data, adding any validation errors to the provided
      * {@link BindingResult}. This implementation currently delegates to the parent form validation
      * framework and Jakarta Bean Validation constraints defined on the DTO.
-     * </p>
+
      *
      * @param br the BindingResult to accumulate validation errors
      * @return this form instance for method chaining

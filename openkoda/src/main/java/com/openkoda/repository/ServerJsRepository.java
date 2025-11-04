@@ -40,26 +40,26 @@ import java.util.List;
  * It manages server-side JavaScript code that can be stored, retrieved, and executed
  * within the OpenKoda platform. The repository provides lookups by code name, module
  * association, and organization context.
- * </p>
+
  * <p>
  * ServerJs entities are used by {@link com.openkoda.uicomponent.JsFlowRunner} for
  * script execution and {@link com.openkoda.uicomponent.FileSystemImpl} for polyglot
  * filesystem operations. The repository extends {@link ComponentEntityRepository} to
  * support module-scoped operations, enabling JavaScript code organization within
  * OpenKoda modules.
- * </p>
+
  * <p>
  * This is an unsecured repository (extends UnsecuredFunctionalRepositoryWithLongId),
  * meaning privilege checks are not automatically enforced on repository operations.
  * Security rules should be applied at the service layer when accessing ServerJs entities.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * ServerJs jsCode = serverJsRepository.findByName("myScript");
  * List&lt;Tuple&gt; allScripts = serverJsRepository.findAllAsTuple();
  * </pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -79,7 +79,7 @@ public interface ServerJsRepository extends UnsecuredFunctionalRepositoryWithLon
      * Retrieves server-side JavaScript code by its name identifier. The name
      * should be unique within the system. This method is commonly used to
      * locate specific JavaScript code for execution by the GraalVM engine.
-     * </p>
+
      *
      * @param name the unique name of the ServerJs entity, must not be null
      * @return the ServerJs entity with the specified name, or null if not found
@@ -94,7 +94,7 @@ public interface ServerJsRepository extends UnsecuredFunctionalRepositoryWithLon
      * method is optimized for scenarios requiring only basic entity information
      * without loading complete entity graphs, such as populating dropdown lists
      * or building entity references.
-     * </p>
+
      *
      * @return list of tuples containing (id, name) for all ServerJs entities,
      *         ordered by name alphabetically; empty list if no entities exist
@@ -109,12 +109,12 @@ public interface ServerJsRepository extends UnsecuredFunctionalRepositoryWithLon
      * module. This operation is typically used during module uninstallation or
      * cleanup procedures. The deletion is executed as a bulk operation within a
      * single database transaction.
-     * </p>
+
      * <p>
      * <b>Important:</b> This is a modifying query that requires an active transaction.
      * The method should be called within a transactional context (e.g., from a
      * service method annotated with @Transactional).
-     * </p>
+
      *
      * @param module the OpenkodaModule whose associated ServerJs entities should
      *               be deleted, must not be null

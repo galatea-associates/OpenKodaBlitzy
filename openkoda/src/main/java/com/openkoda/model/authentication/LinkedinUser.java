@@ -32,23 +32,23 @@ import org.hibernate.annotations.DynamicUpdate;
  * This entity stores LinkedIn user profile data retrieved during the OAuth 2.0 authentication flow,
  * enabling professional network social login via LinkedIn. It links a LinkedIn identity to an OpenKoda
  * User account through a one-to-one shared primary key relationship.
- * </p>
+
  * <p>
  * The entity is persisted to the 'linkedin_users' table and uses the {@code @MapsId} pattern to share
  * the primary key with the {@link User} entity, ensuring a strict one-to-one association. Profile fields
  * are synchronized from LinkedIn API v2 responses during authentication, including first name, last name,
  * email (requires r_emailaddress scope), and profile picture URL.
- * </p>
+
  * <p>
  * The {@code @DynamicUpdate} annotation optimizes database operations by updating only modified columns
  * rather than all columns, improving performance for partial entity updates.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>
  * LinkedinUser linkedinUser = new LinkedinUser(linkedinId, firstName, lastName, email, pictureUrl);
  * </pre>
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
@@ -56,7 +56,7 @@ import org.hibernate.annotations.DynamicUpdate;
  * @since 2019-08-21
  * @see User
  * @see LoggedUser
- * @see com.openkoda.integration.controller.LinkedinController
+ * // LinkedinController
  */
 @Entity
 @DynamicUpdate
@@ -68,7 +68,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This field uses the {@code @MapsId} pattern to share the same primary key value as the associated
      * User entity, enforcing a one-to-one relationship at the database level.
-     * </p>
+
      */
     @Id
     private Long id;
@@ -78,7 +78,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This is the LinkedIn member ID that uniquely identifies the user within LinkedIn's system.
      * It is retrieved from the LinkedIn API during OAuth authentication and remains constant for the user.
-     * </p>
+
      */
     private String linkedinId;
 
@@ -87,7 +87,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * Corresponds to the {@code localizedFirstName} field from the LinkedIn Profile API v2.
      * This field is updated during authentication if the user's profile information changes.
-     * </p>
+
      */
     private String firstName;
     
@@ -96,7 +96,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * Corresponds to the {@code localizedLastName} field from the LinkedIn Profile API v2.
      * This field is updated during authentication if the user's profile information changes.
-     * </p>
+
      */
     private String lastName;
     
@@ -106,7 +106,7 @@ public class LinkedinUser extends LoggedUser {
      * This field requires the {@code r_emailaddress} permission scope during OAuth authorization.
      * If the scope is not granted, this field may be null. The email is retrieved from the
      * LinkedIn Email Address API endpoint during authentication.
-     * </p>
+
      */
     private String email;
     
@@ -115,7 +115,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This URL points to the user's LinkedIn profile photo and can be used to display their picture
      * within the application. The URL may change if the user updates their profile picture.
-     * </p>
+
      */
     private String profilePicture;
 
@@ -125,7 +125,7 @@ public class LinkedinUser extends LoggedUser {
      * This bidirectional association uses {@code @MapsId} to share the primary key with the User entity.
      * The relationship is mapped through the {@code user_id} foreign key column. The {@code @JsonIgnore}
      * annotation prevents circular reference issues during JSON serialization.
-     * </p>
+
      */
     @MapsId
     @OneToOne
@@ -138,7 +138,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This constructor is used by the JPA provider (Hibernate) when loading entities from the database
      * or creating new instances via reflection. It should not be called directly in application code.
-     * </p>
+
      */
     public LinkedinUser() {
     }
@@ -148,7 +148,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This constructor initializes a new LinkedinUser entity with data retrieved from the LinkedIn API
      * during OAuth authentication. All profile fields are populated from the LinkedIn API v2 response.
-     * </p>
+
      *
      * @param linkedinId the LinkedIn member ID (unique identifier from LinkedIn OAuth provider)
      * @param firstName the user's first name from LinkedIn profile (localizedFirstName)
@@ -173,7 +173,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * The audit string includes the user's first name, last name, and email address, providing
      * a human-readable identifier for audit logs and tracking purposes.
-     * </p>
+
      *
      * @return a formatted string in the format "firstName lastName email" for audit logging
      */
@@ -185,9 +185,9 @@ public class LinkedinUser extends LoggedUser {
     /**
      * Returns the primary key identifier shared with the associated {@link User} entity.
      * <p>
-     * This method overrides {@link LoggedUser#getId()} to provide access to the shared primary key.
+     * This method overrides {@link LoggedUser#getId} to provide access to the shared primary key.
      * The ID value is synchronized with the User entity through the {@code @MapsId} relationship.
-     * </p>
+
      *
      * @return the primary key identifier, or null if not yet persisted
      */
@@ -201,7 +201,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This ID is shared with the associated {@link User} entity via the {@code @MapsId} pattern.
      * Typically, this value is managed by JPA and should not be set manually in application code.
-     * </p>
+
      *
      * @param id the primary key identifier to set
      */
@@ -214,7 +214,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This is the immutable LinkedIn member ID that uniquely identifies the user within LinkedIn's system.
      * It is retrieved during the OAuth authentication flow and remains constant for the user.
-     * </p>
+
      *
      * @return the LinkedIn member ID, or null if not yet set
      */
@@ -227,7 +227,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This value is typically set once during initial OAuth authentication and should not change
      * for the lifetime of the user's LinkedIn account association.
-     * </p>
+
      *
      * @param linkedinId the LinkedIn member ID to set
      */
@@ -240,7 +240,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This value corresponds to the {@code localizedFirstName} field from the LinkedIn Profile API v2
      * and is updated during authentication if the user's profile changes.
-     * </p>
+
      *
      * @return the user's first name, or null if not available
      */
@@ -253,7 +253,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This value is synchronized from the LinkedIn API during authentication and represents
      * the user's localized first name.
-     * </p>
+
      *
      * @param firstName the user's first name to set
      */
@@ -266,7 +266,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This value corresponds to the {@code localizedLastName} field from the LinkedIn Profile API v2
      * and is updated during authentication if the user's profile changes.
-     * </p>
+
      *
      * @return the user's last name, or null if not available
      */
@@ -279,7 +279,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This value is synchronized from the LinkedIn API during authentication and represents
      * the user's localized last name.
-     * </p>
+
      *
      * @param lastName the user's last name to set
      */
@@ -293,7 +293,7 @@ public class LinkedinUser extends LoggedUser {
      * This field requires the {@code r_emailaddress} permission scope during OAuth authorization.
      * If the application does not request or the user does not grant this scope, this field will be null.
      * The email is retrieved from the LinkedIn Email Address API endpoint during authentication.
-     * </p>
+
      *
      * @return the user's email address, or null if not available or permission not granted
      */
@@ -306,7 +306,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This value is synchronized from the LinkedIn API during authentication when the {@code r_emailaddress}
      * permission scope is granted. The email may be null if the permission was not requested or granted.
-     * </p>
+
      *
      * @param email the user's email address to set, may be null
      */
@@ -319,7 +319,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This URL points to the user's current profile photo on LinkedIn and can be used to display
      * their picture within the application. The URL may change if the user updates their profile picture.
-     * </p>
+
      *
      * @return the profile picture URL, or null if not available
      */
@@ -332,7 +332,7 @@ public class LinkedinUser extends LoggedUser {
      * <p>
      * This value is synchronized from the LinkedIn API during authentication and provides
      * a direct link to the user's profile photo.
-     * </p>
+
      *
      * @param profilePicture the profile picture URL to set, may be null
      */
@@ -346,7 +346,7 @@ public class LinkedinUser extends LoggedUser {
      * This method provides access to the OpenKoda User entity that is linked to this LinkedIn identity
      * through the one-to-one shared primary key relationship. The User entity contains the core user
      * information and relationships within the OpenKoda system.
-     * </p>
+
      *
      * @return the associated User entity, or null if not yet set
      */
@@ -360,7 +360,7 @@ public class LinkedinUser extends LoggedUser {
      * This method establishes the one-to-one relationship between this LinkedIn identity and an OpenKoda
      * User account. The relationship uses the {@code @MapsId} pattern, so the User's ID will be shared
      * as this entity's primary key.
-     * </p>
+
      *
      * @param user the User entity to associate with this LinkedIn user
      */

@@ -12,24 +12,24 @@ import jakarta.persistence.*;
  * numbers (major.minor.build.revision). Each version encodes to single comparable integer: 
  * major*10000000 + minor*100000 + build*100 + revision. Implements {@link Comparable} via 
  * {@link #value()} for version ordering.
- * </p>
+ * 
  * <p>
  * Used by DbVersionService to determine which migrations to execute during application startup. 
  * Extends {@link TimestampedEntity} for creation/update timestamps. Implements {@link AuditableEntity} 
  * for audit trail.
- * </p>
+ * 
  * <p>
  * <b>Version Encoding:</b> Composite version (major, minor, build, revision) encoded to integer 
  * for comparison. Example: version 1.7.1.0 = 1*10000000 + 7*100000 + 1*100 = 10700100
- * </p>
+ * 
  * <p>
  * <b>Migration Workflow:</b> DbVersionService queries db_version records to determine current schema 
  * state, executes pending SQL blocks, persists new version records with done=true on success.
- * </p>
+ * 
  * <p>
  * <b>WARNING:</b> {@link #value()} and {@link #toString()} methods use Integer wrapper unboxing 
  * without null checks - potential NPE risk if version components not initialized.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -53,7 +53,7 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * Semantic version number component - major version.
      * <p>
      * Null values treated as 0 in {@link #value()} calculation but cause NPE in {@link #toString()}.
-     * </p>
+     * 
      */
     @Column(nullable = false, updatable = true, name = "major")
     private Integer major;
@@ -62,7 +62,7 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * Semantic version number component - minor version.
      * <p>
      * Null values treated as 0 in {@link #value()} calculation but cause NPE in {@link #toString()}.
-     * </p>
+     * 
      */
     @Column(nullable = false, updatable = true, name = "minor")
     private Integer minor;
@@ -71,7 +71,7 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * Semantic version number component - build number.
      * <p>
      * Null values treated as 0 in {@link #value()} calculation but cause NPE in {@link #toString()}.
-     * </p>
+     * 
      */
     @Column(nullable = false, updatable = true, name = "build")
     private Integer build;
@@ -80,7 +80,7 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * Semantic version number component - revision number.
      * <p>
      * Null values treated as 0 in {@link #value()} calculation but cause NPE in {@link #toString()}.
-     * </p>
+     * 
      */
     @Column(nullable = false, updatable = true, name = "revision")
     private Integer revision;
@@ -89,7 +89,7 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * Boolean flag indicating successful migration completion.
      * <p>
      * True if version applied successfully, false or null otherwise.
-     * </p>
+     * 
      */
     @Column(nullable = true, updatable = true, name = "done")
     private Boolean done;
@@ -104,7 +104,7 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * Transient flag controlling if migration should run during initialization.
      * <p>
      * Not persisted to database. Used by DbVersionService to determine execution timing.
-     * </p>
+     * 
      */
     @Transient
     private boolean runOnInit = false;
@@ -155,7 +155,7 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * Returns audit trail string representation of this entity.
      * <p>
      * Currently returns null - audit string not implemented for DbVersion.
-     * </p>
+     * 
      *
      * @return null (audit string not implemented)
      */
@@ -295,7 +295,7 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * Returns formatted version string in major.minor.build.revision format.
      * <p>
      * <b>WARNING:</b> NPE if any version component is null. Example: "1.7.1.0"
-     * </p>
+     * 
      *
      * @return formatted version string (e.g., "1.7.1.0")
      * @throws NullPointerException if any version component (major, minor, build, revision) is null
@@ -310,10 +310,10 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * <p>
      * Calculation: major*10000000 + minor*100000 + build*100 + revision.
      * Example: version 1.7.1.0 encodes to 10700100.
-     * </p>
+     * 
      * <p>
      * <b>WARNING:</b> NPE if any version component is null during unboxing.
-     * </p>
+     * 
      *
      * @return encoded integer version value for comparison
      * @throws NullPointerException if any version component (major, minor, build, revision) is null
@@ -338,7 +338,7 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * <p>
      * Two DbVersion instances are equal if all version components (major, minor, build, revision)
      * and the done flag have equal values.
-     * </p>
+     * 
      *
      * @param obj the object to compare with
      * @return true if all version components and done flag are equal, false otherwise
@@ -357,7 +357,7 @@ public class DbVersion extends TimestampedEntity implements AuditableEntity, Com
      * <p>
      * Enables version ordering for migration sequence determination. Lower encoded values
      * represent earlier versions.
-     * </p>
+     * 
      *
      * @param obj the DbVersion to compare with
      * @return negative if this version is earlier, zero if equal, positive if this version is later

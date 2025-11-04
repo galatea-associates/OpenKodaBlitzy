@@ -27,7 +27,7 @@ package com.openkoda.service.export.dto;
  * This is a mutable JavaBean POJO designed for YAML/JSON serialization. It extends ComponentDto
  * to inherit module identifier and organization scope fields. This DTO maps the Form domain entity
  * for export/import operations.
- * </p>
+
  * <p>
  * Boolean flags control automatic CRUD controller scaffolding:
  * <ul>
@@ -35,17 +35,17 @@ package com.openkoda.service.export.dto;
  *   <li>registerHtmlCrudController - generates HTML/UI CRUD pages</li>
  *   <li>showOnOrganizationDashboard - controls dashboard visibility</li>
  * </ul>
- * </p>
+
  * <p>
  * This DTO is used by form export pipelines and dynamic entity generation systems. It is not thread-safe
  * and provides no validation or defensive copying.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
  * @see ComponentDto for inherited module and organizationId fields
- * @see com.openkoda.model.Form domain entity
+ * @see com.openkoda.model.component.Form
  */
 public class FormConversionDto extends ComponentDto {
     /**

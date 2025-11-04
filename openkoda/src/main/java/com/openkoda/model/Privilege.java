@@ -31,20 +31,20 @@ import static com.openkoda.model.PrivilegeGroup.*;
  * display label, and visibility flag. Implements PrivilegeBase interface for uniform privilege handling and PrivilegeNames for 
  * string constant validation. Privilege IDs are used as database foreign keys in privilege assignment tables. Startup validation 
  * via checkName() ensures enum constant names match PrivilegeNames string constants to prevent configuration drift.
- * </p>
+ * 
  * <p>
  * Privilege categories: Organized into PrivilegeGroups: GLOBAL_SETTINGS (system-wide), ORGANIZATION (tenant data), 
  * USER/USER_ROLE (user management), SUPPORT (logs/diagnostics), FRONTEND_RESOURCE (UI resources), TOKEN (authentication), 
  * BACKEND (configuration), HISTORY (audit trails).
- * </p>
+ * 
  * <p>
  * ID allocation: Each privilege ID = enumOrdinalId * idOffset (1), creating unique database values. 
  * Example: isUser (id=1), canAccessGlobalSettings (id=2)
- * </p>
+ * 
  * <p>
  * Hidden privileges: Some privileges marked hidden=true (e.g., canRecoverPassword, canVerifyAccount) are internal-only 
  * and not exposed in UI privilege management screens.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -53,7 +53,7 @@ import static com.openkoda.model.PrivilegeGroup.*;
  * @see PrivilegeGroup
  * @see PrivilegeNames
  * @see Role
- * @see PrivilegeHelper
+ * @see com.openkoda.core.helper.PrivilegeHelper
  */
 public enum Privilege implements PrivilegeBase, PrivilegeNames {
 

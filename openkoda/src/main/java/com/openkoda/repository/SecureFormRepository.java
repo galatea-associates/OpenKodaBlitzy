@@ -30,16 +30,16 @@ import static com.openkoda.controller.common.URLConstants.FORM;
 /**
  * Secure repository marker interface for Form entities with SearchableRepositoryMetadata.
  * <p>
- * Extends {@link SecureRepository} for privilege-enforced form operations. This interface
+ * Extends {@link com.openkoda.repository.SecureRepository} for privilege-enforced form operations. This interface
  * is annotated with {@link SearchableRepositoryMetadata} to enable dynamic repository discovery
  * by the SearchableRepositories system. The metadata configuration specifies the entity key
  * (FORM), description formula for search results, and the Form entity class for type safety.
- * </p>
+ * 
  * <p>
  * As a secure repository, all query operations inherit privilege enforcement from the
- * {@link SecureRepository} contract, ensuring that form access respects the authenticated
+ * {@link com.openkoda.repository.SecureRepository} contract, ensuring that form access respects the authenticated
  * user's privileges and organizational context.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

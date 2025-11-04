@@ -42,23 +42,19 @@ import org.springframework.stereotype.Service;
  * to read tokens from the request parameter named "token". It is designed for GET-only requests with
  * auto-expiring single-use tokens embedded in URLs, typically used in email links to protected resources
  * (download file, view report, reset password) where users click links without prior authentication.
- * </p>
  * <p>
  * <b>Request Matcher:</b> The static method {@code checkRequestSupport()} verifies that the request uses
  * the GET method AND contains a non-blank "token" parameter. POST, PUT, and DELETE methods are not supported
  * for security reasons, as tokens in URLs are logged in browser history, proxy logs, and referrer headers.
- * </p>
  * <p>
  * <b>Success Handler:</b> Configures {@link RequestParameterTokenAuthenticationSuccessHandler} which persists
  * the SecurityContext to the HTTP session, enabling subsequent requests to use session authentication without
  * requiring the token parameter. After the first authenticated request, users can navigate the application
  * using standard session cookies.
- * </p>
  * <p>
  * <b>Single-Use Token Invalidation:</b> The {@code afterAuthentication()} method calls
  * {@code token.invalidateIfSingleUse()} and {@code tokenRepository.saveAndFlush()} to mark single-use tokens
  * as invalid after successful authentication. This prevents token reuse and unauthorized sharing.
- * </p>
  * <p>
  * <b>Usage Example:</b>
  * <pre>
@@ -70,7 +66,6 @@ import org.springframework.stereotype.Service;
  * // 5. Success handler saves SecurityContext to session
  * // 6. Subsequent requests use session authentication without token
  * </pre>
- * </p>
  *
  * @see AbstractTokenAuthenticationFilter
  * @see RequestParameterTokenAuthenticationSuccessHandler
@@ -100,18 +95,18 @@ public class RequestParameterTokenAuthenticationFilter extends AbstractTokenAuth
      * Configures the superclass with a RequestMatcher via method reference
      * {@code RequestParameterTokenAuthenticationFilter::checkRequestSupport}, which ensures only GET requests
      * with a "token" parameter are processed by this filter.
-     * </p>
+     * 
      * <p>
      * Sets a custom {@link RequestParameterTokenAuthenticationSuccessHandler} that saves the SecurityContext
      * to the HttpSession via {@code securityContextRepository}. This enables users to access protected resources
      * in subsequent requests without the token parameter.
-     * </p>
+     * 
      * <p>
      * <b>Typical flow:</b> First request with {@code ?token=abc} authenticates and creates a session.
      * Subsequent requests use the session cookie for authentication without requiring the token parameter.
      * This differs from {@code ApiTokenHeaderAuthenticationFilter}, which forwards without session creation
      * (stateless REST API pattern).
-     * </p>
+     * 
      */
     public RequestParameterTokenAuthenticationFilter() {
         super( RequestParameterTokenAuthenticationFilter::checkRequestSupport );
@@ -123,7 +118,7 @@ public class RequestParameterTokenAuthenticationFilter extends AbstractTokenAuth
      * <p>
      * Returns {@code true} if the request method equals "GET" AND the request contains a non-blank
      * "token" parameter. This dual condition ensures:
-     * </p>
+     * 
      * <ol>
      *   <li><b>GET method only</b> - Prevents CSRF attacks via token-in-URL for POST/PUT/DELETE operations.
      *       Tokens in URLs are logged in browser history, proxy logs, and referrer headers, making them
@@ -145,7 +140,7 @@ public class RequestParameterTokenAuthenticationFilter extends AbstractTokenAuth
      * <p>
      * Delegates to {@code HttpServletRequest.getParameter()} for query parameter extraction.
      * The constant {@code TOKEN} defines the parameter name "token".
-     * </p>
+     * 
      *
      * @param request HttpServletRequest containing the token query parameter
      * @return String token value from {@code request.getParameter(TOKEN)}, null if parameter not present
@@ -163,12 +158,12 @@ public class RequestParameterTokenAuthenticationFilter extends AbstractTokenAuth
      * If true, sets {@code token.valid=false} to mark the token as invalid and returns the token instance
      * (fluent API). The invalidated token is then persisted immediately via
      * {@code tokenRepository.saveAndFlush()}, which flushes the Hibernate session to the database.
-     * </p>
+     * 
      * <p>
      * <b>Security benefit:</b> Prevents token reuse. A second GET request with the same token will fail
      * authentication because {@code token.valid=false}. This makes email link tokens one-time-use,
      * preventing unauthorized sharing or replay attacks.
-     * </p>
+     * 
      *
      * @param request HttpServletRequest (unused in this implementation)
      * @param response HttpServletResponse (unused in this implementation)
@@ -184,7 +179,7 @@ public class RequestParameterTokenAuthenticationFilter extends AbstractTokenAuth
      * <p>
      * Delegates to {@code authenticationDetailsSource.buildDetails(request)} to extract authentication
      * details such as IP address and session ID for audit logging purposes.
-     * </p>
+     * 
      *
      * @param request HttpServletRequest for extracting details (IP address, session ID)
      * @param authRequest UsernamePasswordAuthenticationToken to populate with WebAuthenticationDetails
@@ -201,7 +196,7 @@ public class RequestParameterTokenAuthenticationFilter extends AbstractTokenAuth
      * authentication provider chain. The {@code @Lazy} annotation breaks circular dependencies that
      * occur during Spring Security configuration, where the filter needs the AuthenticationManager
      * and the security configuration needs the filter for chain construction.
-     * </p>
+     * 
      *
      * @param authenticationManager AuthenticationManager containing LoginByPasswordOrTokenAuthenticationProvider
      *                              for processing RequestTokenAuthenticationToken

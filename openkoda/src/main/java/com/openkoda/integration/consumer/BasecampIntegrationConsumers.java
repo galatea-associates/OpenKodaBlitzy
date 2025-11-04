@@ -36,7 +36,7 @@ import org.springframework.web.client.RestTemplate;
  * Implements notification-to-external-artifact conversion for Basecamp integration. This service
  * authenticates using OAuth access tokens from per-organization configuration and constructs JSON
  * payloads for Basecamp API endpoints via synchronous RestTemplate HTTP POST requests.
- * </p>
+
  * <p>
  * Key features include:
  * <ul>
@@ -46,19 +46,19 @@ import org.springframework.web.client.RestTemplate;
  *   <li>Automatic token refresh on 401 Unauthorized responses via integrationService.refreshBasecampToken()</li>
  *   <li>API endpoint template: https://3.basecampapi.com/{accountId}/buckets/{projectId}/todolists/{todolistId}/todos.json</li>
  * </ul>
- * </p>
+
  * <p>
  * Architecture notes: Stateless Spring {@code @Service} component that verifies notification scope
  * (services.notification.isOrganization), respects propagate flag, and loads per-organization configuration
  * via integrationService.getOrganizationConfiguration().
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * NotificationDto notification = ...;
  * basecampConsumer.postBasecampToDo(notification);
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -73,7 +73,7 @@ public class BasecampIntegrationConsumers extends IntegrationComponentProvider {
      * Basecamp API endpoint URL template for creating todos.
      * <p>
      * Template format: https://3.basecampapi.com/{accountId}/buckets/{projectId}/todolists/{todolistId}/todos.json
-     * </p>
+
      * <p>
      * Placeholders:
      * <ul>
@@ -81,7 +81,7 @@ public class BasecampIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>%s (second) - Project ID (bucket)</li>
      *   <li>%s (third) - Todo list ID</li>
      * </ul>
-     * </p>
+
      * Configured via application property: {@code api.basecamp.post.message}
      */
     @Value("${api.basecamp.post.message:https://3.basecampapi.com/%s/buckets/%s/todolists/%s/todos.json}")
@@ -102,15 +102,15 @@ public class BasecampIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>HTTP POST - executes RestTemplate POST request with Bearer token authentication</li>
      *   <li>Error handling - delegates to handleBasecampError() with automatic token refresh and single retry on 401 Unauthorized</li>
      * </ol>
-     * </p>
+
      * <p>
      * Authentication: Uses OAuth access token from IntegrationModuleOrganizationConfiguration.getBasecampAccessToken().
      * If the token is missing or empty, the method logs a warning and returns without posting.
-     * </p>
+
      * <p>
      * Token refresh: On 401 Unauthorized response, automatically calls integrationService.refreshBasecampToken()
      * and retries the request once via recursive call to postBasecampToDo().
-     * </p>
+
      *
      * @param notification the NotificationDto containing the message to convert to a Basecamp todo. Must be organization-level
      *                     with propagate flag set to true. The notification message is used for the todo description.
@@ -148,7 +148,7 @@ public class BasecampIntegrationConsumers extends IntegrationComponentProvider {
      * <p>
      * Constructs the full Basecamp API URL by formatting the BASECAMP_POST_TODO_URL template with
      * the account ID, project ID (bucket), and todo list ID from the organization's Basecamp configuration.
-     * </p>
+
      * <p>
      * Required configuration parameters from organizationConfig:
      * <ul>
@@ -157,7 +157,7 @@ public class BasecampIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>toDoListId - Basecamp todo list identifier (from getBasecampToDoListId())</li>
      * </ul>
      * All three parameters must be non-blank, otherwise the method logs an error and returns null.
-     * </p>
+
      *
      * @param organizationConfig the IntegrationModuleOrganizationConfiguration containing Basecamp account settings.
      *                           Must have non-blank accountId, projectId, and toDoListId.
@@ -187,12 +187,12 @@ public class BasecampIntegrationConsumers extends IntegrationComponentProvider {
      *   "description": "message with escaped quotes"
      * }
      * }</pre>
-     * </p>
+
      * <p>
      * The content field is populated from the internationalized message key "notification.basecamp.subject"
      * via the messages service. The description field contains the provided message with double quotes
      * escaped to \" for JSON compatibility using StringUtils.replace().
-     * </p>
+
      *
      * @param message the notification message to include in the todo description. Double quotes in the message
      *                are automatically escaped to prevent JSON parsing errors.
@@ -218,10 +218,10 @@ public class BasecampIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>Authorization: Bearer {accessToken} - OAuth 2.0 access token for authentication</li>
      *   <li>Content-Type: application/json - indicates JSON payload format</li>
      * </ul>
-     * </p>
+
      * <p>
      * The Authorization header uses the Bearer token scheme as required by the Basecamp API OAuth implementation.
-     * </p>
+
      *
      * @param accessToken the OAuth access token from organization configuration (IntegrationModuleOrganizationConfiguration.getBasecampAccessToken()).
      *                    Must be non-empty to authenticate successfully.
@@ -245,11 +245,11 @@ public class BasecampIntegrationConsumers extends IntegrationComponentProvider {
      *   <li>Other errors: Delegates to integrationService.handleResponseError() for logging and error propagation
      *       with the message template "[postBasecampToDo] Error while posting message. Code: {}. Error: {}"</li>
      * </ol>
-     * </p>
+
      * <p>
      * Note: Token refresh and retry occurs only once. If the retry also fails, the error is propagated
      * via handleResponseError() without further retry attempts.
-     * </p>
+
      *
      * @param response the ResponseEntity from the Basecamp API request containing HTTP status code and response body
      * @param notification the original NotificationDto used for the retry attempt if token refresh succeeds

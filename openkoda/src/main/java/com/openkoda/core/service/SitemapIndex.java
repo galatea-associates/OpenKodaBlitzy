@@ -38,18 +38,18 @@ import java.util.List;
  * This class serves as the root container for generating XML sitemaps that comply with the sitemaps.org protocol.
  * It is annotated with Jackson XML bindings to facilitate automatic serialization to XML format. Each instance
  * contains a collection of {@link SitemapEntry} objects that represent individual URLs to be included in the sitemap.
- * </p>
+
  * <p>
  * The class implements {@link LoggingComponentWithRequestId} to provide request-scoped logging capabilities,
  * allowing trace correlation across distributed operations. Debug logging is used to track sitemap initialization
  * and entry retrieval operations.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * SitemapIndex sitemap = new SitemapIndex(frontendResources, "https://example.com");
  * }</pre>
- * </p>
+
  *
  * @see SitemapEntry
  * @see FrontendResource
@@ -64,7 +64,7 @@ public class SitemapIndex implements Serializable, LoggingComponentWithRequestId
      * Constructs a new SitemapIndex by converting a collection of FrontendResource objects to SitemapEntry objects.
      * <p>
      * This constructor performs the following operations:
-     * </p>
+
      * <ul>
      *   <li>Initializes debug logging for sitemap creation tracking</li>
      *   <li>Creates a new ArrayList to store sitemap entries</li>
@@ -75,7 +75,7 @@ public class SitemapIndex implements Serializable, LoggingComponentWithRequestId
      * <p>
      * The baseUrl parameter is propagated to each {@link SitemapEntry} constructor to ensure all URLs in the sitemap
      * are absolute and properly formatted according to the sitemaps.org specification.
-     * </p>
+
      *
      * @param entries the collection of FrontendResource objects to include in the sitemap, must not be null
      * @param baseUrl the base URL to prepend to all resource paths, must not be null or empty
@@ -96,11 +96,11 @@ public class SitemapIndex implements Serializable, LoggingComponentWithRequestId
      * as a {@code <url>} element in the generated XML. The {@code @JacksonXmlElementWrapper(useWrapping = false)}
      * annotation ensures that entries are rendered as unwrapped {@code <url>} elements directly under the
      * {@code <urlset>} root element, without an intermediate wrapper element.
-     * </p>
+
      * <p>
      * Each {@link SitemapEntry} in this list contains location, last modification date, change frequency,
      * and priority information for a specific URL in the sitemap.
-     * </p>
+
      */
     @JacksonXmlProperty(localName = "url")
     @JacksonXmlElementWrapper(useWrapping = false)
@@ -113,7 +113,7 @@ public class SitemapIndex implements Serializable, LoggingComponentWithRequestId
      * declaring conformance to the sitemaps.org schema version 0.9. The namespace is set to
      * {@code "http://www.sitemaps.org/schemas/sitemap/0.9"} which is the official XML namespace
      * for the Sitemap protocol as defined by sitemaps.org.
-     * </p>
+
      */
     @JacksonXmlProperty(isAttribute = true)
     private String xmlns = "http://www.sitemaps.org/schemas/sitemap/0.9";
@@ -124,15 +124,15 @@ public class SitemapIndex implements Serializable, LoggingComponentWithRequestId
      * This method provides access to the collection of {@link SitemapEntry} objects that represent
      * individual URLs included in the sitemap. Each entry contains location, last modification date,
      * change frequency, and priority information.
-     * </p>
+
      * <p>
      * Debug logging is performed when this method is invoked to track sitemap entry access for
      * troubleshooting and monitoring purposes.
-     * </p>
+
      * <p>
      * Note: This class is not thread-safe. It is intended for single-threaded XML serialization
      * operations. Concurrent access to the returned list may result in undefined behavior.
-     * </p>
+
      *
      * @return the list of sitemap entries, never null
      */

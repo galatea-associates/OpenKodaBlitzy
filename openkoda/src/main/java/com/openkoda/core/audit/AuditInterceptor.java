@@ -62,22 +62,22 @@ import java.util.Map.Entry;
  * PropertyChangeListener.prepareAuditLogs, persists with AuditRepository.saveAll + flush inside active transaction. 
  * Registry can be extended via {@link com.openkoda.core.customisation.BasicCustomisationService} for custom entity 
  * audit support.
- * </p>
+ * 
  * <p>
  * <b>Predefined Auditable Entities</b> (lines 79-98): Task, Organization, UserRole, User, Role, Form 
  * (registered twice - line 84 and 98), ServerJs, OrganizationRole, GlobalRole, FrontendResource, ControllerEndpoint, 
  * Email, HttpRequestTask, EventListenerEntry, FacebookUser, GoogleUser, LDAPUser, LoginAndPassword, DynamicEntity.
- * </p>
+ * 
  * <p>
  * <b>CRITICAL Transaction Safety Warning</b>: beforeTransactionCompletion executes inside active Hibernate transaction. 
  * Errors during audit persistence can rollback the entire transaction including audited changes. Audit save failures 
  * affect business logic commits.
- * </p>
+ * 
  * <p>
  * <b>Thread Safety</b>: Singleton Spring @Service with mutable auditListeners registry. Registry modifications not 
  * synchronized (constructor initialization only). Called by session-scoped PropertyChangeInterceptor instances with 
  * per-session auditMap.
- * </p>
+ * 
  *
  * @see PropertyChangeInterceptor Session-scoped Hibernate hook that delegates to this service
  * @see PersistanceInterceptor Abstract base providing computeChanges algorithm
@@ -97,7 +97,7 @@ public class AuditInterceptor extends PersistanceInterceptor implements LoggingC
      * <p>
      * Populated in constructor with 18 predefined entity types. Extensible via registerAuditableClass for custom 
      * entities. Not synchronized - modifications only in constructor.
-     * </p>
+     * 
      */
     private Map<Class<? extends AuditableEntity>, PropertyChangeListener> auditListeners;
 
@@ -121,11 +121,11 @@ public class AuditInterceptor extends PersistanceInterceptor implements LoggingC
      * ControllerEndpoint, Email, HttpRequestTask, EventListenerEntry, FacebookUser, GoogleUser, LDAPUser, 
      * LoginAndPassword, DynamicEntity. Each registration creates PropertyChangeListener with simple class name and 
      * human-readable label.
-     * </p>
+     * 
      * <p>
      * <b>Note</b>: Form class registered twice at lines 84 and 98 - likely unintentional duplicate. Registry 
      * extensible via registerAuditableClass after construction.
-     * </p>
+     * 
      */
     public AuditInterceptor() {
         //standard listeners, can be extended with @{@link com.openkoda.core.customisation.BasicCustomisationService}
@@ -158,10 +158,10 @@ public class AuditInterceptor extends PersistanceInterceptor implements LoggingC
      * Creates PropertyChangeListener with class simple name and display label, stores in auditListeners map keyed 
      * by class. Allows extension of audit coverage beyond 18 predefined types. Called by constructor for standard 
      * entities and can be invoked by BasicCustomisationService for custom entities.
-     * </p>
+     * 
      * <p>
      * Usage example: {@code registerAuditableClass(CustomEntity.class, "Custom Entity")}
-     * </p>
+     * 
      *
      * @param c Entity class to audit (must extend AuditableEntity)
      * @param classLabel Human-readable label for audit display (e.g., "Organization", "User Role")
@@ -201,7 +201,7 @@ public class AuditInterceptor extends PersistanceInterceptor implements LoggingC
      * Called by PropertyChangeInterceptor when Hibernate detects dirty entity during flush. Checks if entity class 
      * is registered (line 138), delegates to inherited computeChanges from PersistanceInterceptor for diff generation, 
      * populates auditMap with EDIT operation AuditedObjectState. Skips unregistered entity types.
-     * </p>
+     * 
      *
      * @param auditMap Session-scoped map accumulating AuditedObjectState entries
      * @param entity Entity being updated
@@ -243,11 +243,11 @@ public class AuditInterceptor extends PersistanceInterceptor implements LoggingC
      * Collections (line 177-179), blank strings (line 181-183), ignored properties via isIgnoredProperty (line 191-193). 
      * Handles content properties separately via isContentProperty (line 185-189). Creates AuditedObjectState with ADD 
      * operation and empty string as 'before' value in changes map (line 187, 195).
-     * </p>
+     * 
      * <p>
      * <b>Implementation Note</b>: Properties map contains simple string values (line 194), changes map contains 
      * ImmutablePair('', currentValue) pairs (line 195).
-     * </p>
+     * 
      *
      * @param auditMap Session-scoped map accumulating AuditedObjectState entries
      * @param entity Entity being inserted (must implement AuditableEntity)
@@ -304,11 +304,11 @@ public class AuditInterceptor extends PersistanceInterceptor implements LoggingC
      * Called by PropertyChangeInterceptor when entity is deleted. Checks if entity class registered (line 219), 
      * creates AuditedObjectState with empty properties and changes maps and DELETE operation (line 220). entityState, 
      * propertyNames, types are unused - DELETE audit only captures entity identity via PropertyChangeListener.getEntityId.
-     * </p>
+     * 
      * <p>
      * <b>Implementation Note</b>: Empty HashMaps at line 220 - DELETE operation only records "Deleted EntityClass 
      * [auditString]" via AuditChangeFactory.
-     * </p>
+     * 
      *
      * @param auditMap Session-scoped map accumulating AuditedObjectState entries
      * @param entity Entity being deleted (must implement AuditableEntity)
@@ -337,22 +337,22 @@ public class AuditInterceptor extends PersistanceInterceptor implements LoggingC
      * prepareAuditLogs to build Audit[] with metadata (user, IP, request ID, organization, change description), 
      * (3) Batch saves with auditRepository.saveAll (line 241), (4) Flushes to database (line 242). Finally clears 
      * auditMap (line 246). Resolves authenticated user via UserProvider.getFromContext() (line 238).
-     * </p>
+     * 
      * <p>
      * <b>RUNS INSIDE ACTIVE TRANSACTION</b> - audit save errors can rollback entire transaction including business changes.
-     * </p>
+     * 
      * <p>
      * <b>Important</b>: If multiple changes on same field during one session, the saved will be the last change on 
      * the entity, because of that there is a possibility that the old state differs from previous audit log new state.
-     * </p>
+     * 
      * <p>
      * <b>Transaction Warning</b>: Audit persistence failures throw exceptions that rollback surrounding transaction. 
      * Ensure auditRepository operations succeed or business data commits will be lost.
-     * </p>
+     * 
      * <p>
      * <b>Note</b>: auditMap.clear() at line 246 in finally block ensures cleanup even if audit save fails. Comment 
      * "do we need this?" suggests uncertainty - clearing is safe given session-scoped lifecycle.
-     * </p>
+     * 
      *
      * @param auditMap Session-scoped map with accumulated AuditedObjectState entries keyed by entity instance
      * @param tx Hibernate Transaction about to commit

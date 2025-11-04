@@ -14,26 +14,26 @@ import org.hibernate.annotations.Formula;
  * parameter binding, enabling flexible reporting capabilities across the OpenKoda platform.
  * Reports are organization-scoped for multi-tenant isolation and include computed privilege
  * fields for fine-grained authorization control.
- * </p>
+
  * <p>
  * <b>Persistence Details:</b><br>
  * Persisted to 'query_reports' table (inferred from JPA naming convention). Extends
  * {@link OpenkodaEntity} to inherit auditing fields (createdOn, updatedOn) and organization
  * scoping (organizationId) for tenant isolation.
- * </p>
+
  * <p>
  * <b>Report Workflow:</b><br>
  * 1. Create QueryReport instance with organization context and SQL query<br>
  * 2. Reporting service executes query with runtime parameter binding<br>
  * 3. Export handlers generate output files using {@link #getFileName()} for naming<br>
  * 4. UI components display reports using {@link #getName()} for labels
- * </p>
+
  * <p>
  * <b>Multi-Tenancy:</b><br>
  * Organization-scoped via inherited organizationId field ensures tenant isolation. Each report
  * definition is visible only within its owning organization context, preventing cross-tenant
  * data access in multi-tenant deployments.
- * </p>
+
  * <p>
  * <b>Security:</b><br>
  * Computed privilege fields ({@link #requiredReadPrivilege}, {@link #requiredWritePrivilege})
@@ -41,14 +41,14 @@ import org.hibernate.annotations.Formula;
  * Read operations require {@link PrivilegeNames#_readOrgData}, write operations require
  * {@link PrivilegeNames#_manageOrgData}. Service layer must sanitize SQL queries to prevent
  * SQL injection attacks.
- * </p>
+
  * <p>
  * <b>Integration:</b><br>
  * - Reporting services: Query execution and parameter binding<br>
  * - Export handlers: File generation with CSV, Excel, PDF formats<br>
  * - UI components: Report management interfaces and display widgets<br>
  * - AI integration: Supports AI-assisted report generation via canUseReportingAI privilege
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -56,7 +56,7 @@ import org.hibernate.annotations.Formula;
  * report.setName("Monthly Sales Report");
  * report.setQuery("SELECT * FROM sales WHERE month = :month");
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -73,7 +73,7 @@ public class QueryReport extends OpenkodaEntity {
      * This field stores the report's display label shown in UI components and used
      * by {@link #getFileName()} to generate filesystem-friendly export filenames.
      * Persisted as VARCHAR column in database.
-     * </p>
+
      */
     private String name;
     
@@ -84,7 +84,7 @@ public class QueryReport extends OpenkodaEntity {
      * must validate and sanitize this query before execution to prevent SQL injection
      * attacks. Supports parameterized queries with runtime parameter binding using
      * named parameters (e.g., :paramName syntax).
-     * </p>
+
      */
     private String query;
 
@@ -95,7 +95,7 @@ public class QueryReport extends OpenkodaEntity {
      * This field is not persisted to the database but computed at query time using the
      * SQL expression: {@code ( 'ORGANIZATION_DATA_READ' )}. Used by authorization services
      * to enforce read access control for report viewing and execution.
-     * </p>
+
      *
      * @see PrivilegeNames#_readOrgData
      */
@@ -109,7 +109,7 @@ public class QueryReport extends OpenkodaEntity {
      * This field is not persisted to the database but computed at query time using the
      * SQL expression: {@code ( 'ORGANIZATION_DATA_MANAGE' )}. Used by authorization services
      * to enforce write access control for report creation, modification, and deletion.
-     * </p>
+
      *
      * @see PrivilegeNames#_manageOrgData
      */
@@ -122,7 +122,7 @@ public class QueryReport extends OpenkodaEntity {
      * Creates a new report instance bound to the specified organization context, ensuring
      * tenant isolation in multi-tenant deployments. The organizationId is passed to the
      * parent {@link OpenkodaEntity} constructor to establish tenant scope.
-     * </p>
+
      *
      * @param organizationId the organization identifier for tenant scoping, or null for
      *                       global reports (not recommended for multi-tenant environments)
@@ -138,7 +138,7 @@ public class QueryReport extends OpenkodaEntity {
      * materialization. Passes null organization to parent constructor. For application
      * code, prefer {@link #QueryReport(Long)} with explicit organization context to
      * ensure proper multi-tenant isolation.
-     * </p>
+
      */
     public QueryReport() {
         super(null);
@@ -151,7 +151,7 @@ public class QueryReport extends OpenkodaEntity {
      * set. The organization context is null, so caller should set organizationId separately
      * for multi-tenant deployments. Name field remains null and should be set via
      * {@link #setName(String)} for proper display and export filename generation.
-     * </p>
+
      *
      * @param query the SQL query string to execute for report generation (not validated
      *              or sanitized; service layer must validate before execution)
@@ -167,7 +167,7 @@ public class QueryReport extends OpenkodaEntity {
      * Retrieves the human-readable report name used in UI components for display labels
      * and by {@link #getFileName()} for generating export filenames. May be null if not
      * yet set via {@link #setName(String)} or during entity initialization.
-     * </p>
+
      *
      * @return the report name, or null if not set
      */
@@ -181,7 +181,7 @@ public class QueryReport extends OpenkodaEntity {
      * Updates the human-readable report name. This value is used by UI forms for display
      * and by import handlers during report definition imports. The name is also used by
      * {@link #getFileName()} to generate filesystem-friendly export filenames.
-     * </p>
+
      *
      * @param name the report name to set (may be null)
      */
@@ -196,7 +196,7 @@ public class QueryReport extends OpenkodaEntity {
      * This query is stored without validation or sanitization, so the reporting service
      * must validate and sanitize before execution to prevent SQL injection attacks.
      * Supports parameterized queries with named parameters.
-     * </p>
+
      *
      * @return the SQL query string, or null if not set
      */
@@ -211,7 +211,7 @@ public class QueryReport extends OpenkodaEntity {
      * or sanitization is performed at this level. The caller must ensure the query is safe
      * and valid before persisting. The reporting service must validate and sanitize this
      * query before execution to prevent SQL injection vulnerabilities.
-     * </p>
+
      *
      * @param query the SQL query string to set (not validated; may be null)
      */
@@ -226,13 +226,13 @@ public class QueryReport extends OpenkodaEntity {
      * whitespace characters with underscores and converting to lowercase. If the name
      * field is null or empty, returns the default filename "report". This method is used
      * by export handlers to generate filenames for CSV, Excel, and PDF exports.
-     * </p>
+
      * <p>
      * Example transformations:<br>
      * "Monthly Sales Report" → "monthly_sales_report"<br>
      * null → "report"<br>
      * "" → "report"
-     * </p>
+
      *
      * @return filesystem-friendly filename derived from report name, or "report" if name
      *         is null or empty

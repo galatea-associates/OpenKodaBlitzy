@@ -42,12 +42,12 @@ import java.util.regex.Pattern;
  * follow the pattern [a-z\-\/0-9]+ without leading slashes. Provides a static helper method
  * {@link #toFileDto(File)} for converting File entities to FileDto with URL generation via
  * {@link UrlHelper#getFileURL(File)}.
- * </p>
+ * 
  * <p>
  * This form is specifically designed for HTML page frontend resources with sitemap inclusion.
  * The validate method enforces strict URL-path formatting rules: lowercase letters, hyphens,
  * forward slashes, and digits only, with no leading slash allowed.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -63,7 +63,7 @@ public class FrontendResourcePageForm extends FrontendResourceForm<FrontendResou
      * <p>
      * Uses {@link FrontendMappingDefinitions#frontendResourcePageForm} to configure form fields
      * and validation rules specific to HTML page frontend resources.
-     * </p>
+     * 
      */
     public FrontendResourcePageForm() {
         super(FrontendMappingDefinitions.frontendResourcePageForm);
@@ -75,7 +75,7 @@ public class FrontendResourcePageForm extends FrontendResourceForm<FrontendResou
      * Creates a new {@link FrontendResourcePageDto} and populates the form from the provided
      * frontend resource entity within the specified organization context. Uses the frontend
      * resource page form mapping definition for field configuration.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID for tenant-scoped operations
      * @param frontendResource the existing frontend resource entity to populate from
@@ -88,7 +88,7 @@ public class FrontendResourcePageForm extends FrontendResourceForm<FrontendResou
      * Validates the frontend resource page name according to URL-path formatting rules.
      * <p>
      * Enforces the following validation rules on dto.name:
-     * </p>
+     * 
      * <ul>
      * <li>Name must not be blank (rejects with "not.empty" if blank)</li>
      * <li>Name must match pattern [a-z\-\/0-9]+ - lowercase letters, hyphens, forward slashes,
@@ -98,7 +98,7 @@ public class FrontendResourcePageForm extends FrontendResourceForm<FrontendResou
      * <p>
      * Delegates to parent {@link FrontendResourceForm#validate(BindingResult)} for additional
      * validation rules inherited from the base form.
-     * </p>
+     * 
      *
      * @param br the Spring BindingResult to collect validation errors
      * @return this form instance for fluent chaining
@@ -124,7 +124,7 @@ public class FrontendResourcePageForm extends FrontendResourceForm<FrontendResou
      * filename, contentType, and a generated file URL via {@link UrlHelper#getFileURL(File)}.
      * This helper method is used to transform File entities into DTOs suitable for
      * frontend resource page representation.
-     * </p>
+     * 
      *
      * @param a the File entity to convert
      * @return FileDto with file metadata and generated URL
@@ -141,7 +141,7 @@ public class FrontendResourcePageForm extends FrontendResourceForm<FrontendResou
      * Sets the entity name using {@link #getSafeValue(Object, String)} with URL_PATH_ prefix,
      * configures the resource type as HTML, and enables sitemap inclusion. This method is
      * part of the form lifecycle's populateTo phase.
-     * </p>
+     * 
      *
      * @param entity the frontend resource entity to populate
      * @return the populated frontend resource entity

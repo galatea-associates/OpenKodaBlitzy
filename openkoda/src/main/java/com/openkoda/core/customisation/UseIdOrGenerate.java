@@ -34,11 +34,9 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
  * This generator extends {@link SequenceStyleGenerator} to provide flexible ID assignment behavior:
  * when an entity already has an ID value assigned before persistence, that value is preserved; 
  * when no ID is present, a new value is generated from the configured database sequence.
- * </p>
  * <p>
  * This hybrid approach is essential for canonical entities where specific ID values must be guaranteed 
  * for system integrity. Common use cases include:
- * </p>
  * <ul>
  * <li>Predefined system roles with fixed IDs (e.g., ROLE_ADMIN with ID=1)</li>
  * <li>Canonical privilege definitions that must maintain consistent IDs across environments</li>
@@ -65,18 +63,15 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
  *     // ID null - will be generated from sequence
  * }
  * }</pre>
- * </p>
  * <p>
  * <b>Thread Safety:</b> This generator is thread-safe as it delegates to the parent 
  * {@link SequenceStyleGenerator} for sequence value generation and relies on Hibernate's 
  * session contract for concurrency management.
- * </p>
  * <p>
  * The generator requires entities to implement {@link LongIdEntity} to access the getId() method 
  * for checking pre-assigned values. When the entity's ID is null, generation is delegated to the 
  * parent SequenceStyleGenerator which retrieves the next value from the configured database sequence 
  * (typically GLOBAL_ID_GENERATOR with allocationSize=10 in OpenKoda).
- * </p>
  *
  * @see com.openkoda.model.Role Concrete usage example with predefined role IDs
  * @see SequenceStyleGenerator Parent class providing sequence-based generation
@@ -90,7 +85,7 @@ public class UseIdOrGenerate extends SequenceStyleGenerator {
      * Generates a primary key value for the given entity using hybrid ID assignment logic.
      * <p>
      * This method implements conditional ID generation behavior:
-     * </p>
+     * 
      * <ol>
      * <li>If the entity object is null, throws HibernateException immediately</li>
      * <li>If the entity already has a non-null ID value, that existing ID is returned unchanged</li>
@@ -100,12 +95,12 @@ public class UseIdOrGenerate extends SequenceStyleGenerator {
      * The method casts the entity to {@link LongIdEntity} to access the getId() method. This is safe 
      * because entities using this generator must implement LongIdEntity as specified in the 
      * {@code @GenericGenerator} configuration.
-     * </p>
+     * 
      * <p>
      * When sequence generation is triggered (ID is null), the parent class retrieves the next value 
      * from the database sequence configured for this generator, typically using the GLOBAL_ID_GENERATOR 
      * sequence with an allocation size of 10 for performance optimization.
-     * </p>
+     * 
      *
      * @param session the Hibernate session contract implementation providing access to the current 
      *                persistence context and database connection; used by parent generator for 

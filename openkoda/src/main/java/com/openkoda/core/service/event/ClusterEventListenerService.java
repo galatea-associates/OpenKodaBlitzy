@@ -36,21 +36,21 @@ import org.springframework.stereotype.Service;
  * appropriate service handlers for cross-node configuration synchronization. Receives cluster events published 
  * by {@link ClusterEventSenderService} and routes to {@link SchedulerService}, {@link EventListenerService}, 
  * or {@link FormService} based on eventType.
- * </p>
+
  * <p>
  * Implements Hazelcast {@code MessageListener<ClusterEvent>} registered on CLUSTER_EVENT_TOPIC during Hazelcast 
  * configuration. Active only in 'hazelcast' profile; not loaded in single-instance deployments.
- * </p>
+
  * <p>
  * All service dependencies are {@code @Lazy} injected to avoid circular dependency issues during Spring context 
  * initialization. Hazelcast invokes {@link #onMessage(Message)} on message listener threads; handler service 
  * methods must be thread-safe.
- * </p>
+
  * <p>
  * Exceptions in {@link #onMessage(Message)} are logged by Hazelcast but do not stop message processing; 
  * failed nodes may have inconsistent state. Handler operations should be idempotent as duplicate messages 
  * may arrive in rare failure scenarios.
- * </p>
+
  * <p>
  * Example cluster synchronization flow:
  * <pre>{@code
@@ -60,15 +60,15 @@ import org.springframework.stereotype.Service;
  * // Node B: This listener receives event
  * onMessage() receives event → schedulerService.loadFromDb(123)
  * }</pre>
- * </p>
+
  * <p>
  * Hazelcast guarantees message order from single publisher; concurrent publishers may interleave. 
  * All cluster nodes (including publisher) receive messages; handlers must handle self-published events gracefully.
- * </p>
+
  * <p>
  * <strong>WARNING:</strong> {@code @Lazy} injection delays circular dependency but may cause 
  * {@code NullPointerException} if service accessed before Spring fully initialized.
- * </p>
+
  *
  * @see ClusterEventSenderService for event publishing
  * @see ClusterEvent for event DTO structure and EventType enum
@@ -87,7 +87,7 @@ public class ClusterEventListenerService implements MessageListener<ClusterEvent
      * <p>
      * {@code @Lazy} injected to break circular dependency with SchedulerService → ClusterEventSenderService → ClusterHelper.
      * Invoked for loadFromDb (SCHEDULER_ADD), remove (SCHEDULER_REMOVE), removeAndLoadFromDb (SCHEDULER_RELOAD).
-     * </p>
+
      * <p>
      * Operations:
      * <ul>
@@ -95,7 +95,7 @@ public class ClusterEventListenerService implements MessageListener<ClusterEvent
      * <li>SCHEDULER_REMOVE: Cancels ScheduledFuture and removes from currentlyScheduled Map</li>
      * <li>SCHEDULER_RELOAD: Cancels existing schedule and re-registers with updated configuration</li>
      * </ul>
-     * </p>
+
      */
     @Inject @Lazy
     private SchedulerService schedulerService;
@@ -105,7 +105,7 @@ public class ClusterEventListenerService implements MessageListener<ClusterEvent
      * <p>
      * {@code @Lazy} injected to avoid circular dependency. Invoked for loadFromDb (EVENT_LISTENER_ADD), 
      * unregisterEventListener (EVENT_LISTENER_REMOVE), removeAndLoadFromDb (EVENT_LISTENER_RELOAD).
-     * </p>
+
      * <p>
      * Operations:
      * <ul>
@@ -113,7 +113,7 @@ public class ClusterEventListenerService implements MessageListener<ClusterEvent
      * <li>EVENT_LISTENER_REMOVE: Removes listener tuple from ApplicationEventService registry</li>
      * <li>EVENT_LISTENER_RELOAD: Unregisters and re-registers with updated consumer configuration</li>
      * </ul>
-     * </p>
+
      */
     @Inject @Lazy
     private EventListenerService eventListenerService;
@@ -123,7 +123,7 @@ public class ClusterEventListenerService implements MessageListener<ClusterEvent
      * <p>
      * {@code @Lazy} injected to avoid circular dependency. Invoked for addForm (FORM_ADD), 
      * reloadForm (FORM_RELOAD), removeForm (FORM_REMOVE).
-     * </p>
+
      * <p>
      * Operations:
      * <ul>
@@ -131,7 +131,7 @@ public class ClusterEventListenerService implements MessageListener<ClusterEvent
      * <li>FORM_RELOAD: Refreshes form metadata and recompiles validation rules</li>
      * <li>FORM_REMOVE: Unregisters form from FormService registry</li>
      * </ul>
-     * </p>
+
      */
     @Inject @Lazy
     private FormService formService;
@@ -146,16 +146,16 @@ public class ClusterEventListenerService implements MessageListener<ClusterEvent
      * <li>EVENT_LISTENER_* → eventListenerService</li>
      * <li>FORM_* → formService</li>
      * </ul>
-     * </p>
+
      * <p>
      * Invoked on Hazelcast message listener thread pool; not caller's request thread; MDC context may not be available. 
      * Service method exceptions are logged by Hazelcast but swallowed; failed operation may leave node in inconsistent 
      * state requiring manual intervention.
-     * </p>
+
      * <p>
      * Handler methods are designed to be idempotent: loadFromDb/addForm loads only if not already loaded, remove is 
      * no-op if not present, reload always refreshes.
-     * </p>
+
      * <p>
      * Event type handling details:
      * <ul>
@@ -178,7 +178,7 @@ public class ClusterEventListenerService implements MessageListener<ClusterEvent
      * <li><strong>FORM_REMOVE:</strong> Invokes {@code formService.removeForm(id)} which unregisters form from 
      * FormService registry</li>
      * </ul>
-     * </p>
+
      *
      * @param message Hazelcast Message wrapper containing ClusterEvent payload with eventType and entity ID
      */

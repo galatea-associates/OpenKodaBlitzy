@@ -43,14 +43,14 @@ import java.util.Map;
  * It delegates PDF generation to {@link PdfConstructor} and file persistence to {@link FileService},
  * ensuring tenant-aware file storage through {@link TenantResolver}. All file operations automatically
  * detect content types and persist files securely via {@link SecureFileRepository}.
- * </p>
+ * 
  * <p>
  * Exception handling: IOException and SQLException from underlying services are caught and wrapped
  * into RuntimeException to simplify error handling in UI component JavaScript contexts.
- * </p>
+ * 
  * <p>
  * Thread-safety: This class is stateless and thread-safe as it delegates to thread-safe Spring services.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -89,7 +89,7 @@ public class LiveMediaServices implements MediaServices {
      * Delegates to {@link PdfConstructor#writeDocumentToByteArray(String, Map[])} to render
      * the specified template with the provided data models. Useful for generating PDFs for
      * download or further processing in memory.
-     * </p>
+     * 
      *
      * @param templateName the path to the PDF template (relative to template directory)
      * @param models variable number of data model maps containing values to render in the template
@@ -107,7 +107,7 @@ public class LiveMediaServices implements MediaServices {
      * Delegates to {@link PdfConstructor#writeDocumentToStream(String, Map[])} to render
      * the specified template with the provided data models. Useful for streaming PDFs directly
      * to HTTP responses or other output destinations without loading entire content into memory.
-     * </p>
+     * 
      *
      * @param templateName the path to the PDF template (relative to template directory)
      * @param models variable number of data model maps containing values to render in the template
@@ -126,13 +126,13 @@ public class LiveMediaServices implements MediaServices {
      * It automatically detects content type, stores the file content, and creates a File entity
      * with appropriate metadata. The organization ID is resolved from {@link TenantResolver} to
      * ensure tenant isolation.
-     * </p>
+     * 
      *
      * @param input byte array containing the complete file content to persist
      * @param fileName the name for the file including extension (used for display and content-type detection)
      * @return persisted File entity with generated ID and metadata
      * @throws RuntimeException wrapping IOException if file storage fails, or SQLException if database persistence fails
-     * @see FileService#saveAndPrepareFileEntity(Long, Long, String, String, byte[])
+     * @see com.openkoda.core.service.FileService#saveAndPrepareFileEntity(Long, String, String, String, byte[])
      * @see TenantResolver#getTenantedResource()
      */
     @Override
@@ -158,14 +158,14 @@ public class LiveMediaServices implements MediaServices {
      * It stores the stream content efficiently, creates a File entity with size and metadata,
      * and ensures tenant isolation through {@link TenantResolver}. Useful for handling large files
      * or streaming uploads without loading entire content into memory.
-     * </p>
+     * 
      *
      * @param inputStream the input stream containing file content to persist (will be consumed)
      * @param totalFileSize the total size of the file in bytes (required for storage allocation)
      * @param fileName the name for the file including extension (used for display and content-type detection)
      * @return persisted File entity with generated ID and metadata
      * @throws RuntimeException wrapping IOException if stream reading or file storage fails, or SQLException if database persistence fails
-     * @see FileService#saveAndPrepareFileEntity(Long, Long, String, long, String, InputStream)
+     * @see com.openkoda.core.service.FileService#saveAndPrepareFileEntity(Long, String, String, long, String, InputStream)
      * @see TenantResolver#getTenantedResource()
      */
     @Override

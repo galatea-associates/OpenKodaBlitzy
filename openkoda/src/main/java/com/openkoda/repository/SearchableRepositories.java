@@ -45,23 +45,23 @@ import static com.openkoda.model.common.ModelConstants.UPDATED_ON;
 /**
  * Startup discovery utility enumerating SecureRepository beans and caching searchable entity metadata for dynamic indexing.
  * <p>
- * This utility class discovers all {@link SecureRepository} beans from the Spring ApplicationContext at startup or lazy initialization,
+ * This utility class discovers all {@link com.openkoda.repository.SecureRepository} beans from the Spring ApplicationContext at startup or lazy initialization,
  * enforcing that each repository interface is annotated with {@link SearchableRepositoryMetadata}. It resolves physical table names
  * using the {@link Table} annotation or Hibernate's {@link CamelCaseToUnderscoresNamingStrategy} when the annotation is absent.
- * </p>
+ * 
  * <p>
  * The discovery process formats and caches per-entity UPDATE SQL templates for index maintenance, combining the {@code UPDATE_INDEX_QUERY}
  * pattern with the {@code INDEX_STRING_COLUMN} constant. These templates are stored in fast lookup maps and arrays for both static and
  * dynamic searchable entities, enabling efficient batch index updates via {@link JobsScheduler#searchIndexUpdaterJob()}.
- * </p>
+ * 
  * <p>
  * Discovery is synchronized once for thread-safety during initialization, with the {@code discoveryCompleted} flag preventing duplicate
  * discovery. The class provides {@code registerSearchableRepository} for runtime plugin registration of dynamically generated entities.
- * </p>
+ * 
  * <p>
  * Used by search indexing services and {@link SecureEntityDictionaryRepository} for global search functionality in
  * {@link com.openkoda.controller.GlobalSearchController}.
- * </p>
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
  * @author OpenKoda Team
@@ -79,11 +79,11 @@ public class SearchableRepositories {
      * SQL template for updating the search index string column of searchable entities.
      * <p>
      * Format: {@code UPDATE %s SET %s = (%s) where (CURRENT_TIMESTAMP - %s < interval '00:01:01')}
-     * </p>
+     * 
      * <p>
      * Parameters: table name, index column name, search index formula, updated timestamp column.
      * The WHERE clause limits updates to recently modified records (within 61 seconds) for efficiency.
-     * </p>
+     * 
      */
     public static final String UPDATE_INDEX_QUERY = "UPDATE %s SET %s = (%s) where (CURRENT_TIMESTAMP - %s < interval '00:01:01')";
     
@@ -110,7 +110,7 @@ public class SearchableRepositories {
      * <p>
      * Used for global search in {@link com.openkoda.controller.GlobalSearchController}.
      * The queries update the indexString continuously as configured in {@link JobsScheduler#searchIndexUpdaterJob()}.
-     * </p>
+     * 
      */
     private static String[] searchIndexUpdates = {};
     
@@ -135,10 +135,10 @@ public class SearchableRepositories {
     /**
      * Discovers and caches all searchable repository beans from the Spring ApplicationContext at application startup.
      * <p>
-     * This synchronized method performs a one-time discovery of all {@link SecureRepository} beans, validates that each
+     * This synchronized method performs a one-time discovery of all {@link com.openkoda.repository.SecureRepository} beans, validates that each
      * is annotated with {@link SearchableRepositoryMetadata}, and builds internal caches for fast lookup. The discovery
      * process resolves physical table names and generates UPDATE SQL templates for search index maintenance.
-     * </p>
+     * 
      * <p>
      * Discovery steps:
      * <ol>
@@ -151,10 +151,10 @@ public class SearchableRepositories {
      *   <li>Build lookup maps by entity key and entity class</li>
      *   <li>Set {@code discoveryCompleted} flag to true</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Thread-safety: Method is synchronized to prevent race conditions during concurrent startup initialization.
-     * </p>
+     * 
      *
      * @throws RuntimeException if any SecureRepository bean lacks the required SearchableRepositoryMetadata annotation
      * @see SearchableRepositoryMetadata
@@ -225,7 +225,7 @@ public class SearchableRepositories {
      * <p>
      * This array is populated during {@link #discoverSearchableRepositories()} and contains all SecureRepository beans
      * that are annotated with {@link SearchableRepositoryMetadata}.
-     * </p>
+     * 
      *
      * @return array of searchable repository instances, empty array before discovery completes
      */
@@ -238,7 +238,7 @@ public class SearchableRepositories {
      * <p>
      * The entity key is obtained from {@link SearchableRepositoryMetadata#entityKey()} and provides fast lookup
      * of repositories by their associated entity identifier.
-     * </p>
+     * 
      *
      * @return map of entity keys to searchable repository instances
      */
@@ -251,7 +251,7 @@ public class SearchableRepositories {
      * <p>
      * Delegates to {@link ScopedSecureRepository#getSearchableRepositoryMetadata()} to obtain the metadata
      * that defines search indexing behavior and entity characteristics.
-     * </p>
+     * 
      *
      * @param r the scoped secure repository instance
      * @return the SearchableRepositoryMetadata annotation associated with the repository
@@ -295,7 +295,7 @@ public class SearchableRepositories {
      * <p>
      * Returns a {@link SecureRepositoryWrapper} that enforces the provided security scope on all repository operations.
      * Used to obtain privilege-checked repository access within a specific organizational or global context.
-     * </p>
+     * 
      *
      * @param entityKey the entity identifier as defined in {@link SearchableRepositoryMetadata#entityKey()}
      * @param scope the security scope to enforce on repository operations
@@ -313,10 +313,10 @@ public class SearchableRepositories {
      * This method enables plugin-style registration of repositories for entities generated at runtime (e.g., via Byte Buddy).
      * It extracts the {@link SearchableRepositoryMetadata} from the repository, adds it to all lookup maps, generates an
      * UPDATE SQL query for index maintenance, and registers the entity class in the dynamic entities map.
-     * </p>
+     * 
      * <p>
      * Used by the dynamic entity generation subsystem to integrate runtime-generated entities into the global search infrastructure.
-     * </p>
+     * 
      *
      * @param tableName the physical database table name for the entity
      * @param repository the SecureRepository instance for the dynamic entity, must have SearchableRepositoryMetadata annotation
@@ -337,7 +337,7 @@ public class SearchableRepositories {
      * <p>
      * Looks up the {@link SearchableRepositoryMetadata} by entity key and returns the associated entity class.
      * Used for dynamic entity instantiation and type resolution in generic repository operations.
-     * </p>
+     * 
      *
      * @param entityKey the entity identifier as defined in {@link SearchableRepositoryMetadata#entityKey()}
      * @return the entity class implementing {@link SearchableEntity}, or null if entity key not found
@@ -354,7 +354,7 @@ public class SearchableRepositories {
      * Retrieves the SearchableRepositoryMetadata annotation for the specified entity key.
      * <p>
      * Provides fast lookup of metadata defining search indexing behavior, entity characteristics, and global search inclusion.
-     * </p>
+     * 
      *
      * @param entityKey the entity identifier as defined in {@link SearchableRepositoryMetadata#entityKey()}
      * @return the SearchableRepositoryMetadata annotation, or null if entity key not found
@@ -367,7 +367,7 @@ public class SearchableRepositories {
      * Retrieves the SearchableRepositoryMetadata annotation for the specified entity class.
      * <p>
      * Enables type-safe metadata lookup by entity class for compile-time type checking in generic repository operations.
-     * </p>
+     * 
      *
      * @param entityClass the entity class implementing {@link SearchableEntity}
      * @return the SearchableRepositoryMetadata annotation, or null if entity class not registered
@@ -382,7 +382,7 @@ public class SearchableRepositories {
      * Each query updates the {@code indexString} column for recently modified records using the formula defined in
      * {@link SearchableRepositoryMetadata#searchIndexFormula()}. These queries are executed periodically by
      * {@link JobsScheduler#searchIndexUpdaterJob()} to keep search indexes current.
-     * </p>
+     * 
      *
      * @return array of formatted UPDATE SQL queries for static searchable entities
      * @see #UPDATE_INDEX_QUERY
@@ -396,7 +396,7 @@ public class SearchableRepositories {
      * <p>
      * Similar to {@link #getSearchIndexUpdates()}, but contains queries for entities registered at runtime via
      * {@link #registerSearchableRepository(String, SecureRepository)}. Used for dynamic entity search indexing.
-     * </p>
+     * 
      *
      * @return mutable list of formatted UPDATE SQL queries for dynamic searchable entities
      */
@@ -413,10 +413,10 @@ public class SearchableRepositories {
      *   <li>Otherwise, convert the class simple name from camelCase to underscore_separated format using
      *       {@link CamelCaseToUnderscoresNamingStrategy}</li>
      * </ol>
-     * </p>
+     * 
      * <p>
      * Example: {@code Organization.class} resolves to {@code "organization"} table, or uses {@link Table#name()} if present.
-     * </p>
+     * 
      *
      * @param c the entity class to resolve the table name for
      * @return the physical database table name
@@ -435,7 +435,7 @@ public class SearchableRepositories {
      * <p>
      * Contains entity keys added via {@link #registerSearchableRepository(String, SecureRepository)} for runtime-generated
      * entities such as those created by the Byte Buddy dynamic entity generation subsystem.
-     * </p>
+     * 
      *
      * @return array of entity keys for dynamic searchable entities
      */
@@ -448,7 +448,7 @@ public class SearchableRepositories {
      * <p>
      * Provides access to the complete registry of dynamically registered searchable entities, enabling runtime
      * type resolution and entity class lookup for plugin-style entity generation.
-     * </p>
+     * 
      *
      * @return map of entity keys to entity classes for dynamic searchable entities
      */

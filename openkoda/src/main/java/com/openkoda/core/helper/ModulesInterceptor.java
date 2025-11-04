@@ -40,20 +40,17 @@ import java.util.Map;
  * EmailModelPreHandler implementations to inject module-specific menu items, resources,
  * and data into view models. This enables modules to extend the UI navigation and enrich
  * page models without modifying core application code.
- * </p>
  * <p>
  * The interceptor follows Spring MVC's HandlerInterceptor contract, executing registered
  * handlers at preHandle (before controller execution) and postHandle (after controller
  * execution but before view rendering) phases. PostHandler implementations typically
  * retrieve registered OpenkodaModule instances and add module menu items to the model
  * for navigation rendering in the UI.
- * </p>
  * <p>
  * Thread-safety: This interceptor is thread-safe for read operations. Module discovery
  * and menu injection occur per request using registered handler instances. Handler
  * registration (add operations) should occur during application startup before handling
  * requests.
- * </p>
  * <p>
  * Example usage - Modules register handlers during initialization:
  * <pre>{@code
@@ -62,7 +59,6 @@ import java.util.Map;
  *     modelAndView.addObject("moduleMenuItems", menuItems);
  * });
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -79,7 +75,7 @@ public class ModulesInterceptor implements ReadableCode, LoggingComponentWithReq
      * PreHandler implementations are invoked before controller execution during the preHandle
      * phase of the Spring MVC request lifecycle. Handlers can inspect or modify the request,
      * perform authentication checks, or abort request processing by returning false.
-     * </p>
+     * 
      *
      * @since 1.7.1
      */
@@ -101,7 +97,7 @@ public class ModulesInterceptor implements ReadableCode, LoggingComponentWithReq
      * can enrich the ModelAndView with module-specific data such as menu items, resources,
      * or contextual information needed for UI rendering. This is the primary mechanism for
      * modules to inject navigation elements and view model data.
-     * </p>
+     * 
      *
      * @since 1.7.1
      */
@@ -123,7 +119,7 @@ public class ModulesInterceptor implements ReadableCode, LoggingComponentWithReq
      * to allow modules to inject data into the email template model. This enables modules
      * to add contextual information, branding elements, or module-specific data to
      * outgoing emails.
-     * </p>
+     * 
      *
      * @since 1.7.1
      */
@@ -145,7 +141,7 @@ public class ModulesInterceptor implements ReadableCode, LoggingComponentWithReq
      * <p>
      * This method iterates through all registered email model handlers and invokes each one,
      * allowing modules to inject data into the provided model before email rendering.
-     * </p>
+     * 
      *
      * @param model the email template model to be enriched by modules
      * @return true always (for consistency with interceptor pattern)
@@ -164,7 +160,7 @@ public class ModulesInterceptor implements ReadableCode, LoggingComponentWithReq
      * It iterates through all registered module pre-handlers, invoking each in order.
      * If any handler returns false, the combined result will be false, potentially
      * aborting request processing.
-     * </p>
+     * 
      *
      * @param request the current HTTP request
      * @param response the current HTTP response
@@ -189,18 +185,18 @@ public class ModulesInterceptor implements ReadableCode, LoggingComponentWithReq
      * ModelAndView with module-specific data such as menu items, navigation elements, or
      * contextual resources. This is the primary integration point where modules inject UI
      * components into page navigation.
-     * </p>
+     * 
      * <p>
      * Module menu injection logic: PostHandler implementations typically retrieve registered
      * OpenkodaModule instances from the database or configuration, build module menu items
      * based on user permissions and context, and add these items to the model for rendering
      * in the application's navigation bar or sidebar. The model is then enriched with
      * module-specific resources needed for view rendering.
-     * </p>
+     * 
      * <p>
      * If modelAndView is null (indicating a direct response body such as REST API responses),
      * post handlers are skipped as there is no view model to enrich.
-     * </p>
+     * 
      *
      * @param request the current HTTP request
      * @param response the current HTTP response
@@ -222,7 +218,7 @@ public class ModulesInterceptor implements ReadableCode, LoggingComponentWithReq
      * <p>
      * Modules call this method during initialization to register pre-request handlers.
      * Registration should occur during application startup before handling requests.
-     * </p>
+     * 
      *
      * @param modulePreHandler the pre-handler to register
      */
@@ -236,7 +232,7 @@ public class ModulesInterceptor implements ReadableCode, LoggingComponentWithReq
      * Modules call this method during initialization to register post-request handlers
      * that enrich view models with module-specific menu items and resources.
      * Registration should occur during application startup before handling requests.
-     * </p>
+     * 
      *
      * @param modulePostHandler the post-handler to register
      */
@@ -249,7 +245,7 @@ public class ModulesInterceptor implements ReadableCode, LoggingComponentWithReq
      * <p>
      * Modules call this method during initialization to register email model enrichment
      * handlers. Registration should occur during application startup before sending emails.
-     * </p>
+     * 
      *
      * @param emailModelPreHandler the email model handler to register
      */

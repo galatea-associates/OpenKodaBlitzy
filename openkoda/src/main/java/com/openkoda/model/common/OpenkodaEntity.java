@@ -44,20 +44,20 @@ import java.util.Map;
  * This abstract base class establishes the fundamental structure for all organization-related entities
  * in the system. It provides multi-tenancy through organization scoping, automatic audit trail tracking,
  * flexible key-value property storage, and full-text search capabilities.
- * </p>
+ * 
  * <p>
  * The class uses JPA {@code @Inheritance} with {@code TABLE_PER_CLASS} strategy, meaning each concrete
  * entity subclass gets its own dedicated database table containing all inherited fields plus its own.
  * This approach provides clear table separation and simplifies querying individual entity types.
- * </p>
+ * 
  * <p>
  * Spring Data JPA auditing is enabled via {@code @EntityListeners(AuditingEntityListener.class)},
  * automatically populating {@code @CreatedBy}, {@code @CreatedDate}, {@code @LastModifiedBy}, and
  * {@code @LastModifiedDate} fields on entity persistence and updates.
- * </p>
+ * 
  * <p>
  * <b>Key Features:</b>
- * </p>
+ * 
  * <ul>
  *   <li><b>Organization Scope:</b> Each entity is associated with an {@link Organization} for multi-tenant isolation</li>
  *   <li><b>Automatic Timestamps:</b> Created and updated timestamps are managed by Spring Data auditing</li>
@@ -68,7 +68,7 @@ import java.util.Map;
  * </ul>
  * <p>
  * <b>Usage Example:</b>
- * </p>
+ * 
  * <pre>
  * public class CustomEntity extends OpenkodaEntity {
  *     public CustomEntity(Long organizationId) { super(organizationId); }
@@ -98,7 +98,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * Uses {@link ModelConstants#ORGANIZATION_RELATED_ID_GENERATOR} sequence with allocation size of 10
      * for performance optimization. The sequence starts from {@link ModelConstants#INITIAL_ORGANIZATION_RELATED_VALUE}.
      * Batch allocation reduces database roundtrips during bulk entity creation.
-     * </p>
+     * 
      *
      * @see ModelConstants#ORGANIZATION_RELATED_ID_GENERATOR
      */
@@ -114,7 +114,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * non-updatable. The actual foreign key is managed by {@link #organizationId}.
      * Marked with {@code @JsonIgnore} to prevent circular references during JSON serialization.
      * Uses {@code FetchType.LAZY} to avoid unnecessary database queries.
-     * </p>
+     * 
      *
      * @see Organization
      * @see #organizationId
@@ -130,7 +130,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * This field establishes tenant isolation by associating each entity with a specific organization.
      * The value is set once during entity creation via constructor and is immutable thereafter
      * ({@code updatable = false}). Nullable to support global entities not tied to specific organizations.
-     * </p>
+     * 
      *
      * @see Organization
      * @see #setOrganizationId(Long)
@@ -145,7 +145,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * {@link ModelConstants#DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA}.
      * Provides a human-readable identifier combining entity type and key attributes.
      * Read-only and computed at query time by the database.
-     * </p>
+     * 
      *
      * @see ModelConstants#DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA
      */
@@ -158,7 +158,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * This field stores searchable text extracted from the entity for full-text search capabilities.
      * Database column defaults to empty string and is non-insertable, typically populated by triggers
      * or database functions. Maximum length defined by {@link ModelConstants#INDEX_STRING_COLUMN_LENGTH}.
-     * </p>
+     * 
      *
      * @see SearchableOrganizationRelatedEntity
      * @see ModelConstants#INDEX_STRING_COLUMN
@@ -173,7 +173,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * Uses {@code @CreatedBy} annotation to capture the current authenticated user's identity
      * at entity creation time. The value is a {@link TimestampedEntity.UID} embeddable containing
      * both username and user ID. Marked {@code @JsonIgnore} to exclude from JSON responses.
-     * </p>
+     * 
      *
      * @see TimestampedEntity.UID
      * @see AuditingEntityListener
@@ -188,7 +188,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * Uses {@code @CreatedDate} annotation to capture entity creation time. Database column
      * defaults to {@code CURRENT_TIMESTAMP} with timezone support. Non-insertable and non-updatable
      * to ensure immutability. Formatted as ISO 8601 date-time for JSON serialization.
-     * </p>
+     * 
      *
      * @see AuditingEntityListener
      */
@@ -211,7 +211,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * on each entity update. Uses {@code @AttributeOverrides} to map the {@link TimestampedEntity.UID}
      * embeddable fields to {@code modifiedBy} and {@code modifiedById} columns.
      * Marked {@code @JsonIgnore} to exclude from JSON responses.
-     * </p>
+     * 
      *
      * @see TimestampedEntity.UID
      * @see AuditingEntityListener
@@ -237,7 +237,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * Uses {@code @LastModifiedDate} annotation to capture the time of each entity update.
      * Database column defaults to {@code CURRENT_TIMESTAMP} with timezone support. Non-insertable
      * to ensure the database sets the initial value. Formatted as ISO 8601 date-time for JSON serialization.
-     * </p>
+     * 
      *
      * @see AuditingEntityListener
      */
@@ -258,7 +258,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * <p>
      * Provides the entity's simple class name for logging and audit records.
      * Subclasses may override to include additional identifying information.
-     * </p>
+     * 
      *
      * @return the simple class name of this entity
      * @see AuditableEntityOrganizationRelated#toAuditString()
@@ -274,7 +274,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * Default implementation returns {@code null}, indicating no specific privilege is required.
      * Subclasses should override this method to enforce per-instance read access control
      * by returning the appropriate privilege name from {@code PrivilegeNames}.
-     * </p>
+     * 
      *
      * @return {@code null} in base implementation; privilege name in subclasses
      * @see EntityWithRequiredPrivilege#getRequiredReadPrivilege()
@@ -290,7 +290,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * Default implementation returns {@code null}, indicating no specific privilege is required.
      * Subclasses should override this method to enforce per-instance write access control
      * by returning the appropriate privilege name from {@code PrivilegeNames}.
-     * </p>
+     * 
      *
      * @return {@code null} in base implementation; privilege name in subclasses
      * @see EntityWithRequiredPrivilege#getRequiredWritePrivilege()
@@ -306,7 +306,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * Provides the tenant identifier this entity belongs to. Used by the security
      * and multi-tenancy subsystems to enforce organization-based data isolation.
      * May be {@code null} for global entities.
-     * </p>
+     * 
      *
      * @return the organization ID, or {@code null} for global entities
      * @see Organization
@@ -323,7 +323,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * Assigns the tenant identifier only if not already set, ensuring immutability
      * after initial assignment. This prevents accidental reassignment that could
      * violate tenant isolation boundaries.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID to set; ignored if already set
      * @see Organization
@@ -340,7 +340,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * Provides a human-readable identifier calculated by the database via the
      * {@code @Formula} annotation. The value combines entity type and key attributes
      * to create a unique reference string.
-     * </p>
+     * 
      *
      * @return the computed reference string, or {@code null} if not yet loaded
      * @see #referenceString
@@ -356,7 +356,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * <p>
      * Provides the database-generated primary key value. May be {@code null}
      * for transient entities not yet persisted.
-     * </p>
+     * 
      *
      * @return the entity ID, or {@code null} for transient entities
      * @see #id
@@ -371,7 +371,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * <p>
      * Typically managed by JPA and should not be called directly in application code.
      * Used by persistence framework during entity hydration.
-     * </p>
+     * 
      *
      * @param id the entity ID to set
      * @see #id
@@ -386,7 +386,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * Provides access to the searchable text content extracted from this entity.
      * Typically populated by database triggers or functions for full-text search capabilities.
      * Returns empty string by default if not yet indexed.
-     * </p>
+     * 
      *
      * @return the search index string, empty string if not indexed
      * @see SearchableOrganizationRelatedEntity#getIndexString()
@@ -402,7 +402,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * <p>
      * Initializes the entity with the specified organization ID for multi-tenant isolation.
      * The organization ID is immutable after construction.
-     * </p>
+     * 
      *
      * @param organizationId the organization ID for tenant scope, may be {@code null} for global entities
      * @see Organization
@@ -417,7 +417,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * <p>
      * Automatically maintained by Spring Data auditing. Returns the time of the most recent
      * update operation, or the creation time if never modified.
-     * </p>
+     * 
      *
      * @return the last modification timestamp, or {@code null} for transient entities
      * @see #updatedOn
@@ -432,7 +432,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * <p>
      * Automatically set by Spring Data auditing at entity creation time.
      * Immutable after initial persistence.
-     * </p>
+     * 
      *
      * @return the creation timestamp, or {@code null} for transient entities
      * @see #createdOn
@@ -449,10 +449,10 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * for storing custom attributes without schema modifications. Uses {@code @ElementCollection}
      * for JPA mapping with {@code entity_id} foreign key. Foreign key constraint is disabled
      * ({@code NO_CONSTRAINT}) to support polymorphic entity references.
-     * </p>
+     * 
      * <p>
      * <b>Usage Example:</b>
-     * </p>
+     * 
      * <pre>
      * entity.setProperty("customField", "customValue");
      * String value = entity.getProperty("customField");
@@ -476,7 +476,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * <p>
      * Provides access to flexible key-value storage without schema changes.
      * Returns {@code null} if the property does not exist.
-     * </p>
+     * 
      *
      * @param name the property name key
      * @return the property value, or {@code null} if not found
@@ -492,7 +492,7 @@ public abstract class OpenkodaEntity implements ModelConstants, Serializable, Se
      * <p>
      * Stores a key-value pair in the flexible property storage.
      * Returns the previous value if the property was already set.
-     * </p>
+     * 
      *
      * @param name the property name key
      * @param value the property value to set

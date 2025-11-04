@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toMap;
  * for web endpoint controllers. It aggregates multiple sources of autocomplete data including
  * service access via the Services aggregator, repository queries, Flow pipeline operations,
  * model properties, PageModelMap keys, and HTTP response helpers.
- * </p>
+
  * <p>
  * The service supports code snippet insertion patterns for common operations such as:
  * <ul>
@@ -30,19 +30,19 @@ import static java.util.stream.Collectors.toMap;
  * <li>HTTP response helpers and controller utilities</li>
  * <li>ServerJs module imports and function suggestions</li>
  * </ul>
- * </p>
+
  * <p>
  * This service is a stateless singleton managed by Spring's service component scanning.
  * It extends GenericAutocompleteService to inherit base reflection and method extraction
  * capabilities, and depends on repositories and services via ComponentProvider.
- * </p>
+
  *
  * @see WebendpointAutocompleteResponse
  * @see GenericAutocompleteService
  * @see com.openkoda.service.Services
- * @see LiveComponentProvider
+ * // LiveComponentProvider
  * @see ServerJs
- * @see com.openkoda.uicomponent.annotation.JsParser
+ * // JsParser
  * @author OpenKoda Team
  * @version 1.7.1
  * @since 1.7.1
@@ -57,12 +57,12 @@ public class WebendpointAutocompleteService extends GenericAutocompleteService {
      * editing experience. The response includes service suggestions from LiveComponentProvider,
      * model property keys for common entities, ServerJs module import suggestions, and
      * function signatures from ServerJs modules.
-     * </p>
+
      * <p>
      * The response is constructed fresh on each invocation without caching, ensuring
      * up-to-date suggestions that reflect the current state of ServerJs modules and
      * available services.
-     * </p>
+
      *
      * @return populated WebendpointAutocompleteResponse containing service suggestions,
      *         model keys (organizationEntityId, userEntityId), ServerJs import suggestions,
@@ -89,17 +89,17 @@ public class WebendpointAutocompleteService extends GenericAutocompleteService {
      * with their documentation. The reflection is performed on
      * {@code LiveComponentProvider.class.getDeclaredFields()}, and each field's type
      * is analyzed to generate autocomplete entries.
-     * </p>
+
      * <p>
      * The method employs stream processing to flatten the field-to-suggestions mapping
      * into a single map where keys are fully-qualified method names and values are
      * their documentation strings.
-     * </p>
+
      *
      * @return Map of service method suggestions where keys are method names prefixed
      *         with their service field name (e.g., "dataServices.getData()") and values
      *         are method documentation strings extracted via reflection
-     * @see LiveComponentProvider
+     * // LiveComponentProvider
      * @see #getSuggestionsAndDocumentation(Map, String)
      * @see #getExposedMethods(String)
      */
@@ -117,11 +117,11 @@ public class WebendpointAutocompleteService extends GenericAutocompleteService {
      * extracts their names for use as import suggestions in the code editor. The query
      * is executed via {@code repositories.secure.serverJs.findAll()} and results are
      * streamed and mapped to module names.
-     * </p>
+
      * <p>
      * Example usage in code editor: User types "import " and receives suggestions like
      * "utils", "validators", "transformers" based on available ServerJs modules.
-     * </p>
+
      *
      * @return Array of ServerJs module names available for import, extracted from
      *         all ServerJs entities via repository query
@@ -139,17 +139,17 @@ public class WebendpointAutocompleteService extends GenericAutocompleteService {
      * module's code to extract function signatures. It integrates with
      * {@code services.jsParser.getFunctions()} to parse JavaScript code and identify
      * available functions within each module.
-     * </p>
+
      * <p>
      * The returned map enables the code editor to provide function-level autocomplete
      * after a module is imported. For example, after importing "utils", the editor can
      * suggest functions like "formatDate()", "validateEmail()", etc.
-     * </p>
+
      *
      * @return Map where keys are ServerJs module names and values are lists of function
      *         names extracted from the module's code via JsParser integration
      * @see ServerJs
-     * @see com.openkoda.uicomponent.annotation.JsParser
+     * // JsParser
      * @see com.openkoda.service.Services#jsParser
      */
     private Map<String, List<String>> getServerJsSuggestions(){

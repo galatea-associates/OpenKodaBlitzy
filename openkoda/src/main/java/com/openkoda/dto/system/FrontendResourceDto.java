@@ -33,26 +33,26 @@ import com.openkoda.model.component.FrontendResource;
  * within OpenKoda's multi-tenant CMS system. It implements {@link CanonicalObject} and
  * {@link OrganizationRelatedObject} to support multi-tenant CMS operations with proper
  * organizational scoping and audit trail generation.
- * </p>
+
  * <p>
  * The DTO is used by CMS controllers, Thymeleaf template resolution, and frontend resource
  * management services to transfer content data between layers without exposing domain entities.
  * It supports various resource types including pages, templates, fragments, and embeddable
  * components with granular access control.
- * </p>
+
  * <p>
  * <b>Design Notes:</b>
  * This is a mutable DTO with public fields following JavaBean conventions. It does not provide
  * validation, equals/hashCode implementation, or thread-safety guarantees. The DTO is tightly
  * coupled to domain enums ({@link FrontendResource.AccessLevel} and {@link FrontendResource.Type}),
  * requiring careful serialization and integration testing when enum values change.
- * </p>
+
  * <p>
  * <b>Enum Coupling Warning:</b>
  * Changes to {@link FrontendResource.AccessLevel} or {@link FrontendResource.Type} enums
  * constitute breaking changes requiring version migration and thorough integration testing
  * of serialization/deserialization paths.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
@@ -60,7 +60,7 @@ import com.openkoda.model.component.FrontendResource;
  * dto.setName("home-page");
  * dto.setType(FrontendResource.Type.PAGE);
  * }</pre>
- * </p>
+
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @author OpenKoda Team
@@ -78,7 +78,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * This name serves as the primary identifier for the frontend resource
      * within its organization scope. It is used for URL mapping, template
      * resolution, and resource lookups in the CMS system.
-     * </p>
+
      */
     public String name;
     
@@ -88,7 +88,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * Specifies which organization owns this frontend resource, enabling
      * proper data isolation in multi-tenant deployments. Null values indicate
      * global resources accessible across all organizations.
-     * </p>
+
      */
     public Long organizationId;
     
@@ -98,7 +98,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * Contains the actual content to be rendered, which may include HTML,
      * Thymeleaf template expressions, or other markup. This is the production
      * content served to end users.
-     * </p>
+
      */
     public String content;
     
@@ -108,7 +108,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * Stores a simplified or modified version of the content optimized for
      * visual editing in WYSIWYG editors. This may differ from the production
      * content to facilitate easier editing workflows.
-     * </p>
+
      */
     public String contentEditable;
     
@@ -117,7 +117,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * <p>
      * Contains test data used to preview the resource with mock content during
      * development and testing. This data is not used in production rendering.
-     * </p>
+
      */
     public String testData;
     
@@ -127,7 +127,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * Specifies the privilege identifier that users must possess to access
      * this resource. If null or empty, no specific privilege check is enforced
      * beyond the access level settings.
-     * </p>
+
      */
     public String requiredPrivilege;
     
@@ -137,7 +137,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * When true, this resource will be included in automatically generated
      * sitemap files for search engine indexing. Typically set to true for
      * public pages and false for templates, fragments, or restricted content.
-     * </p>
+
      */
     public boolean includeInSitemap;
     
@@ -149,7 +149,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * directly. Note that this field has dual accessors: {@link #isEmbeddable()}
      * and {@link #getEmbeddable()} to support both JavaBean and boolean "is"
      * naming conventions.
-     * </p>
+
      */
     public boolean embeddable;
     
@@ -159,7 +159,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * Defines the access level for this resource. This field is coupled to the
      * {@link FrontendResource.AccessLevel} domain enum, and changes to that enum
      * constitute breaking changes requiring version migration.
-     * </p>
+
      *
      * @see FrontendResource.AccessLevel
      */
@@ -173,7 +173,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * {@link FrontendResource.Type} domain enum. Changes to that enum values
      * constitute breaking changes with potential serialization risks requiring
      * thorough integration testing.
-     * </p>
+
      *
      * @see FrontendResource.Type
      */
@@ -266,7 +266,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * <p>
      * This enum value determines how the resource is processed and rendered.
      * Ensure the provided enum value is compatible with serialization requirements.
-     * </p>
+
      *
      * @param type the resource type enum value
      * @see FrontendResource.Type
@@ -317,7 +317,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * This method follows the boolean "is" naming convention. A dual accessor
      * {@link #getEmbeddable()} is also provided for JavaBean compatibility.
      * Both methods return the same value.
-     * </p>
+
      *
      * @return true if the resource can be embedded in iframe or other contexts
      * @see #getEmbeddable()
@@ -332,7 +332,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * This method follows the JavaBean "get" naming convention. A dual accessor
      * {@link #isEmbeddable()} is also provided for boolean "is" convention.
      * Both methods return the same value.
-     * </p>
+
      *
      * @return true if the resource can be embedded in iframe or other contexts
      * @see #isEmbeddable()
@@ -383,7 +383,7 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * <p>
      * This enum value determines who can access this resource. Ensure the provided
      * enum value is compatible with serialization and authorization requirements.
-     * </p>
+
      *
      * @param accessLevel the access level enum value
      * @see FrontendResource.AccessLevel
@@ -398,14 +398,14 @@ public class FrontendResourceDto implements CanonicalObject, OrganizationRelated
      * Generates a human-readable message describing this CMS entry using the format
      * "CmsEntry %s of type: %s." with the resource name and type. This message is
      * used for audit logging and notification systems.
-     * </p>
+
      * <p>
      * <b>Warning:</b> This method does not perform null checking. If {@link #name}
      * or {@link #type} is null, {@link String#format(String, Object...)} will produce
      * "null" in the output string rather than throwing a NullPointerException.
      * Callers should ensure name and type are set before invoking this method for
      * meaningful audit messages.
-     * </p>
+
      *
      * @return the formatted notification message in the form "CmsEntry %s of type: %s."
      */

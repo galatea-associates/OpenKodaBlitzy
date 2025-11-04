@@ -38,11 +38,11 @@ import java.util.Map;
  * Offers WebSocket message delivery to specific users or broadcast channels for real-time
  * communication. All email operations create Email entity records for tracking and audit purposes.
  * All methods are annotated with {@link Autocomplete} for UI tooling metadata.
- * </p>
+ * 
  * <p>
  * Implementation: LiveMessagesServices provides the concrete implementation of this interface,
  * delegating to EmailService for email operations and WebsocketService for WebSocket messaging.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -59,11 +59,11 @@ public interface MessagesServices {
      * Creates Email entity, queues for immediate delivery via emailService.sendAndSaveEmail.
      * Attachments are converted from List to File array. Email record is persisted with
      * delivery status for audit trail.
-     * </p>
+     * 
      * <p>
      * Example: {@code sendEmail("user@example.com", "Welcome", "Hello!", null)} sends
      * immediate plain text email without attachments.
-     * </p>
+     * 
      *
      * @param email recipient email address (validated format required)
      * @param subject email subject line
@@ -80,11 +80,11 @@ public interface MessagesServices {
      * Creates Email entity with scheduledAt timestamp and queues for scheduled delivery.
      * Background job processes scheduled emails at configured interval. If sendOn is in the
      * past, delivers immediately.
-     * </p>
+     * 
      * <p>
      * Example: {@code sendEmail("user@example.com", "Reminder", "Meeting tomorrow", null,
      * LocalDateTime.now().plusHours(12))} schedules email for 12 hours from now.
-     * </p>
+     * 
      *
      * @param email recipient email address
      * @param subject email subject line
@@ -102,11 +102,11 @@ public interface MessagesServices {
      * Constructs PageModelMap with model variables, resolves template path as EMAIL_TEMPLATE_PATH
      * plus resourceName, and renders template via emailService.sendAndSaveOrganizationEmail with
      * tenant context. Default template is used if resourceName is null or empty.
-     * </p>
+     * 
      * <p>
      * Example: {@code sendEmail("user@example.com", "Invoice", "invoice",
      * Map.of("total", 100), null)} renders the invoice template with total variable.
-     * </p>
+     * 
      *
      * @param email recipient email address
      * @param subject email subject line
@@ -125,11 +125,11 @@ public interface MessagesServices {
      * Combines template rendering with scheduled delivery. Template is rendered immediately
      * but email is queued for future delivery at sendOn timestamp. Background job processes
      * scheduled emails at the specified time.
-     * </p>
+     * 
      * <p>
      * Example: {@code sendEmail("user@example.com", "Report", "monthly-report", reportData,
      * null, LocalDateTime.now().plusDays(1))} schedules templated email for tomorrow.
-     * </p>
+     * 
      *
      * @param email recipient email address
      * @param subject email subject line
@@ -149,11 +149,11 @@ public interface MessagesServices {
      * serialized to JSON via Jackson. If user has multiple browser tabs or sessions, message
      * is delivered to all active connections. Message sending is synchronized by websocketService
      * for thread-safety.
-     * </p>
+     * 
      * <p>
      * Example: {@code sendToWebsocketUser(user, "notifications",
      * Map.of("type", "alert", "message", "New comment"))} sends notification to user.
-     * </p>
+     * 
      *
      * @param user target User entity (message delivered to all user's active WebSocket connections)
      * @param channelName WebSocket channel or topic name for message routing (e.g., "notifications", "updates")
@@ -171,11 +171,11 @@ public interface MessagesServices {
      * serialized to JSON. Suitable for system-wide announcements, live updates, and real-time
      * data feeds. All subscribed users receive the message regardless of organization or tenant
      * context, so authorization should be applied at subscription time.
-     * </p>
+     * 
      * <p>
      * Example: {@code sendToWebsocketChannel("live-updates",
      * Map.of("event", "deployment", "status", "complete"))} broadcasts to all subscribers.
-     * </p>
+     * 
      *
      * @param channelName WebSocket channel or topic name for broadcast (e.g., "global-announcements")
      * @param payload message payload object (serialized to JSON for transmission)

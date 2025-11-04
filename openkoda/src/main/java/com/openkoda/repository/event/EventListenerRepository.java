@@ -37,12 +37,12 @@ import org.springframework.stereotype.Repository;
  * the OpenKoda platform. Event listeners are registered at runtime to handle application events and enable
  * extensible workflow automation. The repository supports discovery of existing listeners to prevent duplicates,
  * validation of listener configurations, and bulk cleanup operations during module uninstallation.
- * </p>
+ * 
  * <p>
  * Event listeners are scoped to {@link OpenkodaModule} instances, allowing module-specific event handling
  * and isolation. When modules are removed or disabled, all associated event listeners are cleaned up via
  * bulk delete operations to maintain referential integrity.
- * </p>
+ * 
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-03-11
@@ -61,7 +61,7 @@ public interface EventListenerRepository extends UnsecuredFunctionalRepositoryWi
      * multiple listeners from being registered for the same event-method combination. It also
      * supports validation workflows that need to verify listener existence before performing
      * updates or deletions.
-     * </p>
+     * 
      *
      * @param eventName the name of the event that triggers the listener (e.g., "UserCreated", "OrderSubmitted")
      * @param consumerMethodName the fully qualified method name that handles the event (e.g., "com.example.service.EventHandler.onUserCreated")
@@ -75,18 +75,18 @@ public interface EventListenerRepository extends UnsecuredFunctionalRepositoryWi
      * This bulk delete operation is typically invoked during module uninstallation or cleanup procedures
      * to remove all event listeners registered by the module. The operation executes as a single JPQL
      * DELETE statement for efficiency.
-     * </p>
+     * 
      * <p>
      * <b>Important:</b> This method requires an active transaction context due to the {@link Modifying}
      * annotation. The calling code must be annotated with {@code @Transactional} or executed within
      * an existing transaction. After execution, the persistence context should be cleared or synchronized
      * to avoid stale entity references, as bulk operations bypass the EntityManager cache.
-     * </p>
+     * 
      * <p>
      * <b>Referential Integrity:</b> Ensure that no active event processing references the listeners
      * being deleted. Deleting listeners while events are being processed may cause runtime exceptions
      * if the event handling framework attempts to invoke removed listener methods.
-     * </p>
+     * 
      *
      * @param module the OpenkodaModule whose event listeners should be deleted
      */

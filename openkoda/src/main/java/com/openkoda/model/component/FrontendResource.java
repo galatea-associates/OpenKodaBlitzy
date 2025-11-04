@@ -43,12 +43,12 @@ import java.util.List;
  * multi-tenancy, access control, and content versioning. Resources can be published content
  * or draft content pending review. The entity supports MD5-based change detection through
  * computed hash fields.
- * </p>
+
  * <p>
  * <strong>Multi-Tenancy:</strong> Resources are scoped by organization via the
  * {@code organization_id} column inherited from {@link ComponentEntity}. Access control
  * is further refined through the {@link AccessLevel} enum (PUBLIC, GLOBAL, ORGANIZATION, INTERNAL).
- * </p>
+
  * <p>
  * <strong>Content Storage:</strong> Supports dual content storage:
  * <ul>
@@ -57,7 +57,7 @@ import java.util.List;
  * </ul>
  * Both content fields support up to 262,144 characters and have corresponding MD5 hash fields
  * for change detection.
- * </p>
+
  * <p>
  * <strong>Computed Fields:</strong> Uses Hibernate @Formula annotations for:
  * <ul>
@@ -68,18 +68,18 @@ import java.util.List;
  *   <li>{@code contentHash} - Truncated MD5 hash of content (15 characters)</li>
  *   <li>{@code draftHash} - Truncated MD5 hash of draftContent (15 characters)</li>
  * </ul>
- * </p>
+
  * <p>
  * <strong>Relationships:</strong> Referenced by {@code ControllerEndpoint} entity which
  * associates dynamic REST endpoints with HTML templates stored in FrontendResource.
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * FrontendResource page = new FrontendResource("home", "/home", "<html>...</html>", null, Type.HTML);
  * page.setAccessLevel(AccessLevel.PUBLIC);
  * }</pre>
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -114,7 +114,7 @@ public class FrontendResource extends ComponentEntity {
      * Each type maps to a specific file extension for content type detection
      * and URL routing. Supports JavaScript, CSS, JSON, CSV, plain text, XML,
      * and HTML resources.
-     * </p>
+
      *
      * @see #getEntryTypeFromPath(String)
      */
@@ -165,7 +165,7 @@ public class FrontendResource extends ComponentEntity {
          * <p>
          * Iterates through all Type values and returns the first match based on
          * file extension. If no match is found, defaults to HTML.
-         * </p>
+
          *
          * @param path the file path to analyze
          * @return the matching Type, or HTML if no match found
@@ -186,7 +186,7 @@ public class FrontendResource extends ComponentEntity {
      * Defines the high-level category of the frontend resource which affects how
      * the resource is processed and displayed. Each category has an associated
      * field name used in data binding and UI rendering.
-     * </p>
+
      */
     public enum ResourceType{
         /** Generic resource category with field name "resource" */
@@ -214,11 +214,11 @@ public class FrontendResource extends ComponentEntity {
      * Controls which users can access the resource and determines the URL path
      * prefix for routing. Supports multi-tenancy by providing organization-level
      * isolation along with public and global visibility options.
-     * </p>
+
      * <p>
      * Example URL construction: {@code /{path}{resourceName}} where path is the
      * AccessLevel path prefix (e.g., "public/", "organization/").
-     * </p>
+
      */
     public enum AccessLevel {
         /** Publicly accessible resources with path prefix "public/" */
@@ -405,7 +405,7 @@ public class FrontendResource extends ComponentEntity {
      * Creates a new frontend resource with the given name, content, type, and
      * optional privilege restriction. The resource is not associated with any
      * organization (organizationId is null).
-     * </p>
+
      *
      * @param name the resource name, must not be null
      * @param urlPath the URL path (parameter not used in constructor body)
@@ -427,7 +427,7 @@ public class FrontendResource extends ComponentEntity {
      * No-argument constructor required by JPA specification. Sets organizationId to null
      * and initializes type to HTML (default), resourceType to RESOURCE (default),
      * and accessLevel to PUBLIC (default).
-     * </p>
+
      */
     public FrontendResource() {
         super(null);
@@ -439,7 +439,7 @@ public class FrontendResource extends ComponentEntity {
      * Creates a new frontend resource scoped to the specified organization for
      * multi-tenancy support. Type defaults to HTML, resourceType to RESOURCE,
      * and accessLevel to PUBLIC.
-     * </p>
+
      *
      * @param organizationId the organization ID for tenant scoping, may be null
      */
@@ -451,7 +451,7 @@ public class FrontendResource extends ComponentEntity {
      * Returns whether this resource has no access restrictions.
      * <p>
      * Computed field evaluating to true when requiredPrivilege is null.
-     * </p>
+
      *
      * @return true if resource is unsecured (no privilege required), false otherwise
      */
@@ -482,7 +482,7 @@ public class FrontendResource extends ComponentEntity {
      * <p>
      * Content can be HTML templates, JavaScript code, CSS styles, JSON data,
      * CSV data, XML, or text depending on the resource type.
-     * </p>
+
      *
      * @return the published content, may be null if not set
      */
@@ -494,7 +494,7 @@ public class FrontendResource extends ComponentEntity {
      * Returns whether this resource is a page.
      * <p>
      * Computed field evaluating to true when name is not null.
-     * </p>
+
      *
      * @return true if resource is a page (has a name), false otherwise
      */
@@ -524,7 +524,7 @@ public class FrontendResource extends ComponentEntity {
      * Returns the privilege string required for accessing this resource.
      * <p>
      * When null, the resource is publicly accessible without privilege checks.
-     * </p>
+
      *
      * @return the required privilege string, or null for unrestricted access
      */
@@ -547,7 +547,7 @@ public class FrontendResource extends ComponentEntity {
      * Content can be HTML templates, JavaScript code, CSS styles, JSON data,
      * CSV data, XML, or text depending on the resource type. Maximum length
      * is 262,144 characters.
-     * </p>
+
      *
      * @param content the published content to set, may be null
      */
@@ -577,7 +577,7 @@ public class FrontendResource extends ComponentEntity {
      * Sets the resource type from a string name.
      * <p>
      * Converts the string to Type enum using Enum.valueOf().
-     * </p>
+
      *
      * @param type the type name as string (e.g., "HTML", "JS")
      * @throws IllegalArgumentException if type name is invalid
@@ -608,7 +608,7 @@ public class FrontendResource extends ComponentEntity {
      * Sets the resource category from a string name.
      * <p>
      * Converts the string to ResourceType enum using Enum.valueOf().
-     * </p>
+
      *
      * @param resourceType the resource type name as string
      * @throws IllegalArgumentException if resource type name is invalid
@@ -620,7 +620,7 @@ public class FrontendResource extends ComponentEntity {
      * <p>
      * Overrides ComponentEntity to provide the content properties list
      * containing "content" and "draftContent".
-     * </p>
+
      *
      * @return collection of content property names
      */
@@ -634,7 +634,7 @@ public class FrontendResource extends ComponentEntity {
      * <p>
      * Draft content allows editing without affecting the published content visible
      * to end users. Maximum length is 262,144 characters.
-     * </p>
+
      *
      * @return the draft content, or null if no draft exists
      */
@@ -655,7 +655,7 @@ public class FrontendResource extends ComponentEntity {
      * Returns whether draft content exists for this resource.
      * <p>
      * Computed field evaluating to true when draftContent is not null.
-     * </p>
+
      *
      * @return true if draft content exists, false otherwise
      */
@@ -667,7 +667,7 @@ public class FrontendResource extends ComponentEntity {
      * Returns whether published content exists for this resource.
      * <p>
      * Computed field evaluating to true when content is not null.
-     * </p>
+
      *
      * @return true if published content exists, false otherwise
      */
@@ -680,7 +680,7 @@ public class FrontendResource extends ComponentEntity {
      * <p>
      * Computed via database @Formula using LEFT(MD5(content), 15).
      * Returns empty string if hash is null. Used for change detection.
-     * </p>
+
      *
      * @return the 15-character content hash, or empty string if null
      */
@@ -690,7 +690,7 @@ public class FrontendResource extends ComponentEntity {
      * Sets the content hash value.
      * <p>
      * Note: This field is computed by database formula and should not normally be set manually.
-     * </p>
+
      *
      * @param contentHash the content hash to set
      */
@@ -701,7 +701,7 @@ public class FrontendResource extends ComponentEntity {
      * <p>
      * Computed via database @Formula using LEFT(MD5(draft_content), 15).
      * Returns empty string if hash is null. Used for change detection.
-     * </p>
+
      *
      * @return the 15-character draft hash, or empty string if null
      */
@@ -711,7 +711,7 @@ public class FrontendResource extends ComponentEntity {
      * Sets the draft hash value.
      * <p>
      * Note: This field is computed by database formula and should not normally be set manually.
-     * </p>
+
      *
      * @param draftHash the draft hash to set
      */
@@ -722,7 +722,7 @@ public class FrontendResource extends ComponentEntity {
      * <p>
      * Overrides ComponentEntity to provide computed privilege via @Formula.
      * Always returns readFrontendResource privilege constant.
-     * </p>
+
      *
      * @return the privilege string constant for reading frontend resources
      */
@@ -736,7 +736,7 @@ public class FrontendResource extends ComponentEntity {
      * <p>
      * Overrides ComponentEntity to provide computed privilege via @Formula.
      * Always returns manageFrontendResource privilege constant.
-     * </p>
+
      *
      * @return the privilege string constant for managing frontend resources
      */
@@ -759,7 +759,7 @@ public class FrontendResource extends ComponentEntity {
      * <p>
      * When false (default), prevents embedding in iframe elements for security.
      * When true, allows the resource to be embedded on other pages.
-     * </p>
+
      *
      * @param embeddable true to allow embedding, false to prevent
      */
@@ -781,7 +781,7 @@ public class FrontendResource extends ComponentEntity {
      * <p>
      * Controls multi-tenancy isolation and determines which users can access
      * the resource. Also affects URL routing via path prefix.
-     * </p>
+
      *
      * @param accessLevel the AccessLevel enum value to set
      */

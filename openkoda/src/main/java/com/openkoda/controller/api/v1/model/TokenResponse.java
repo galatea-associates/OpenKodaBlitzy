@@ -29,10 +29,10 @@ import java.time.LocalDateTime;
  * This class encapsulates the token response returned by authentication and token generation endpoints.
  * It contains three final fields (apiToken, userId, expiresOn) initialized via constructor.
  * The class provides getters only with no setters, making it immutable and thread-safe for concurrent read access.
- * </p>
+ * 
  * <p>
  * <b>Note:</b> LocalDateTime serialization requires Jackson JavaTimeModule for ISO-8601 formatting.
- * </p>
+ * 
  * <p>
  * Example JSON response:
  * <pre>{@code
@@ -42,7 +42,6 @@ import java.time.LocalDateTime;
  *   "expiresOn": "2024-01-15T10:30:00"
  * }
  * }</pre>
- * </p>
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -53,7 +52,7 @@ public class TokenResponse {
      * JWT access token string in header.payload.signature format.
      * <p>
      * This token is used for authenticating subsequent API requests.
-     * </p>
+     * 
      */
     private final String apiToken;
     
@@ -66,7 +65,7 @@ public class TokenResponse {
      * Token expiration timestamp in UTC.
      * <p>
      * Requires Jackson JavaTimeModule for proper ISO-8601 serialization.
-     * </p>
+     * 
      */
     private final LocalDateTime expiresOn;
 
@@ -75,7 +74,7 @@ public class TokenResponse {
      * <p>
      * This constructor initializes all final fields, making the instance immutable and thread-safe.
      * Note that the constructor parameter 'token' is assigned to the apiToken field.
-     * </p>
+     * 
      *
      * @param token JWT access token string to return to the client
      * @param userId User ID for which this token is issued

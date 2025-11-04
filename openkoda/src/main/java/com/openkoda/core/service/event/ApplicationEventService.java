@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  * This service maintains a registry of event descriptors mapped to listener tuples and provides mechanisms for both
  * synchronous and asynchronous event dispatch. It supports functional (Consumer, BiConsumer) and reflective (Method-based)
  * event consumers with up to 4 static String parameters for parameterized event handling.
- * </p>
+
  * 
  * <p><b>Architecture:</b></p>
  * <ul>
@@ -110,7 +110,7 @@ import java.util.function.Consumer;
      *   <li>T2-T5: Up to 4 static String parameters for parameterized event handling</li>
      *   <li>T6: Database EventListenerEntry.id for persisted listeners (null for programmatic listeners)</li>
      * </ul>
-     * </p>
+
      */
     public class ListenerTupleList extends ArrayList<Tuple6<EventConsumer, String, String, String, String, Long>>{}
 
@@ -131,7 +131,7 @@ import java.util.function.Consumer;
      * <p>
      * <b>WARNING:</b> Never shutdown during lifecycle, may leak resources; shared across all async event publications.
      * Created eagerly at class load time.
-     * </p>
+
      */
     private final static ExecutorService asyncEventsExecutor = Executors.newFixedThreadPool(4);
 
@@ -140,11 +140,11 @@ import java.util.function.Consumer;
      * <p>
      * Used by {@link #emitEvent(AbstractApplicationEvent, Object)} for listener dispatch. External modifications 
      * bypass synchronization and may cause race conditions.
-     * </p>
+
      * <p>
      * Key: AbstractApplicationEvent descriptor<br>
      * Value: ListenerTupleList containing registered listeners with static parameters and entry IDs
-     * </p>
+
      */
     public Map<AbstractApplicationEvent,
             ListenerTupleList> listeners = new HashMap<>();
@@ -154,7 +154,7 @@ import java.util.function.Consumer;
      * <p>
      * Used by {@link EventListenerService#findConsumersByEventType(Class)} to discover consumers registered for 
      * event payload types. Supports inheritance-based consumer matching.
-     * </p>
+
      */
     private LinkedHashMap<Class, List<EventConsumer>> consumers = new LinkedHashMap<>();
 
@@ -164,7 +164,7 @@ import java.util.function.Consumer;
      * This method is synchronized to prevent concurrent modification of the listeners Map during registration.
      * Static parameters are passed to the consumer during event dispatch and can be used for configuration
      * or context-specific event handling.
-     * </p>
+
      * 
      * @param <T> Event payload type
      * @param event Event descriptor to associate consumer with
@@ -187,7 +187,7 @@ import java.util.function.Consumer;
      * <p>
      * This method is synchronized to prevent concurrent modification of the listeners Map. Suitable for simple 
      * event handlers that don't require configuration parameters.
-     * </p>
+
      * <p><b>Usage Example:</b></p>
      * <pre>{@code
      * registerEventListener(USER_CREATED, user -> log.info("User: {}", user));
@@ -210,7 +210,7 @@ import java.util.function.Consumer;
      * <p>
      * This method is synchronized to prevent concurrent modification of the listeners Map. The BiConsumer 
      * receives both the event payload and an array of static configuration parameters during event dispatch.
-     * </p>
+
      * 
      * @param <T> Event payload type
      * @param event Event descriptor to associate consumer with
@@ -235,7 +235,7 @@ import java.util.function.Consumer;
      * Ensures every event has an associated list even before first listener registration, simplifying 
      * event dispatch logic. This method is NOT thread-safe for concurrent modifications; callers should 
      * use synchronized registration methods.
-     * </p>
+
      * 
      * @param <T> Event payload type
      * @param event Event descriptor to retrieve listeners for
@@ -257,7 +257,7 @@ import java.util.function.Consumer;
      * <p>
      * This method is synchronized to prevent concurrent modification of the consumers Map. Used by 
      * EventListenerService to register consumers discovered via reflection or persisted EventListenerEntry.
-     * </p>
+
      * 
      * @param <T> Event payload type
      * @param eventClass Event payload Class for type-based consumer matching
@@ -280,11 +280,11 @@ import java.util.function.Consumer;
      * This method is synchronized to prevent concurrent modification of the consumers Map. It resolves 
      * the consumer method via reflection using the event class plus static parameter classes, then 
      * creates an EventConsumer wrapper for the reflective method invocation.
-     * </p>
+
      * <p>
      * Logs info on success, error on failure (NoSuchMethodException). Returns false if method signature 
      * cannot be resolved, allowing graceful degradation during consumer discovery.
-     * </p>
+
      * 
      * @param <T> Event payload type
      * @param eventClass Event payload Class expected as first method parameter
@@ -294,7 +294,6 @@ import java.util.function.Consumer;
      * @param category EventConsumerCategory for domain-based filtering
      * @param methodStaticParamsClass Variable-length Class array for static parameter types (0-4 String.class entries)
      * @return true if method resolved and consumer registered; false if NoSuchMethodException
-     * @throws NoSuchMethodException If method signature not found (caught internally and logged)
      */
     synchronized public <T> boolean registerEventConsumerWithMethod(Class<T> eventClass,
                                                                     Class eventConsumerClass,
@@ -328,7 +327,7 @@ import java.util.function.Consumer;
      * <p>
      * This method is synchronized to prevent concurrent modification of the listeners Map during unregistration.
      * Performs O(n*m) scan across all events and listeners; suitable for infrequent unregistration operations.
-     * </p>
+
      * 
      * @param <T> Event payload type
      * @param eventListenerEntryId Database primary key of EventListenerEntry to unregister
@@ -355,7 +354,7 @@ import java.util.function.Consumer;
      * <p>
      * Listener exceptions are swallowed by the executor; no error feedback to caller. Suitable for 
      * fire-and-forget event publication where caller doesn't need to know listener execution results.
-     * </p>
+
      * 
      * @param <T> Event payload type
      * @param event Event descriptor to publish
@@ -372,7 +371,7 @@ import java.util.function.Consumer;
      * <p>
      * Iterates listeners and invokes accept() with event plus 0-4 static parameters based on tuple configuration.
      * First listener exception halts dispatch and propagates to caller; remaining listeners are not invoked.
-     * </p>
+
      * 
      * @param <T> Event payload type
      * @param event Event descriptor to publish
@@ -403,7 +402,7 @@ import java.util.function.Consumer;
      * <p>
      * Exposes internal consumers Map for EventListenerService integration; modifications affect live registry.
      * Method name contains typo (Consumer<b>t</b>) but preserved for backward compatibility.
-     * </p>
+
      * 
      * @return Entry set of consumers Map for iteration over Class-to-EventConsumer mappings
      */
@@ -416,7 +415,7 @@ import java.util.function.Consumer;
      * <p>
      * Supports inheritance: consumers registered for User.class will match BasicUser.class events.
      * This enables polymorphic event handling where parent class consumers receive subclass events.
-     * </p>
+
      * 
      * @param c Event payload Class to match against registered consumer classes
      * @return List of matching EventConsumers supporting polymorphic event handling
@@ -438,7 +437,7 @@ import java.util.function.Consumer;
      * Method executed automatically after the bean has been constructed by the Spring framework.
      * Idempotent: only sets thisService once even if called multiple times; enables 
      * {@link #getApplicationEventService()} static access for components without dependency injection.
-     * </p>
+
      */
     @PostConstruct
     void setThisService() {
@@ -451,7 +450,7 @@ import java.util.function.Consumer;
      * Returns static singleton reference to Spring-managed ApplicationEventService instance.
      * <p>
      * Legacy static accessor for components without dependency injection; prefer @Autowired injection in new code.
-     * </p>
+
      * 
      * @return Static singleton reference to Spring-managed ApplicationEventService instance
      */

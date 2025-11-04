@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
  * Spring components extend ComponentProvider to inherit autowired dependencies without requiring explicit
  * {@code @Autowired} annotations on each field. This class is registered as a singleton bean, providing
  * a single shared instance across the entire application.
- * </p>
+ * 
  * <p>
  * Usage example:
  * <pre>{@code
@@ -39,10 +39,9 @@ import org.springframework.stereotype.Component;
  *     // Inherits services, repositories, controllers, messages fields
  * }
  * }</pre>
- * </p>
  * <p>
  * <b>Thread-safety:</b> Singleton bean with thread-safe aggregators. Concurrent access is safe.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

@@ -27,11 +27,9 @@ package com.openkoda.core.flow;
  * This interface enables automatic finalization or cleanup operations for values stored in the Flow pipeline's
  * PageModelMap. When a Flow pipeline completes successfully, the Flow executor automatically invokes the
  * {@link #process()} method on all PageAttr values that implement this interface.
- * </p>
  * <p>
  * Processing occurs only after successful execution of all pipeline steps. If an exception occurs during
  * Flow execution, post-execution processing is skipped to prevent inconsistent state.
- * </p>
  * <p>
  * Example usage:
  * <pre>
@@ -39,7 +37,6 @@ package com.openkoda.core.flow;
  *     public void process() { // finalization logic }
  * }
  * </pre>
- * </p>
  *
  * @see Flow
  * @see PageAttr
@@ -54,11 +51,11 @@ public interface PostExecuteProcessablePageAttr {
      * This method is invoked automatically by {@code Flow.execute()} after all pipeline steps complete
      * successfully. Implementations should perform cleanup, finalization, or other post-processing tasks
      * required by the PageAttr value.
-     * </p>
+     * 
      * <p>
      * This method is called only on successful execution. If the Flow pipeline throws an exception during
      * execution, this method is not invoked.
-     * </p>
+     * 
      */
     void process();
 }

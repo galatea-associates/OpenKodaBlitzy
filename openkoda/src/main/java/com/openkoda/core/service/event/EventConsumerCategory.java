@@ -8,7 +8,7 @@ import com.openkoda.model.OptionWithLabel;
  * This enumeration implements {@link OptionWithLabel} to support dropdown and select UI integration,
  * providing human-friendly labels for each category. Event consumers are organized into functional
  * domains to enable efficient event routing and filtering in the EventListenerService.
- * </p>
+
  * <p>
  * Categories include:
  * <ul>
@@ -19,13 +19,13 @@ import com.openkoda.model.OptionWithLabel;
  *   <li><b>ROLE_MODIFICATION</b> - Role and permission changes (privilege updates, role reconciliation)</li>
  *   <li><b>SERVER_SIDE_CODE</b> - Server-side code execution (GraalVM JavaScript, dynamic scripting)</li>
  * </ul>
- * </p>
+
  * <p>
  * Example usage:
  * <pre>{@code
  * EventListenerService.registerConsumer(eventName, consumer, EventConsumerCategory.INTEGRATION);
  * }</pre>
- * </p>
+
  *
  * @since 1.7.1
  * @author OpenKoda Team
@@ -37,7 +37,7 @@ public enum EventConsumerCategory implements OptionWithLabel {
      * <p>
      * Used for event consumers that interact with third-party services and external APIs,
      * including OAuth-based integrations and REST API consumers.
-     * </p>
+
      */
     INTEGRATION("Integration"),
     
@@ -46,7 +46,7 @@ public enum EventConsumerCategory implements OptionWithLabel {
      * <p>
      * Used for event consumers that handle backup procedures, restoration processes,
      * and backup integrity verification tasks.
-     * </p>
+
      */
     BACKUP("Backup"),
     
@@ -55,7 +55,7 @@ public enum EventConsumerCategory implements OptionWithLabel {
      * <p>
      * Used for event consumers that handle message delivery through various channels,
      * including email notifications, SMS alerts, and in-application messaging.
-     * </p>
+
      */
     MESSAGE("Message"),
     
@@ -64,7 +64,7 @@ public enum EventConsumerCategory implements OptionWithLabel {
      * <p>
      * Used for event consumers that deliver push notifications to mobile devices
      * and web browsers for real-time user alerts.
-     * </p>
+
      */
     PUSH_NOTIFICATION("Push Notification"),
     
@@ -73,7 +73,7 @@ public enum EventConsumerCategory implements OptionWithLabel {
      * <p>
      * Used for event consumers that handle role-based access control changes,
      * privilege updates, and role reconciliation procedures.
-     * </p>
+
      */
     ROLE_MODIFICATION("Role"),
     
@@ -82,7 +82,7 @@ public enum EventConsumerCategory implements OptionWithLabel {
      * <p>
      * Used for event consumers that execute server-side code, including GraalVM JavaScript
      * flows and dynamic script execution within the polyglot context.
-     * </p>
+
      */
     SERVER_SIDE_CODE("Server Side Code"),
     ;
@@ -92,7 +92,7 @@ public enum EventConsumerCategory implements OptionWithLabel {
      * <p>
      * This label is displayed in dropdowns, select fields, and configuration UIs
      * to provide a user-readable representation of the category.
-     * </p>
+
      */
     private String label;
 
@@ -110,7 +110,7 @@ public enum EventConsumerCategory implements OptionWithLabel {
      * <p>
      * This method implements the {@link OptionWithLabel} interface, enabling the enum
      * to be used directly in UI select components and form fields.
-     * </p>
+
      *
      * @return Human-friendly category label for display in dropdowns and configuration UIs
      */

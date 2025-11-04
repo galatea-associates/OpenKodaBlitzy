@@ -33,14 +33,14 @@ import org.springframework.validation.BindingResult;
  * <p>
  * Extends AbstractEntityForm&lt;IntegrationMsTeamsDto, IntegrationModuleOrganizationConfiguration&gt; and implements FrontendMappingDefinition 
  * lifecycle: populateFrom(entity) → validate(BindingResult) → populateTo(entity).
- * </p>
+
  * <p>
  * Form lifecycle:
  * 1. populateFrom(entity): loads msTeamsWebhookUrl from IntegrationModuleOrganizationConfiguration into DTO
  * 2. validate(BindingResult): checks webhookUrl is present (rejectValue 'dto.webhookUrl', 'not.empty'), validates URL format (must be HTTPS), 
  *    validates URL pattern matches MS Teams webhook format
  * 3. populateTo(entity): stores validated webhookUrl to entity using getSafeValue with WEBHOOK_URL_ mapping key
- * </p>
+
  * <p>
  * Validation rules:
  * <ul>
@@ -48,24 +48,24 @@ import org.springframework.validation.BindingResult;
  * <li>URL must be HTTPS</li>
  * <li>URL must match pattern: https://outlook.office.com/webhook/* or https://*.webhook.office.com/*</li>
  * </ul>
- * </p>
+
  * <p>
  * Error codes:
  * <ul>
  * <li>not.empty - Webhook URL is required and cannot be blank</li>
  * </ul>
- * </p>
+
  * <p>
  * Note: validate() returns null instead of this, which breaks fluent chaining expected by some callers. 
  * Additional URL format validation (HTTPS, MS Teams pattern) can be added to validate() method.
- * </p>
+
  * <p>
  * Webhook configuration: MS Teams incoming webhook URLs are created in Teams channel settings: 
  * Connectors → Incoming Webhook. Copy the generated webhook URL to this form.
- * </p>
+
  * <p>
  * Integration: Used by Spring MVC controllers with @Valid annotation, BindingResult captures errors.
- * </p>
+
  *
  * @author OpenKoda Team
  * @version 1.7.1
@@ -122,14 +122,14 @@ public class IntegrationMsTeamsForm extends AbstractEntityForm<IntegrationMsTeam
      * <ul>
      * <li>webhookUrl is not blank (rejectValue 'dto.webhookUrl', 'not.empty')</li>
      * </ul>
-     * </p>
+
      * <p>
      * Additional validation can be added:
      * <ul>
      * <li>URL must be HTTPS</li>
      * <li>URL must match MS Teams webhook pattern (https://outlook.office.com/webhook/* or https://*.webhook.office.com/*)</li>
      * </ul>
-     * </p>
+
      *
      * @param br the Spring BindingResult for error collection
      * @return null (note: breaks fluent chaining, should return this)

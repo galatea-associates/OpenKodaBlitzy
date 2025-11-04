@@ -32,15 +32,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * Provides CRUD operations and privilege-protected queries for LinkedIn OAuth user mappings.
  * This repository handles the persistence layer for LinkedIn authentication, enabling the OAuth flow
  * where external LinkedIn authentication leads to token exchange, user lookup, and User entity linking.
- * </p>
+ * 
  * <p>
  * Persists to 'linkedin_user' table with method-level {@code @PreAuthorize} privilege enforcement
  * via Spring Security. The CHECK_CAN_READ_LINKEDIN_USER privilege is required for query operations.
- * </p>
+ * 
  * <p>
  * Usage context: Used by LinkedIn OAuth callback controllers for account linking, authentication,
  * and admin flows. Extends Spring Data JPA repository for automatic query generation.
- * </p>
+ * 
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @version 1.7.1
@@ -56,10 +56,10 @@ public interface LinkedinUserRepository extends JpaRepository<LinkedinUser, Long
      * This method performs a {@code @PreAuthorize} protected lookup by LinkedIn user identifier
      * from OAuth response. Spring Data JPA automatically generates the query based on the method
      * name pattern {@code findBy[PropertyName]}.
-     * </p>
+     * 
      * <p>
      * Thread-safety: Repository is a thread-safe Spring-managed singleton.
-     * </p>
+     * 
      *
      * @param linkedinId LinkedIn user identifier from OAuth response, must not be null
      * @return LinkedinUser entity with matching LinkedIn ID, or null if not found

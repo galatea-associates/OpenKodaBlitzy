@@ -35,12 +35,12 @@ import org.springframework.validation.BindingResult;
  * Handles form binding and validation for GitHub repository owner, name, and access token.
  * This form extends AbstractEntityForm&lt;IntegrationGitHubDto, IntegrationModuleOrganizationConfiguration&gt;
  * and implements the FrontendMappingDefinition lifecycle pattern for processing GitHub integration settings.
- * </p>
  * 
- * <h3>Form Lifecycle</h3>
+ * 
+ * <b>Form Lifecycle</b>
  * <p>
  * This form follows a three-stage lifecycle:
- * </p>
+ * 
  * <ol>
  * <li><b>populateFrom(entity)</b>: Loads gitHubRepoOwner and gitHubRepoName from 
  * IntegrationModuleOrganizationConfiguration into the DTO for form pre-population in edit views</li>
@@ -50,25 +50,25 @@ import org.springframework.validation.BindingResult;
  * with GITHUB_REPO_NAME_ and GITHUB_REPO_OWNER_ mapping keys for null-safe field access</li>
  * </ol>
  * 
- * <h3>Validation Rules</h3>
+ * <b>Validation Rules</b>
  * <ul>
  * <li><b>repoOwner</b>: Required, alphanumeric with hyphens, max 39 chars (GitHub username constraints)</li>
  * <li><b>repoName</b>: Required, alphanumeric with hyphens/underscores, max 100 chars</li>
  * <li><b>accessToken</b>: Optional (can be set via OAuth), if provided validate format</li>
  * </ul>
  * 
- * <h3>Error Codes</h3>
+ * <b>Error Codes</b>
  * <ul>
  * <li><b>not.empty</b>: Field is required and cannot be blank</li>
  * </ul>
  * 
- * <h3>Integration</h3>
+ * <b>Integration</b>
  * <p>
  * This form is used by Spring MVC controllers with the @Valid annotation to trigger validation.
  * BindingResult captures errors for form rendering in Thymeleaf templates.
- * </p>
  * 
- * <h3>Example Usage</h3>
+ * 
+ * <b>Example Usage</b>
  * <pre>
  * IntegrationGitHubForm form = new IntegrationGitHubForm(dto, entity);
  * form.populateFrom(entity);
@@ -95,7 +95,7 @@ public class IntegrationGitHubForm extends AbstractEntityForm<IntegrationGitHubD
      * Initializes the form with a new IntegrationGitHubDto and the default
      * gitHubConfigurationForm mapping definition. The entity is set to null
      * and should be provided later via populateFrom or constructor injection.
-     * </p>
+     * 
      */
     public IntegrationGitHubForm() {
         super(new IntegrationGitHubDto(), null, IntegrationFrontendMappingDefinitions.gitHubConfigurationForm);
@@ -107,7 +107,7 @@ public class IntegrationGitHubForm extends AbstractEntityForm<IntegrationGitHubD
      * This constructor is typically used when editing an existing GitHub integration
      * configuration. The form is initialized with the default gitHubConfigurationForm
      * mapping definition.
-     * </p>
+     * 
      * 
      * @param dto the GitHub integration DTO containing form field values
      * @param entity the integration configuration entity to bind to
@@ -122,7 +122,7 @@ public class IntegrationGitHubForm extends AbstractEntityForm<IntegrationGitHubD
      * This constructor allows overriding the default gitHubConfigurationForm mapping
      * with a custom FrontendMappingDefinition. This is useful for creating read-only
      * or disabled form variants.
-     * </p>
+     * 
      * 
      * @param formDef the custom frontend mapping definition to use instead of the default
      */
@@ -136,7 +136,7 @@ public class IntegrationGitHubForm extends AbstractEntityForm<IntegrationGitHubD
      * This is the most flexible constructor, allowing complete control over the DTO,
      * entity, and mapping definition. Useful for advanced scenarios requiring custom
      * configuration.
-     * </p>
+     * 
      * 
      * @param dto the GitHub integration DTO containing form field values
      * @param entity the integration configuration entity to bind to
@@ -152,7 +152,7 @@ public class IntegrationGitHubForm extends AbstractEntityForm<IntegrationGitHubD
      * Loads gitHubRepoName and gitHubRepoOwner from the IntegrationModuleOrganizationConfiguration
      * entity into the DTO for form pre-population in edit views. This method is called when
      * rendering an edit form to display existing configuration values.
-     * </p>
+     * 
      * 
      * @param entity the IntegrationModuleOrganizationConfiguration to load values from
      * @return this form instance for fluent method chaining
@@ -171,7 +171,7 @@ public class IntegrationGitHubForm extends AbstractEntityForm<IntegrationGitHubD
      * for null-safe field access. The getSafeValue method uses GITHUB_REPO_NAME_ and 
      * GITHUB_REPO_OWNER_ frontend mapping keys to retrieve values from the form.
      * This method is called after successful validation to persist changes.
-     * </p>
+     * 
      * 
      * @param entity the IntegrationModuleOrganizationConfiguration to populate with form values
      * @return the populated entity for further processing or persistence
@@ -189,7 +189,7 @@ public class IntegrationGitHubForm extends AbstractEntityForm<IntegrationGitHubD
      * Performs validation on the repository name and owner fields to ensure they are not blank.
      * Validation errors are registered on the BindingResult with the error code "not.empty"
      * for display in the form UI.
-     * </p>
+     * 
      * 
      * <h4>Validation Rules:</h4>
      * <ul>
@@ -201,7 +201,7 @@ public class IntegrationGitHubForm extends AbstractEntityForm<IntegrationGitHubD
      * <b>Note:</b> Additional format validation can be added if needed, such as:
      * alphanumeric pattern matching, length constraints (max 39 chars for owner per GitHub username rules,
      * max 100 chars for repository name), and special character validation (hyphens/underscores allowed).
-     * </p>
+     * 
      * 
      * @param br the Spring BindingResult for collecting validation errors
      * @return this form instance for fluent method chaining

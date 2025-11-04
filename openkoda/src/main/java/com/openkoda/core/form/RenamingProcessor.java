@@ -42,13 +42,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * bracketed notation (dto[field]) for proper Map-based DTO binding in Spring MVC. It extends 
  * {@link ProxyingHandlerMethodArgumentResolver} to integrate with Spring Data's argument 
  * resolution infrastructure.
- * </p>
  * <p>
  * The processor caches rename mappings per form class in a {@link ConcurrentHashMap} for 
  * performance optimization. When processing {@link MapEntityForm} instances, the rename map 
  * is computed once via reflection and reused for all subsequent requests involving the same 
  * form class.
- * </p>
  * <p>
  * Example usage in Spring configuration:
  * <pre>
@@ -59,12 +57,10 @@ import java.util.concurrent.ConcurrentHashMap;
  *         return new RenamingProcessor(true, () -> cs);
  *     }
  * }}</pre>
- * </p>
  * <p>
  * Note: This class contains commented code suggesting {@code ParamNameDataBinder} was the 
  * original approach. The current implementation represents an evolution of the parameter 
  * renaming strategy.
- * </p>
  *
  * @see MapEntityForm
  * @see ProxyingHandlerMethodArgumentResolver
@@ -88,11 +84,11 @@ public class RenamingProcessor extends ProxyingHandlerMethodArgumentResolver {
      * (dto.field) and newName uses bracketed notation (dto[field]). The cache is populated 
      * lazily on first request for each form class and reused for subsequent requests to 
      * avoid repeated reflection overhead.
-     * </p>
+     * 
      * <p>
      * Thread-safety is ensured by using {@link ConcurrentHashMap}, allowing concurrent reads 
      * and writes without external synchronization.
-     * </p>
+     * 
      *
      * @see #analyzeClass(Class)
      */
@@ -104,7 +100,7 @@ public class RenamingProcessor extends ProxyingHandlerMethodArgumentResolver {
      * This constructor initializes the parent {@link ProxyingHandlerMethodArgumentResolver} with 
      * the provided conversion service factory and annotation requirement flag. It is typically 
      * invoked by Spring configuration when registering custom argument resolvers.
-     * </p>
+     * 
      *
      * @param annotationNotRequired if {@code true}, the resolver applies to all applicable 
      *                              parameters regardless of annotations; if {@code false}, only 
@@ -123,21 +119,21 @@ public class RenamingProcessor extends ProxyingHandlerMethodArgumentResolver {
      * delegates to the superclass implementation. For MapEntityForm instances, it retrieves or 
      * builds a rename map by analyzing the form class structure, then caches the mapping for 
      * future requests.
-     * </p>
+     * 
      * <p>
      * The rename map converts dotted notation parameter names (dto.fieldName) from HTML forms 
      * to bracketed notation (dto[fieldName]) required for Map-based binding. This conversion 
      * ensures proper data binding when form fields reference nested Map properties.
-     * </p>
+     * 
      * <p>
      * Performance optimization: The rename map is computed once per form class via 
      * {@link #analyzeClass(Class)} and cached in {@link #replaceMap} for all subsequent 
      * requests using the same form type.
-     * </p>
+     * 
      * <p>
      * Note: Commented code suggests the original implementation used {@code ParamNameDataBinder} 
      * for parameter renaming. The current approach represents an evolved strategy.
-     * </p>
+     * 
      *
      * @param binder the {@link WebDataBinder} instance for binding request parameters to the 
      *               target object
@@ -168,19 +164,19 @@ public class RenamingProcessor extends ProxyingHandlerMethodArgumentResolver {
      * converting dotted notation to bracketed notation. The conversion pattern transforms 
      * "dto.fieldName" into "dto[fieldName]" to support HTML form input names that reference 
      * nested Map properties.
-     * </p>
+     * 
      * <p>
      * Example conversion:
      * <pre>
      * Input field name:  "dto.name"
      * Output mapping:    "dto[name]" -> "dto.name"
      * </pre>
-     * </p>
+     * 
      * <p>
      * The method uses Java reflection to inspect field declarations and generates mappings 
      * for all discovered fields. If no fields are found, it returns an empty immutable map 
      * for efficiency.
-     * </p>
+     * 
      *
      * @param targetClass the {@link MapEntityForm} class to analyze for field-based rename 
      *                    mappings

@@ -36,11 +36,11 @@ import java.util.Set;
  * (log_statement, log_min_duration_statement), disk partition space (free/total), operating system
  * detection (Windows/Linux), sysstat tool availability, and pidstat process metrics. Populated by
  * SystemHealthStatusService and consumed by health monitoring endpoints and admin dashboards.
- * </p>
+ * 
  * <p>
  * This mutable JavaBean provides no synchronization. Instances are not thread-safe and should be
  * accessed from a single thread or externally synchronized.
- * </p>
+ * 
  *
  * @see SystemHealthStatusService
  * @author OpenKoda Team

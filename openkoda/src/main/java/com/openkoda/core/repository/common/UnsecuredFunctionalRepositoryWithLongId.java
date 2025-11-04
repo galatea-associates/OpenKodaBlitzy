@@ -32,12 +32,12 @@ import org.springframework.data.repository.NoRepositoryBean;
  * This interface extends JPA repository methods that return {@code void} with methods returning values,
  * enabling use in chained lambda expressions and functional composition patterns. Unlike secured repositories,
  * this interface does not enforce privilege checks, making it suitable for internal system operations.
- * </p>
+ * 
  * <p>
  * Combines functionality from {@link FunctionalRepositoryWithLongId}, {@link JpaSpecificationExecutor},
  * {@link ModelConstants}, and {@link HasSecurityRules} to provide a complete data access foundation
  * with Specification-based query support.
- * </p>
+ * 
  *
  * @param <T> the entity type managed by this repository
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
@@ -56,7 +56,7 @@ public interface UnsecuredFunctionalRepositoryWithLongId<T> extends FunctionalRe
      * <p>
      * This is a nullable adapter over {@code findById(id).orElse(null)}, designed for use
      * in lambda expressions where Optional handling is inconvenient.
-     * </p>
+     * 
      *
      * @param id the Long ID to search for
      * @return the entity with the given ID, or null if not found
@@ -69,7 +69,7 @@ public interface UnsecuredFunctionalRepositoryWithLongId<T> extends FunctionalRe
      * <p>
      * This boolean return adapter delegates to {@code deleteById} but returns a value for use
      * in chained lambda expressions. Always returns true after deletion completes.
-     * </p>
+     * 
      *
      * @param aLong the ID of the entity to delete
      * @return always returns true after deletion completes
@@ -84,7 +84,7 @@ public interface UnsecuredFunctionalRepositoryWithLongId<T> extends FunctionalRe
      * <p>
      * This abstract method must be implemented by concrete repository implementations
      * to provide entity deletion functionality.
-     * </p>
+     * 
      *
      * @param aLong the ID of the entity to delete
      */

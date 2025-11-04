@@ -6,11 +6,11 @@ package com.openkoda.model;
  * Groups related privileges into logical categories for presentation in role management screens. Each group has a 
  * display label shown in privilege selection UI. Enables hierarchical privilege organization and simplifies privilege 
  * discovery for administrators. Used by Privilege enum and DynamicPrivilege to categorize individual permissions.
- * </p>
+ * 
  * <p>
  * Groups appear as sections or tabs in role configuration interface, with privileges listed under their respective groups.
  * This categorization improves usability when managing complex role definitions with dozens of individual privileges.
- * </p>
+ * 
  *
  * @author OpenKoda Team
  * @version 1.7.1

@@ -41,19 +41,19 @@ import java.util.Map;
  * password encoder for the OpenKoda application. It centralizes password encoder configuration
  * and registration via the {@link PostConstruct} lifecycle callback, avoiding circular Spring
  * dependency issues that would occur with traditional dependency injection.
- * </p>
+ * 
  * <p>
  * During initialization, this component distributes password encoder instances to static setters
  * on domain classes and services: {@link LoginAndPassword#setPasswordEncoderOnce},
  * {@link UserService#setPasswordEncoderOnce}, and {@link ApiKey#setPasswordEncoderOnce}.
  * The {@link Component} stereotype registers this as a Spring bean, ensuring single initialization
  * during application startup.
- * </p>
+ * 
  * <p>
  * Example usage pattern: after initialization, {@code LoginAndPassword.setPasswordEncoderOnce()}
  * receives a {@link DelegatingPasswordEncoder} with "bcrypt" as the default algorithm, enabling
  * password validation via {@code password.matches(rawPassword)}.
- * </p>
+ * 
  *
  * @see LoginAndPassword#setPasswordEncoderOnce
  * @see UserService#setPasswordEncoderOnce
@@ -70,7 +70,7 @@ public class ApplicationAwarePasswordEncoder extends BCryptPasswordEncoder {
      * <p>
      * This {@link PostConstruct} lifecycle callback executes after Spring bean construction
      * and performs the following initialization sequence:
-     * </p>
+     * 
      * <ol>
      * <li>Creates a {@link HashMap} of {@link PasswordEncoder} instances with "bcrypt" key
      * mapping to this {@link BCryptPasswordEncoder}</li>
@@ -88,12 +88,12 @@ public class ApplicationAwarePasswordEncoder extends BCryptPasswordEncoder {
      * The {@link DelegatingPasswordEncoder} stores encoded passwords in the format
      * {@code {bcrypt}$2a$10$...} with an algorithm prefix, enabling future migration to
      * alternative password hashing algorithms.
-     * </p>
+     * 
      * <p>
      * Thread-safety: The {@link PostConstruct} annotation guarantees single execution per bean
      * lifecycle. The static setters use a one-time assignment pattern to prevent multiple
      * initialization attempts.
-     * </p>
+     * 
      *
      * @throws IllegalStateException if called multiple times (enforced by setPasswordEncoderOnce
      * methods in target classes)
