@@ -91,20 +91,20 @@ apt install -y wget curl git build-essential
 
 Source: openkoda/doc/installation.md:8
 
-### Java 17 Installation
+### Java 21 Installation
 
-OpenKoda requires Java 17 (OpenJDK 17.0.2 or higher).
+OpenKoda requires Java 21 LTS (OpenJDK 21 or higher).
 
-**Download and Install Java 17**:
+**Download and Install Java 21**:
 ```bash
 cd /usr/lib && mkdir -p jvm && cd jvm
-wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
-tar -xzf openjdk-17.0.2_linux-x64_bin.tar.gz
+wget https://download.java.net/java/GA/jdk21.0.5/b0dc2e7cf62c4ea1ba5c276ca1c45b2f/11/GPL/openjdk-21.0.5_linux-x64_bin.tar.gz
+tar -xzf openjdk-21.0.5_linux-x64_bin.tar.gz
 ```
 
 **Configure JAVA_HOME**:
 ```bash
-export JAVA_HOME=/usr/lib/jvm/jdk-17.0.2
+export JAVA_HOME=/usr/lib/jvm/jdk-21.0.5
 export PATH=$JAVA_HOME/bin:$PATH
 ```
 
@@ -115,7 +115,7 @@ Add these lines to `/etc/profile` or `~/.bashrc` for persistence.
 java --version
 ```
 
-Expected output: `openjdk 17.0.2 2022-01-18`
+Expected output: `openjdk 21.0.5 2024-10-15`
 
 Source: openkoda/doc/installation.md:76-94, docker/Dockerfile:2
 
@@ -138,7 +138,7 @@ Configure the following system environment variables:
 
 | Variable | Purpose | Example Value |
 |----------|---------|---------------|
-| JAVA_HOME | Java installation path | /usr/lib/jvm/jdk-17.0.2 |
+| JAVA_HOME | Java installation path | /usr/lib/jvm/jdk-21.0.5 |
 | PATH | Include Java and Maven binaries | $JAVA_HOME/bin:$PATH |
 | SPRING_DATASOURCE_URL | Database connection string | jdbc:postgresql://localhost:5432/openkoda |
 | SPRING_PROFILES_ACTIVE | Active Spring profiles | openkoda,production |
@@ -262,7 +262,7 @@ After=network.target postgresql.service
 Type=simple
 User=openkoda-cloud
 WorkingDirectory=/opt/openkoda
-ExecStart=/usr/lib/jvm/jdk-17.0.2/bin/java \
+ExecStart=/usr/lib/jvm/jdk-21.0.5/bin/java \
   -Dloader.path=/BOOT-INF/classes \
   -Dspring.profiles.active=openkoda \
   -Dlogging.file.name=/var/log/openkoda/openkoda.log \
@@ -2255,7 +2255,7 @@ Source: openkoda/doc/
 
 **Environment**:
 - OpenKoda Version: 1.7.1
-- Java Version: 17.0.2
+- Java Version: 21.0.5
 - PostgreSQL Version: 14.4
 - Operating System: Ubuntu 22.04
 

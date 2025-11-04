@@ -83,7 +83,7 @@
                     <version>true</version>
                     <doctitle>OpenKoda API Documentation</doctitle>
                     <windowtitle>OpenKoda API</windowtitle>
-                    <source>11</source>
+                    <source>21</source>
                     <detectJavaApiLink>true</detectJavaApiLink>
                     <additionalOptions>
                         <additionalOption>-Xdoclint:all</additionalOption>

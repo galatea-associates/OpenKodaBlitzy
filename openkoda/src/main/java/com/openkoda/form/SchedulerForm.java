@@ -25,7 +25,7 @@ import com.openkoda.core.form.AbstractOrganizationRelatedEntityForm;
 import com.openkoda.core.form.FrontendMappingDefinition;
 import com.openkoda.dto.system.SchedulerDto;
 import com.openkoda.model.component.Scheduler;
-import org.springframework.scheduling.support.CronSequenceGenerator;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.validation.BindingResult;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -35,7 +35,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * <p>
  * This form extends {@link AbstractOrganizationRelatedEntityForm} to provide validation and data transfer
  * between the web layer and the {@link Scheduler} domain model. It validates the cron expression using
- * {@link CronSequenceGenerator#isValidExpression(String)} to ensure proper cron syntax, and validates that
+ * {@link CronExpression#isValidExpression(String)} to ensure proper cron syntax, and validates that
  * eventData is present. Validation errors are recorded in the {@link BindingResult} with appropriate
  * error codes ('cron.invalid' for invalid cron expressions, 'not.empty' for blank fields).
  * </p>
@@ -164,7 +164,7 @@ public class SchedulerForm extends AbstractOrganizationRelatedEntityForm<Schedul
     public SchedulerForm validate(BindingResult br) {
         if(isBlank(dto.cronExpression)) { br.rejectValue("dto.cronExpression", "not.empty", defaultErrorMessage); }
         if(isBlank(dto.eventData)) { br.rejectValue("dto.eventData", "not.empty", defaultErrorMessage); }
-        if(!CronSequenceGenerator.isValidExpression(dto.cronExpression)) { br.rejectValue("dto.cronExpression", "not" +
+        if(!CronExpression.isValidExpression(dto.cronExpression)) { br.rejectValue("dto.cronExpression", "not" +
                         ".valid",
                 defaultErrorMessage); }
         return this;

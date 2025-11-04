@@ -382,7 +382,7 @@ public interface LoggingComponent {
     * @throws IllegalArgumentException if the object is null
     */
    default void notNull(Object o) {
-      Assert.notNull( o );
+      Assert.notNull( o, "Object must not be null" );
    }
 
    /**
@@ -395,7 +395,7 @@ public interface LoggingComponent {
     * @throws IllegalArgumentException if the condition is false
     */
    default void isTrue(Boolean b) {
-      Assert.isTrue( b );
+      Assert.isTrue( b, "Condition must be true" );
    }
 
    /**

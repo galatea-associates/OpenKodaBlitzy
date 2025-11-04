@@ -496,7 +496,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * @throws IllegalArgumentException if object is {@code null}
      */
     default void notNull(Object o) {
-        Assert.notNull( o );
+        Assert.notNull( o, "Object must not be null" );
     }
 
     /**
@@ -509,7 +509,7 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
      * @throws IllegalArgumentException if boolean is {@code false} or {@code null}
      */
     default void isTrue(Boolean b) {
-        Assert.isTrue( b );
+        Assert.isTrue( b, "Condition must be true" );
     }
 
     /**
