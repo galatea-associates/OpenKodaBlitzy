@@ -37,25 +37,92 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * <p>Abstract EmailSender class.</p>
+ * Abstract base class providing lifecycle and orchestration management for email delivery implementations.
+ * <p>
+ * This class serves as the foundation for all email sending mechanisms in OpenKoda, managing the complete
+ * email delivery lifecycle including start, fail, and complete state transitions. It implements the template
+ * method pattern where {@link #sendMail(Email)} orchestrates the email sending workflow while delegating
+ * the actual transport mechanism to subclass-specific implementations via {@link #sendEmail}.
+
+ * <p>
+ * The email sending lifecycle is managed as follows:
+ * <ul>
+ *   <li>Invokes {@link Email#start()} to mark email as in-progress</li>
+ *   <li>Records sender class name via {@link Email#setSender(String)}</li>
+ *   <li>Delegates to abstract {@link #sendEmail} method implemented by subclasses</li>
+ *   <li>Invokes {@link Email#complete()} on successful delivery</li>
+ *   <li>Invokes {@link Email#fail()} if exceptions occur during sending</li>
+ * </ul>
+
+ * <p>
+ * Subclasses must implement {@link #sendEmail} to provide the actual email transport mechanism
+ * (SMTP, REST API, message queue, etc.). All error handling and lifecycle state management is
+ * handled by this base class.
+
+ * <p>
+ * Configuration is managed through Spring @Value properties for default sender addresses and
+ * per-organization SMTP configuration via {@link EmailConfigRepository}.
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
+ * @since 1.7.1
  */
 public abstract class EmailSender implements LoggingComponentWithRequestId {
 
+    /**
+     * Default mail sender address used when email does not specify a from address.
+     * <p>
+     * Configured via {@code mail.from} property in application configuration.
+     * Defaults to empty string if not configured.
+
+     */
     @Value("${mail.from:}")
     protected String mailFrom;
 
+    /**
+     * Reply-to address used in sent emails to direct responses.
+     * <p>
+     * Configured via {@code mail.replyTo} property in application configuration.
+     * Defaults to empty string if not configured.
+
+     */
     @Value("${mail.replyTo:}")
     String replyTo;
 
+    /**
+     * Repository providing access to per-organization SMTP configuration entities.
+     * <p>
+     * Enables subclass implementations to retrieve organization-specific email server
+     * settings, credentials, and connection parameters for multi-tenant email delivery.
+
+     */
     @Inject protected EmailConfigRepository emailConfigRepository;
     
     /**
-     * <p>sendMail.</p>
+     * Orchestrates the complete email sending lifecycle with state management and error handling.
+     * <p>
+     * This method manages the email delivery workflow by transitioning the email through its
+     * lifecycle states (started, completed, or failed) and delegating the actual transport
+     * mechanism to the abstract {@link #sendEmail} method implemented by subclasses.
+
+     * <p>
+     * Lifecycle sequence:
+     * <ol>
+     *   <li>Invokes {@link Email#start()} to mark email as in-progress</li>
+     *   <li>Records sender implementation class name via {@link Email#setSender(String)}</li>
+     *   <li>Calls {@link #sendEmail} with prepared email parameters</li>
+     *   <li>On success: Invokes {@link Email#complete()} to mark delivery successful</li>
+     *   <li>On exception: Invokes {@link Email#fail()} to mark delivery failed and logs error</li>
+     * </ol>
+
+     * <p>
+     * Error handling: All exceptions during email sending are caught, logged via {@code error()},
+     * and result in the email being marked as failed. The email object is always returned with
+     * its updated lifecycle state.
+
      *
-     * @param email a {@link com.openkoda.model.task.Email} object.
-     * @return a {@link com.openkoda.model.task.Email} object.
+     * @param email the email entity containing recipient, subject, content, and attachments
+     * @return the same email object with updated lifecycle state (completed or failed)
      */
     public Email sendMail(Email email) {
         debug("[sendMail] {}", email);
@@ -75,21 +142,59 @@ public abstract class EmailSender implements LoggingComponentWithRequestId {
     }
 
     /**
-     * <p>sendEmail.</p>
+     * Abstract method that subclasses must implement to provide the actual email transport mechanism.
+     * <p>
+     * This method is invoked by {@link #sendMail(Email)} with prepared email parameters and is
+     * responsible for the concrete implementation of email delivery (SMTP, REST API, message queue, etc.).
+     * Implementations should not manage lifecycle state transitions as this is handled by the base class.
+
+     * <p>
+     * Subclass responsibilities:
+     * <ul>
+     *   <li>Establish connection to email transport service</li>
+     *   <li>Construct email message with provided parameters</li>
+     *   <li>Handle attachments from URL or File entities</li>
+     *   <li>Perform actual email transmission</li>
+     *   <li>Return success status (exceptions are caught by base class)</li>
+     * </ul>
+
      *
-     * @param fullFrom a {@link java.lang.String} object.
-     * @param fullTo   a {@link java.lang.String} object.
-     * @param subject  a {@link java.lang.String} object.
-     * @param html     a {@link java.lang.String} object.
+     * @param fullFrom the complete sender address with optional display name (e.g., "Name &lt;email@example.com&gt;")
+     * @param fullTo the complete recipient address with optional display name
+     * @param subject the email subject line
+     * @param html the email body content in HTML format
+     * @param attachmentURL optional URL to download attachment (may be null)
+     * @param attachments optional list of File entities to attach (may be null or empty)
+     * @return {@code true} if email was successfully sent, {@code false} otherwise
      */
     public abstract boolean sendEmail(String fullFrom, String fullTo, String subject, String html, String attachmentURL, List<File> attachments);
 
 
     /**
-     * Creating temporary attachment for email
+     * Downloads an attachment from a URL and creates a temporary file for email attachment.
+     * <p>
+     * This utility method performs synchronous HTTP download of the attachment using {@link RestTemplate},
+     * extracts the filename from the Content-Disposition header, and writes the content to a temporary
+     * file created via {@link Files#createTempFile(String, String)}.
+
+     * <p>
+     * Implementation details:
+     * <ol>
+     *   <li>Returns null immediately if attachmentURL is blank</li>
+     *   <li>Performs GET request via RestTemplate to download attachment bytes</li>
+     *   <li>Parses Content-Disposition header to extract filename</li>
+     *   <li>Separates filename and extension for temp file creation</li>
+     *   <li>Creates temporary file with original filename and extension</li>
+     *   <li>Writes downloaded bytes to temporary file</li>
+     * </ol>
+
+     * <p>
+     * Error handling: Any IOException during download or file creation is caught, logged via
+     * {@code error()}, and results in null return value.
+
      *
-     * @param attachmentURL
-     * @return a {@link java.nio.file.Path}  to temporary attachment.
+     * @param attachmentURL the URL to download the attachment from (may be null or blank)
+     * @return Path to the created temporary file, or null if URL is blank or download fails
      */
     protected Path prepareTempAttachmentFile(String attachmentURL) {
         debug("[prepareTempAttachmentFile] {}", attachmentURL);

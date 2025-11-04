@@ -23,6 +23,26 @@ package com.openkoda.controller;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Concrete implementation of CRUD controller configuration registry for REST API endpoints.
+ * <p>
+ * Spring {@code @Component} extending {@link AbstractCRUDControllerConfigurationMap}.
+ * Stores configurations for API-based generic CRUD controllers (CRUDApiController).
+ * Configurations are registered at application startup via CRUDControllers.
+ * Used by API controllers to retrieve entity-specific settings including repository,
+ * form class, and required privileges for JSON REST endpoints.
+ * 
+ * <p>
+ * Thread-safety: Extends HashMap with no additional synchronization. Assumes
+ * single-threaded startup registration during {@code @PostConstruct} phase.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * See {@code AbstractCRUDControllerConfigurationMap}
+ * See {@code CRUDApiController}
+ */
 @Component
 public class ApiCRUDControllerConfigurationMap extends AbstractCRUDControllerConfigurationMap{
 }

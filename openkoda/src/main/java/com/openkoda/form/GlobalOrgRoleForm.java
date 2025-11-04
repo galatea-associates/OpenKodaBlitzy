@@ -28,17 +28,73 @@ import org.springframework.validation.BindingResult;
 
 import java.util.List;
 
+/**
+ * Simple adapter form for GlobalOrgRoleDto.
+ * <p>
+ * This request-scoped form extends AbstractForm and seeds GlobalOrgRoleDto with a list of
+ * global organization roles. It is used for managing global organization role assignments,
+ * providing a frontend mapping for role selection and submission.
+ * 
+ * <p>
+ * The form supports two initialization patterns: default construction with an empty DTO,
+ * and pre-seeded construction with an existing list of global organization role identifiers.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see AbstractForm
+ * @see GlobalOrgRoleDto
+ * @see FrontendMappingDefinitions#globalOrgRoleForm
+ */
 public class GlobalOrgRoleForm extends AbstractForm<GlobalOrgRoleDto> {
 
+    /**
+     * Constructs a new GlobalOrgRoleForm with default initialization.
+     * <p>
+     * Initializes the form with a new GlobalOrgRoleDto instance and the predefined
+     * frontend mapping definition from FrontendMappingDefinitions.globalOrgRoleForm.
+     * The DTO's globalOrganizationRoles list will be empty by default.
+     * 
+     */
     public GlobalOrgRoleForm(){
         super(new GlobalOrgRoleDto(), FrontendMappingDefinitions.globalOrgRoleForm);
     }
 
+    /**
+     * Constructs a new GlobalOrgRoleForm with pre-seeded global organization roles.
+     * <p>
+     * Initializes the form with a new GlobalOrgRoleDto instance and the predefined
+     * frontend mapping definition, then pre-populates the dto.globalOrganizationRoles
+     * field with the provided list of global organization role identifiers.
+     * 
+     *
+     * @param globalOrgRoles list of global organization role identifiers to pre-seed
+     *                       into the DTO; may be null or empty
+     */
     public GlobalOrgRoleForm(List<String> globalOrgRoles){
         super(new GlobalOrgRoleDto(), FrontendMappingDefinitions.globalOrgRoleForm);
         dto.globalOrganizationRoles=globalOrgRoles;
     }
 
+    /**
+     * Validates the form data bound to this GlobalOrgRoleForm instance.
+     * <p>
+     * <strong>UNIMPLEMENTED:</strong> This method currently returns null as a stub.
+     * To participate in standard validation flows, this method must be completed to
+     * perform validation logic and return this form instance for fluent chaining.
+     * 
+     * <p>
+     * When implemented, this method should validate the globalOrganizationRoles list
+     * in the DTO and register any validation errors in the provided BindingResult.
+     * 
+     *
+     * @param br BindingResult for collecting validation errors; unused in current
+     *           stub implementation
+     * @param <F> the form type extending Form, allowing fluent chaining
+     * @return currently returns null (unimplemented); should return this form instance
+     *         when implemented to support fluent validation chaining
+     */
     @Override
     public <F extends Form> F validate(BindingResult br) {
         return null;

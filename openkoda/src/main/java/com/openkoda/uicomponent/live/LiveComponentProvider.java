@@ -26,19 +26,110 @@ import com.openkoda.uicomponent.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Aggregator component providing a single injection point for UI service beans.
+ * <p>
+ * This class serves as a consolidated entry point for commonly used service beans, simplifying
+ * dependency injection for downstream controllers and components. Rather than injecting multiple
+ * individual service interfaces, consumers can inject this single provider to access all UI
+ * service capabilities through a unified interface.
+ * 
+ * <p>
+ * All fields are final and set only in the constructor, making this class immutable after
+ * construction. The immutable references yield thread-safe access to the underlying service
+ * implementations, which themselves must ensure thread-safety.
+ * 
+ * <p>
+ * <b>Usage Note:</b> Tests should inject/mock this provider or construct it directly with test
+ * doubles for the service dependencies.
+ * 
+ * <p>
+ * <b>Warning:</b> Removing or renaming this class or its fields will break consumers that
+ * autowire this provider. Any changes should be coordinated across the codebase.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see DataServices
+ * @see IntegrationServices
+ * @see MessagesServices
+ * @see UtilServices
+ * @see OpenAIServices
+ * @see SystemServices
+ * @see MediaServices
+ */
 @Component
 public class LiveComponentProvider {
 
-
+    /**
+     * Provides data repository access and form management operations.
+     * This service enables CRUD operations on entities and form data processing.
+     */
     public final DataServices data;
+    
+    /**
+     * Provides Slack messaging and REST client operations.
+     * This service enables integration with external systems and third-party APIs.
+     */
     public final IntegrationServices integrations;
+    
+    /**
+     * Provides email and WebSocket messaging operations.
+     * This service enables sending emails and real-time messages to connected clients.
+     */
     public final MessagesServices messages;
+    
+    /**
+     * Provides utility operations for UI components.
+     * This service offers common utility functions used throughout the UI layer.
+     */
     public final UtilServices util;
+    
+    /**
+     * Provides ChatGPT integration operations.
+     * <p>
+     * This service is optional and may be null if OpenAI is not configured.
+     * The {@code @Autowired(required=false)} annotation allows the application to start
+     * even when OpenAI dependencies are not available.
+     * 
+     */
     @Autowired(required = false)
     public final OpenAIServices openAI;
+    
+    /**
+     * Provides server-side code execution and system command operations.
+     * <p>
+     * The actual implementation is profile-dependent: {@code LiveSystemServices} in standard
+     * mode or {@code SecureLiveSystemServices} in secure mode.
+     * 
+     */
     public final SystemServices system;
+    
+    /**
+     * Provides PDF generation and file creation operations.
+     * This service enables document generation and media file processing.
+     */
     public final MediaServices media;
 
+    /**
+     * Creates an immutable provider with all required service dependencies via Spring autowiring.
+     * <p>
+     * This constructor is invoked by Spring's dependency injection framework to instantiate
+     * the provider with all necessary service implementations. All fields are set once in the
+     * constructor and never modified, ensuring immutability and thread-safety.
+     * 
+     *
+     * @param data the DataServices implementation for repository access and form management
+     * @param integrations the IntegrationServices implementation for Slack and REST operations
+     * @param messages the MessagesServices implementation for email and WebSocket messaging
+     * @param util the UtilServices implementation for common utility operations
+     * @param system the SystemServices implementation for server-side code execution
+     *               (profile-dependent: LiveSystemServices or SecureLiveSystemServices)
+     * @param openAI the OpenAIServices implementation for ChatGPT integration
+     *               (optional, may be null if OpenAI is not configured)
+     * @param media the MediaServices implementation for PDF generation and file creation
+     */
     public LiveComponentProvider(
             @Autowired DataServices data,
             @Autowired IntegrationServices integrations,

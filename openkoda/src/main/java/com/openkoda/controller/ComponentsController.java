@@ -36,11 +36,49 @@ import java.util.List;
 
 import static com.openkoda.controller.common.URLConstants.*;
 
+/**
+ * REST controller providing component export and import functionality for YAML archives.
+ * <p>
+ * Enables bulk export of entities (FrontendResource, ServerJs, EventListener, SchedulerEvent, Form, Privilege)
+ * as zipped YAML archives and transactional import from uploaded ZIP files. Export methods serialize entity
+ * collections via {@code services.componentExport.exportToZip}. Import methods deserialize and load resources
+ * via {@code services.zipComponentImport.loadResourcesFromZip}. All endpoints are guarded with
+ * {@code @PreAuthorize} annotations requiring either {@code canManageOrgData} or {@code canManageBackend} privileges.
+ * <p>
+ * Typical usage for exporting all frontend resources:
+ * <pre>
+ * GET /html/frontendResource/export-yaml
+ * </pre>
+ * Returns a ZIP file containing YAML representations of all frontend resources.
+ * <p>
+ * Security notes: All endpoints require administrative privileges. Imported YAML is deserialized,
+ * so ensure trusted sources only. Export operations use secure repositories to enforce privilege checks.
+ * <p>
+ * Thread-safety: Stateless controller, thread-safe. Import uses transactional service methods.
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.service.export.ComponentExportService
+ * @see com.openkoda.service.export.ZipComponentImportService
+ * @see ComponentProvider
+ */
 @RestController
 @RequestMapping({_HTML})
 public class ComponentsController extends ComponentProvider implements HasSecurityRules {
 
 
+    /**
+     * Exports all organization-scoped resources as a ZIP containing YAML files.
+     * <p>
+     * Collects all ServerJs, FrontendResource, EventListener, SchedulerEvent, Form, and Privilege entities
+     * from secure repositories, serializes them to YAML format, and packages them into a downloadable ZIP archive.
+     * 
+     *
+     * @return byte array containing ZIP archive with YAML representations of all resources
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageOrgData privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @PreAuthorize(CHECK_CAN_MANAGE_ORG_DATA)
     @ResponseBody
     @GetMapping(value = _ORGANIZATION + _EXPORT_YAML + _ALL, produces = "application/zip")
@@ -57,6 +95,18 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(allResources).toByteArray();
     }
 
+    /**
+     * Exports all resources for a specific organization as a ZIP containing YAML files.
+     * <p>
+     * Retrieves ServerJs, FrontendResource, EventListener, SchedulerEvent, and Form entities
+     * scoped to the specified organization, serializes them to YAML, and packages into a ZIP archive.
+     * 
+     *
+     * @param organizationId the unique identifier of the organization whose resources to export
+     * @return byte array containing ZIP archive with YAML representations of organization-specific resources
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageOrgData privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @PreAuthorize(CHECK_CAN_MANAGE_ORG_DATA)
     @ResponseBody
     @GetMapping(value = _ORGANIZATION + _ORGANIZATIONID + _EXPORT_YAML + _ALL, produces = "application/zip")
@@ -72,6 +122,17 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(allResources).toByteArray();
     }
 
+    /**
+     * Exports all frontend resources as a ZIP containing YAML files.
+     * <p>
+     * Retrieves all FrontendResource entities, serializes them to YAML format, and packages
+     * into a downloadable ZIP archive. Useful for backing up or migrating frontend configurations.
+     * 
+     *
+     * @return byte array containing ZIP archive with YAML representations of all frontend resources
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @GetMapping(value = _FRONTENDRESOURCE + _EXPORT_YAML, produces = "application/zip")
     @ResponseBody
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
@@ -80,6 +141,18 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(repositories.secure.frontendResource.findAll()).toByteArray();
     }
 
+    /**
+     * Exports all UI components as a ZIP containing YAML files.
+     * <p>
+     * Filters frontend resources by ResourceType.UI_COMPONENT, serializes matching entities to YAML,
+     * and packages into a ZIP archive. UI components represent reusable UI building blocks.
+     * 
+     *
+     * @return byte array containing ZIP archive with YAML representations of UI component resources
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see FrontendResource.ResourceType#UI_COMPONENT
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @GetMapping(value =  _UI_COMPONENT + _EXPORT_YAML, produces = "application/zip")
     @ResponseBody
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
@@ -88,6 +161,18 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(repositories.secure.frontendResource.search(FrontendResourceSpecifications.searchByResourceType(FrontendResource.ResourceType.UI_COMPONENT))).toByteArray();
     }
 
+    /**
+     * Exports a single frontend resource as a ZIP containing one YAML file.
+     * <p>
+     * Retrieves the specified FrontendResource entity by ID, serializes it to YAML, and packages
+     * into a ZIP archive. Useful for backing up individual configurations before modification.
+     * 
+     *
+     * @param frontendResourceId the unique identifier of the frontend resource to export
+     * @return byte array containing ZIP archive with YAML representation of the single frontend resource
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @GetMapping(value = _FRONTENDRESOURCE + _ID + _EXPORT_YAML, produces = "application/zip")
     @ResponseBody
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
@@ -97,6 +182,17 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
     }
 
 
+    /**
+     * Exports all server-side JavaScript code as a ZIP containing YAML files.
+     * <p>
+     * Retrieves all ServerJs entities, serializes them to YAML format, and packages into a ZIP archive.
+     * ServerJs entities contain server-side JavaScript code executed in the GraalVM context.
+     * 
+     *
+     * @return byte array containing ZIP archive with YAML representations of all ServerJs entities
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @ResponseBody
     @GetMapping(value = _SERVERJS + _EXPORT_YAML, produces = "application/zip")
@@ -105,6 +201,18 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(repositories.secure.serverJs.findAll()).toByteArray();
     }
 
+    /**
+     * Exports a single server-side JavaScript entity as a ZIP containing one YAML file.
+     * <p>
+     * Retrieves the specified ServerJs entity by ID, serializes it to YAML, and packages into a ZIP archive.
+     * Useful for backing up individual server-side scripts before modification.
+     * 
+     *
+     * @param serverJsId the unique identifier of the ServerJs entity to export
+     * @return byte array containing ZIP archive with YAML representation of the single ServerJs entity
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @ResponseBody
     @GetMapping(value = _SERVERJS + _ID + _EXPORT_YAML, produces = "application/zip")
@@ -113,6 +221,17 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(Arrays.asList(repositories.secure.serverJs.findOne(serverJsId))).toByteArray();
     }
 
+    /**
+     * Exports all form definitions as a ZIP containing YAML files.
+     * <p>
+     * Retrieves all Form entities, serializes them to YAML format, and packages into a ZIP archive.
+     * Form entities define dynamic form structures and validation rules.
+     * 
+     *
+     * @return byte array containing ZIP archive with YAML representations of all Form entities
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @GetMapping(value = _FORM + _EXPORT_YAML, produces = "application/zip")
     @ResponseBody
@@ -121,6 +240,18 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(repositories.secure.form.findAll()).toByteArray();
     }
 
+    /**
+     * Exports a single form definition as a ZIP containing one YAML file.
+     * <p>
+     * Retrieves the specified Form entity by ID, serializes it to YAML, and packages into a ZIP archive.
+     * Useful for backing up individual form configurations before modification.
+     * 
+     *
+     * @param formId the unique identifier of the Form entity to export
+     * @return byte array containing ZIP archive with YAML representation of the single Form entity
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @GetMapping(value = _FORM + _ID + _EXPORT_YAML, produces = "application/zip")
     @ResponseBody
@@ -129,6 +260,17 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(Arrays.asList(repositories.secure.form.findOne(formId))).toByteArray();
     }
 
+    /**
+     * Exports all scheduler configurations as a ZIP containing YAML files.
+     * <p>
+     * Retrieves all SchedulerEvent entities, serializes them to YAML format, and packages into a ZIP archive.
+     * SchedulerEvent entities define scheduled tasks and their execution parameters.
+     * 
+     *
+     * @return byte array containing ZIP archive with YAML representations of all SchedulerEvent entities
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @GetMapping(value = _SCHEDULER + _EXPORT_YAML, produces = "application/zip")
     @ResponseBody
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
@@ -137,6 +279,18 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(repositories.secure.scheduler.findAll()).toByteArray();
     }
 
+    /**
+     * Exports a single scheduler configuration as a ZIP containing one YAML file.
+     * <p>
+     * Retrieves the specified SchedulerEvent entity by ID, serializes it to YAML, and packages into a ZIP archive.
+     * Useful for backing up individual scheduler configurations before modification.
+     * 
+     *
+     * @param schedulerId the unique identifier of the SchedulerEvent entity to export
+     * @return byte array containing ZIP archive with YAML representation of the single SchedulerEvent entity
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @GetMapping(value = _SCHEDULER + _ID + _EXPORT_YAML, produces = "application/zip")
     @ResponseBody
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
@@ -145,6 +299,17 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(Arrays.asList(repositories.secure.scheduler.findOne(schedulerId))).toByteArray();
     }
 
+    /**
+     * Exports all event listener configurations as a ZIP containing YAML files.
+     * <p>
+     * Retrieves all EventListener entities, serializes them to YAML format, and packages into a ZIP archive.
+     * EventListener entities define event-driven automation rules and handlers.
+     * 
+     *
+     * @return byte array containing ZIP archive with YAML representations of all EventListener entities
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @ResponseBody
     @GetMapping(value = _EVENTLISTENER + _EXPORT_YAML, produces = "application/zip")
@@ -153,6 +318,18 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(repositories.secure.eventListener.findAll()).toByteArray();
     }
 
+    /**
+     * Exports a single event listener configuration as a ZIP containing one YAML file.
+     * <p>
+     * Retrieves the specified EventListener entity by ID, serializes it to YAML, and packages into a ZIP archive.
+     * Useful for backing up individual event listener configurations before modification.
+     * 
+     *
+     * @param eventListenerId the unique identifier of the EventListener entity to export
+     * @return byte array containing ZIP archive with YAML representation of the single EventListener entity
+     * @throws org.springframework.security.access.AccessDeniedException if user lacks canManageBackend privilege
+     * @see com.openkoda.service.export.ComponentExportService#exportToZip(List)
+     */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @ResponseBody
     @GetMapping(value = _EVENTLISTENER + _ID + _EXPORT_YAML, produces = "application/zip")
@@ -161,6 +338,30 @@ public class ComponentsController extends ComponentProvider implements HasSecuri
         return services.componentExport.exportToZip(Arrays.asList(repositories.secure.eventListener.findOne(eventListenerId))).toByteArray();
     }
 
+    /**
+     * Imports components from an uploaded ZIP archive containing YAML files transactionally.
+     * <p>
+     * Accepts a multipart file upload, deserializes YAML entity definitions using
+     * {@code services.zipComponentImport.loadResourcesFromZip}, validates entities, and persists them
+     * within a single transaction. The delete parameter controls whether existing entities are removed
+     * before import. On error, the entire transaction rolls back.
+     * 
+     * <p>
+     * Example usage:
+     * <pre>
+     * POST /html/component/import/zip
+     * Content-Type: multipart/form-data
+     * Parameters: file=[ZIP archive], delete=false
+     * </pre>
+     * Returns a view model containing import results and validation messages.
+     * 
+     *
+     * @param file the uploaded ZIP file containing YAML entity definitions
+     * @param delete if true, removes existing components before import (default: false)
+     * @return Flow execution result with "components" view and import log
+     * @see com.openkoda.service.export.ZipComponentImportService#loadResourcesFromZip(MultipartFile, boolean)
+     * @see Flow
+     */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @Transactional
     @RequestMapping(value = _COMPONENT + _IMPORT + _ZIP, method = RequestMethod.POST)

@@ -31,14 +31,65 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
+ * Spring Data JPA repository for {@link EventListenerEntry} entities used in event-driven workflow management.
+ * <p>
+ * This repository provides data access operations for managing dynamic event listener registrations within
+ * the OpenKoda platform. Event listeners are registered at runtime to handle application events and enable
+ * extensible workflow automation. The repository supports discovery of existing listeners to prevent duplicates,
+ * validation of listener configurations, and bulk cleanup operations during module uninstallation.
+ * 
+ * <p>
+ * Event listeners are scoped to {@link OpenkodaModule} instances, allowing module-specific event handling
+ * and isolation. When modules are removed or disabled, all associated event listeners are cleaned up via
+ * bulk delete operations to maintain referential integrity.
+ * 
+ *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-03-11
+ * @see EventListenerEntry
+ * @see OpenkodaModule
+ * @see SecureEventListenerRepository
+ * @see UnsecuredFunctionalRepositoryWithLongId
  */
 @Repository
 public interface EventListenerRepository extends UnsecuredFunctionalRepositoryWithLongId<EventListenerEntry>, ModelConstants, ComponentEntityRepository<EventListenerEntry> {
 
+    /**
+     * Finds an event listener entry by its event name and consumer method name.
+     * <p>
+     * This method is used for duplicate detection during event listener registration to prevent
+     * multiple listeners from being registered for the same event-method combination. It also
+     * supports validation workflows that need to verify listener existence before performing
+     * updates or deletions.
+     * 
+     *
+     * @param eventName the name of the event that triggers the listener (e.g., "UserCreated", "OrderSubmitted")
+     * @param consumerMethodName the fully qualified method name that handles the event (e.g., "com.example.service.EventHandler.onUserCreated")
+     * @return the matching EventListenerEntry if found, or null if no listener exists for the given event-method pair
+     */
     EventListenerEntry findByEventNameAndConsumerMethodName(String eventName, String consumerMethodName);
 
+    /**
+     * Deletes all event listener entries associated with the specified module.
+     * <p>
+     * This bulk delete operation is typically invoked during module uninstallation or cleanup procedures
+     * to remove all event listeners registered by the module. The operation executes as a single JPQL
+     * DELETE statement for efficiency.
+     * 
+     * <p>
+     * <b>Important:</b> This method requires an active transaction context due to the {@link Modifying}
+     * annotation. The calling code must be annotated with {@code @Transactional} or executed within
+     * an existing transaction. After execution, the persistence context should be cleared or synchronized
+     * to avoid stale entity references, as bulk operations bypass the EntityManager cache.
+     * 
+     * <p>
+     * <b>Referential Integrity:</b> Ensure that no active event processing references the listeners
+     * being deleted. Deleting listeners while events are being processed may cause runtime exceptions
+     * if the event handling framework attempts to invoke removed listener methods.
+     * 
+     *
+     * @param module the OpenkodaModule whose event listeners should be deleted
+     */
     @Modifying
     @Query("delete from EventListenerEntry where module = :module")
     void deleteByModule(OpenkodaModule module);

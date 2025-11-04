@@ -34,12 +34,57 @@ import java.util.HashSet;
 import static com.openkoda.core.lifecycle.BaseDatabaseInitializer.ROLE_ADMIN;
 
 /**
+ * Service for loading initial integration data and bootstrapping integration module during application startup.
+ * <p>
+ * This service implements an event listener for {@link CoreSettledEvent} that executes after the core
+ * application context is fully initialized. It loads default configurations and registers privilege
+ * definitions for the integration module.
+ * 
+ * <p>
+ * During startup, this service seeds module privileges into the administrator role by collecting
+ * all values from {@code IntegrationPrivilege.values()} into a Set and calling
+ * {@code services.module.addModulePrivilegesToRole(ROLE_ADMIN, privilegesSet)}.
+ * This ensures administrators have access to all integration features immediately after deployment.
+ * 
+ * <p>
+ * Execution is guarded by {@link SpringProfilesHelper#isInitializationProfile()} to run only during
+ * initialization profiles. This prevents duplicate privilege seeding on subsequent application restarts.
+ * Disabling this service prevents automatic privilege seeding and requires manual role updates.
+ * 
+ *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
+ * @author OpenKoda Team
+ * @version 1.7.1
  * @since 2019-10-11
+ * @see CoreSettledEvent
+ * @see IntegrationPrivilege
+ * @see SpringProfilesHelper#isInitializationProfile()
  */
 @Service
 public class IntegrationDataLoaderService extends IntegrationComponentProvider {
 
+    /**
+     * Updates organization administrator and user roles with integration module privileges.
+     * <p>
+     * This method executes during the application startup phase when the {@link CoreSettledEvent}
+     * is published. It seeds all integration privileges into the administrator role to grant
+     * immediate access to integration features.
+     * 
+     * <p>
+     * The method guards execution with {@link SpringProfilesHelper#isInitializationProfile()} to
+     * ensure privilege seeding occurs only during initialization profiles (such as drop_and_init_database).
+     * This prevents duplicate privilege additions on normal application restarts.
+     * 
+     * <p>
+     * Lifecycle: This service executes after core application initialization but before the application
+     * is ready to serve requests. The privilege seeding is transactional and completes before user
+     * authentication begins. Triggered by CoreSettledEvent provided by Spring event mechanism.
+     * 
+     *
+     * @see CoreSettledEvent
+     * @see IntegrationPrivilege
+     * @see com.openkoda.core.service.module.ModuleService#addModulePrivilegesToRole(String, Set)
+     */
     @EventListener(CoreSettledEvent.class)
     public void updateOrgAdminAndUserRole() {
         if (SpringProfilesHelper.isInitializationProfile()) {

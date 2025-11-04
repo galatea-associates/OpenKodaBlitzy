@@ -32,17 +32,34 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Implementation of Hibernate's Interceptor.
- * To make it work, it must be configured the configuration.
- * For Spring Boot, you need to set the following property in the application.properties: <br/>
- * spring.jpa.properties.hibernate.ejb.interceptor.session_scoped=com.openkoda.core.audit.PropertyChangeInterceptor
- * Important detail of the class is that there is separate object created for each hibernate session therefore
- * {@link #auditMap} is thread safe.
+ * Session-scoped Hibernate Interceptor delegating entity lifecycle events to AuditInterceptor for audit trail capture.
+ * <p>
+ * Implements Hibernate Interceptor SPI to hook into entity lifecycle events (onSave, onFlushDirty, onDelete, 
+ * beforeTransactionCompletion). Maintains per-session ConcurrentHashMap (auditMap) accumulating AuditedObjectState 
+ * entries during transaction. Delegates actual change detection to singleton AuditInterceptor resolved at runtime 
+ * via ApplicationContextProvider to avoid circular dependency. Hibernate creates one instance per session, ensuring 
+ * auditMap is session-scoped and thread-isolated.
+ * 
+ * <p>
+ * <b>CRITICAL Configuration:</b> Must be configured in application.properties:
+ * {@code spring.jpa.properties.hibernate.ejb.interceptor.session_scoped=com.openkoda.core.audit.PropertyChangeInterceptor}
+ * Without this property, audit trail will not function.
+ * 
+ * <p>
+ * <b>Instance Lifecycle:</b> Created per Hibernate session, destroyed when session closes. auditMap accumulates 
+ * changes during flush operations, cleared implicitly on transaction commit via beforeTransactionCompletion delegation.
+ * 
+ * <p>
+ * <b>Thread Safety:</b> Each Hibernate session has its own instance, so auditMap is naturally thread-isolated. 
+ * ConcurrentHashMap used for extra safety but not strictly necessary given session isolation.
+ * 
  *
+ * @see AuditInterceptor
  * @see <a href="https://docs.jboss.org/hibernate/orm/3.3/reference/en/html/events.html">Hibernate Interceptors
  * reference</a>
- * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- * 
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
  */
 @Component
 public class PropertyChangeInterceptor implements Interceptor, LoggingComponent {
@@ -51,15 +68,32 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
 
 
    /**
-    * Map to store audit information for all entities modified within transaction.
-    * Each hibernate session gets its own instance of PropertyChangeInterceptor therefor non-static field is safe.
+    * Per-session concurrent map accumulating AuditedObjectState entries during transaction.
+    * <p>
+    * Keyed by entity instance identity, values contain property changes, operation type, and optional content. 
+    * Populated during onSave/onFlushDirty/onDelete, consumed in beforeTransactionCompletion for Audit entity 
+    * persistence. ConcurrentHashMap provides thread-safety although session-scoped instances are naturally 
+    * thread-isolated.
+    * 
     */
    private Map<Object, AuditedObjectState> auditMap = new ConcurrentHashMap<>();
 
 
    /**
-    * Invoked by hibernate on database flush.
-    * At this state we are on flush but before the commit, so we post-process the changes that should be saved in audit.
+    * Hibernate callback invoked during flush when dirty entity is detected, delegates to AuditInterceptor for change detection.
+    * <p>
+    * Called by Hibernate during session flush when entity modifications are detected. Passes auditMap and all entity 
+    * state arrays to AuditInterceptor.onFlushDirty for diff computation via PersistanceInterceptor.computeChanges. 
+    * Changes are accumulated in auditMap for later persistence in beforeTransactionCompletion.
+    * 
+    *
+    * @param entity Entity being flushed (must implement AuditableEntity if auditable)
+    * @param id Entity primary key
+    * @param currentState Array of current property values after modification
+    * @param previousState Array of previous property values before modification
+    * @param propertyNames Array of property names matching state array indices
+    * @param types Hibernate Type metadata for properties
+    * @return false to allow operation to proceed (audit never vetoes)
     */
    @Override
    public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState, String[] propertyNames,
@@ -69,7 +103,18 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
    }
 
    /**
-    * Invoked by hibernate on entity save. At this state we collect information about entity changes.
+    * Hibernate callback invoked on entity insertion, delegates to AuditInterceptor to capture new entity state.
+    * <p>
+    * Called by Hibernate during session flush when new entity is persisted. Passes auditMap and entity state 
+    * to AuditInterceptor.onSave for ADD operation recording.
+    * 
+    *
+    * @param entity Entity being inserted
+    * @param id Generated or assigned entity ID
+    * @param state Array of property values for new entity
+    * @param propertyNames Array of property names matching state indices
+    * @param types Hibernate Type metadata
+    * @return false to allow operation to proceed
     */
    @Override
    public boolean onSave(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
@@ -78,7 +123,17 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
    }
 
    /**
-    * Invoked by hibernate on entity delete. At this state we collect information about the deletion.
+    * Hibernate callback invoked on entity deletion, delegates to AuditInterceptor to capture deletion event.
+    * <p>
+    * Called by Hibernate during session flush when entity is deleted. Passes auditMap and entity details to 
+    * AuditInterceptor.onDelete for DELETE operation recording.
+    * 
+    *
+    * @param entity Entity being deleted
+    * @param id Entity ID being deleted
+    * @param state Array of property values before deletion (may be unused)
+    * @param propertyNames Array of property names
+    * @param types Hibernate Type metadata
     */
    @Override
    public void onDelete(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
@@ -87,8 +142,19 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
    }
 
    /**
-    * Invoked by hibernate just before transaction.
-    * At this state we are ready to save the Audit in the database.
+    * Hibernate callback invoked before transaction commit, converts accumulated AuditedObjectState entries to persistent Audit entities.
+    * <p>
+    * Called by Hibernate just before transaction commits, while database connection is still open. If auditMap is 
+    * non-empty (line 96), delegates to AuditInterceptor.beforeTransactionCompletion which converts each 
+    * AuditedObjectState to Audit[] via PropertyChangeListener, batches with AuditRepository.saveAll, and flushes 
+    * within the active transaction. Errors during audit persistence can affect the surrounding transaction.
+    * 
+    * <p>
+    * <b>Implementation Note:</b> Empty auditMap check (line 96) avoids unnecessary delegation. Audit persistence 
+    * occurs in same transaction as audited changes - failure rolls back both.
+    * 
+    *
+    * @param tx Hibernate Transaction about to commit
     */
    @Override
    public void beforeTransactionCompletion(Transaction tx) {
@@ -99,7 +165,14 @@ public class PropertyChangeInterceptor implements Interceptor, LoggingComponent 
    }
 
    /**
-    * Invoked by hibernate on database flush
+    * Resolves singleton AuditInterceptor bean at runtime to avoid circular dependency.
+    * <p>
+    * Uses ApplicationContextProvider static lookup to obtain AuditInterceptor from Spring context. Runtime 
+    * resolution necessary because PropertyChangeInterceptor is instantiated by Hibernate outside Spring's bean 
+    * lifecycle, preventing constructor injection.
+    * 
+    *
+    * @return Singleton AuditInterceptor Spring bean with registered PropertyChangeListener instances
     */
    protected AuditInterceptor getAuditInterceptor() {
       return ApplicationContextProvider.getContext().getBean( AuditInterceptor.class );

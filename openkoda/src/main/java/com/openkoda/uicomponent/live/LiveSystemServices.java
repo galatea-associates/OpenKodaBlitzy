@@ -34,20 +34,62 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * Non-cloud implementation of {@link SystemServices} providing unrestricted server-side JavaScript
+ * execution and system command execution capabilities for local and development environments.
+ * <p>
+ * This implementation is active when the "cloud" profile is NOT active (configured via
+ * {@code @Profile("!cloud")}), making it suitable for local development and testing environments
+ * where unrestricted access to system resources is acceptable.
+ * 
+ * <p>
+ * LiveSystemServices delegates JavaScript execution to {@link ServerJSRunner} for evaluating
+ * ServerJS scripts and to {@link ServerJSProcessRunner} for executing operating system commands.
+ * All command execution methods provide direct access to system shell commands without restrictions.
+ * 
+ * <p>
+ * <b>SECURITY WARNING:</b> This implementation allows unrestricted command execution and is intended
+ * ONLY for local development and non-production environments. For production and cloud deployments,
+ * use {@code SecureLiveSystemServices} which provides appropriate security restrictions.
+ * 
+ * <p>
+ * Thread-Safety: This class is stateless and thread-safe, delegating to thread-safe service components.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see SystemServices
+ * @see ServerJSRunner
+ * @see ServerJSProcessRunner
+ */
 @Component
 @Profile("!cloud")
 public class LiveSystemServices implements SystemServices {
 
+    /**
+     * Server-side JavaScript evaluation engine used to execute ServerJS scripts.
+     * Injected by Spring dependency injection to evaluate dynamic JavaScript code
+     * with provided model context and arguments.
+     */
     @Inject ServerJSRunner serverJSRunner;
 
     /**
-     * Runs Server side code (AKA ServerJS) by its name.
-     * As the method is used in javascript flows and these are dynamic by nature,
-     * there's no much need to cate about types and the method returns Object type.
-     * @param serverJsName name of the server side code entity
-     * @param model model for the code execution
-     * @param arguments arguments for the code execution
-     * @return result od the Server side code execution
+     * Runs server-side code (ServerJS) by its name, executing the script within the provided context.
+     * <p>
+     * As this method is used in JavaScript flows which are dynamic by nature, the return type is
+     * Object to support JavaScript's dynamic typing and allow flexible flow composition without
+     * compile-time type constraints.
+     * 
+     *
+     * @param serverJsName the name of the ServerJS entity to execute, must correspond to a registered
+     *                     server-side code definition (not null)
+     * @param model the execution context model containing variables and beans accessible to the script,
+     *              may be null or empty if script requires no context
+     * @param arguments the list of string arguments passed to the script execution, may be null or
+     *                  empty if script requires no arguments
+     * @return the result of the ServerJS execution as an Object, type depends on script implementation
+     *         and may be null if script produces no result
      */
     @Override
     public Object runServerSideCode(String serverJsName, Map<String, Object> model, List<String> arguments) {
@@ -55,8 +97,16 @@ public class LiveSystemServices implements SystemServices {
     }
 
     /**
-     * Executes system command and returns standard output as stream
-     * @param command linux command
+     * Executes a system command and returns the standard output as an InputStream for streaming access.
+     * <p>
+     * <b>SECURITY NOTE:</b> This method executes commands without restrictions and should only be
+     * used in local/development environments. Command input is not sanitized or validated.
+     * 
+     *
+     * @param command the shell command to execute (e.g., "ls -la", "cat /etc/hosts"), executed
+     *                directly in the system shell without escaping or validation
+     * @return an InputStream containing the command's standard output, never null but may be empty
+     *         if command produces no output
      */
     @Override
     public InputStream runCommandToStream(String command) {
@@ -64,16 +114,32 @@ public class LiveSystemServices implements SystemServices {
     }
 
     /**
-     * Executes system command and returns standard output as String
-     * @param command linux command
+     * Executes a system command and returns the standard output as a String for convenient text processing.
+     * <p>
+     * <b>SECURITY NOTE:</b> This method executes commands without restrictions and should only be
+     * used in local/development environments. Command input is not sanitized or validated.
+     * 
+     *
+     * @param command the shell command to execute (e.g., "echo 'Hello'", "pwd"), executed directly
+     *                in the system shell without escaping or validation
+     * @return a String containing the command's standard output, never null but may be empty if
+     *         command produces no output
      */
     @Override
     public String runCommandToString(String command) {
         return ServerJSProcessRunner.commandToString(command);
     }
     /**
-     * Executes system command and returns standard output as byte array
-     * @param command linux command
+     * Executes a system command and returns the standard output as a byte array for binary data processing.
+     * <p>
+     * <b>SECURITY NOTE:</b> This method executes commands without restrictions and should only be
+     * used in local/development environments. Command input is not sanitized or validated.
+     * 
+     *
+     * @param command the shell command to execute (e.g., "cat image.png"), executed directly in
+     *                the system shell without escaping or validation
+     * @return a byte array containing the command's standard output, never null but may be empty
+     *         if command produces no output
      */
     @Override
     public byte[] runCommandToByteArray(String command) {

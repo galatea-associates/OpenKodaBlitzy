@@ -24,6 +24,28 @@ package com.openkoda.repository;
 import com.openkoda.model.GlobalEntitySearch;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Repository managing GlobalSearch index entries for cross-entity full-text search.
+ * <p>
+ * Manages GlobalSearch entities storing searchable content aggregated from multiple entity types.
+ * Enables unified search across organizations, users, forms, and other searchable entities.
+ * Provides specifications-based dynamic queries via GlobalSearchSpecifications.
+ * Used by global search features for cross-entity text matching and relevance ranking.
+ * 
+ * <p>
+ * Extends {@link com.openkoda.repository.SecureRepository} to inherit privilege-enforced operations with DEFAULT_SCOPE = USER.
+ * All search operations enforce read privilege checks based on entity access control rules.
+ * The global search index consolidates searchable content from multiple source entities into
+ * a unified index table for efficient cross-entity queries.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see GlobalEntitySearch
+ * @see SecureRepository
+ * @see com.openkoda.model.common.SearchableEntity
+ */
 @Repository
 public interface GlobalSearchRepository extends SecureRepository<GlobalEntitySearch> {
 

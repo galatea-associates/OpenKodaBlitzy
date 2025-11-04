@@ -28,6 +28,29 @@ import org.springframework.stereotype.Repository;
 import static com.openkoda.controller.common.URLConstants.*;
 import static com.openkoda.model.common.ModelConstants.ORGANIZATION_ID;
 
+/**
+ * Secure repository marker interface for MapEntity geospatial data with SearchableRepositoryMetadata.
+ * <p>
+ * Extends {@link com.openkoda.repository.SecureRepository} for privilege-enforced geospatial operations on {@link MapEntity} objects.
+ * This interface provides metadata for geographic entity search and WKT POINT coordinate indexing through
+ * the {@link SearchableRepositoryMetadata} annotation. The repository enables organization-scoped and global
+ * access to map entities with automatic privilege checking.
+ * 
+ * <p>
+ * The SearchableRepositoryMetadata configuration defines URL path formulas for both global and organization-related
+ * access patterns, search indexing based on the MapEntity reference formula, and description generation for
+ * geographic entities. WKT (Well-Known Text) POINT format coordinates are indexed via JTS (Java Topology Suite)
+ * integration for geospatial queries.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see SecureRepository
+ * @see MapEntity
+ * @see SearchableRepositoryMetadata
+ * @see org.locationtech.jts.geom.Point
+ */
 @Repository
 @SearchableRepositoryMetadata(
         entityKey = "mapEntity",

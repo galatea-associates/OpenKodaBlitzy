@@ -25,32 +25,90 @@ import com.openkoda.core.form.AbstractOrganizationRelatedEntityForm;
 import com.openkoda.core.form.FrontendMappingDefinition;
 import com.openkoda.dto.system.SchedulerDto;
 import com.openkoda.model.component.Scheduler;
-import org.springframework.scheduling.support.CronSequenceGenerator;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.validation.BindingResult;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
- * Form class which allows to generate html userForm on the basis of defined userForm fields.
- * It is used for creating and editing {@link Scheduler} entities.
+ * Form adapter for validating and processing cron expression and event data for {@link Scheduler} entities.
+ * <p>
+ * This form extends {@link AbstractOrganizationRelatedEntityForm} to provide validation and data transfer
+ * between the web layer and the {@link Scheduler} domain model. It validates the cron expression using
+ * {@link CronExpression#isValidExpression} to ensure proper cron syntax, and validates that
+ * eventData is present. Validation errors are recorded in the {@link BindingResult} with appropriate
+ * error codes ('cron.invalid' for invalid cron expressions, 'not.empty' for blank fields).
+ * 
+ * <p>
+ * The form lifecycle follows the standard pattern: populateFrom (entity to DTO), validate (business rules),
+ * populateTo (DTO to entity). The populateTo method uses getSafeValue() to safely apply validated values
+ * while preserving existing entity data when form fields are unchanged.
+ * 
  *
- * @author Martyna Litkowska (mlitkowska@stratoflow.com)
- * @since 2019-03-20
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see Scheduler
+ * @see SchedulerDto
+ * @see AbstractOrganizationRelatedEntityForm
+ * // CronSequenceGenerator (Spring)
  */
 public class SchedulerForm extends AbstractOrganizationRelatedEntityForm<SchedulerDto, Scheduler> {
 
+    /**
+     * Default constructor for creating an empty SchedulerForm.
+     * <p>
+     * Initializes the form with the predefined scheduler frontend mapping definition from
+     * {@link FrontendMappingDefinitions#schedulerForm}. This constructor is typically used
+     * when creating a new Scheduler entity via the web interface.
+     * 
+     */
     public SchedulerForm() {
         super(FrontendMappingDefinitions.schedulerForm);
     }
 
+    /**
+     * Constructs a SchedulerForm for editing an existing Scheduler entity within an organization context.
+     * <p>
+     * Creates a new {@link SchedulerDto} instance and initializes the form with the provided entity.
+     * This constructor is typically used when loading an existing Scheduler for editing in the web interface.
+     * 
+     *
+     * @param organizationId the organization ID to which this Scheduler belongs (tenant scope)
+     * @param entity the existing Scheduler entity to populate the form from
+     */
     public SchedulerForm(Long organizationId, Scheduler entity) {
         super(organizationId, new SchedulerDto(), entity, FrontendMappingDefinitions.schedulerForm);
     }
 
+    /**
+     * Full constructor providing complete control over form initialization with custom DTO and mapping definition.
+     * <p>
+     * This constructor allows for advanced customization scenarios where a pre-populated DTO or custom
+     * frontend mapping definition is required. Useful for testing or specialized form processing workflows.
+     * 
+     *
+     * @param organizationId the organization ID to which this Scheduler belongs (tenant scope)
+     * @param dto the SchedulerDto containing form data (may be pre-populated)
+     * @param entity the Scheduler entity to be edited or null for new entities
+     * @param frontendMappingDefinition custom frontend mapping definition for form field rendering
+     */
     public SchedulerForm(Long organizationId, SchedulerDto dto, Scheduler entity, FrontendMappingDefinition frontendMappingDefinition) {
         super(organizationId, dto, entity, frontendMappingDefinition);
     }
 
+    /**
+     * Populates this form's DTO with data from the provided Scheduler entity.
+     * <p>
+     * Transfers the following fields from the entity to the DTO:
+     * cronExpression, eventData, organizationId, and onMasterOnly. This method implements
+     * the entity-to-form direction of the form lifecycle, preparing the form for display
+     * in the web interface with existing entity values.
+     * 
+     *
+     * @param entity the Scheduler entity to populate from
+     * @return this SchedulerForm instance for method chaining
+     */
     @Override
     public SchedulerForm populateFrom(Scheduler entity) {
         dto.cronExpression = entity.getCronExpression();
@@ -60,6 +118,18 @@ public class SchedulerForm extends AbstractOrganizationRelatedEntityForm<Schedul
         return this;
     }
 
+    /**
+     * Applies validated DTO values to the Scheduler entity using safe value resolution.
+     * <p>
+     * Transfers validated form data from the DTO to the entity, using {@code getSafeValue()} to handle
+     * field-level changes. The getSafeValue method preserves the existing entity value when the form field
+     * is unchanged, ensuring partial updates are handled correctly. Updates the following fields:
+     * cronExpression, eventData, organizationId, and onMasterOnly.
+     * 
+     *
+     * @param entity the Scheduler entity to populate (may be existing or new)
+     * @return the populated Scheduler entity
+     */
     @Override
     protected Scheduler populateTo(Scheduler entity) {
 
@@ -71,11 +141,30 @@ public class SchedulerForm extends AbstractOrganizationRelatedEntityForm<Schedul
         return entity;
     }
 
+    /**
+     * Validates the form data according to Scheduler business rules.
+     * <p>
+     * Performs the following validations:
+     * 
+     * <ul>
+     *   <li>Validates that cronExpression is not blank - rejects with error code 'not.empty' if blank</li>
+     *   <li>Validates that eventData is not blank - rejects with error code 'not.empty' if blank</li>
+     *   <li>Validates cron expression syntax using {@link CronExpression#isValidExpression(String)} -
+     *       rejects with error code 'not.valid' if the expression is invalid</li>
+     * </ul>
+     * <p>
+     * Validation errors are recorded in the provided {@link BindingResult} and can be displayed to the user
+     * via Spring's form error handling mechanism.
+     * 
+     *
+     * @param br the BindingResult to record validation errors
+     * @return this SchedulerForm instance for fluent method chaining
+     */
     @Override
     public SchedulerForm validate(BindingResult br) {
         if(isBlank(dto.cronExpression)) { br.rejectValue("dto.cronExpression", "not.empty", defaultErrorMessage); }
         if(isBlank(dto.eventData)) { br.rejectValue("dto.eventData", "not.empty", defaultErrorMessage); }
-        if(!CronSequenceGenerator.isValidExpression(dto.cronExpression)) { br.rejectValue("dto.cronExpression", "not" +
+        if(!CronExpression.isValidExpression(dto.cronExpression)) { br.rejectValue("dto.cronExpression", "not" +
                         ".valid",
                 defaultErrorMessage); }
         return this;

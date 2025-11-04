@@ -32,9 +32,54 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * XML-serializable sitemap container representing the root urlset element containing multiple URL entries.
+ * <p>
+ * This class serves as the root container for generating XML sitemaps that comply with the sitemaps.org protocol.
+ * It is annotated with Jackson XML bindings to facilitate automatic serialization to XML format. Each instance
+ * contains a collection of {@link SitemapEntry} objects that represent individual URLs to be included in the sitemap.
+
+ * <p>
+ * The class implements {@link LoggingComponentWithRequestId} to provide request-scoped logging capabilities,
+ * allowing trace correlation across distributed operations. Debug logging is used to track sitemap initialization
+ * and entry retrieval operations.
+
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * SitemapIndex sitemap = new SitemapIndex(frontendResources, "https://example.com");
+ * }</pre>
+
+ *
+ * @see SitemapEntry
+ * @see FrontendResource
+ * @see JacksonXmlRootElement
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 @JacksonXmlRootElement(localName = "urlset")
 public class SitemapIndex implements Serializable, LoggingComponentWithRequestId {
 
+    /**
+     * Constructs a new SitemapIndex by converting a collection of FrontendResource objects to SitemapEntry objects.
+     * <p>
+     * This constructor performs the following operations:
+
+     * <ul>
+     *   <li>Initializes debug logging for sitemap creation tracking</li>
+     *   <li>Creates a new ArrayList to store sitemap entries</li>
+     *   <li>Iterates through each FrontendResource in the provided collection</li>
+     *   <li>Converts each FrontendResource to a SitemapEntry, propagating the baseUrl to construct absolute URLs</li>
+     *   <li>Adds each SitemapEntry to the internal entries list</li>
+     * </ul>
+     * <p>
+     * The baseUrl parameter is propagated to each {@link SitemapEntry} constructor to ensure all URLs in the sitemap
+     * are absolute and properly formatted according to the sitemaps.org specification.
+
+     *
+     * @param entries the collection of FrontendResource objects to include in the sitemap, must not be null
+     * @param baseUrl the base URL to prepend to all resource paths, must not be null or empty
+     */
     public SitemapIndex(Collection<FrontendResource> entries, String baseUrl) {
         debug("[SitemapIndex]");
         this.entries = new ArrayList<>();
@@ -44,13 +89,53 @@ public class SitemapIndex implements Serializable, LoggingComponentWithRequestId
         }
     }
 
+    /**
+     * List of sitemap entries representing individual URLs to be included in the sitemap.
+     * <p>
+     * This field is annotated with {@code @JacksonXmlProperty(localName = "url")} to serialize each entry
+     * as a {@code <url>} element in the generated XML. The {@code @JacksonXmlElementWrapper(useWrapping = false)}
+     * annotation ensures that entries are rendered as unwrapped {@code <url>} elements directly under the
+     * {@code <urlset>} root element, without an intermediate wrapper element.
+
+     * <p>
+     * Each {@link SitemapEntry} in this list contains location, last modification date, change frequency,
+     * and priority information for a specific URL in the sitemap.
+
+     */
     @JacksonXmlProperty(localName = "url")
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<SitemapEntry> entries;
 
+    /**
+     * XML namespace attribute for the sitemap schema.
+     * <p>
+     * This field is serialized as the {@code xmlns} attribute on the root {@code <urlset>} element,
+     * declaring conformance to the sitemaps.org schema version 0.9. The namespace is set to
+     * {@code "http://www.sitemaps.org/schemas/sitemap/0.9"} which is the official XML namespace
+     * for the Sitemap protocol as defined by sitemaps.org.
+
+     */
     @JacksonXmlProperty(isAttribute = true)
     private String xmlns = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
+    /**
+     * Returns the list of sitemap entries contained in this sitemap index.
+     * <p>
+     * This method provides access to the collection of {@link SitemapEntry} objects that represent
+     * individual URLs included in the sitemap. Each entry contains location, last modification date,
+     * change frequency, and priority information.
+
+     * <p>
+     * Debug logging is performed when this method is invoked to track sitemap entry access for
+     * troubleshooting and monitoring purposes.
+
+     * <p>
+     * Note: This class is not thread-safe. It is intended for single-threaded XML serialization
+     * operations. Concurrent access to the returned list may result in undefined behavior.
+
+     *
+     * @return the list of sitemap entries, never null
+     */
     public List<SitemapEntry> getEntries() {
         debug("[getEntries]");
         return entries;

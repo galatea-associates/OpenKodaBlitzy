@@ -44,27 +44,150 @@ import java.io.PrintStream;
 import java.util.*;
 
 /**
- * Interface that makes logging easier. In order to use it, just let a class
- * implement it and all functions are available and working out-of-box.
- *
- * In addition this logging component appends current request id and logs it along with the message
+ * Base component providing request correlation ID tracking for distributed tracing across application layers.
+ * <p>
+ * Mixin interface that components extend to gain automatic request-correlated logging capabilities. 
+ * Extracts or generates correlation IDs from HTTP request context (via {@link WebRequestIdHolder}) or 
+ * MDC cron job context (via {@link RequestIdHolder}), automatically prepending correlation IDs to all 
+ * log messages. Provides centralized logger management with per-class SLF4J logger caching, runtime 
+ * debug mode toggles per logger class, and in-memory debug stack for log retention.
+
+ * <p>
+ * Integrates with {@link ApplicationEventService} for error event emission and {@link AuditService} for 
+ * error audit trails. Thread-safe storage uses {@code ThreadLocal} MDC for correlation IDs and 
+ * {@code ThreadLocal} {@link #isInLoggingLoop} for recursion prevention.
+
+ * <p>
+ * <b>WARNING</b>: Shared static collections ({@link #loggers}, {@link #availableLoggers}, 
+ * {@link #debugLoggers}) are mutated process-wide without explicit synchronization - concurrency safety 
+ * depends on concrete collection types. The {@link #loggers} HashMap may lose entries during concurrent 
+ * class registration. Consider using {@code ConcurrentHashMap} for production use.
+
+ * <p>
+ * Usage pattern - extend this interface to automatically gain request-correlated logging:
+ * <pre>{@code
+ * class MyService implements LoggingComponentWithRequestId {
+ *     void processUser(Long userId) {
+ *         debug("Processing user {}", userId);
+ *     }
+ * }
+ * }</pre>
+
+ * <p>
+ * Distributed tracing integration: Correlation IDs propagate through entire request or job execution, 
+ * enabling trace correlation across controllers, services, and repositories. IDs appear in all log 
+ * messages for filtering and grouping.
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- *
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see RequestIdHolder
+ * @see WebRequestIdHolder
+ * @see LoggingEntriesStack
+ * @see ApplicationEventService
+ * @see AuditService
+ * @see DebugLogsDecoratorWithRequestId
  */
 public interface LoggingComponentWithRequestId extends ReadableCode {
 
+    /**
+     * Process-wide cache of SLF4J Logger instances keyed by implementing class.
+     * <p>
+     * Populated lazily on first {@link #getLogger()} call per class. Each class implementing this 
+     * interface gets its own Logger instance cached here for reuse across all method calls.
+
+     * <p>
+     * <b>WARNING</b>: Uses unsynchronized {@code HashMap} - concurrent class registration from multiple 
+     * threads may lose entries or corrupt map structure. Consider {@code ConcurrentHashMap} for 
+     * production use.
+
+     */
     static final Map<Class, Logger> loggers = new HashMap<Class, Logger>();
+    
+    /**
+     * List of all classes that have registered loggers.
+     * <p>
+     * Updated when new logger created via {@link #getLogger()}. Used by 
+     * {@code DebugLogsDecoratorWithRequestId} to enumerate available logger classes for management 
+     * interfaces.
+
+     * <p>
+     * <b>WARNING</b>: Unsynchronized {@code ArrayList} - concurrent modifications may cause 
+     * {@code ConcurrentModificationException} or inconsistent state.
+
+     */
     static final List<Class> availableLoggers = new ArrayList<>();
+    
+    /**
+     * Set of classes with debug mode enabled.
+     * <p>
+     * Classes in this set have debug and trace messages logged to {@link #debugStack}. Modified by 
+     * {@code DebugLogsDecoratorWithRequestId} toggle methods to enable or disable debug mode at runtime.
+
+     * <p>
+     * <b>WARNING</b>: Unsynchronized {@code HashSet} - concurrent adds or removes may cause inconsistent 
+     * debug mode state across threads.
+
+     */
     static final Set<Class> debugLoggers = new HashSet<>();
+    
+    /**
+     * Dedicated SLF4J logger for debug stack messages.
+     * <p>
+     * Logger name: {@code "jmxDebug"}. Used by {@link #logToDebugStack(Throwable, String, boolean, Object...)} 
+     * to write formatted messages. Configure log level independently in logging configuration (logback.xml 
+     * or log4j2.xml).
+
+     * <p>
+     * Immutable and thread-safe after initialization.
+
+     */
     static final Logger debugLogger = LoggerFactory.getLogger( "jmxDebug" );
+    
+    /**
+     * In-memory bounded debug log buffer with 500-entry capacity.
+     * <p>
+     * Stores request-keyed debug messages for runtime inspection via JMX or management interfaces. 
+     * Entries formatted as {@code "ClassName - message"}. Capacity configurable via 
+     * {@code DebugLogsDecoratorWithRequestId.setMaxEntries()}.
+
+     * <p>
+     * Thread-safety depends on {@link LoggingEntriesStack} implementation. Used by {@link #getDebugEntries()} 
+     * to retrieve captured debug logs.
+
+     */
     static final LoggingEntriesStack<String> debugStack = new LoggingEntriesStack<>(500);
+    
+    /**
+     * ThreadLocal flag to prevent infinite recursion when error logging triggers exceptions.
+     * <p>
+     * Set to {@code true} during {@link #emitErrorLogNotificationEvent(Throwable, String, Object...)} 
+     * execution. If error occurs during event emission or audit creation, recursion is detected and 
+     * prevented. Thread-safe via {@code ThreadLocal} isolation. Initialized to {@code false} for each 
+     * thread.
+
+     */
     ThreadLocal<Boolean> isInLoggingLoop =  ThreadLocal.withInitial( () -> false);
 
     /**
-     * @return logger for class implementing the interface. Can be overridden in
-     *         order to provide precreated logger.
+     * Retrieves cached SLF4J Logger for implementing class, optionally creating if absent.
+     * <p>
+     * Checks {@link #loggers} cache for implementing class's Logger. If not found and 
+     * {@code createIfNotExists} is {@code true}, creates new Logger via 
+     * {@link LoggerFactory#getLogger(Class)}, caches it in {@link #loggers}, and adds class to 
+     * {@link #availableLoggers} list.
+
+     * <p>
+     * <b>WARNING</b>: Uses unsynchronized {@code HashMap} - concurrent creates from multiple threads 
+     * may lose cache entries or corrupt map structure.
+
      *
+     * @param createIfNotExists {@code true} to create and cache logger if not exists, {@code false} 
+     *                          to return {@code null} if not cached
+     * @return SLF4J Logger for implementing class, or {@code null} if not cached and 
+     *         {@code createIfNotExists} is {@code false}
+     * @see LoggerFactory#getLogger(Class)
      */
     default Logger getLogger(boolean createIfNotExists) {
         Logger l = loggers.get( getClass() );
@@ -77,9 +200,16 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
     }
 
     /**
-     * @return logger for class implementing the interface. Can be overridden in
-     *         order to provide precreated logger.
+     * Retrieves cached SLF4J Logger for implementing class, creating if necessary.
+     * <p>
+     * Convenience method that delegates to {@link #getLogger(boolean)} with {@code true}. Always returns 
+     * a logger, creating and caching if needed.
+
+     * <p>
+     * Excluded from JSON serialization via {@link JsonIgnore} to avoid exposing internal logger instances.
+
      *
+     * @return SLF4J Logger for implementing class, never {@code null}
      */
     @JsonIgnore
     default Logger getLogger() {
@@ -87,15 +217,36 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
     }
 
 
+    /**
+     * Appends correlation ID to log message.
+     * <p>
+     * Delegates to {@link #appendRequestId(String, boolean)} with {@code false}. Retrieves correlation 
+     * ID via {@link RequestIdHolder#getId()} and prepends it to message.
+
+     *
+     * @param message original log message
+     * @return message prefixed with correlation ID in format {@code "correlationId: message"}
+     */
     default String appendRequestId(String message) {
         return appendRequestId(message, false);
     }
 
     /**
-     * Method to append requestId to logged message
+     * Appends correlation ID to log message, optionally building audit UI link.
+     * <p>
+     * If {@code appendAuditUrl} is {@code true}, formats message as 
+     * {@code "{baseUrl}/html/audit/all?audit_search={correlationId}: {message}"} for clickable audit 
+     * trail access. If {@code false}, formats as {@code "{correlationId}: {message}"}.
+
+     * <p>
+     * Uses {@link UrlHelper#getBaseUrlOrEmpty()} for base URL and {@link RequestIdHolder#getId()} for 
+     * correlation ID.
+
      *
-     * @param message
-     * @return Format string containing requestId for session
+     * @param message original log message
+     * @param appendAuditurl {@code true} to build clickable audit UI link with correlation ID, 
+     *                       {@code false} for simple prefix
+     * @return message with correlation ID prepended, either as audit UI URL or simple prefix
      */
     default String appendRequestId(String message, boolean appendAuditurl) {
         return appendAuditurl ? String.format("%s/html/audit/all?audit_search=%s: %s",
@@ -104,10 +255,15 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
     }
 
     /**
-     * Logger method for debug.
+     * Logs debug-level message with correlation ID and optional debug stack capture.
+     * <p>
+     * Logs to {@link #debugStack} if debug mode enabled for class (via {@link #isDebugLogger()}), then 
+     * logs to SLF4J logger at debug level with correlation ID prepended. Debug stack entry includes 
+     * class name and formatted message.
+
      *
-     * @param format Format string, use {} for placeholders. Eg.: "User id: {}"
-     * @param arguments to fill placeholders
+     * @param format SLF4J format string with {@code {}} placeholders (e.g., {@code "User id: {}"})
+     * @param arguments values to fill placeholders
      */
     default void debug(String format, Object... arguments) {
         logToDebugStack(null, format , true, arguments );
@@ -116,11 +272,42 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
         l.debug( format , arguments );
     }
 
+    /**
+     * Formats message using SLF4J MessageFormatter.
+     * <p>
+     * Uses {@link MessageFormatter#arrayFormat(String, Object[])} to substitute arguments into format 
+     * string. Handles throwables in argument array per SLF4J conventions.
+
+     *
+     * @param format format string with {@code {}} placeholders
+     * @param arguments values to fill placeholders
+     * @return formatted message with placeholders replaced
+     */
     default String formatMessage(String format, Object... arguments) {
         FormattingTuple ft = MessageFormatter.arrayFormat( format , arguments );
         return ft.getMessage();
     }
 
+    /**
+     * Writes formatted message to debug stack with optional exception stack trace.
+     * <p>
+     * Formats message via {@link #formatMessage(String, Object...)}. If throwable provided, captures 
+     * full stack trace via {@link Throwable#printStackTrace(PrintStream)} into 
+     * {@link ResizableByteArrayOutputStream}, appends to message. Logs to {@link #debugLogger} at debug 
+     * level and stores in {@link #debugStack} with correlation ID key and {@code "ClassName - message"} 
+     * format.
+
+     * <p>
+     * Used by {@link #debug(String, Object...)}, {@link #trace(String, Object...)}, 
+     * {@link #warn(String, Object...)}, and {@link #error(String, Object...)} methods.
+
+     *
+     * @param t throwable to capture stack trace from, or {@code null}
+     * @param message message format string
+     * @param checkIfDebugLoggerEnabled {@code true} to skip logging if debug mode not enabled for class, 
+     *                                  {@code false} to always log
+     * @param arguments format string arguments
+     */
     default void logToDebugStack(Throwable t, String message, boolean checkIfDebugLoggerEnabled, Object... arguments) {
         if (checkIfDebugLoggerEnabled && !isDebugLogger()) {
             return;
@@ -145,6 +332,16 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
         debugStack.log(RequestIdHolder.getId(), getClass().getSimpleName() + " - " + message );
     }
 
+    /**
+     * Logs trace-level message with correlation ID and optional debug stack capture.
+     * <p>
+     * Logs to {@link #debugStack} if debug mode enabled, then logs to SLF4J logger at trace level with 
+     * correlation ID prepended.
+
+     *
+     * @param format SLF4J format string with {@code {}} placeholders
+     * @param arguments values to fill placeholders
+     */
     default void trace(String format, Object... arguments) {
         logToDebugStack( null, format , true, arguments );
         Logger l = getLogger();
@@ -152,16 +349,32 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
         l.trace( format , arguments );
     }
 
+    /**
+     * Checks if debug mode is enabled for implementing class.
+     * <p>
+     * Returns {@code true} if class is in {@link #debugLoggers} set (debug messages logged to 
+     * {@link #debugStack}), {@code false} otherwise. Debug mode can be enabled or disabled via 
+     * {@code DebugLogsDecoratorWithRequestId} toggle methods.
+
+     * <p>
+     * Excluded from JSON serialization via {@link JsonIgnore}.
+
+     *
+     * @return {@code true} if class is in debugLoggers set, {@code false} otherwise
+     */
     @JsonIgnore
     default boolean isDebugLogger() {
         return debugLoggers.contains( getClass() );
     }
 
     /**
-     * Logger method for info.
+     * Logs info-level message with correlation ID.
+     * <p>
+     * Logs to SLF4J logger at info level with correlation ID prepended. Does not log to debug stack.
+
      *
-     * @param format Format string, use {} for placeholders. Eg.: "User id: {}"
-     * @param arguments to fill placeholders
+     * @param format SLF4J format string with {@code {}} placeholders (e.g., {@code "User id: {}"})
+     * @param arguments values to fill placeholders
      */
     default void info(String format, Object... arguments) {
         format = appendRequestId(format);
@@ -169,10 +382,14 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
     }
 
     /**
-     * Logger method for warn.
+     * Logs warn-level message with correlation ID and debug stack capture.
+     * <p>
+     * Always logs to {@link #debugStack} (regardless of debug mode), then logs to SLF4J logger at warn 
+     * level with correlation ID prepended.
+
      *
-     * @param format Format string, use {} for placeholders. Eg.: "User id: {}"
-     * @param arguments to fill placeholders
+     * @param format SLF4J format string with {@code {}} placeholders (e.g., {@code "User id: {}"})
+     * @param arguments values to fill placeholders
      */
     default void warn(String format, Object... arguments) {
         logToDebugStack( null, format , false, arguments );
@@ -181,10 +398,14 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
     }
 
     /**
-     * Logger method for warn with underlying exception.
+     * Logs warn-level message with exception stack trace.
+     * <p>
+     * Logs message and exception to {@link #debugStack} with full stack trace captured, then logs to 
+     * SLF4J logger at warn level with correlation ID prepended.
+
      *
-     * @param message - message to put into log file.
-     * @param throwable - exception to provide stack trace.
+     * @param message warning message
+     * @param throwable exception to log with stack trace
      */
     default void warn(String message, Throwable throwable) {
         logToDebugStack(throwable, message, false);
@@ -193,10 +414,16 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
     }
 
     /**
-     * Logger method for error.
+     * Logs error-level message with audit UI link and emits error event.
+     * <p>
+     * Logs to {@link #debugStack}, logs to SLF4J logger at error level with audit UI link appended, 
+     * emits {@code APPLICATION_ERROR} event to {@link ApplicationEventService} for notification system 
+     * integration. Prevents recursion via {@link #isInLoggingLoop} ThreadLocal.
+
      *
-     * @param format Format string, use {} for placeholders. Eg.: "User id: {}"
-     * @param arguments to fill placeholders
+     * @param format SLF4J format string with {@code {}} placeholders (e.g., {@code "User id: {}"})
+     * @param arguments values to fill placeholders
+     * @see #emitErrorLogNotificationEvent(Throwable, String, Object...)
      */
     default void error(String format, Object... arguments) {
         logToDebugStack(null, format , false, arguments );
@@ -207,11 +434,16 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
 
 
     /**
-     * Logger method for error.
+     * Logs error with exception, audit UI link, and error event emission.
+     * <p>
+     * Logs message and exception to {@link #debugStack} with full stack trace, logs to SLF4J logger at 
+     * error level with audit UI link, emits error event, creates error audit via 
+     * {@link AuditService#createErrorAuditForException(Throwable, String)}.
+
      *
-     * @param throwable - exception to provide stack trace.
-     * @param format Format string, use {} for placeholders. Eg.: "User id: {}"
-     * @param arguments to fill placeholders
+     * @param throwable exception to log with stack trace
+     * @param format SLF4J format string with {@code {}} placeholders
+     * @param arguments values to fill placeholders
      */
     default void error(Throwable throwable, String format, Object... arguments) {
         logToDebugStack(throwable, format , false, arguments );
@@ -221,10 +453,14 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
     }
 
     /**
-     * Logger method for error with underlying exception.
+     * Logs error message with exception and emits error event.
+     * <p>
+     * Logs message and exception to {@link #debugStack}, logs to SLF4J logger at error level with audit 
+     * UI link, emits error event to {@link ApplicationEventService}.
+
      *
-     * @param message - message to put into log file.
-     * @param throwable - exception to provide stack trace.
+     * @param message error message
+     * @param throwable exception to log with stack trace
      */
     default void error(String message, Throwable throwable) {
         logToDebugStack( throwable, message, false );
@@ -233,29 +469,102 @@ public interface LoggingComponentWithRequestId extends ReadableCode {
         emitErrorLogNotificationEvent(throwable, message);
     }
 
+    /**
+     * Retrieves in-memory debug log entries.
+     * <p>
+     * Returns {@link #debugStack} for runtime inspection of captured debug messages. Used by management 
+     * interfaces (JMX or MBean) to view recent debug logs.
+
+     * <p>
+     * Excluded from JSON serialization via {@link JsonIgnore} to avoid exposing large debug history.
+
+     *
+     * @return map of correlation ID to debug messages from debugStack
+     */
     @JsonIgnore
     default Map<String, String> getDebugEntries() {
         return debugStack;
     }
 
+    /**
+     * Validates object is not null.
+     * <p>
+     * Delegates to Assert.notNull(Object). Convenience assertion method.
+
+     *
+     * @param o object to validate
+     * @throws IllegalArgumentException if object is {@code null}
+     */
     default void notNull(Object o) {
-        Assert.notNull( o );
+        Assert.notNull( o, "Object must not be null" );
     }
 
+    /**
+     * Validates boolean is true.
+     * <p>
+     * Delegates to Assert.isTrue(boolean). Convenience assertion method.
+
+     *
+     * @param b Boolean to validate
+     * @throws IllegalArgumentException if boolean is {@code false} or {@code null}
+     */
     default void isTrue(Boolean b) {
-        Assert.isTrue( b );
+        Assert.isTrue( b, "Condition must be true" );
     }
 
+    /**
+     * Lists all classes with registered loggers.
+     * <p>
+     * Returns {@link #availableLoggers} list. Used by {@code DebugLogsDecoratorWithRequestId.collectLoggerNames()} 
+     * to enumerate logger classes for management interfaces.
+
+     * <p>
+     * Excluded from JSON serialization via {@link JsonIgnore}.
+
+     *
+     * @return list of Class objects that have called {@link #getLogger()}
+     */
     @JsonIgnore
     default List<Class> getAvailableLoggers() {
         return availableLoggers;
     }
 
+    /**
+     * Retrieves set of classes with debug mode enabled.
+     * <p>
+     * Returns {@link #debugLoggers} set. Used by management interfaces to inspect which classes have 
+     * debug mode enabled.
+
+     * <p>
+     * Excluded from JSON serialization via {@link JsonIgnore}.
+
+     *
+     * @return set of Class objects in debug mode (logging to {@link #debugStack})
+     */
     @JsonIgnore
     default Set<Class> getDebugLoggers() {
         return debugLoggers;
     }
 
+    /**
+     * Emits error event to ApplicationEventService and creates audit trail.
+     * <p>
+     * Formats message, checks {@link #isInLoggingLoop} ThreadLocal to prevent recursion. If not in loop, 
+     * sets flag, emits {@code APPLICATION_ERROR} event with {@link NotificationDto}, creates error audit 
+     * via {@link AuditService#createErrorAuditForException(Throwable, String)}, then clears flag. If in 
+     * loop, logs error about recursion and returns.
+
+     * <p>
+     * Integrates logging with notification and audit subsystems. Recursion prevention critical for errors 
+     * during event emission or audit creation.
+
+     *
+     * @param throwable exception to include in audit, or {@code null}
+     * @param format error message format string
+     * @param arguments format string arguments
+     * // ApplicationEventService
+     * @see AuditService#createErrorAuditForException(Throwable, String)
+     */
     default void emitErrorLogNotificationEvent(Throwable throwable, String format, Object... arguments){
         ApplicationEventService applicationEventService = ApplicationEventService.getApplicationEventService();
         if(applicationEventService != null){

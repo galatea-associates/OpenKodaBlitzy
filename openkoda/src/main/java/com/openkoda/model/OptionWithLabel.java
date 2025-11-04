@@ -21,7 +21,31 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.openkoda.model;
 
+/**
+ * Marker interface for entities and domain objects that provide a human-readable label for UI display and selection lists.
+ * <p>
+ * Implemented by entities and value objects that need to be presented in dropdown menus, selection widgets, and user 
+ * interface components. The label typically represents a display name, title, or user-friendly identifier. This interface 
+ * enables generic UI component rendering without coupling to specific entity types.
+ * 
+ * <p>
+ * Common implementations include entities like Organization, Role, User, and various configuration objects.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see OptionWithPrivilege for option types with privilege requirements
+ */
 public interface OptionWithLabel {
 
+    /**
+     * Returns the human-readable label for this option.
+     * <p>
+     * Used by UI components for dropdown display text and form field rendering.
+     * 
+     *
+     * @return the display label, typically non-null but implementation-specific
+     */
     String getLabel();
 }

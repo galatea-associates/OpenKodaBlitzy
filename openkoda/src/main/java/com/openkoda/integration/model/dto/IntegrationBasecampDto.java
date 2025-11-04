@@ -21,13 +21,42 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.openkoda.integration.model.dto;
 
+/**
+ * Data transfer object for Basecamp integration configuration form binding.
+ * <p>
+ * Mutable JavaBean used in controllers and services for Basecamp API endpoint configuration.
+ * This DTO carries Basecamp API URLs between web layer, service layer, and persistence.
+ * Instances are not thread-safe; callers must enforce concurrency control.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ */
 public class IntegrationBasecampDto {
+    
+    /**
+     * Basecamp API URL for to-do list operations.
+     * <p>
+     * Format example: {@code https://3.basecampapi.com/{account}/buckets/{project}/todolists/{list}/todos.json}
+     * 
+     */
     public String toDoListUrl;
 
+    /**
+     * Returns the Basecamp API URL for to-do list operations.
+     *
+     * @return the Basecamp API URL, may be null if not configured
+     */
     public String getToDoListUrl() {
         return toDoListUrl;
     }
 
+    /**
+     * Sets the Basecamp API URL for to-do list operations.
+     *
+     * @param toDoListUrl the Basecamp API URL in format https://3.basecampapi.com/{account}/buckets/{project}/todolists/{list}/todos.json
+     */
     public void setToDoListUrl(String toDoListUrl) {
         this.toDoListUrl = toDoListUrl;
     }

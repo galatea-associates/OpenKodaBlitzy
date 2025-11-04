@@ -24,11 +24,29 @@ package com.openkoda.controller;
 import org.springframework.stereotype.Component;
 
 /**
- * <p>Class that aggregates all Services, Repositories and Controllers so that it can be extended by other
- * Spring components and reduce the need for injecting beans.</p>
- *
- * @author Arkadiusz Drysch (adrysch@stratoflow.com)
+ * Concrete Spring {@code @Component} implementation of ComponentProvider for dependency injection.
+ * <p>
+ * This Spring-managed bean extends the ComponentProvider abstract class and serves as a dependency injection
+ * anchor point for Services, Repositories, Controllers, and Messages aggregators. Controllers and other
+ * Spring components extend ComponentProvider to inherit autowired dependencies without requiring explicit
+ * {@code @Autowired} annotations on each field. This class is registered as a singleton bean, providing
+ * a single shared instance across the entire application.
  * 
+ * <p>
+ * Usage example:
+ * <pre>{@code
+ * public class MyController extends ComponentProvider {
+ *     // Inherits services, repositories, controllers, messages fields
+ * }
+ * }</pre>
+ * <p>
+ * <b>Thread-safety:</b> Singleton bean with thread-safe aggregators. Concurrent access is safe.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see ComponentProvider
  */
 @Component
 public class DefaultComponentProvider extends ComponentProvider {

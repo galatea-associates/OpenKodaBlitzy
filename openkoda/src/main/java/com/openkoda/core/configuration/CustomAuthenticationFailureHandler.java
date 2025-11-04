@@ -31,10 +31,57 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import java.io.IOException;
 
 /**
- * Authentication Failure Handler that makes redirect to the login page
+ * Spring Security authentication failure handler that redirects users to the login page with error parameters.
+ * <p>
+ * Implements {@link AuthenticationFailureHandler} to customize error handling after failed login attempts.
+ * Analyzes the authentication exception type and redirects to appropriate error page with query parameters
+ * indicating the failure reason. Distinguishes between disabled accounts (verification required) and general
+ * authentication failures.
+ * 
+ * <p>
+ * Redirect behavior:
+ * <ul>
+ * <li>Redirects to /login?verificationError for {@link DisabledException} (account not verified)</li>
+ * <li>Redirects to /login?error for all other authentication failures</li>
+ * </ul>
+ * <p>
+ * Thread-safety: This is a thread-safe stateless singleton with no mutable fields. Can safely handle
+ * concurrent authentication failures.
+ * 
+ * <p>
+ * Spring Security integration: Registered in WebSecurityConfig via
+ * {@code formLogin().failureHandler(customAuthenticationFailureHandler)} to intercept failed login attempts.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see AuthenticationFailureHandler
+ * @see CustomAuthenticationSuccessHandler
+ * @see DisabledException
  */
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
+    /**
+     * Handles authentication failure by redirecting to login page with appropriate error parameter.
+     * <p>
+     * Invoked by Spring Security when authentication fails. Examines the exception type to determine
+     * redirect target: /login?verificationError for disabled accounts (user not verified), /login?error
+     * for all other failures (bad credentials, locked account, etc.).
+     * 
+     * <p>
+     * Implementation uses {@link HttpServletResponse#sendRedirect(String)} for client-side redirect.
+     * Query parameter added to URL signals error type to login page for user feedback message display.
+     * 
+     *
+     * @param request the HTTP request that triggered authentication (unused but required by interface)
+     * @param response the HTTP response used for redirect to error page
+     * @param e the authentication exception that caused the failure ({@link DisabledException} for disabled
+     *          accounts, BadCredentialsException for wrong password, etc.)
+     * @throws IOException if redirect fails due to I/O error
+     * @throws ServletException if servlet error occurs during redirect (not thrown in current implementation)
+     * @see DisabledException
+     */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
         response.sendRedirect("/login?" + (e instanceof DisabledException ? "verificationError" : "error"));

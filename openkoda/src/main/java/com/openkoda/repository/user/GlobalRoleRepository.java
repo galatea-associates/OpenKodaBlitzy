@@ -30,29 +30,82 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- *
+ * Spring Data JPA repository managing GlobalRole entities for system-wide role definitions.
+ * <p>
+ * This interface extends {@link FunctionalRepositoryWithLongId} to provide repository operations
+ * for GlobalRole entities. GlobalRole represents system-wide roles that apply across all organizations
+ * (e.g., ROLE_ADMIN, ROLE_SYSTEM_ADMIN) in the single-table Role inheritance hierarchy.
+
+ * <p>
+ * Key features:
+ * <ul>
+ *   <li>Derived finder {@link #findByName(String)} for role lookup by unique name</li>
+ *   <li>JPQL projection {@link #findAllAsTupleWithLabelName()} returning Tuple(name, label) for UI lists</li>
+ *   <li>Filters out '%UNAUTHENTICATED%' roles in tuple projection for user-facing displays</li>
+ *   <li>Override {@link #save(GlobalRole)} for explicit type safety in role persistence</li>
+ *   <li>Used by system initialization, role management, and global privilege assignment</li>
+ * </ul>
+
+ * <p>
+ * Persists to 'roles' table (single-table inheritance) with type discriminator 'GlobalRole'.
+ * Shares table with {@link com.openkoda.model.OrganizationRole} and {@link com.openkoda.model.GlobalOrganizationRole}.
+
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- *
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see GlobalRole
+ * @see com.openkoda.model.OrganizationRole
+ * @see com.openkoda.model.GlobalOrganizationRole
+ * @see FunctionalRepositoryWithLongId
  */
 @Repository
 public interface GlobalRoleRepository extends FunctionalRepositoryWithLongId<GlobalRole> {
 
     /**
-     * <p>findByName.</p>
+     * Finds GlobalRole by unique role name.
+     * <p>
+     * Uses Spring Data query derivation to generate query with single-table inheritance filtering:
+     * {@code SELECT * FROM roles WHERE name = ? AND dtype = 'GlobalRole'}
+     * Name comparison is case-sensitive.
+
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link com.openkoda.model.GlobalRole} object.
+     * @param name Unique global role name to search for (e.g., 'ROLE_ADMIN'), must not be null
+     * @return GlobalRole with matching name, null if not found
      */
     GlobalRole findByName(String name);
 
+    /**
+     * Saves GlobalRole entity with explicit type safety.
+     * <p>
+     * Overrides generic save method from {@link FunctionalRepositoryWithLongId} to provide
+     * typed return signature. Delegates to standard JPA persist/merge operations.
+
+     *
+     * @param globalRole GlobalRole entity to save (insert or update), must not be null
+     * @return Saved GlobalRole with generated ID if new, or merged instance if existing
+     */
     @Override
     GlobalRole save(GlobalRole globalRole);
 
     /**
-     * <p>findAllAsTuple.</p>
+     * Retrieves all user-assignable GlobalRole entities as Tuple projections with localized label keys.
+     * <p>
+     * Executes JPQL constructor expression:
+     * {@code SELECT new Tuple(name, 'label.globalRole.' || name) FROM GlobalRole 
+     *        WHERE name NOT LIKE '%UNAUTHENTICATED%' ORDER BY name}
+
+     * <p>
+     * Returns Tuple instances with role name and i18n label key (e.g., 'label.globalRole.ROLE_ADMIN').
+     * Filters out internal UNAUTHENTICATED role not meant for user assignment. Ordered alphabetically
+     * by name for consistent UI display.
+
+     * <p>
+     * Usage: Populate role dropdowns in user management UI with localized labels.
+     * Label key should resolve via MessageSource to display name.
+
      *
-     * @return a {@link List} object.
+     * @return List of Tuple(name, labelKey) for assignable GlobalRoles, empty list if none exist
      */
     @Query("select new com.openkoda.core.flow.Tuple(dbGlobalRole.name, 'label.globalRole.' || dbGlobalRole.name) FROM GlobalRole dbGlobalRole " +
             "where dbGlobalRole.name not like '%UNAUTHENTICATED%' order by dbGlobalRole.name")

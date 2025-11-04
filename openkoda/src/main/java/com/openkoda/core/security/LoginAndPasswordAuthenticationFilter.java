@@ -35,8 +35,57 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 
 /**
- * The login is in the LoginAndPassword table, and the username is User.email.
- * These two values can be different, so we need a filter to map them
+ * Spring Security form-based authentication filter for username/password login that maps legacy
+ * login identifiers to canonical email addresses.
+ * <p>
+ * This filter extends {@link UsernamePasswordAuthenticationFilter} to provide traditional HTML form
+ * POST authentication via the /login endpoint. Its key responsibility is mapping legacy login
+ * identifiers (stored in LoginAndPassword.login field) to canonical email usernames (stored in
+ * User.email field) via {@link UserRepository#findUsernameLowercaseByLogin(String)}.
+ * 
+ * <p>
+ * The filter integrates with {@link CustomAuthenticationSuccessHandler} for role-based post-login
+ * redirects:
+ * 
+ * <ul>
+ *   <li>Global admin users (superuser privilege) → dashboard</li>
+ *   <li>Single organization users → organization settings page</li>
+ *   <li>Multiple organization users → organization selection page</li>
+ * </ul>
+ * <p>
+ * It also integrates with {@link CustomAuthenticationFailureHandler} for login error handling
+ * and user feedback.
+ * 
+ * <p>
+ * <b>Use Case:</b> Supports organizations that allow users to authenticate with custom login
+ * identifiers (such as employee ID or username) distinct from the email address stored in the
+ * User entity.
+ * 
+ * <p>
+ * <b>Login/Email Distinction:</b>
+ * 
+ * <ul>
+ *   <li>LoginAndPassword.login: custom identifier chosen by user (may be username, employee ID, or email)</li>
+ *   <li>User.email: canonical lowercase email address used as Spring Security username</li>
+ *   <li>This filter bridges the gap by looking up email from login identifier</li>
+ * </ul>
+ * <p>
+ * <b>Authentication Flow Example:</b>
+ * 
+ * <pre>
+ * 1. User submits form: username="john.doe", password="secret123"
+ * 2. obtainUsername() queries: findUsernameLowercaseByLogin("john.doe") → "john.doe@example.com"
+ * 3. Filter creates UsernamePasswordAuthenticationToken with email
+ * 4. LoginByPasswordOrTokenAuthenticationProvider validates credentials
+ * 5. CustomAuthenticationSuccessHandler redirects based on user's organization membership
+ * </pre>
+ *
+ * @see CustomAuthenticationSuccessHandler
+ * @see CustomAuthenticationFailureHandler
+ * @see UserRepository#findUsernameLowercaseByLogin(String)
+ * @see LoginByPasswordOrTokenAuthenticationProvider
+ * @since 1.7.1
+ * @author OpenKoda Team
  */
 @Service("loginAndPasswordAuthenticationFilter")
 public class LoginAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -44,6 +93,42 @@ public class LoginAndPasswordAuthenticationFilter extends UsernamePasswordAuthen
     @Inject
     private UserRepository userRepository;
 
+    /**
+     * Constructs the authentication filter with role-based redirect URLs and authentication handlers.
+     * <p>
+     * This constructor initializes the filter with customizable redirect URLs based on the user's
+     * organization membership and privilege level. It instantiates {@link CustomAuthenticationSuccessHandler}
+     * to perform intelligent post-login redirects and {@link CustomAuthenticationFailureHandler} to
+     * render login error messages.
+     * 
+     * <p>
+     * <b>Redirect Logic:</b> The success handler evaluates the OrganizationUser principal after
+     * authentication and redirects according to the following rules:
+     * 
+     * <ul>
+     *   <li>If user.isSuperUser() (canManageBackend privilege) → pageAfterAuthForGlobalAdmin</li>
+     *   <li>If user.organizationNames.size() == 1 → pageAfterAuthForOneOrganization (formatted with organizationId)</li>
+     *   <li>If user.organizationNames.size() &gt; 1 → pageAfterAuthForMultipleOrganizations</li>
+     * </ul>
+     * <p>
+     * <b>Typical Property Configuration:</b>
+     * 
+     * <pre>
+     * page.after.auth.for.multiple.organizations=/html/organization/all
+     * page.after.auth.for.one.organization=/html/organization/%s/settings
+     * page.after.auth.for.global.admin=/html/dashboard
+     * </pre>
+     *
+     * @param pageAfterAuthForMultipleOrganizations redirect URL for users belonging to multiple
+     *        organizations, defaults to "/html/organization/all" (organization selection page)
+     * @param pageAfterAuthForOneOrganization redirect URL template for users belonging to a single
+     *        organization, defaults to "/html/organization/%s/settings" (organization settings page
+     *        with organizationId substitution)
+     * @param pageAfterAuthForGlobalAdmin redirect URL for global admin users with superuser privilege,
+     *        defaults to "/html/dashboard" (admin dashboard)
+     * @param securityContextRepository SecurityContextRepository for persisting SecurityContext to
+     *        the session after successful authentication
+     */
     public LoginAndPasswordAuthenticationFilter(
             @Value("${page.after.auth.for.multiple.organizations:/html/organization/all}")
                     String pageAfterAuthForMultipleOrganizations,
@@ -63,9 +148,39 @@ public class LoginAndPasswordAuthenticationFilter extends UsernamePasswordAuthen
     }
 
     /**
-     * Searches for a username in database
-     * If a user is found - returns its email
-     * Otherwise returns provided login
+     * Overrides UsernamePasswordAuthenticationFilter to map legacy login identifiers to canonical
+     * email usernames.
+     * <p>
+     * This method extracts the "username" parameter from the form POST (which is actually a login
+     * identifier, not necessarily an email), then queries the database to find the corresponding
+     * User.email address. If a match is found, it returns the canonical email; otherwise, it
+     * returns the original login identifier unchanged.
+     * 
+     * <p>
+     * <b>Lookup Algorithm:</b>
+     * 
+     * <ol>
+     *   <li>super.obtainUsername(request) extracts "username" parameter from form POST</li>
+     *   <li>userRepository.findUsernameLowercaseByLogin(login) queries database:
+     *       SELECT LOWER(u.email) FROM User u JOIN LoginAndPassword lap ON u.id = lap.userId WHERE lap.login = :login</li>
+     *   <li>If match found, returns User.email (canonical username for Spring Security)</li>
+     *   <li>If no match (null), returns original login identifier (user might be authenticating with email directly)</li>
+     * </ol>
+     * <p>
+     * <b>Email Normalization:</b> This method always returns a lowercase email address per User.email
+     * storage conventions and Spring Security username requirements.
+     * 
+     * <p>
+     * <b>Fallback Behavior:</b> If the login is not found in the LoginAndPassword table, authentication
+     * proceeds with the login as the username. This handles users who authenticate directly with their
+     * email address.
+     * 
+     *
+     * @param request HttpServletRequest containing form POST data with "username" parameter (actually
+     *        a login identifier, not necessarily an email address)
+     * @return canonical lowercase email address from User.email if login found in LoginAndPassword
+     *         table, otherwise returns the original login identifier unchanged
+     * @see UserRepository#findUsernameLowercaseByLogin(String)
      */
     @Override
     protected String obtainUsername(HttpServletRequest request) {
@@ -74,6 +189,35 @@ public class LoginAndPasswordAuthenticationFilter extends UsernamePasswordAuthen
         return username != null ? username : login;
     }
 
+    /**
+     * Sets the AuthenticationManager for this filter via setter injection with lazy initialization.
+     * <p>
+     * This method configures the authentication flow by connecting the filter to the authentication
+     * provider chain. The {@link Lazy @Lazy} annotation breaks a circular dependency during Spring
+     * Security configuration initialization.
+     * 
+     * <p>
+     * <b>Circular Dependency Resolution:</b>
+     * 
+     * <ul>
+     *   <li>SecurityConfiguration creates LoginAndPasswordAuthenticationFilter bean</li>
+     *   <li>SecurityConfiguration creates AuthenticationManager bean referencing the filter</li>
+     *   <li>@Lazy annotation defers AuthenticationManager injection until after both beans are initialized</li>
+     * </ul>
+     * <p>
+     * <b>Authentication Flow After Manager Set:</b>
+     * 
+     * <ol>
+     *   <li>Filter calls attemptAuthentication() with UsernamePasswordAuthenticationToken</li>
+     *   <li>AuthenticationManager delegates to LoginByPasswordOrTokenAuthenticationProvider</li>
+     *   <li>Provider validates credentials via UserDetailsService and PasswordEncoder</li>
+     *   <li>On success, SecurityContext is updated with authenticated OrganizationUser</li>
+     *   <li>CustomAuthenticationSuccessHandler performs role-based redirect</li>
+     * </ol>
+     *
+     * @param authenticationManager AuthenticationManager containing ProviderManager with
+     *        LoginByPasswordOrTokenAuthenticationProvider for validating username/password credentials
+     */
     @Autowired
     @Override
     public void setAuthenticationManager(@Lazy AuthenticationManager authenticationManager) {

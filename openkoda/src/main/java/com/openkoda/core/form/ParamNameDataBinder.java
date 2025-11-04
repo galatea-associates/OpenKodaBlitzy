@@ -26,9 +26,79 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.web.servlet.mvc.method.annotation.ExtendedServletRequestDataBinder;
 
+/**
+ * Deprecated Spring MVC data binder converting dotted parameter names to bracketed notation for Map-based form binding.
+ * <p>
+ * This legacy data binder converts HTTP parameter names from dotted notation (dto.field) to bracketed notation
+ * (dto[field]) to enable proper binding to Map-based DTOs in Spring MVC. When HTML forms use input names like
+ * "dto.fieldName", Spring's default binding treats these as nested JavaBean properties. For Map-based forms
+ * (MapEntityForm, OrganizationRelatedMap), bracketed notation is required to correctly populate Map entries.
+ * <p>
+ * This implementation extends ExtendedServletRequestDataBinder and performs parameter name conversion during
+ * construction. The constructor iterates through all property values, identifies names starting with "dto.",
+ * and adds renamed entries using replaceFirstLevel() conversion logic.
+ * <p>
+ * Conversion examples:
+ * <ul>
+ *   <li>"dto.field" → "dto[field]"</li>
+ *   <li>"dto.field.nested" → "dto[field].nested" (first level only)</li>
+ *   <li>"dto.field.nested" → "dto[field][nested]" (all levels via replaceAllLevels)</li>
+ * </ul>
+ * <p>
+ * <b>Deprecation Notice:</b> This class is deprecated and replaced by {@link RenamingProcessor} which provides
+ * better performance through parameter rename map caching per form class. New code should use RenamingProcessor
+ * configured as a custom HandlerMethodArgumentResolver in Spring MVC configuration.
+ * <p>
+ * Example usage (deprecated approach):
+ * <pre>{@code
+ * // Old approach - creates new binder instance per request
+ * MutablePropertyValues propertyValues = new ServletRequestParameterPropertyValues(request);
+ * ParamNameDataBinder binder = new ParamNameDataBinder(form, "form", propertyValues);
+ * 
+ * // New approach - use RenamingProcessor configured in Spring MVC
+ * // RenamingProcessor automatically handles parameter name conversion
+ * // for MapEntityForm parameters in controller methods
+ * }</pre>
+ *
+ * @see RenamingProcessor
+ * @see MapFormArgumentResolver
+ * @see MapEntityForm
+ * @see OrganizationRelatedMap
+ * @deprecated Replaced by {@link RenamingProcessor} for better performance with cached rename maps
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 @Deprecated
 public class ParamNameDataBinder extends ExtendedServletRequestDataBinder {
 
+    /**
+     * Constructs a ParamNameDataBinder and converts dotted parameter names to bracketed notation.
+     * <p>
+     * Iterates through all property values in the provided MutablePropertyValues collection, identifies
+     * parameters starting with "dto.", and adds renamed versions using bracketed notation. The conversion
+     * applies {@link #replaceFirstLevel(String)} to transform "dto.field" into "dto[field]" for proper
+     * Map-based binding in Spring MVC.
+     * 
+     * <p>
+     * This conversion is necessary because HTML forms typically use dotted notation (name="dto.fieldName")
+     * which Spring's default binder interprets as nested JavaBean properties. For Map-based DTOs like
+     * OrganizationRelatedMap, bracketed notation is required to correctly populate Map entries rather than
+     * attempting JavaBean property access.
+     * 
+     * <p>
+     * Example transformation:
+     * <pre>
+     * Input: PropertyValue("dto.firstName", "John")
+     * Output: Adds PropertyValue("dto[firstName]", "John")
+     * </pre>
+     * 
+     *
+     * @param target the target object for data binding (typically a Form instance)
+     * @param objectName the name of the target object for binding errors
+     * @param pv the MutablePropertyValues containing HTTP request parameters to convert
+     * @see #replaceFirstLevel(String)
+     * @see ExtendedServletRequestDataBinder
+     */
     public ParamNameDataBinder(Object target, String objectName, MutablePropertyValues pv) {
         super(target, objectName);
         for (PropertyValue a : pv.getPropertyValues()) {
@@ -39,6 +109,38 @@ public class ParamNameDataBinder extends ExtendedServletRequestDataBinder {
         }
     }
 
+    /**
+     * Converts first-level dotted parameter name to bracketed notation for Map-based binding.
+     * <p>
+     * Transforms parameter names from dotted notation (dto.field) to bracketed notation (dto[field])
+     * for the first level only. Nested levels remain in their original format. This conversion enables
+     * proper binding to Map-based DTOs where keys are accessed via bracket notation rather than
+     * JavaBean property paths.
+     * 
+     * <p>
+     * Conversion algorithm:
+     * <ol>
+     *   <li>Strips "dto." prefix from the parameter name</li>
+     *   <li>Finds the first delimiter (. or [ or () using StringUtils.indexOfAny</li>
+     *   <li>If no delimiter found, wraps entire name in brackets: "dto[fieldName]"</li>
+     *   <li>If delimiter found, wraps first segment in brackets and preserves rest: "dto[field].nested"</li>
+     * </ol>
+     * 
+     * <p>
+     * Conversion examples:
+     * <pre>
+     * "dto.field" → "dto[field]"
+     * "dto.field.nested" → "dto[field].nested"
+     * "dto.field[0]" → "dto[field][0]"
+     * "dto.method()" → "dto[method]()"
+     * </pre>
+     * 
+     *
+     * @param name the parameter name to convert, must start with "dto."
+     * @return the converted parameter name with first-level bracketed notation
+     * @see StringUtils#indexOfAny(CharSequence, String)
+     * @see #replaceAllLevels(String)
+     */
     public static String replaceFirstLevel(String name) {
         String nameWithoutDtoPrefix = name.substring(4);
         int closingPos = StringUtils.indexOfAny(nameWithoutDtoPrefix, ".[(");
@@ -51,6 +153,40 @@ public class ParamNameDataBinder extends ExtendedServletRequestDataBinder {
         }
         return result;
     }
+    
+    /**
+     * Converts all levels of dotted parameter name to bracketed notation for nested Map binding.
+     * <p>
+     * Transforms parameter names from dotted notation (dto.field.nested) to fully bracketed notation
+     * (dto[field][nested]) for all levels. This conversion enables proper binding to nested Map structures
+     * where each level is accessed via bracket notation.
+     * 
+     * <p>
+     * Conversion algorithm:
+     * <ol>
+     *   <li>Strips "dto." prefix from the parameter name</li>
+     *   <li>Replaces all dots (.) with "][" using String.replaceAll</li>
+     *   <li>Wraps result in "dto[" prefix and "]" suffix</li>
+     * </ol>
+     * 
+     * <p>
+     * Conversion examples:
+     * <pre>
+     * "dto.field" → "dto[field]"
+     * "dto.field.nested" → "dto[field][nested]"
+     * "dto.field.nested.deep" → "dto[field][nested][deep]"
+     * </pre>
+     * 
+     * <p>
+     * <b>Note:</b> This method converts all dot delimiters indiscriminately. It does not preserve
+     * existing brackets or handle method call syntax. Use {@link #replaceFirstLevel(String)} if you
+     * need to preserve nested notation beyond the first level.
+     * 
+     *
+     * @param name the parameter name to convert, must start with "dto."
+     * @return the converted parameter name with all levels in bracketed notation
+     * @see #replaceFirstLevel(String)
+     */
     public static String replaceAllLevels(String name) {
         String nameWithoutDtoPrefix = name.substring(4);
         String result = nameWithoutDtoPrefix.replaceAll("\\.", "][");

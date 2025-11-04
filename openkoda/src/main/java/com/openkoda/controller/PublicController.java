@@ -56,17 +56,36 @@ import static com.openkoda.core.service.FrontendResourceService.frontendResource
 import static com.openkoda.core.service.event.ApplicationEvent.USER_VERIFIED;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-@Controller
 /**
- * <p>Controller that is a general place for putting all public actions, ie. actions that don't require
- * authentication.</p>
- * <p>There are a few more specialized controllers for such actions (eg. PasswordRecoveryController or FrontendResourceController,
- * but this a a go-to place for all the other actions.
- * </p>
- *
- * @author Arkadiusz Drysch (adrysch@stratoflow.com)
+ * Public-facing controller providing unauthenticated endpoints for registration, email verification, and diagnostics.
+ * <p>
+ * Handles public endpoints accessible without authentication including user registration with ReCaptcha validation,
+ * email verification via token, verification link resending, login form display, and diagnostic endpoints for
+ * session and access testing. This controller serves as the central location for all public actions that do not
+ * require authentication, complementing specialized controllers like PasswordRecoveryController and FrontendResourceController.
  * 
+ * <p>
+ * The registration flow uses {@link ValidationService} for ReCaptcha validation, delegates to services.user flows
+ * for user creation, and emits USER_VERIFIED events upon successful email verification. Flash attributes are used
+ * for success and error messages across redirects. Servlet session is used for diagnostic endpoints.
+ * 
+ * <p>
+ * Thread-safety: Stateless controller with session-safe operations. Each request is handled independently.
+ * 
+ * <p>
+ * Security notes: All endpoints are public by design without @PreAuthorize restrictions. ReCaptcha validation
+ * prevents automated bot registrations. Diagnostic endpoints (getSessionId, hasAccess) should be disabled in
+ * production environments or restricted by IP address for security.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * See {@code ValidationService}
+ * See {@code com.openkoda.controller.user.PasswordRecoveryController}
+ * See {@code FrontendResourceController}
  */
+@Controller
 public class PublicController extends AbstractController implements HasSecurityRules {
 
     @Value("${page.after.register:/logout}")
@@ -78,6 +97,21 @@ public class PublicController extends AbstractController implements HasSecurityR
     @Inject
     ValidationService validationService;
 
+    /**
+     * Captures initial registration attempt and redirects to registration form with email pre-filled.
+     * <p>
+     * HTTP mapping: POST /register-attempt or /{languagePrefix}/register-attempt
+     * 
+     * <p>
+     * Stores the provided email in flash attributes and redirects to the registration form,
+     * allowing the form to pre-populate the email field for user convenience.
+     * 
+     *
+     * @param languagePrefix Optional language prefix for internationalization (e.g., "en", "pl"), may be null
+     * @param email Email address to pre-fill in registration form
+     * @param redirectAttributes Spring MVC redirect attributes for flash scope data transfer
+     * @return RedirectView to registration form with email in flash attributes
+     */
     @RequestMapping(value = {_REGISTER + _ATTEMPT, "/{languagePrefix:" + LANGUAGEPREFIX + "$}" + _REGISTER + _ATTEMPT}, method = POST, consumes = "application/json", headers = "content-type=application/x-www-form-urlencoded")
     @ResponseBody
     public RedirectView registerAttempt(@PathVariable(value = "languagePrefix", required = false) String languagePrefix, String email, RedirectAttributes redirectAttributes) {
@@ -88,6 +122,30 @@ public class PublicController extends AbstractController implements HasSecurityR
         return rv;
     }
 
+    /**
+     * Processes user registration with ReCaptcha validation and form validation.
+     * <p>
+     * HTTP mapping: POST /register or /{languagePrefix}/register
+     * 
+     * <p>
+     * Validates ReCaptcha token via {@link ValidationService#isCaptchaVerified()}, checks form validation using
+     * Jakarta Bean Validation annotations, then calls services.user.registerUserOrReturnExisting to create the user
+     * account. If user already exists, returns registration form with appropriate error message indicating existing
+     * authentication methods. On success, returns thank-you page view and sends verification email to the user.
+     * 
+     * <p>
+     * Flow: ReCaptcha validation → Form validation → User registration → Email verification → Thank-you page
+     * 
+     * <p>
+     * Authentication: No authentication required - public access for new user registration
+     * 
+     *
+     * @param languagePrefix Optional language prefix for internationalization (e.g., "en", "pl"), may be null
+     * @param registerUserForm Form object bound from request with validation constraints applied
+     * @param request HttpServletRequest for accessing cookies and session data
+     * @return ModelAndView with registration error page if validation fails or user exists,
+     *         thank-you page on successful registration
+     */
     @RequestMapping(value = {_REGISTER, "/{languagePrefix:" + LANGUAGEPREFIX + "$}" + _REGISTER}, method = POST, consumes = "application/json", headers = "content-type=application/x-www-form-urlencoded")
     @ResponseBody
     public Object registerUser(@PathVariable(value = "languagePrefix", required = false) String languagePrefix, @ModelAttribute("registerForm") @Valid RegisterUserForm registerUserForm, HttpServletRequest request) {
@@ -117,6 +175,28 @@ public class PublicController extends AbstractController implements HasSecurityR
         return mav;
     }
 
+    /**
+     * Verifies user email address using token from verification email link.
+     * <p>
+     * HTTP mapping: GET /register/verify?token={base64UserIdToken}
+     * 
+     * <p>
+     * Validates and invalidates the verification token via services.token.verifyAndInvalidateToken, checks that
+     * the token has canVerifyAccount privilege, then enables the user account and their login credentials. Emits
+     * USER_VERIFIED application event for downstream processing. Returns success or failure view based on token
+     * validity and verification completion.
+     * 
+     * <p>
+     * Token verification ensures one-time use - tokens are invalidated after successful verification or if expired.
+     * 
+     * <p>
+     * Authentication: No authentication required - public access via email link with token parameter
+     * 
+     *
+     * @param base64UserIdToken Base64-encoded verification token (UUID) from email link
+     * @return ModelAndView with account-verification-success view if token valid and verification succeeds,
+     *         account-verification-fail view if token invalid, expired, or verification fails
+     */
     @GetMapping(_REGISTER + _VERIFY)
     @ResponseBody
     public Object verifyUser(@RequestParam(VERIFY_TOKEN) String base64UserIdToken) {
@@ -143,6 +223,23 @@ public class PublicController extends AbstractController implements HasSecurityR
         return new ModelAndView(frontendResourceTemplateNamePrefix + "account-verification-fail");
     }
 
+    /**
+     * Resends email verification link to user's email address.
+     * <p>
+     * HTTP mapping: POST /resend/verification
+     * 
+     * <p>
+     * Generates and sends new verification email via services.user.resendAccountVerificationEmail for users who
+     * did not receive or lost their original verification email. Returns view indicating whether resend was
+     * successful or if email address was not found in system.
+     * 
+     * <p>
+     * Authentication: No authentication required - public access for unverified users
+     * 
+     *
+     * @param email Email address to resend verification link to
+     * @return ModelAndView with resend-verification view containing success or failure status
+     */
     @PostMapping(_RESEND + _VERIFICATION)
     @ResponseBody
     public Object resendVerificationLink(@RequestParam String email) {
@@ -152,7 +249,24 @@ public class PublicController extends AbstractController implements HasSecurityR
         return mav;
     }
 
-
+    /**
+     * Displays login form fragment for AJAX or partial page updates.
+     * <p>
+     * HTTP mapping: GET /login/form
+     * 
+     * <p>
+     * Returns Thymeleaf fragment view (login::login-form) for dynamic login form rendering. Optional error and
+     * logout parameters indicate authentication failure or successful logout, respectively. These parameters are
+     * passed to the view for displaying appropriate user feedback messages.
+     * 
+     * <p>
+     * Authentication: No authentication required - public access for login form display
+     * 
+     *
+     * @param error Optional error parameter indicating login failure, may be null
+     * @param logout Optional logout parameter indicating successful logout, may be null
+     * @return ModelAndView with login form fragment view and optional error/logout status parameters
+     */
     @GetMapping(_LOGIN + _FORM)
     @ResponseBody
     public Object getLoginForm(@RequestParam(required = false) String error, @RequestParam(required = false) String logout) {
@@ -167,12 +281,50 @@ public class PublicController extends AbstractController implements HasSecurityR
         return mav;
     }
 
+    /**
+     * Redirects home page requests to root application path.
+     * <p>
+     * HTTP mapping: GET /home
+     * 
+     * <p>
+     * Simple redirect handler that forwards /home requests to the application root (/). Used for consistent
+     * home page routing across the application.
+     * 
+     * <p>
+     * Authentication: No authentication required - public access
+     * 
+     *
+     * @return ModelAndView with redirect to application root "/"
+     */
     @GetMapping(_HOME)
     public Object getHome(){
         debug("[getHome]");
         return new ModelAndView(REDIRECT + "/");
     }
 
+    /**
+     * Tests file access privileges for authenticated users (diagnostic endpoint).
+     * <p>
+     * HTTP mapping: GET /has-file-access?id={fileId}
+     * 
+     * <p>
+     * Diagnostic endpoint that checks whether the current authenticated user has access to a specific file by
+     * querying repositories.secure.file.findOne. Returns HTTP 403 (Forbidden) if user is not authenticated or
+     * file access is denied, HTTP 200 (OK) if user has access. Prints all request cookies to console for
+     * debugging session and authentication issues.
+     * 
+     * <p>
+     * Security warning: This diagnostic endpoint should be disabled or IP-restricted in production environments
+     * as it exposes cookie information and internal access control logic.
+     * 
+     * <p>
+     * Authentication: Public access but checks authentication status internally for access decision
+     * 
+     *
+     * @param fileId File identifier to check access for
+     * @param request HttpServletRequest for cookie inspection
+     * @param response HttpServletResponse for setting status code (200 or 403)
+     */
     @GetMapping("/has-file-access")
     public void hasAccess(
             @RequestParam(ID) Long fileId,
@@ -187,7 +339,29 @@ public class PublicController extends AbstractController implements HasSecurityR
             response.setStatus(200);
         }
     }
-    
+
+    /**
+     * Returns current HTTP session identifier for debugging and diagnostics.
+     * <p>
+     * HTTP mapping: GET /session-id
+     * 
+     * <p>
+     * Diagnostic endpoint that retrieves and returns the current HttpSession ID as plain text response. Useful
+     * for troubleshooting session management issues, verifying load balancer session affinity (sticky sessions),
+     * and debugging distributed session storage configurations.
+     * 
+     * <p>
+     * Security warning: This diagnostic endpoint exposes session identifiers and should be disabled or
+     * IP-restricted in production environments to prevent session enumeration attacks.
+     * 
+     * <p>
+     * Authentication: No authentication required - public access for diagnostic purposes
+     * 
+     *
+     * @param request HttpServletRequest to extract session from
+     * @param response HttpServletResponse (unused but available for future enhancements)
+     * @return ResponseEntity containing session ID as plain text string with HTTP 200 status
+     */
     @GetMapping("/session-id")
     @ResponseBody()
     public ResponseEntity<String> getSessionId(HttpServletRequest request, HttpServletResponse response) {

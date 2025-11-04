@@ -39,7 +39,37 @@ import java.util.Map;
 import static com.openkoda.controller.common.URLConstants._HTML;
 
 /**
- * Websockets configuration
+ * Spring configuration class for WebSocket support and STOMP messaging protocol.
+ * <p>
+ * Annotated with {@link Configuration} and {@link EnableWebSocketMessageBroker} to activate 
+ * WebSocket capabilities in the application. Configures a simple in-memory message broker 
+ * with /queue/ prefix for pub/sub messaging. Registers WebSocket endpoint at /html/websocket 
+ * with SockJS fallback for browsers without native WebSocket support.
+ * 
+ * <p>
+ * This configuration is used by LiveService for real-time updates and notifications, 
+ * enabling bidirectional communication between server and clients. The STOMP protocol 
+ * provides a simple text-oriented messaging protocol on top of WebSocket.
+ * 
+ * <p>
+ * Example client connection:
+ * <pre>{@code
+ * var socket = new SockJS('/html/websocket');
+ * var stompClient = Stomp.over(socket);
+ * stompClient.connect({}, function(frame) {
+ *     stompClient.subscribe('/queue/updates', function(message) {
+ *         console.log(message.body);
+ *     });
+ * });
+ * }</pre>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * See {@code EnableWebSocketMessageBroker}
+ * See {@code StompEndpointRegistry}
+ * See {@code MessageBrokerRegistry}
+ * See {@code LiveService}
  */
 @Configuration
 @EnableWebSocketMessageBroker
@@ -50,13 +80,38 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${application.websocket.allowed-origins}")
     public String[] allowedOrigins;
 
+    /**
+     * Configures the message broker for STOMP messaging.
+     * <p>
+     * Enables a simple in-memory broker with /queue/ prefix for pub/sub messaging.
+     * Messages published to /queue/ destinations are broadcast to all subscribed clients.
+     * The simple broker is suitable for development and low-traffic applications; for 
+     * production systems with higher load, consider using a full-featured message broker 
+     * like RabbitMQ or ActiveMQ.
+     * 
+     *
+     * @param config MessageBrokerRegistry for configuring message broker options
+     */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker(CHANNEL_PREFIX);
     }
 
     /**
-     * Registration of websocket endpoint on /html/websocket
+     * Registers STOMP protocol endpoints for WebSocket connections.
+     * <p>
+     * Adds /html/websocket endpoint with SockJS fallback transport for browsers that 
+     * do not support native WebSocket. The endpoint is configured with a custom handshake 
+     * handler that extracts the HTTP session ID and makes it available as a WebSocket 
+     * session attribute, enabling session continuity between HTTP and WebSocket connections.
+     * 
+     * <p>
+     * Allowed origins are configured via the {@code application.websocket.allowed-origins} 
+     * property. For production deployments, this should be restricted to specific trusted 
+     * domains rather than allowing all origins (*).
+     * 
+     *
+     * @param registry StompEndpointRegistry for WebSocket endpoint registration
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {

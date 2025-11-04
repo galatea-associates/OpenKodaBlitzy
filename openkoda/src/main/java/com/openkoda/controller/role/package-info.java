@@ -20,9 +20,77 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 /**
- * <p>Controllers for actions around roles</p>
+ * Role-Based Access Control (RBAC) role management controllers providing web interfaces for role lifecycle operations.
+ * 
+ * <b>Overview</b>
+ * <p>
+ * This package contains Spring MVC controllers that manage roles within OpenKoda's RBAC security architecture.
+ * Controllers provide HTTP endpoints for creating, reading, updating, and deleting roles, as well as managing
+ * role-privilege assignments and role-user associations. The implementation follows OpenKoda's Flow pipeline
+ * pattern for request handling and integrates with the organization-scoped multi-tenancy system.
+ * 
+ * 
+ * <b>RBAC Model</b>
+ * <p>
+ * OpenKoda implements Role-Based Access Control where roles aggregate multiple privileges. Users receive roles
+ * through UserRole associations. The effective privileges for a user are calculated by taking the union of all
+ * privileges from all roles assigned to that user within the current organization context. This enables flexible
+ * permission management while maintaining strict tenant isolation.
+ * 
+ * <p>
+ * Key relationships:
+ * 
+ * <ul>
+ *   <li><strong>Role</strong> - Aggregates multiple Privileges via serialized privilege string</li>
+ *   <li><strong>Privilege</strong> - Canonical permission enum with PrivilegeBase interface</li>
+ *   <li><strong>UserRole</strong> - Association entity linking Users to Roles with organization scope</li>
+ *   <li><strong>User</strong> - Receives effective privileges from all assigned roles</li>
+ * </ul>
+ * 
+ * <b>Key Classes</b>
+ * <dl>
+ *   <dt>{@code AbstractRoleController}</dt>
+ *   <dd>Abstract base controller implementing core role CRUD operations using Flow pipelines. Provides protected
+ *   methods for role creation, modification, privilege assignment, and role reconciliation. Subclasses provide
+ *   concrete HTTP endpoint mappings and response rendering (HTML or REST API).</dd>
+ *   
+ *   <dt>{@code RoleControllerHtml}</dt>
+ *   <dd>HTML UI implementation extending AbstractRoleController. Provides browser-based role management interface
+ *   with server-side rendering using Thymeleaf templates. Secured with Spring Security annotations requiring
+ *   appropriate role management privileges.</dd>
+ * </dl>
+ * 
+ * <b>Integration Points</b>
+ * <p>
+ * Controllers in this package integrate with multiple layers of the OpenKoda architecture:
+ * 
+ * <ul>
+ *   <li><strong>services.role</strong> - RoleService for role reconciliation and privilege assignment logic</li>
+ *   <li><strong>model.Role</strong> - JPA entity for role persistence with single-table inheritance</li>
+ *   <li><strong>model.Privilege</strong> - Privilege enum providing canonical privilege definitions</li>
+ *   <li><strong>model.UserRole</strong> - Association entity for user-role assignments</li>
+ *   <li><strong>core.security</strong> - SecurityService for privilege evaluation and enforcement</li>
+ *   <li><strong>core.flow</strong> - Flow pipeline DSL for request handling and transactional execution</li>
+ * </ul>
+ * 
+ * <b>Usage Pattern</b>
+ * <p>
+ * Concrete controllers extend {@code AbstractRoleController} and provide HTTP endpoint mappings with Spring
+ * Security authorization. Controllers use the Flow pipeline pattern to compose request handling logic with
+ * transactional execution and privilege checks.
+ * 
+ * <pre>
+ * // Example Flow pipeline for role creation
+ * Flow.init().thenSet("role", a -&gt; roleService.createRole(form))
+ * </pre>
+ * 
+ * <b>Package Guidelines</b>
  * <p><b>Should I put a class into this package?</b></p>
- * <p>If it's controller and implements actions around roles, sure, why not?</p>
+ * <p>
+ * Include classes in this package if they implement Spring MVC controller functionality specifically for role
+ * management operations. Controllers must extend {@code AbstractRoleController} or implement equivalent role
+ * lifecycle operations with appropriate Spring Security authorization.
+ * 
  *
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-01-24

@@ -22,15 +22,38 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.openkoda.model;
 
 /**
- * Interface for Dropdown options which would be enums
- * Options implementing it can have the privileges check in order to make some of them available or not for the user on
- * the basis of user's privileges.
+ * Interface for dropdown options and enums that require privilege-based visibility control.
+ * <p>
+ * Extends OptionWithLabel to add privilege checking capability for UI component rendering. 
+ * Options implementing this interface can be conditionally displayed based on the current 
+ * user's privileges, enabling fine-grained access control in selection lists, dropdown menus, 
+ * and form fields. The privilege check is performed by UI layer components before rendering 
+ * the option.
+ * 
+ * <p>
+ * Common implementations include Role enums, dynamic entity type selectors, and administrative 
+ * configuration options where visibility depends on user permissions.
+ * 
  *
- * @author Martyna Litkowska (mlitkowska@stratoflow.com)
- * @since 2019-09-10
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see OptionWithLabel
+ * @see PrivilegeBase
+ * @see Privilege
  */
 public interface OptionWithPrivilege extends OptionWithLabel {
 
+    /**
+     * Returns the privilege required to view and select this option.
+     * <p>
+     * UI components check this privilege against the user's granted privileges before 
+     * including the option in selection lists.
+     * 
+     *
+     * @return the privilege that must be granted to the current user for this option to be 
+     *         visible, may be null for publicly visible options
+     */
     PrivilegeBase getPrivilege();
 
 }

@@ -39,21 +39,101 @@ import java.util.Map;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-@Controller
 /**
- * <p>PublicFrontendResourceController has just one purpose - to display PUBLIC pages that are stored in FrontendResource repository.</p>
- * <p>The idea and assumption is that all url's under root path made from letters and dash should be loaded
- * from database as FrontendResource</p>
+ * Controller for rendering public frontend resources accessible without authentication.
+ * <p>
+ * Renders FrontendResource pages with public visibility. No login required. Used for landing pages,
+ * marketing content, and public documentation. Retrieves FrontendResource by URL path, executes
+ * associated ServerJs code, and renders via Thymeleaf template. Routes under public URL paths (/).
+ * 
+ * <p>
+ * All URLs under root path made from letters, numbers, and dashes are loaded from database as
+ * FrontendResource entities. This enables dynamic content management where pages are stored in the
+ * database and can be updated without code deployment. Supports draft preview mode for content review
+ * before publication.
+ * 
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * // Accessing root: GET /
+ * // Accessing page: GET /about-us
+ * // Accessing nested: GET /products/overview
+ * }</pre>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- *
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.core.controller.frontendresource.AbstractFrontendResourceController
+ * @see com.openkoda.model.component.FrontendResource
  */
+@Controller
 @RequestMapping({"/"})
 public class PublicFrontendResourceController extends AbstractFrontendResourceController {
 
+    /**
+     * Default home view name used when root path (/) is accessed without a specific FrontendResource path.
+     * <p>
+     * Configured via application property {@code default.pages.homeview} with default value "home".
+     * This view is rendered when {@code frontendResourcePath} is null in the root URL request.
+     * 
+     *
+     * @see #openFrontendResourcePage(String, String, Boolean, Map, AbstractOrganizationRelatedEntityForm, HttpServletRequest, HttpServletResponse)
+     */
     @Value("${default.pages.homeview:home}")
     String homeViewName;
 
+    /**
+     * Renders public frontend resource page for both GET and POST requests without authentication requirements.
+     * <p>
+     * Handles root path (/) and slug-based URL patterns. Retrieves FrontendResource from database by path,
+     * executes ServerJs for dynamic content generation, and renders via Thymeleaf template. Falls back to
+     * configured {@code homeview} when no path provided. Supports draft preview mode and subpath navigation.
+     * 
+     * <p>
+     * URL patterns supported:
+     * <ul>
+     *   <li>"/" - Root path, uses {@link #homeViewName}</li>
+     *   <li>"/{path}" - Slug format (letters, numbers, dash matched by FRONTENDRESOURCEREGEX)</li>
+     *   <li>"/{path}/{subPath}" - Nested resource with hierarchical navigation</li>
+     * </ul>
+     * 
+     * <p>
+     * Processing flow:
+     * <ol>
+     *   <li>Path normalization: null frontendResourcePath defaults to homeViewName</li>
+     *   <li>Session initialization: {@code request.getSession(true)} ensures session exists</li>
+     *   <li>Delegation: Calls {@code invokeFrontendResourceEntry} from AbstractFrontendResourceController</li>
+     * </ol>
+     * 
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * GET /about-us -> Renders "about-us" FrontendResource
+     * POST /contact?draft=true -> Renders draft "contact" page with form data
+     * }</pre>
+     * 
+     *
+     * @param frontendResourcePath URL path to FrontendResource in slug format (letters, numbers, dash).
+     *                            If null, uses {@code homeViewName} from configuration (default: "home").
+     *                            Matched by FRONTENDRESOURCEREGEX pattern.
+     * @param subPath Optional subpath for hierarchical resource navigation. Normalized to empty string if null.
+     *               Passed to {@code invokeFrontendResourceEntry} for nested resource routing.
+     * @param draft If true, renders draft version of FrontendResource for preview. If false (default),
+     *             renders published version. Used for content review before publication.
+     * @param requestParams Map of all HTTP request parameters. Passed to {@code invokeFrontendResourceEntry}
+     *                     for ServerJs context and form population.
+     * @param form Validated form object for POST requests. Must be AbstractOrganizationRelatedEntityForm subclass.
+     *            Used for form submission handling and validation.
+     * @param request HttpServletRequest used for session management (ensures session exists via {@code getSession(true)})
+     *               and HTTP method detection (GET/POST).
+     * @param response HttpServletResponse for potential error handling and response customization.
+     * @return ModelAndView with resource content and template name, or String view name, or ResponseEntity
+     *        depending on {@code invokeFrontendResourceEntry} result. Return type varies based on
+     *        FrontendResource configuration and execution flow.
+     * @see AbstractFrontendResourceController#invokeFrontendResourceEntry
+     * @see com.openkoda.model.component.FrontendResource
+     * @see com.openkoda.model.component.ControllerEndpoint.HttpMethod
+     */
     @RequestMapping(
             value = {
                     "/",

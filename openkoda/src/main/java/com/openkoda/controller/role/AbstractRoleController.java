@@ -39,17 +39,52 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
- * <p>Controller that provides actual Role related functionality for different type of access (eg. API, HTML)</p>
- * <p>Implementing classes should take over http binding and forming a result whereas this controller should take care
- * of actual implementation</p>
+ * Abstract base controller providing Role-Based Access Control (RBAC) role management operations.
+ * <p>
+ * Implements role lifecycle operations including role creation with privilege assignment, role editing
+ * with privilege modification, role-user assignment and unassignment, and role deletion with dependency checks.
+ * Supports three role types: GlobalRole (platform-wide permissions), OrganizationRole (organization-scoped permissions),
+ * and GlobalOrganizationRole (global permissions within organization context). Uses single-table inheritance
+ * for Role entities.
+ * 
+ * <p>
+ * Subclasses provide concrete endpoint mappings for different access methods (HTML, API).
+ * Delegates to {@code services.role} for role reconciliation and privilege synchronization.
+ * Uses Flow pipeline pattern for request orchestration.
+ * 
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * PageModelMap result = findRole(roleId);
+ * Role role = result.get("roleEntity");
+ * }</pre>
  *
- * @author Martyna Litkowska (mlitkowska@stratoflow.com)
- * @since 2019-01-24
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.service.user.RoleService
+ * @see com.openkoda.model.Role
+ * @see com.openkoda.model.Privilege
  */
 public class AbstractRoleController extends AbstractController {
 
+    /**
+     * Request-scoped cache service for memoizing frequently-accessed data within a single HTTP request lifecycle.
+     */
     @Inject private RequestSessionCacheService cacheService;
     
+    /**
+     * Lists roles within organization or globally with optional search filtering and pagination.
+     * <p>
+     * Uses secure repository to enforce privilege-based access control. Only roles visible to the current user
+     * are returned based on their permissions. Search is performed on role names when aSearchTerm is provided.
+     * 
+     *
+     * @param aSearchTerm optional text search term for filtering roles by name, null for no filtering
+     * @param aSpecification JPA Specification for additional filtering criteria, null for no specification
+     * @param aPageable pagination parameters including page number, size, and sort order
+     * @return PageModelMap containing 'rolePage' with paginated search results of roles matching criteria
+     */
     protected PageModelMap findRolesFlow(
             String aSearchTerm,
             Specification<Role> aSpecification,
@@ -60,6 +95,17 @@ public class AbstractRoleController extends AbstractController {
                 .execute();
     }
 
+    /**
+     * Loads a single role by ID with form preparation and privilege enumeration.
+     * <p>
+     * Uses unsecure repository for internal operations. Pre-populates form with role data for edit scenarios.
+     * For roleId of -1, initializes an empty form for creation workflow.
+     * 
+     *
+     * @param roleId role identifier to retrieve, use -1 for new role form initialization
+     * @return PageModelMap containing 'roleEntity' (Role), 'roleForm' (RoleForm pre-populated), 
+     *         and 'rolesEnum' (all available privileges)
+     */
     protected PageModelMap findRole(long roleId) {
         debug("[findRole] roleId {}", roleId);
         return Flow.init()
@@ -69,6 +115,24 @@ public class AbstractRoleController extends AbstractController {
                 .execute();
     }
 
+    /**
+     * Creates new role with specified name, type, and privilege set.
+     * <p>
+     * Flow: Validates form → Checks role name uniqueness → Converts privilege identifier strings to
+     * PrivilegeBase instances via {@code PrivilegeHelper.valueOfString()} → Delegates to 
+     * {@code services.role.createRole()} for persistence → Resets form on success.
+     * 
+     * <p>
+     * Privilege identifiers are mapped using PrivilegeHelper. Falls back to empty privilege set if 
+     * dto.privileges is null. Validation failures are recorded in BindingResult without exception throwing.
+     * 
+     *
+     * @param roleFormData form containing role name, type (GlobalRole/OrganizationRole/GlobalOrganizationRole), 
+     *                     and selected privilege identifiers
+     * @param br BindingResult for capturing validation errors and form-level failures
+     * @return PageModelMap with validation results. On success: empty 'roleForm' for next creation. 
+     *         On failure: original form with errors in BindingResult
+     */
     protected PageModelMap createRole(RoleForm roleFormData, BindingResult br) {
         debug("[createRole]");
         return Flow.init(roleForm, roleFormData)
@@ -84,6 +148,21 @@ public class AbstractRoleController extends AbstractController {
                 .execute();
     }
 
+    /**
+     * Deletes role with atomic cleanup of user-role associations.
+     * <p>
+     * Cascade deletion pattern: First removes UserRole associations via 
+     * {@code repositories.unsecure.userRole.deleteUserRoleByRoleId()}, then deletes Role entity.
+     * This prevents orphaned UserRole records. Transaction ensures atomicity with rollback on any failure.
+     * 
+     * <p>
+     * Warning: No validation for roles in use. Caller must implement business rule checks 
+     * (e.g., prevent deleting last admin role).
+     * 
+     *
+     * @param roleId role identifier to delete
+     * @return PageModelMap indicating operation completion
+     */
     @Transactional
     public PageModelMap deleteRole(long roleId) {
         debug("[deleteRole] roleId {}", roleId);
@@ -93,6 +172,23 @@ public class AbstractRoleController extends AbstractController {
                 .execute();
     }
 
+    /**
+     * Updates existing role with modified name and privilege set.
+     * <p>
+     * Flow: Loads existing role via {@code repositories.unsecure.role.findOne()} → Validates and merges
+     * form data via {@code services.validation.validateAndPopulateToEntity()} → Persists updated role →
+     * Triggers privilege change notification via {@code services.privilege.notifyOnPrivilagesChange()}.
+     * 
+     * <p>
+     * Privilege change notification triggers recalculation of effective privileges for all users with this role.
+     * Updates UserRole effective privilege caches.
+     * 
+     *
+     * @param roleId role identifier to update
+     * @param roleFormData form containing updated role name and privilege selections
+     * @param br BindingResult for validation error capture
+     * @return PageModelMap containing updated 'roleEntity'. Validation errors recorded in BindingResult
+     */
     protected PageModelMap updateRole(long roleId, RoleForm roleFormData, BindingResult br) {
         debug("[updateRole] roleId {}", roleId);
         return Flow.init(roleForm, roleFormData)

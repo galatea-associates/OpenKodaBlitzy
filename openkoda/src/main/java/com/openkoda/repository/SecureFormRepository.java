@@ -27,6 +27,27 @@ import org.springframework.stereotype.Repository;
 
 import static com.openkoda.controller.common.URLConstants.FORM;
 
+/**
+ * Secure repository marker interface for Form entities with SearchableRepositoryMetadata.
+ * <p>
+ * Extends {@link com.openkoda.repository.SecureRepository} for privilege-enforced form operations. This interface
+ * is annotated with {@link SearchableRepositoryMetadata} to enable dynamic repository discovery
+ * by the SearchableRepositories system. The metadata configuration specifies the entity key
+ * (FORM), description formula for search results, and the Form entity class for type safety.
+ * 
+ * <p>
+ * As a secure repository, all query operations inherit privilege enforcement from the
+ * {@link com.openkoda.repository.SecureRepository} contract, ensuring that form access respects the authenticated
+ * user's privileges and organizational context.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see SecureRepository
+ * @see Form
+ * @see SearchableRepositoryMetadata
+ */
 @Repository
 @SearchableRepositoryMetadata(
         entityKey = FORM,

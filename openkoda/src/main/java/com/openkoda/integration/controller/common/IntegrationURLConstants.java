@@ -24,22 +24,72 @@ package com.openkoda.integration.controller.common;
 import com.openkoda.controller.common.URLConstants;
 
 /**
- * Handy constants to define URLs in the Integration module
+ * Constants for integration module URL paths, path variables, and request parameters.
+ * <p>
+ * This interface centralizes routing keys and OAuth callback parameter names used by
+ * integration controllers and views. All constants are implicitly {@code public static final}
+ * per Java interface contract, enabling compile-time constant inlining by the JVM.
+
+ * <p>
+ * The interface-as-constants pattern provides type-safe, discoverable URL fragments that
+ * ensure consistent route registration across Trello, GitHub, Slack, Microsoft Teams,
+ * Jira, and Basecamp integrations. Controllers concatenate these constants in
+ * {@code @GetMapping} and {@code @PostMapping} annotations to build complete endpoint paths.
+
+ * <p>
+ * Example controller usage:
+ * <pre>{@code
+ * @GetMapping(IntegrationURLConstants._INTEGRATION + IntegrationURLConstants._GITHUB)
+ * public ModelAndView githubCallback(@RequestParam(IntegrationURLConstants.CODE) String code) {
+ *     // OAuth callback handler
+ * }
+ * }</pre>
+
+ * <p>
+ * <strong>Important:</strong> Changing these constants requires coordinated updates to
+ * controller endpoints, integration tests, OAuth provider configurations, and view templates.
+
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.controller.common.URLConstants
  */
 public interface IntegrationURLConstants extends URLConstants {
 
+    /** Base module path identifier for integration subsystem. */
     String INTEGRATION = "integration";
+    
+    /** Leading slash prefix for integration module routes, computed as {@code '/' + INTEGRATION}. */
     String _INTEGRATION = "/" + INTEGRATION;
+    
+    /** URL path segment for Trello integration endpoints. */
     String _TRELLO = "/trello";
+    
+    /** URL path segment for GitHub integration endpoints. */
     String _GITHUB = "/github";
+    
+    /** URL path segment for Slack integration endpoints. */
     String _SLACK = "/slack";
+    
+    /** URL path segment for Microsoft Teams integration endpoints. */
     String _MSTEAMS = "/msteams";
+    
+    /** URL path segment for Jira integration endpoints. */
     String _JIRA = "/jira";
+    
+    /** URL path segment for Basecamp integration endpoints. */
     String _BASECAMP = "/basecamp";
+    
+    /** URL path segment for OAuth disconnection action. */
     String _DISCONNECT = "/disconnect";
 
-//    request parameters
+    // Request parameters
+    
+    /** OAuth 2.0 standard authorization code parameter name for callback handling. */
     String CODE = "code";
+    
+    /** OAuth 2.0 standard CSRF protection state parameter name for callback validation. */
     String STATE = "state";
 
 }

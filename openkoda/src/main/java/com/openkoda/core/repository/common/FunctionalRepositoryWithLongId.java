@@ -26,20 +26,44 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 /**
- * Most of the entities in Openkoda have Long ID.
- * Also, repositories are often used in chained lambda expressions.
- * This interface simplifies development by introducing repository interface assuming both functional interface
- * and Long ID.
- *
- * @author Arkadiusz Drysch (adrysch@stratoflow.com)
+ * Generic base repository interface for entities with {@code Long} ID type.
+ * This interface locks the ID type to {@code Long} and inherits CRUD and paging semantics from Spring Data JPA.
+ * It simplifies repository development by assuming both functional interface usage and {@code Long} ID.
+ * <p>
+ * By extending {@link JpaRepository}{@code <T, Long>}, this interface provides standard repository operations
+ * such as save, findById, findAll, delete, and pagination support. It also adds a convenience method
+ * {@link #findOne(Integer)} for repositories that need to accept {@code Integer} IDs.
  * 
+ *
+ * @param <T> the entity type managed by this repository
+ * @author Arkadiusz Drysch (adrysch@stratoflow.com)
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see JpaRepository
  */
 @NoRepositoryBean
 public interface FunctionalRepositoryWithLongId<T> extends JpaRepository<T, Long> {
+    /**
+     * Example demonstrating Specification/Criteria pattern usage for ID-based queries.
+     * This method can be uncommented for Specification-based query building when needed.
+     */
 //    default Specification<T> idSpecification(Long id) {
 //        return (root, query, cb) -> cb.equal(root.get("id"), id);
 //    }
 
+    /**
+     * Convenience method that accepts an {@code Integer} ID and returns the entity.
+     * This method converts the {@code Integer} to {@code Long} and delegates to
+     * {@link #findById(Object)}, returning {@code null} if no entity is found.
+     * <p>
+     * This is useful for code that passes {@code Integer} IDs or prefers nullable
+     * returns instead of {@code Optional}.
+     * 
+     *
+     * @param aLong the Integer ID to convert to Long and search for
+     * @return the entity with the given ID, or {@code null} if no entity exists with that ID
+     */
     default T findOne(Integer aLong) {
         return findById(aLong.longValue()).orElse(null);
     }

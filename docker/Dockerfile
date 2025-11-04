@@ -1,5 +1,5 @@
 # Use an official OpenJdk runtime as a parent image
-FROM eclipse-temurin:17-jdk
+FROM eclipse-temurin:21-jdk
 #Set jar file
 ARG JAR_FILE=openkoda/build/openkoda.jar
 ARG UID=20000

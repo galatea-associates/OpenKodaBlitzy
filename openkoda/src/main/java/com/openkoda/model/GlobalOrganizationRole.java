@@ -24,13 +24,35 @@ package com.openkoda.model;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
-@Entity
 /**
- * <p>OrganizationRole class.</p>
+ * Concrete Role subclass representing hybrid roles combining both system-wide and tenant-scoped privileges for cross-organizational support scenarios.
+ * <p>
+ * Persisted to 'roles' table with discriminator value 'GLOBAL_ORG'. Extends abstract Role class via single-table inheritance.
+ * Hybrid role type granting both global platform access and organization-specific permissions. Enables support staff or 
+ * cross-tenant administrators to access system-wide functions while also operating within organizational contexts. 
+ * Examples: Support Engineer with org access, Multi-tenant Account Manager. Less common than pure GlobalRole or OrganizationRole.
+ * 
+ * <p>
+ * <b>Inheritance:</b> Part of Role single-table inheritance hierarchy. @DiscriminatorValue('GLOBAL_ORG') identifies records 
+ * as global-organization hybrid roles.
+ * 
+ * <p>
+ * <b>Authorization:</b> Privileges evaluated in both global context (no org requirement) and organizational context (with org ID). 
+ * Dual-scope access pattern.
+ * 
+ * <p>
+ * <b>Use cases:</b> Customer support with system access, managed service providers, cross-organizational coordinators, 
+ * platform support teams.
+ * 
  *
- * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see Role for base role entity
+ * @see GlobalRole for pure global roles
+ * @see OrganizationRole for pure tenant-scoped roles
  */
+@Entity
 @DiscriminatorValue("GLOBAL_ORG")
 public class GlobalOrganizationRole extends Role {
 

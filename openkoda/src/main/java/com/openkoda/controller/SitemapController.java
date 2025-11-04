@@ -33,27 +33,110 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Collection;
 
-@Controller
 /**
- * <p> SitemapController is handling requests for xml files with sitemaps. </p>
- *
- * @author dwojcik
+ * XML sitemap generation controller for SEO optimization.
+ * <p>
+ * Provides XML sitemap endpoints (index, general, pages sitemap) for search engine crawlers.
+ * Returns ModelAndView for XML views or serializes SitemapIndex as application/xml via @ResponseBody.
+ * Uses repositories.unsecure.frontendResource.getEntriesToSitemap() for public page discovery and
+ * services.url.getBaseUrl() for absolute URL construction. Conforms to sitemaps.org protocol.
  * 
+ * <p>
+ * Request mappings:
+ * <ul>
+ *   <li>GET /sitemap.xml - Sitemap index listing all sub-sitemaps</li>
+ *   <li>GET /sitemap-general.xml - Static pages sitemap</li>
+ *   <li>GET /sitemap-pages.xml - Dynamic FrontendResource pages sitemap</li>
+ * </ul>
+ * <p>
+ * SEO notes: Sitemap helps search engines discover pages efficiently. Update frequencies guide
+ * crawler priorities. Static pages have higher priority than dynamic content.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.core.service.SitemapIndex
+ * @see com.openkoda.model.component.FrontendResource
  */
+@Controller
 public class SitemapController extends AbstractController {
 
+    /**
+     * Generates sitemap with static and general pages.
+     * <p>
+     * HTTP mapping: GET /sitemap-general.xml
+     * 
+     * <p>
+     * Creates XML urlset with static pages including home, about, contact, etc. Includes fixed
+     * priorities and weekly change frequencies for general site pages.
+     * 
+     * <p>
+     * Response format:
+     * <pre>{@code
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+     *   <url>
+     *     <loc>https://example.com/</loc>
+     *     <changefreq>weekly</changefreq>
+     *     <priority>1.0</priority>
+     *   </url>
+     * </urlset>
+     * }</pre>
+     * 
+     *
+     * @return ModelAndView rendering XML view with static pages, includes base URL for absolute links
+     */
     @RequestMapping(value = _GENERAL_SITEMAP + _XML_EXTENSION, headers = _XML_HEADER, produces = MediaType.APPLICATION_XML_VALUE)
     public Object getGeneralSitemap() {
         debug("[getGeneralSitemap]");
         return new ModelAndView(XML  + _GENERAL_SITEMAP + _XML_EXTENSION, baseUrl.name, services.url.getBaseUrl());
     }
 
+    /**
+     * Generates sitemap index listing all sub-sitemaps.
+     * <p>
+     * HTTP mapping: GET /sitemap.xml
+     * 
+     * <p>
+     * Creates sitemap index referencing /sitemap-general.xml, /sitemap-pages.xml, etc.
+     * Conforms to sitemaps.org index format. Content-type: application/xml.
+     * 
+     * <p>
+     * Response format:
+     * <pre>{@code
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+     *   <sitemap>
+     *     <loc>https://example.com/sitemap-general.xml</loc>
+     *   </sitemap>
+     *   <sitemap>
+     *     <loc>https://example.com/sitemap-pages.xml</loc>
+     *   </sitemap>
+     * </sitemapindex>
+     * }</pre>
+     * 
+     *
+     * @return ModelAndView rendering XML view with sitemapindex root element listing sub-sitemap locations
+     */
     @RequestMapping(value = _SITEMAP_INDEX + _XML_EXTENSION, headers = _XML_HEADER, produces = MediaType.APPLICATION_XML_VALUE)
     public Object getSitemapIndex() {
         debug("[getSiteMapIndex]");
         return new ModelAndView(XML  + _SITEMAP_INDEX + _XML_EXTENSION, baseUrl.name, services.url.getBaseUrl());
     }
 
+    /**
+     * Redirects sitemap requests to the sitemap index.
+     * <p>
+     * HTTP mapping: GET /sitemap.xml (alternative entry point)
+     * 
+     * <p>
+     * Provides a redirect from /sitemap.xml to /sitemap.xml for consistent access.
+     * Returns a RedirectView that exposes no model attributes for clean redirection.
+     * 
+     *
+     * @return RedirectView redirecting to sitemap index endpoint
+     */
     @RequestMapping(value = _SITEMAP + _XML_EXTENSION, headers = _XML_HEADER, produces = MediaType.APPLICATION_XML_VALUE)
     public Object getSitemap() {
         debug("[getSitemap]");
@@ -64,6 +147,33 @@ public class SitemapController extends AbstractController {
         return redirectView;
     }
 
+    /**
+     * Generates sitemap with dynamic FrontendResource pages.
+     * <p>
+     * HTTP mapping: GET /sitemap-pages.xml
+     * 
+     * <p>
+     * Queries repositories.unsecure.frontendResource.getEntriesToSitemap() for public pages,
+     * builds absolute URLs via services.url.getBaseUrl() + resource.urlPath, includes lastmod
+     * dates, sets priority based on page importance, returns urlset XML.
+     * 
+     * <p>
+     * Response format:
+     * <pre>{@code
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+     *   <url>
+     *     <loc>https://example.com/page-1</loc>
+     *     <lastmod>2023-12-15</lastmod>
+     *     <changefreq>weekly</changefreq>
+     *     <priority>0.8</priority>
+     *   </url>
+     * </urlset>
+     * }</pre>
+     * 
+     *
+     * @return SitemapIndex serialized as XML with public FrontendResource URLs, includes modification dates
+     */
     @RequestMapping(value = _PAGES_SITEMAP + _XML_EXTENSION, headers = _XML_HEADER, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public SitemapIndex getPagesSitemap() {

@@ -21,13 +21,51 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.openkoda.controller.api.v1.model;
 
+/**
+ * Mutable DTO accepting refresh token for access token renewal.
+ * <p>
+ * This single-field JavaBean carries a refresh token string for token renewal operations.
+ * Used by TokenControllerApiV1 refresh endpoint to receive refresh token requests from clients.
+ * Jackson JSON binding deserializes incoming requests without validation annotations,
+ * so consumers must validate, trim and verify the token string before use.
+ * 
+ * <p>
+ * Example usage:
+ * <pre>
+ * POST /api/v1/auth/token/refresh
+ * Content-Type: application/json
+ * {"tokenRefresher": "refresh_token_value"}
+ * </pre>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ */
 public class RefreshTokenRequest {
+    
+    /**
+     * Refresh token string for token renewal.
+     * <p>
+     * Contains sensitive token credential. Enforce TLS for transmission
+     * and avoid logging this value in plain text.
+     * 
+     */
     private String tokenRefresher;
 
+    /**
+     * Returns the refresh token value.
+     *
+     * @return refresh token string (may be null if not set)
+     */
     public String getTokenRefresher() {
         return tokenRefresher;
     }
 
+    /**
+     * Sets the refresh token value from JSON request.
+     *
+     * @param tokenRefresher refresh token to validate
+     */
     public void setTokenRefresher(String tokenRefresher) {
         this.tokenRefresher = tokenRefresher;
     }

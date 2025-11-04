@@ -21,7 +21,26 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.openkoda.core.repository.common;
 
-
+/**
+ * Marker interface for compile-time grouping of functional repository types.
+ * <p>
+ * This interface serves as a named type for repository classification and type-safe grouping.
+ * It declares no methods or metadata and exists purely for compile-time semantics.
+ * Classes that implement this interface signal that they provide functional repository capabilities.
+ * 
+ * <p>
+ * The marker pattern allows the type system to enforce contracts at compile time without requiring
+ * runtime behavior. This interface enables developers to write type-safe code that operates on
+ * repositories with functional characteristics.
+ * 
+ * <p>
+ * <b>Warning:</b> Removing or renaming this interface will cause compile-time failures in any code
+ * that references {@code FunctionalRepository} as a type constraint or marker.
+ * 
+ *
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 public interface FunctionalRepository {
 
 

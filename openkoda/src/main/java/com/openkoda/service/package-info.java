@@ -19,4 +19,75 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ * Business logic orchestration and service layer for OpenKoda platform.
+ * <p>
+ * Provides Spring-managed service beans implementing business logic, orchestration workflows, and integration with external systems.
+ * This package serves as the application's service layer, coordinating between controllers (presentation), repositories (data access),
+ * and core framework components.
+ * 
+ * <p>
+ * The service layer is organized into functional subpackages:
+ * 
+ * <b>Core Service Capabilities</b>
+ * <ul>
+ * <li><b>Services.java</b>: Central aggregator exposing 50+ service beans as injectable fields for legacy code compatibility</li>
+ * <li><b>export/</b>: Component export/import orchestration using YAML serialization and ZIP packaging</li>
+ * <li><b>dynamicentity/</b>: Runtime JPA entity generation using Byte Buddy, enabling dynamic data model creation</li>
+ * <li><b>openai/</b>: ChatGPT integration for AI-powered features with conversation management and prompt templating</li>
+ * <li><b>organization/</b>: Multi-tenant organization provisioning, lifecycle management, and tenant-scoped operations</li>
+ * <li><b>user/</b>: User account management, authentication tokens, API keys, roles, and privileges</li>
+ * <li><b>upgrade/</b>: Database schema migration orchestration with version tracking and transactional execution</li>
+ * </ul>
+ * <b>Supporting Services</b>
+ * <ul>
+ * <li><b>map/</b>: Geospatial WKT POINT parsing via JTS topology library</li>
+ * <li><b>notification/</b>: Application notification lifecycle and delivery management</li>
+ * <li><b>role/</b>: Role assignment reconciliation using server-side JavaScript evaluation</li>
+ * <li><b>csv/</b>: CSV file assembly utilities for data export</li>
+ * <li><b>autocomplete/</b>: Reflection-based autocomplete for forms and web endpoints</li>
+ * <li><b>captcha/</b>: reCAPTCHA verification for bot protection</li>
+ * </ul>
+ * <b>Architectural Patterns</b>
+ * <p>
+ * All services follow Spring dependency injection patterns with {@code @Service} or {@code @Component} stereotypes.
+ * Services use {@code @Transactional} boundaries for data consistency, inject secure/unsecure repositories for data access,
+ * and leverage core framework components (Flow pipelines, MultitenancyService, LoggingComponent) for cross-cutting concerns.
+ * 
+ * <b>Thread Safety</b>
+ * <p>
+ * Most services are stateless and thread-safe. Notable exceptions: DynamicEntityDescriptorFactory uses unsynchronized
+ * static registries (external synchronization required), ChatGPTService uses synchronized disk cache writes,
+ * RoleModificationsConsumers temporarily switches authentication context (not thread-safe during execution).
+ * 
+ * <b>Dependencies</b>
+ * <p>
+ * This package depends on:
+ * 
+ * <ul>
+ * <li>com.openkoda.core: Foundation framework (Flow, security, caching, auditing)</li>
+ * <li>com.openkoda.model: JPA entities and domain model</li>
+ * <li>com.openkoda.repository: Data access via Spring Data JPA</li>
+ * <li>Spring Framework: {@code @Service}, {@code @Transactional}, dependency injection</li>
+ * <li>External libraries: Byte Buddy (dynamic types), JTS (geospatial), OpenAI client, SnakeYAML</li>
+ * </ul>
+ * <p>
+ * Example usage:
+ * 
+ * <pre>
+ * {@code
+ * @Autowired
+ * private OrganizationService organizationService;
+ *
+ * Organization org = organizationService.createOrganization("TenantCo");
+ * }
+ * </pre>
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.core
+ * @see com.openkoda.model
+ * @see com.openkoda.repository
+ */
 package com.openkoda.service;

@@ -24,7 +24,26 @@ package com.openkoda.core.configuration.session;
 import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer;
 
 /**
- * For whatever reason this is required by Spring in order to make Http sessions work
+ * Minimal Spring Session web initializer that triggers automatic servlet filter and listener registration.
+ * <p>
+ * This class extends {@link AbstractHttpSessionApplicationInitializer} with an empty body. The presence of this
+ * class on the classpath activates Spring Session automatic configuration hooks through the Servlet 3.0+
+ * WebApplicationInitializer SPI. The parent class handles all initialization logic including registration of the
+ * springSessionRepositoryFilter and the SessionEventHttpSessionListenerAdapter.
+ * 
+ * <p>
+ * Removing this class disables Spring Session and breaks distributed session behavior in clustered deployments.
+ * No custom logic is required as the parent class handles all initialization through the onStartup() method.
+ * 
+ * <p>
+ * <strong>Important:</strong> Required for Spring Session WebApplicationInitializer SPI detection. Must be present
+ * for distributed session support to function correctly.
+ * 
+ *
+ * @since 1.7.1
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @see AbstractHttpSessionApplicationInitializer
  */
 public class Initializer extends AbstractHttpSessionApplicationInitializer {
 }
