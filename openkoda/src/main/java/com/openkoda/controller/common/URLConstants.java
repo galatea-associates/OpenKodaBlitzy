@@ -879,7 +879,7 @@ public interface URLConstants {
     String _API_AUTH_ANT_EXPRESSION = _API_AUTH + "/**";
     
     /**
-     * Token prefix Ant expression ("/_t_**/**").
+     * Token prefix Ant expression ("/_t_&#42;&#42;/&#42;&#42;").
      * <p>Wildcard pattern for all token-authenticated public endpoints.</p>
      */
     String _TOKEN_PREFIX_ANT_EXPRESSION = __T_ + "**/**";

@@ -36,7 +36,7 @@ package com.openkoda.core.flow;
  * Example usage:
  * <pre>
  * public class CleanupResource implements PostExecuteProcessablePageAttr {
- *     public void process() { /* finalization logic */ }
+ *     public void process() { // finalization logic }
  * }
  * </pre>
  * </p>

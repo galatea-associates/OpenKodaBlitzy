@@ -76,7 +76,7 @@ import java.util.stream.Collectors;
 @DynamicUpdate
 @Table(name = "users",
         uniqueConstraints = @UniqueConstraint(columnNames = ModelConstants.EMAIL))
-public class User extends TimestampedEntity implements AuditableEntity, SearchableEntity, EntityWithRequilege, IsManyOrganizationsRelatedEntity {
+public class User extends TimestampedEntity implements AuditableEntity, SearchableEntity, EntityWithRequiredPrivilege, IsManyOrganizationsRelatedEntity {
 
     /**
      * Primary key from seqGlobalId sequence, allocationSize 10 for batch allocation.

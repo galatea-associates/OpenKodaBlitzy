@@ -1022,7 +1022,7 @@ public class UserService extends ComponentProvider implements HasSecurityRules {
      * Example:
      * <pre>
      * User authenticated = verifyPassword(user, "userInputPassword");
-     * if (authenticated != null) { /* login successful */ }
+     * if (authenticated != null) { /&#42; login successful &#42;/ }
      * </pre>
      * </p>
      *

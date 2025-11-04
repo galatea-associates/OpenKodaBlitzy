@@ -1802,7 +1802,7 @@ public class UrlHelper implements URLConstants, ReadableCode {
      * Example usage:
      * <pre>{@code
      * Long orgId = UrlHelper.getOrganizationIdFromUrlOrNull(request);
-     * if (orgId != null) { /* tenant-specific logic */ }
+     * if (orgId != null) { // tenant-specific logic }
      * }</pre>
      * </p>
      *

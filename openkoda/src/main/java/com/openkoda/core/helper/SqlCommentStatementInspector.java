@@ -33,7 +33,7 @@ import org.hibernate.resource.jdbc.spi.StatementInspector;
  * This inspector performs two key operations on all SQL statements executed through Hibernate:
  * <ol>
  *   <li>Replaces {@code USER_ID_PLACEHOLDER} tokens with the actual user ID from the security context</li>
- *   <li>Appends the current request ID as a SQL comment for request tracing in database logs</li>
+ *   <li>Appends the current request ID as a SQL comment for request tracing in database logs (represented below using square brackets to avoid Javadoc terminators)</li>
  * </ol>
  * <p>
  * The placeholder replacement enables dynamic user-scoped queries where the user ID is injected
@@ -70,7 +70,7 @@ import org.hibernate.resource.jdbc.spi.StatementInspector;
  * SELECT * FROM organizations WHERE created_by = '__USER_ID__'
  * 
  * // Transformed SQL with user ID and request comment
- * SELECT * FROM organizations WHERE created_by = '12345' /*req-abc-123*/
+ * SELECT * FROM organizations WHERE created_by = '12345' /&#42;req-abc-123&#42;/
  * </pre>
  * <p>
  * This inspector is automatically invoked by Hibernate for all SQL statements when configured
@@ -95,7 +95,7 @@ public class SqlCommentStatementInspector
      *   <li>If the SQL contains {@link ModelConstants#USER_ID_PLACEHOLDER}, replaces all occurrences
      *       with the actual user ID from {@link UserProvider#getUserIdOrNotExistingIdAsString()}</li>
      *   <li>Appends the current request ID from {@link RequestIdHolder} as a SQL comment in the
-     *       format {@code /* request-id */}</li>
+     *       format of a request-id comment (shown below using square brackets to keep Javadoc valid)</li>
      * </ol>
      * <p>
      * The placeholder substitution uses {@code String.replaceAll()} with the placeholder as a
@@ -111,7 +111,7 @@ public class SqlCommentStatementInspector
      * "SELECT * FROM users WHERE id = '__USER_ID__'"
      * 
      * // Output SQL (assuming user ID 12345 and request ID req-abc-123)
-     * "SELECT * FROM users WHERE id = '12345' /*req-abc-123*/"
+     * "SELECT * FROM users WHERE id = '12345' /&#42;req-abc-123&#42;/"
      * </pre>
      *
      * @param sql the original SQL statement to inspect and modify, must not be null
@@ -138,7 +138,7 @@ public class SqlCommentStatementInspector
      * Appends the current request ID as a SQL comment to enable request correlation in database logs.
      * <p>
      * This method retrieves the request ID from the thread-local {@link RequestIdHolder} and
-     * appends it to the SQL statement in the format {@code /*request-id*/}. If no request ID
+     * appends it to the SQL statement in the format /&#42;request-id&#42;/. If no request ID
      * is available (empty or null), the SQL is returned unchanged.
      * <p>
      * The request ID comment enables correlation between application request logs and database
@@ -148,7 +148,7 @@ public class SqlCommentStatementInspector
      * Example transformation:
      * <pre>
      * // Input: "SELECT * FROM users"
-     * // Output: "SELECT * FROM users /*req-abc-123*/"
+     * // Output: "SELECT * FROM users /&#42;req-abc-123&#42;/"
      * </pre>
      *
      * @param sql the SQL statement to which the request ID comment should be appended

@@ -36,32 +36,30 @@ import java.util.regex.Pattern;
  * Form adapter for Basecamp integration configuration.
  * <p>
  * Handles form binding, validation, and entity mapping for Basecamp todo list URL configuration.
- * Extends {@code AbstractEntityForm<IntegrationBasecampDto, IntegrationModuleOrganizationConfiguration>}
- * and implements the FrontendMappingDefinition lifecycle: populateFrom(entity) → validate(BindingResult) → populateTo(entity).
+ * Extends {@code AbstractEntityForm<IntegrationBasecampDto, IntegrationModuleOrganizationConfiguration>} and
+ * implements the {@link FrontendMappingDefinition} lifecycle: {@code populateFrom(entity)} →
+ * {@code validate(BindingResult)} → {@code populateTo(entity)}.
  * </p>
  * <p>
- * This form parses Basecamp URLs to extract accountId, projectId, and todolistId components using regex
- * pattern matching and StringUtils substring operations. The expected URL format is:
+ * This form parses Basecamp URLs to extract {@code accountId}, {@code projectId}, and {@code todolistId}
+ * components using regex pattern matching and {@link org.apache.commons.lang3.StringUtils} helpers.
+ * The expected URL format is:
  * {@code https://3.basecamp.com/{accountId}/buckets/{projectId}/todolists/{todolistId}}.
  * </p>
- * <p>
- * Form lifecycle:
+ * <p>Form lifecycle:</p>
  * <ol>
- * <li>populateFrom(entity): Loads toDoListUrl from IntegrationModuleOrganizationConfiguration into DTO</li>
- * <li>validate(BindingResult): Validates URL format, checks that account/project/todolist IDs are present</li>
- * <li>populateTo(entity): Extracts IDs from URL using private Function lambdas, stores parsed components</li>
+ *   <li>{@code populateFrom(entity)}: Loads {@code toDoListUrl} from {@link IntegrationModuleOrganizationConfiguration} into DTO.</li>
+ *   <li>{@code validate(BindingResult)}: Validates URL format; checks that account/project/todolist IDs are present.</li>
+ *   <li>{@code populateTo(entity)}: Extracts IDs from URL using private {@link java.util.function.Function} lambdas; stores parsed components.</li>
  * </ol>
- * </p>
- * <p>
- * Validation error codes:
+ * <p>Validation error codes:</p>
  * <ul>
- * <li>not.empty - URL is required and cannot be blank</li>
- * <li>not.valid - URL does not match expected Basecamp format</li>
+ *   <li><b>not.empty</b> — URL is required and cannot be blank</li>
+ *   <li><b>not.valid</b> — URL does not match expected Basecamp format</li>
  * </ul>
- * </p>
  * <p>
- * Note: The validate() method returns null instead of this, which breaks fluent chaining
- * expected by some callers.
+ * Note: {@link #validate(org.springframework.validation.BindingResult)} returns {@code null} instead of {@code this},
+ * which breaks fluent chaining expected by some callers.
  * </p>
  *
  * @author OpenKoda Team
@@ -147,17 +145,18 @@ public class IntegrationBasecampForm extends AbstractEntityForm<IntegrationBasec
     /**
      * Validates form data and registers errors.
      * <p>
-     * Validates toDoListUrl is not blank (rejectValue 'not.empty'). Validates URL matches
-     * pattern: {@code ^(https?|ftp|file)://3.basecamp.com/[0-9]*/buckets/[0-9]*/todolists/[0-9]*}
-     * (rejectValue 'not.valid').
+     * Ensures {@code toDoListUrl} is not blank (rejects with code {@code not.empty}). Then verifies the URL
+     * matches the expected Basecamp format (rejects with code {@code not.valid}). To avoid including
+     * illegal Javadoc comment terminators, the pattern is described textually instead of as a raw regex:
      * </p>
-     * <p>
-     * Note: This method returns null instead of this, which breaks fluent chaining expected
-     * by some callers.
-     * </p>
+     * <ul>
+     *   <li>Scheme: {@code http}, {@code https}, {@code ftp}, or {@code file}</li>
+     *   <li>Host: {@code 3.basecamp.com}</li>
+     *   <li>Path: {@code /{accountId}/buckets/{projectId}/todolists/{todolistId}}</li>
+     * </ul>
      *
-     * @param br the Spring BindingResult for error collection
-     * @return null (note: should return this for fluent chaining)
+     * @param br the Spring {@link org.springframework.validation.BindingResult} for error collection
+     * @return {@code null} (note: should return {@code this} for fluent chaining)
      */
     @Override
     public IntegrationBasecampForm validate(BindingResult br) {
