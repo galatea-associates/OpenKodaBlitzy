@@ -27,13 +27,46 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
+ * Spring Data JPA repository managing DbVersion entities for database schema migration tracking.
+ * <p>
+ * Extends {@link JpaRepository} providing standard CRUD operations for {@link DbVersion} entities.
+ * This repository manages records that track applied database migrations with version numbers
+ * (major, minor, build, revision) and execution timestamps. The primary use case is schema
+ * upgrade orchestration where the {@link #findCurrentDbVersion()} method returns the latest
+ * successfully applied migration.
+ * 
+ * <p>
+ * Used by DbVersionService to check current schema state before applying new upgrades.
+ * Version ordering is computed via the expression: (major * 1000 + minor * 100 + build * 10 + revision).
+ * 
  *
  * @author mboronski
- *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see DbVersion
+ * @see org.springframework.data.jpa.repository.JpaRepository
  */
 @Repository
 public interface DbVersionRepository extends JpaRepository<DbVersion, Long> {
 
+    /**
+     * Retrieves the most recently applied database version record.
+     * <p>
+     * Executes a custom JPQL query that filters for completed migrations ({@code done = true})
+     * and orders results by a computed numeric expression combining version components:
+     * {@code (major * 1000 + minor * 100 + build * 10 + revision)}. This ordering ensures
+     * that version 2.1.0.0 is correctly identified as newer than 1.9.8.5.
+     * 
+     * <p>
+     * Usage: DbVersionService calls this method to determine the current schema state
+     * before applying new migrations. If no migrations have been applied, returns null.
+     * 
+     *
+     * @return the latest {@link DbVersion} entity based on computed numeric ordering,
+     *         or null if no completed migrations exist in the database
+     * @see DbVersion
+     */
     @Query("SELECT v FROM DbVersion v WHERE v.done = true ORDER BY (v.major  * 1000 + v.minor * 100 + v.build * 10 + v.revision) DESC LIMIT 1")
     DbVersion findCurrentDbVersion();
         

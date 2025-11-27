@@ -32,6 +32,44 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Meta-annotation that aggregates OpenAPI {@link Parameter} documentation for pageable REST endpoints.
+ * <p>
+ * This annotation provides consistent parameter descriptions for Spring Data pagination parameters
+ * in OpenAPI/Swagger documentation. It automatically documents three standard query parameters
+ * used for pagination and sorting in REST API endpoints.
+ * <p>
+ * The annotation defines the following query parameters:
+ * <ul>
+ * <li><b>page</b>: Zero-based page index (0..N). Default value is 0.</li>
+ * <li><b>size</b>: Number of records per page. Default value is 20.</li>
+ * <li><b>sort</b>: Sorting criteria in the format {@code property,asc|desc}. Multiple sort
+ * criteria are supported. Default sort order is ascending.</li>
+ * </ul>
+ * <p>
+ * Example usage on a controller method:
+ * <pre>{@code
+ * @GetMapping("/api/organizations")
+ * @ApiPageable
+ * public ResponseEntity<Page<Organization>> getOrganizations(Pageable pageable) {
+ *     return ResponseEntity.ok(organizationService.findAll(pageable));
+ * }
+ * }</pre>
+ * <p>
+ * This annotation requires {@code io.swagger.v3.oas.annotations} OpenAPI annotations on the classpath
+ * and is used by OpenAPI documentation generators (such as Springdoc or Swagger) to produce
+ * comprehensive API documentation with pagination parameter details.
+ * <p>
+ * This is a compile-time and runtime annotation ({@link RetentionPolicy#RUNTIME} retention) with
+ * no runtime behavior. It is purely for documentation generation purposes and does not affect
+ * application execution.
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see io.swagger.v3.oas.annotations.Parameter
+ * @see org.springframework.data.domain.Pageable
+ */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Parameters({

@@ -28,8 +28,35 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
+ * Functional interface for request-aware view selection providing separate success and error view paths.
+ * <p>
+ * This interface enables conditional view selection based on HTTP request context by returning a 4-tuple
+ * containing separate view names and result generators for both success and error execution paths.
+ * The {@link PageModelMap#mav} method consults this provider and examines {@link BasePageAttributes#isError}
+ * to select the appropriate view and result generator.
+ * <p>
+ * The returned Tuple4 contains the following components:
+ * <ul>
+ *   <li><b>T1: Optional&lt;String&gt;</b> - View name for successful execution</li>
+ *   <li><b>T2: Optional&lt;String&gt;</b> - View name for error execution</li>
+ *   <li><b>T3: Optional&lt;PageModelFunction&gt;</b> - Result generator for success path</li>
+ *   <li><b>T4: Optional&lt;PageModelFunction&gt;</b> - Result generator for error path</li>
+ * </ul>
+ * <p>
+ * Example usage as a lambda implementation:
+ * <pre>{@code
+ * ViewAndObjectProvider provider = request ->
+ *     Tuples.of(Optional.of("successView"), Optional.of("errorView"),
+ *               Optional.of(model -> result), Optional.of(model -> error));
+ * }</pre>
+ *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
+ * @author OpenKoda Team
 * @since 08.08.17
+ * @version 1.7.1
+ * See {@code PageModelMap}
+ * See {@code PageModelFunction}
+ * See {@code BasePageAttributes}
  */
 public interface ViewAndObjectProvider extends Function<
         HttpServletRequest,

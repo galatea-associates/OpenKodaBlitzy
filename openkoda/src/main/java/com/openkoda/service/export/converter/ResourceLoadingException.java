@@ -21,7 +21,34 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.openkoda.service.export.converter;
 
+/**
+ * Unchecked exception signaling failures loading classpath resources during YAML import.
+ * <p>
+ * This exception extends {@link RuntimeException} and is thrown by YAML-to-entity converters
+ * and classpath scanners to translate IO errors into a semantic exception type. It indicates
+ * that a required resource file (such as a YAML configuration or entity definition) could not
+ * be located or read from the classpath during the export/import process.
+ * 
+ * <p>
+ * Typical usage occurs when {@code YamlToEntityConverter} implementations attempt to load
+ * resource files and encounter file system or classpath access issues.
+ * 
+ *
+ * @since 1.7.1
+ * @author OpenKoda Team
+ * @see YamlToEntityConverter
+ */
 public class ResourceLoadingException extends RuntimeException{
+    
+    /**
+     * Constructs a new resource loading exception with the specified detail message.
+     * <p>
+     * The message should describe which resource failed to load and provide context
+     * for troubleshooting the classpath configuration issue.
+     * 
+     *
+     * @param message the detail message explaining the resource loading failure
+     */
     public ResourceLoadingException(String message) {
         super(message);
     }

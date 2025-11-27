@@ -42,14 +42,73 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 
 /**
- * Exception resolver used for handling exceptions during web requests.
- * See: {@link com.openkoda.core.configuration.MvcConfig#configureHandlerExceptionResolvers}
+ * Spring MVC exception resolver that centralizes uncaught controller exception handling.
+ * <p>
+ * This resolver extends {@link SimpleMappingExceptionResolver} to integrate with Spring's exception
+ * resolution chain and implements {@link LoggingComponentWithRequestId} for request-correlated logging
+ * and {@link ReadableCode} for readable conditional logic.
+ * 
+ * <p>
+ * Exception resolution workflow:
+ * 
+ * <ol>
+ *   <li>Catches uncaught exceptions from controllers</li>
+ *   <li>Maps to appropriate HTTP status (HttpStatusException → custom status, AccessDeniedException → 401, others → 500)</li>
+ *   <li>Performs conditional logging (suppresses noise from excluded user agents and client aborts)</li>
+ *   <li>Redirects to /error endpoint with status and requestId query parameters</li>
+ * </ol>
+ * <p>
+ * Integration with {@link RequestIdHolder} enables request correlation for distributed tracing.
+ * Noise suppression mechanisms detect client abort conditions and filter user agents to reduce
+ * log pollution from known problematic clients.
+ * 
+ * <p>
+ * Example configuration in MvcConfig:
+ * 
+ * <pre>
+ * ErrorLoggingExceptionResolver resolver = new ErrorLoggingExceptionResolver(excludedAgent);
+ * resolvers.add(resolver);
+ * </pre>
+ * <p>
+ * Thread safety: This class is effectively thread-safe. The static field is only mutated during construction,
+ * and all instance methods operate on immutable state or thread-safe Spring components.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.core.configuration.MvcConfig#configureHandlerExceptionResolvers
+ * @see HttpStatusException
+ * @see SimpleMappingExceptionResolver
+ * @see LoggingComponentWithRequestId
+ * @see RequestIdHolder
  */
 public class ErrorLoggingExceptionResolver extends
 		SimpleMappingExceptionResolver implements LoggingComponentWithRequestId, ReadableCode {
 
+	/**
+	 * Static configuration for user agent substring filtering.
+	 * <p>
+	 * Exceptions from requests with matching User-Agent headers are not logged at ERROR level
+	 * to reduce log noise from known problematic clients. A null value means no filtering is applied.
+	 * 
+	 */
 	private static String userAgentExcludedFromErrorLog = null;
 
+	/**
+	 * Constructs an exception resolver with user agent filtering configuration.
+	 * <p>
+	 * Initialization steps:
+	 * 
+	 * <ol>
+	 *   <li>Sets warn log category to this class name for controlled logging levels</li>
+	 *   <li>Sets default error view to "frontend-resource/error" for error page rendering</li>
+	 *   <li>Normalizes userAgentExcludedFromErrorLog parameter (blank values become null)</li>
+	 * </ol>
+	 *
+	 * @param userAgentExcludedFromErrorLog User agent substring to exclude from ERROR logging,
+	 *                                      or null/blank to disable filtering
+	 */
 	public ErrorLoggingExceptionResolver(String userAgentExcludedFromErrorLog) {
 		setWarnLogCategory(getClass().getName());
 		setDefaultErrorView("frontend-resource/error");
@@ -58,8 +117,32 @@ public class ErrorLoggingExceptionResolver extends
 
 
 	/**
-	 * This method uses the older API and gets passed the handler (typically the
-	 * <tt>@Controller</tt>) that generated the exception.
+	 * Resolves exceptions thrown during controller request processing.
+	 * <p>
+	 * This method uses the older Spring MVC API and receives the handler that generated the exception
+	 * (typically an <tt>@Controller</tt> annotated class).
+	 * 
+	 * <p>
+	 * Exception resolution logic:
+	 * 
+	 * <ol>
+	 *   <li>Determines if exception should be logged via {@link #shouldErrorLogException}</li>
+	 *   <li>Extracts HTTP status from exception type:
+	 *     <ul>
+	 *       <li>{@link HttpStatusException} → uses custom status from exception</li>
+	 *       <li>{@link AccessDeniedException} → returns 401 UNAUTHORIZED</li>
+	 *       <li>All other exceptions → returns 500 INTERNAL_SERVER_ERROR</li>
+	 *     </ul>
+	 *   </li>
+	 *   <li>Logs exception with message, status, URI, and cause if logging is warranted</li>
+	 *   <li>Returns ModelAndView redirect to /error endpoint with status and requestId query parameters</li>
+	 * </ol>
+	 *
+	 * @param request   Current HTTP request being processed
+	 * @param response  HTTP response (status may be pre-set by servlet container)
+	 * @param handler   Controller handler that generated the exception (typically @Controller)
+	 * @param exception Uncaught exception to be resolved
+	 * @return ModelAndView redirect to /error endpoint with status and requestId query parameters
 	 */
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request,
@@ -76,7 +159,26 @@ public class ErrorLoggingExceptionResolver extends
 	}
 
 	/**
-	 * Determines if a given exception should be logged with ERROR level
+	 * Determines if a given exception should be logged at ERROR level.
+	 * <p>
+	 * Logging decision logic:
+	 * 
+	 * <ul>
+	 *   <li>Returns false for null exceptions</li>
+	 *   <li>Returns false for excluded user agents (configured via constructor parameter)</li>
+	 *   <li>Returns false for Tomcat {@link ClientAbortException} with {@link IOException} cause
+	 *       (indicates client disconnects, not server errors)</li>
+	 *   <li>Emits DEBUG diagnostic context for troubleshooting filter decisions</li>
+	 *   <li>Returns true otherwise (exception should be logged at ERROR level)</li>
+	 * </ul>
+	 * <p>
+	 * This method reduces log noise from known benign conditions while preserving visibility
+	 * into genuine server-side errors.
+	 * 
+	 *
+	 * @param exception Exception to evaluate for logging eligibility
+	 * @param request   HTTP request containing User-Agent header for filtering
+	 * @return True if exception should be logged at ERROR level, false to suppress logging
 	 */
 	private boolean shouldErrorLogException(Exception exception, HttpServletRequest request) {
 		boolean exceptionIsNotNull = exception != null;
@@ -92,8 +194,21 @@ public class ErrorLoggingExceptionResolver extends
 	}
 
 	/**
-	 * Determines if given user Agent should be logged as ERROR in case of exception.
-	 * Useful in order to exclude log polluting from known troublesome agents.
+	 * Determines if a given User-Agent should be excluded from ERROR logging when exceptions occur.
+	 * <p>
+	 * This static method performs substring matching against the configured exclusion filter
+	 * to reduce log pollution from known troublesome agents (such as aggressive crawlers,
+	 * monitoring tools, or misbehaving clients).
+	 * 
+	 * <p>
+	 * The filter is case-sensitive and matches any occurrence of the configured substring
+	 * within the User-Agent header. If no filter is configured (null value), all user agents
+	 * are allowed and this method returns false.
+	 * 
+	 *
+	 * @param userAgent User-Agent header value from HTTP request, may be null
+	 * @return True if user agent contains the configured exclusion substring,
+	 *         false otherwise or if no filter is configured
 	 */
 	public static boolean isExcludedUserAgent(String userAgent) {
         return StringUtils.contains(userAgent, userAgentExcludedFromErrorLog);

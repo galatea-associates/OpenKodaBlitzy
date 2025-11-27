@@ -25,7 +25,56 @@ import com.openkoda.controller.ComponentProvider;
 import com.openkoda.service.export.converter.YamlToEntityConverterFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Abstract base class for YAML component import services, providing shared YamlToEntityConverterFactory wiring for subclasses.
+ * <p>
+ * Extends {@link ComponentProvider} to inherit repository, service, and logging infrastructure. Exposes package-private 
+ * autowired {@link YamlToEntityConverterFactory} field that subclasses use to convert deserialized YAML DTOs into 
+ * persisted domain entities. Serves as a common parent for specialized import strategies including classpath scanning, 
+ * ZIP upload, and filesystem monitoring.
+
+ * <p>
+ * This class implements the Template Method pattern where subclasses implement resource discovery and loading strategies 
+ * while sharing the conversion infrastructure provided by this base class. The abstract nature ensures no direct 
+ * instantiation - concrete implementations must provide the specific import mechanism.
+
+ * <p>
+ * Thread-safety: This is a stateless abstract class. Thread-safety depends on subclass implementations and their usage 
+ * of the shared yamlToEntityConverterFactory field.
+
+ * <p>
+ * Subclass responsibilities include:
+ * <ul>
+ * <li>Discover YAML resources from specific sources (classpath, filesystem, upload streams)</li>
+ * <li>Load and parse YAML content into DTOs</li>
+ * <li>Delegate DTO-to-entity conversion to the inherited yamlToEntityConverterFactory</li>
+ * <li>Handle resource-specific error scenarios and logging</li>
+ * </ul>
+
+ *
+ * @see ComponentProvider for inherited repository and service infrastructure
+ * @see YamlToEntityConverterFactory for DTO-to-entity conversion logic
+ * @see com.openkoda.service.export.ClasspathComponentImportService for classpath-based import implementation
+ * @see com.openkoda.service.export.ZipComponentImportService for ZIP upload import implementation
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 public abstract class YamlComponentImportService extends ComponentProvider {
+    
+    /**
+     * Factory that resolves DTO-specific converters and delegates YAML-to-entity conversion with persistence.
+     * <p>
+     * This field is package-private to allow access by subclasses within the same package. It is autowired by Spring 
+     * during subclass instantiation, ensuring all concrete import services share the same converter factory instance.
+
+     * <p>
+     * Subclasses call {@code yamlToEntityConverterFactory.processYamlDto(dto, filePath)} or 
+     * {@code processYamlDto(dto, filePath, resources)} to convert deserialized YAML DTOs into persisted domain entities. 
+     * The factory handles converter resolution based on DTO type, entity creation, validation, and persistence.
+
+     *
+     * @see YamlToEntityConverterFactory#processYamlDto for converter resolution and delegation logic
+     */
     @Autowired
     YamlToEntityConverterFactory yamlToEntityConverterFactory;
 }

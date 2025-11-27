@@ -34,8 +34,57 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * Spring component providing ZIP entry construction, streaming helpers, and YAML filename conventions for component export operations.
+ * <p>
+ * This stateless singleton service is injected into export converters and provides methods to write text content,
+ * files, and URL resources as ZIP entries with UTF-8 encoding. The {@code addToZipFile} method converts IOExceptions
+ * to RuntimeException for error propagation, while streaming methods ({@code addFileToZip}, {@code addURLFileToZip})
+ * log errors but do not propagate them. Organization-scoped YAML filename generation follows the convention:
+ * filePath + entityName + [_orgId] + .yaml for multi-tenant component exports.
+ * 
+ * <p>
+ * Thread-safety: Stateless but ZipOutputStream parameter is not thread-safe - callers must synchronize access to
+ * shared ZipOutputStream instances.
+ * 
+ * <p>
+ * Resource management: Methods do NOT close the provided ZipOutputStream - caller is responsible for stream lifecycle.
+ * 
+ * <p>
+ * Exception handling: {@code addToZipFile} throws RuntimeException on failure; {@code addFileToZip} and
+ * {@code addURLFileToZip} log and swallow IOExceptions (inconsistent error semantics - callers should verify ZIP integrity).
+ * 
+ *
+ * @see com.openkoda.service.export.ComponentExportService
+ * // AbstractEntityToYamlConverter
+ * @see com.openkoda.core.flow.LoggingComponent
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 @Component
 public class ZipUtils implements LoggingComponent {
+    /**
+     * Writes text content as a ZIP entry with UTF-8 encoding, validates non-empty content, and converts IOExceptions to RuntimeException.
+     * <p>
+     * Creates a new ZipEntry with the specified name, writes UTF-8 encoded bytes if content passes StringUtils.hasText
+     * validation, and closes the entry. This method propagates errors as RuntimeException with diagnostic message
+     * including the entry name for troubleshooting failed exports.
+     * 
+     * <p>
+     * Side effects: Creates ZipEntry, writes UTF-8 bytes to zipOut, closes entry via zipOut.closeEntry().
+     * 
+     * <p>
+     * Example usage:
+     * <pre>
+     * zipUtils.addToZipFile(yamlContent, "config/form.yaml", zipOut);
+     * </pre>
+     * 
+     *
+     * @param content text content to write; must pass StringUtils.hasText validation (not null/empty/whitespace-only)
+     * @param entryName ZIP entry path/name (e.g., "components/form/MyForm.yaml")
+     * @param zipOut open ZipOutputStream to write entry; caller must keep stream open
+     * @throws RuntimeException wrapping IOException with diagnostic message including entryName
+     */
     public void addToZipFile(String content, String entryName, ZipOutputStream zipOut){
         debug("[addToZipFile]");
 
@@ -51,6 +100,22 @@ public class ZipUtils implements LoggingComponent {
         }
     }
 
+    /**
+     * Streams file contents into ZIP entry using 1024-byte buffer, logs IOExceptions but does NOT propagate them.
+     * <p>
+     * Creates a new ZipEntry, opens FileInputStream, and streams file contents in 1024-byte chunks. Error handling
+     * logs IOExceptions via LoggingComponent.error but does NOT rethrow them - creating silent failure risk. The
+     * implementation does not consistently call zipOut.closeEntry() in all control flows which may leave ZIP archive
+     * malformed on error. Resource management closes FileInputStream on completion.
+     * 
+     * <p>
+     * Buffer size: Fixed 1024 bytes.
+     * 
+     *
+     * @param file File to read and add to ZIP; must be readable
+     * @param entryName ZIP entry path/name
+     * @param zipOut open ZipOutputStream to write entry
+     */
     public void addFileToZip(File file, String entryName, ZipOutputStream zipOut){
         debug("[addFileToZip]");
 
@@ -69,6 +134,21 @@ public class ZipUtils implements LoggingComponent {
         }
     }
 
+    /**
+     * Streams URL resource contents (network or classpath) into ZIP entry using 1024-byte buffer, logs IOExceptions but does NOT propagate them.
+     * <p>
+     * Creates a new ZipEntry, opens InputStream from url.openStream() (supporting http://, file://, jar:// protocols),
+     * and streams resource contents in 1024-byte chunks. Error handling logs IOExceptions but does NOT rethrow them -
+     * creating silent failure risk. Resource management closes InputStream obtained from url.openStream() on completion.
+     * 
+     * <p>
+     * Buffer size: Fixed 1024 bytes.
+     * 
+     *
+     * @param url URL to resource (supports url.openStream() - typically http://, file://, jar:// protocols)
+     * @param entryName ZIP entry path/name
+     * @param zipOut open ZipOutputStream to write entry
+     */
     public void addURLFileToZip(URL url, String entryName, ZipOutputStream zipOut){
         debug("[addURLFileToZip]");
 
@@ -87,6 +167,26 @@ public class ZipUtils implements LoggingComponent {
         }
     }
 
+    /**
+     * Constructs YAML filename with optional organization ID suffix following convention: filePath + entityName + [_orgId] + .yaml.
+     * <p>
+     * Generates organization-scoped YAML file paths for multi-tenant component exports. If organizationId is non-null,
+     * appends _organizationId suffix to the entity name for tenant isolation. Logs debug message at invocation for
+     * export operation diagnostics.
+     * 
+     * <p>
+     * Example usage:
+     * <pre>
+     * setResourceFilePath("components/form/", "ContactForm", 123L)
+     * // returns "components/form/ContactForm_123.yaml"
+     * </pre>
+     * 
+     *
+     * @param filePath directory path prefix (typically from FolderPathConstants)
+     * @param entityName component name (without extension)
+     * @param organizationId optional tenant organization ID; if non-null, appends _organizationId suffix
+     * @return complete YAML file path string (e.g., "components/form/ContactForm_123.yaml" or "components/form/ContactForm.yaml")
+     */
     public String setResourceFilePath(String filePath, String entityName, Long organizationId){
         debug("[setResourceFilePath]");
 

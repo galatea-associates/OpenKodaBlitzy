@@ -29,24 +29,91 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration used by ReCaptcha integration
+ * Spring configuration class for Google reCAPTCHA integration properties and initialization.
+ * <p>
+ * Binds reCAPTCHA configuration from application properties including site key, secret key, and validation level.
+ * Propagates the site key to form definitions during initialization for client-side reCAPTCHA widget rendering.
+ * Annotated with {@code @Configuration} to enable Spring bean registration and {@code @PostConstruct} lifecycle
+ * for initialization. The site key is distributed to {@link FrontendMappingDefinition} and {@link RegisterUserForm}
+ * for client-side reCAPTCHA widget rendering.
+ * 
+ * <p>
+ * Binds from properties:
+ * <ul>
+ * <li>{@code recaptcha.site-key}: Public key for client widget</li>
+ * <li>{@code recaptcha.secret-key}: Private key for server validation</li>
+ * <li>{@code recaptcha.validation}: Strictness level (normal or strict)</li>
+ * </ul>
+ * <p>
+ * The {@link #init()} method executes after bean construction to propagate the site key to static fields
+ * in form infrastructure.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see ValidationLevel
+ * @see FrontendMappingDefinition
+ * @see RegisterUserForm
  */
 @Configuration
 public class ReCaptchaConfiguration {
 
 
-    //public key used in recaptcha box
+    /**
+     * Google reCAPTCHA site key (public key) for client-side widget rendering.
+     * <p>
+     * Injected from application property {@code recaptcha.site-key}. Used in HTML forms to initialize
+     * the reCAPTCHA challenge widget. Empty string default allows application startup without reCAPTCHA configured.
+     * 
+     * <p>
+     * Propagated to {@link FrontendMappingDefinition#siteKey} and {@link RegisterUserForm#siteKey}
+     * in the {@link #init()} method.
+     * 
+     */
     @Value("${recaptcha.site-key:}")
     public String siteKey;
 
-    //private key used to verify captcha responses
+    /**
+     * Google reCAPTCHA secret key (private key) for server-side response verification.
+     * <p>
+     * Injected from application property {@code recaptcha.secret-key}. Used by CaptchaService to verify
+     * user responses against the Google reCAPTCHA API. Should be kept confidential. Empty string default
+     * allows application startup without reCAPTCHA configured.
+     * 
+     */
     @Value("${recaptcha.secret-key:}")
     public String secretKey;
 
-    //level of strictness while validating captcha
+    /**
+     * Validation strictness level for reCAPTCHA response verification.
+     * <p>
+     * Injected from application property {@code recaptcha.validation} with default {@code normal}.
+     * Controls how strictly reCAPTCHA responses are validated. {@code ValidationLevel.NORMAL} accepts
+     * standard responses, {@code ValidationLevel.STRICT} may enforce additional checks.
+     * 
+     *
+     * @see ValidationLevel
+     */
     @Value("${recaptcha.validation:normal}")
     public ValidationLevel validationLevel;
 
+    /**
+     * Initializes form definitions with reCAPTCHA site key after bean construction.
+     * <p>
+     * Annotated with {@code @PostConstruct} to execute after dependency injection completes.
+     * Propagates the site key to static fields in {@link FrontendMappingDefinition} and
+     * {@link RegisterUserForm} so forms can render reCAPTCHA widgets. Required because forms
+     * use static fields for site key access across the application.
+     * 
+     * <p>
+     * Executes automatically during Spring bean initialization phase, after {@code @Value}
+     * properties are injected but before the bean is fully available.
+     * 
+     *
+     * @see FrontendMappingDefinition
+     * @see RegisterUserForm
+     */
     @PostConstruct
     public void init() {
         FrontendMappingDefinition.siteKey = siteKey;

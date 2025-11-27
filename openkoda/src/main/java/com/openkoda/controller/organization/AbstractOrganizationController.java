@@ -43,16 +43,50 @@ import reactor.util.function.Tuples;
 import static com.openkoda.model.Privilege.readUserData;
 
 /**
- * <p>AbstractOrganizationController class.</p>
- * <p>Controller that provides actual functionality for different type of access (eg. API, HTML)</p>
- * <p>Implementing classes should take over http binding and forming a result whereas this controller should take care
- * of actual implementation</p>
+ * Abstract base controller providing multi-tenant organization management operations.
+ * <p>
+ * This controller provides comprehensive organization lifecycle management including:
+ * <ul>
+ *   <li>Organization creation with initial admin user provisioning</li>
+ *   <li>Organization editing with property bag customization</li>
+ *   <li>Organization switching for multi-tenant users</li>
+ *   <li>Member management (add/remove users with role assignment)</li>
+ *   <li>Organization deletion with cascade cleanup</li>
+ * </ul>
+ * <p>
+ * Enforces organization-scoped privileges via secure repositories. Subclasses provide concrete endpoint mappings
+ * for different access types (HTML, API). This abstract controller handles the actual business logic implementation
+ * using Flow pipelines for transactional orchestration.
+ * 
+ * <p>
+ * Uses {@link com.openkoda.service.organization.OrganizationService} for tenant provisioning and schema management,
+ * {@link com.openkoda.service.user.UserService} for member operations, and secure repositories for
+ * privilege-enforced data access.
+ * 
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.service.organization.OrganizationService
+ * @see Organization
+ * @see OrganizationControllerHtml
  */
 public class AbstractOrganizationController extends AbstractController implements HasSecurityRules {
 
+    /**
+     * Searches and retrieves organizations with pagination and privilege enforcement.
+     * <p>
+     * Performs a paginated search across organizations using the provided search term and specification.
+     * Default sort order is by createdOn descending if no sort is specified. All results are filtered
+     * through secure repositories to enforce organization-scoped read privileges.
+     * 
+     *
+     * @param aSearchTerm search string applied to organization name and properties, may be null
+     * @param aSpecification JPA Specification for additional filtering criteria, may be null
+     * @param aPageable pagination and sorting parameters, sort defaults to createdOn DESC if null
+     * @return PageModelMap containing 'organizationPage' with privilege-filtered search results
+     */
     protected PageModelMap findOrganizationsFlow(
             String aSearchTerm,
             Specification<Organization> aSpecification,
@@ -68,6 +102,16 @@ public class AbstractOrganizationController extends AbstractController implement
                 .execute();
     }
 
+    /**
+     * Loads an organization by ID and prepares its form representation.
+     * <p>
+     * Retrieves the organization entity using unsecure repository (privilege checks handled by caller)
+     * and populates an OrganizationForm with the entity data. Returns a Flow for further chaining.
+     * 
+     *
+     * @param id organization identifier
+     * @return Flow containing 'organizationEntity' and 'organizationForm' for further processing
+     */
     protected Flow<Long, OrganizationForm, AbstractOrganizationController> findOrganizationFlow(Long id) {
         debug("[findOrganizationFlow] id {}", id);
         return Flow.init(this, id)
@@ -75,17 +119,49 @@ public class AbstractOrganizationController extends AbstractController implement
                 .thenSet(organizationForm, a -> new OrganizationForm(id, a.result));
     }
 
+    /**
+     * Retrieves organization settings flow by delegating to findOrganizationFlow.
+     * <p>
+     * Provides a base Flow for loading organization data, intended to be extended
+     * with additional settings retrieval in calling methods.
+     * 
+     *
+     * @param id organization identifier
+     * @return Flow containing organization entity and form for settings operations
+     */
     protected Flow findOrganizationWithSettingsFlow(Long id) {
         debug("[findOrganizationWithSettingsFlow] id {}", id);
         return findOrganizationFlow(id);
     }
 
+    /**
+     * Executes the organization settings flow and returns the complete PageModelMap.
+     * <p>
+     * Retrieves organization entity and form by executing findOrganizationWithSettingsFlow.
+     * 
+     *
+     * @param id organization identifier
+     * @return PageModelMap with organization entity and form data
+     */
     protected PageModelMap findOrganizationWithSettings(Long id) {
         debug("[findOrganizationWithSettings] id {}");
         return findOrganizationWithSettingsFlow(id)
                 .execute();
     }
 
+    /**
+     * Retrieves comprehensive organization settings including member list and invitation forms.
+     * <p>
+     * Loads organization data, searches for users with organization-scoped filtering, prepares
+     * invitation forms, and retrieves global organization roles. Results include paginated
+     * user list for member management.
+     * 
+     *
+     * @param organizationId organization identifier
+     * @param userSearch search term for filtering users, may be null
+     * @param userPageable pagination parameters for user list
+     * @return PageModelMap containing organizationEntity, organizationForm, userPage, inviteUserForm, globalOrgRoleForm
+     */
     protected PageModelMap getOrganizationSettings(Long organizationId, String userSearch, Pageable userPageable){
         return findOrganizationWithSettingsFlow(organizationId)
                 .thenSet(organizationEntityId, a -> organizationId)
@@ -95,6 +171,16 @@ public class AbstractOrganizationController extends AbstractController implement
                 .execute();
     }
 
+    /**
+     * Prepares settings for new organization creation form.
+     * <p>
+     * Initializes empty organization form with ID -1, loads user list with empty search,
+     * and prepares invitation form for adding initial members during organization creation.
+     * 
+     *
+     * @param userPageable pagination parameters for user list
+     * @return PageModelMap containing empty organizationForm, userPage, and inviteUserForm
+     */
     protected PageModelMap getNewOrganizationSettings(Pageable userPageable) {
         return findOrganizationWithSettingsFlow(-1L)
                 .thenSet(userPage, a -> repositories.secure.user.search(
@@ -102,6 +188,17 @@ public class AbstractOrganizationController extends AbstractController implement
                 .thenSet(inviteUserForm, a -> new InviteUserForm())
                 .execute();
     }
+    /**
+     * Deletes an organization by ID using repository delete operation.
+     * <p>
+     * Performs soft or hard delete based on repository configuration. Does not handle
+     * schema cleanup - use {@link #removeOrganization(long)} for complete removal.
+     * 
+     *
+     * @param id organization identifier to delete
+     * @return PageModelMap with deletion result
+     * @see #removeOrganization(long)
+     */
     protected PageModelMap deleteOrganization(Long id) {
         debug("[deleteOrganization] id {}", id);
         return Flow.init(this, id)
@@ -109,6 +206,20 @@ public class AbstractOrganizationController extends AbstractController implement
                 .execute();
     }
 
+    /**
+     * Invites a user to join an organization with role assignment.
+     * <p>
+     * Validates that the user does not already have a role in the organization, then handles
+     * both existing and new user scenarios. For existing users, associates them with the organization.
+     * For new users, creates account and sends invitation. Uses tuple resolution to load
+     * user and organization entities concurrently.
+     * 
+     *
+     * @param form InviteUserForm containing user email and role assignment details
+     * @param organizationId target organization identifier
+     * @param br BindingResult for validation error accumulation
+     * @return PageModelMap with invitation result and updated inviteUserForm
+     */
     protected PageModelMap inviteUser(InviteUserForm form, Long organizationId, BindingResult br) {
         debug("[inviteUser] orgId {}", organizationId);
         return Flow.init(inviteUserForm, form)
@@ -122,6 +233,18 @@ public class AbstractOrganizationController extends AbstractController implement
                 .execute();
     }
 
+    /**
+     * Updates global organization role assignments for the specified organization.
+     * <p>
+     * Retrieves all global roles and current user roles for the organization, then
+     * updates organization membership to match the selected global roles from the form.
+     * Synchronizes role assignments with the organization's current configuration.
+     * 
+     *
+     * @param form GlobalOrgRoleForm containing selected global organization roles
+     * @param organizationId organization identifier for role assignment
+     * @return PageModelMap with updated globalOrgRoleForm and synchronization result
+     */
     protected PageModelMap globalOrgRole(GlobalOrgRoleForm form, Long organizationId){
         return Flow.init()
                 .thenSet(globalOrgRoleForm, a -> form)
@@ -131,6 +254,16 @@ public class AbstractOrganizationController extends AbstractController implement
                 .execute();
     }
 
+    /**
+     * Removes a user role assignment by userRoleId.
+     * <p>
+     * Deletes the UserRole entity, effectively removing the user's role within the associated
+     * organization. Does not delete the user account itself.
+     * 
+     *
+     * @param userRoleId identifier of the UserRole association to remove
+     * @return PageModelMap with deletion result
+     */
     protected PageModelMap removeUserRole(long userRoleId) {
         debug("[removeUserRole] userRoleId {}", userRoleId);
         return Flow.init()
@@ -138,6 +271,21 @@ public class AbstractOrganizationController extends AbstractController implement
                 .execute();
     }
 
+    /**
+     * Completely removes an organization including schema cleanup and cascade deletion.
+     * <p>
+     * Executes a three-phase removal process:
+     * <ol>
+     *   <li>Marks the organization's schema as deleted in the assigned datasource</li>
+     *   <li>Drops schema constraints to prepare for cleanup</li>
+     *   <li>Removes the organization entity and all associated data</li>
+     * </ol>
+     * This operation is irreversible and cascades to all organization-scoped data.
+     * 
+     *
+     * @param organizationId organization identifier to remove
+     * @return PageModelMap with removal completion status
+     */
     protected PageModelMap removeOrganization(long organizationId) {
         debug("[removeOrganization] organizationId {}", organizationId);
         return Flow.init()
@@ -148,6 +296,19 @@ public class AbstractOrganizationController extends AbstractController implement
                 .execute();
     }
 
+    /**
+     * Updates an existing organization with validated form data.
+     * <p>
+     * Validates the OrganizationForm, populates changes to the existing organization entity,
+     * persists updates, and emits ORGANIZATION_MODIFIED event for downstream listeners.
+     * Property bag customizations are preserved and merged.
+     * 
+     *
+     * @param organizationId identifier of the organization to update
+     * @param form OrganizationForm containing updated organization data
+     * @param br BindingResult for validation error accumulation
+     * @return PageModelMap with updated organizationEntity and organizationForm
+     */
     protected PageModelMap saveOrganization(
             Long organizationId,
             OrganizationForm form,
@@ -163,11 +324,19 @@ public class AbstractOrganizationController extends AbstractController implement
     }
 
     /**
-     * Creates new {@link Organization}
-     * Firstly validates {@link OrganizationForm} and then calls {@link com.openkoda.service.organization.OrganizationService}
-     * to createFormFieldDefinition new {@link Organization} entity
+     * Creates a new organization with initial provisioning and admin user setup.
+     * <p>
+     * Executes a transactional flow that validates the OrganizationForm and delegates to
+     * {@link com.openkoda.service.organization.OrganizationService} for organization entity creation.
+     * The service handles tenant schema provisioning, initial admin user creation, and default
+     * privilege assignment. Form is reset to default state after successful creation.
+     * 
+     *
+     * @param form OrganizationForm containing organization name and datasource assignment
+     * @param br BindingResult for validation error accumulation
+     * @return PageModelMap with newly created organizationEntity and reset organizationForm
+     * @see com.openkoda.service.organization.OrganizationService#createOrganization(String, String)
      */
-
     protected PageModelMap createOrganization(
             OrganizationForm form,
             BindingResult br) {
@@ -180,6 +349,19 @@ public class AbstractOrganizationController extends AbstractController implement
                 .execute();
     }
 
+    /**
+     * Retrieves audit history for an organization with pagination and search filtering.
+     * <p>
+     * Loads organization entity and queries audit log entries scoped to the organization.
+     * Supports search term filtering across audit event details. Results are paginated
+     * for performance with large audit trails.
+     * 
+     *
+     * @param organizationId organization identifier for audit history
+     * @param auditPageable pagination parameters for audit entries
+     * @param search search term for filtering audit events, may be null
+     * @return PageModelMap containing organizationEntity and auditPage with filtered history
+     */
     protected PageModelMap getHistory(
             Long organizationId,
             Pageable auditPageable,
@@ -191,6 +373,19 @@ public class AbstractOrganizationController extends AbstractController implement
                 .execute();
     }
 
+    /**
+     * Changes a user's role within a specific organization.
+     * <p>
+     * Executes a transactional flow that loads the user by ID and updates their role assignment
+     * for the specified organization. Role change is performed by the user service which handles
+     * privilege reconciliation and user role entity updates.
+     * 
+     *
+     * @param organizationId organization identifier where role change occurs
+     * @param userId user identifier whose role is being changed
+     * @param roleName new role name to assign to the user
+     * @return PageModelMap with role change result
+     */
     protected PageModelMap changeUserOrganizationRole(long organizationId, long userId, String roleName){
         debug("[changeUserRole] organizationId {}, userId {}, roleName {}", organizationId, userId, roleName);
         return Flow.init(transactional)

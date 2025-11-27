@@ -26,8 +26,44 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Runtime-retained type annotation marking YamlToEntityConverter implementations for auto-registration in YamlToEntityConverterFactory.
+ * <p>
+ * This annotation identifies converter classes that transform YAML data transfer objects (DTOs) into
+ * JPA entity instances during the import/export process. Annotated converters are automatically
+ * discovered via classpath scanning and registered in the converter factory at application startup.
+
+ * <p>
+ * The annotation is retained at runtime ({@link RetentionPolicy#RUNTIME}) to enable reflection-based
+ * discovery during factory initialization. It targets type-level declarations ({@link ElementType#TYPE})
+ * and should be applied to classes implementing the YamlToEntityConverter interface.
+
+ * <p>
+ * Usage example:
+ * <pre>{@code
+ * @YamlToEntityParentConverter(dtoClass = FormConversionDto.class)
+ * public class FormYamlConverter implements YamlToEntityConverter<FormConversionDto, Form> { }
+ * }</pre>
+
+ *
+ * @see YamlToEntityConverterFactory
+ * @see YamlToEntityConverter
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface YamlToEntityParentConverter {
+    
+    /**
+     * Specifies the DTO class that this converter handles during YAML deserialization.
+     * <p>
+     * The converter factory uses this class reference as a lookup key to map incoming DTO types
+     * to their corresponding converter implementations. When importing YAML data, the factory
+     * selects the converter whose dtoClass matches the deserialized DTO type.
+
+     *
+     * @return the DTO class this converter processes (e.g., FormConversionDto.class)
+     */
     Class<?> dtoClass();
 }

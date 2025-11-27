@@ -38,26 +38,47 @@ import java.util.Map;
 import static com.openkoda.core.controller.generic.AbstractController.*;
 
 /**
- *  <p>The controller for server-side generated html actions extending the {@link AbstractEventListenerController} which
- *  does the actual logic.</p>
- *  <p>General contract is: resolve HTTP bindings, delegate work to {@link AbstractEventListenerController} and provide
- *  ModelAndView</p>
- *  See also {@link AbstractEventListenerController}
- *
+ * Spring MVC REST controller providing HTML view adapters for event listener management.
+ * <p>
+ * This controller serves as the HTTP entry point for server-side rendered HTML pages managing
+ * {@link EventListenerEntry} entities. It follows a delegation pattern where HTTP request
+ * bindings are resolved, business logic is delegated to {@link AbstractEventListenerController},
+ * and ModelAndView responses are generated via the {@code .mav()} method for Thymeleaf rendering.
+ * 
+ * <p>
+ * All endpoints are mapped with the prefix {@code _HTML + _EVENTLISTENER} and integrate with
+ * the Flow pipeline architecture for transactional execution. Security is enforced via
+ * {@code @PreAuthorize} annotations requiring either {@code CHECK_CAN_READ_BACKEND} for
+ * read operations or {@code CHECK_CAN_MANAGE_BACKEND} for write operations.
+ * 
+ * <p>
+ * Form binding leverages Jakarta Bean Validation with {@code @Valid} annotations, and
+ * validation errors are captured in {@code BindingResult} instances for conditional view
+ * fragment selection (success vs. error fragments).
+ * 
+ * 
  * @author Martyna Litkowska (mlitkowska@stratoflow.com)
  * @since 2019-03-11
+ * @see AbstractEventListenerController
+ * @see EventListenerEntry
+ * @see EventListenerForm
  */
 @RestController
 @RequestMapping(_HTML + _EVENTLISTENER)
 public class EventListenerControllerHtml extends AbstractEventListenerController {
 
     /**
-     * Prepares model and view to display all {@link EventListenerEntry} page
-     * See also {@link AbstractEventListenerController}
+     * Displays paginated list of all event listeners with optional search filtering.
+     * <p>
+     * Maps to {@code GET _HTML/_EVENTLISTENER/_ALL} and requires {@code CHECK_CAN_READ_BACKEND}
+     * privilege. Delegates to {@link #findListenersFlow(String, Specification, Pageable)} which executes
+     * a Flow pipeline performing the search query, then renders the result as ModelAndView using
+     * the "eventlistener-all" Thymeleaf template fragment.
+     * 
      *
-     * @param pageable
-     * @param search
-     * @return java.lang.Object
+     * @param pageable pagination parameters qualified with "event" bean name for page size and sorting
+     * @param search optional search string for filtering event listeners by name or properties (default: empty string)
+     * @return ModelAndView containing paginated list of {@link EventListenerEntry} entities for "eventlistener-all" view
      */
     @PreAuthorize(CHECK_CAN_READ_BACKEND)
     @GetMapping(value = _ALL)
@@ -70,11 +91,16 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
     }
 
     /**
-     * Prepares model and view for {@link EventListenerEntry} settings page
-     * See also {@link AbstractEventListenerController}
+     * Displays the settings configuration page for an existing event listener.
+     * <p>
+     * Maps to {@code GET _HTML/_EVENTLISTENER/{id}/_SETTINGS} and requires
+     * {@code CHECK_CAN_READ_BACKEND} privilege. Delegates to {@link #find(Long, long)} which
+     * retrieves the specified {@link EventListenerEntry} via Flow pipeline, then renders the
+     * "eventlistener-settings" view for editing.
+     * 
      *
-     * @param eListenerId
-     * @return java.lang.Object
+     * @param eListenerId the ID of the event listener entity to display, bound from path variable "id"
+     * @return ModelAndView containing the {@link EventListenerEntry} entity and associated form for "eventlistener-settings" view
      */
     @PreAuthorize(CHECK_CAN_READ_BACKEND)
     @GetMapping(value = _ID + _SETTINGS)
@@ -85,10 +111,15 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
     }
 
     /**
-     * Prepares model and view for the new {@link EventListenerEntry} configuration page
-     * See also {@link AbstractEventListenerController}
+     * Displays the configuration page for creating a new event listener.
+     * <p>
+     * Maps to {@code GET _HTML/_EVENTLISTENER/_NEW_SETTINGS} and requires
+     * {@code CHECK_CAN_MANAGE_BACKEND} privilege for write access. Delegates to
+     * {@link #find(Long, long)} with ID=-1 to initialize an empty form, then renders
+     * the "eventlistener-settings" view with a blank {@link EventListenerForm} for creation.
+     * 
      *
-     * @return java.lang.Object
+     * @return ModelAndView containing an initialized empty {@link EventListenerForm} for "eventlistener-settings" view
      */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @GetMapping(_NEW_SETTINGS)
@@ -99,13 +130,19 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
     }
 
     /**
-     * Triggers update of the {@link EventListenerEntry} and prepares model and view for the result page
-     * See also {@link AbstractEventListenerController}
+     * Processes form submission to update an existing event listener configuration.
+     * <p>
+     * Maps to {@code POST _HTML/_EVENTLISTENER/{id}/_SETTINGS} and requires
+     * {@code CHECK_CAN_MANAGE_BACKEND} privilege. Validates the submitted {@link EventListenerForm}
+     * via Jakarta Bean Validation, then delegates to {@link #update(long, EventListenerForm, BindingResult)}
+     * which executes the Flow pipeline for persistence. Returns conditional view fragments based on
+     * validation success: "::eventlistener-settings-form-success" or "::eventlistener-settings-form-error".
+     * 
      *
-     * @param listenerId
-     * @param eventListenerForm
-     * @param br
-     * @return java.lang.Object
+     * @param listenerId the ID of the event listener entity to update, bound from path variable "id"
+     * @param eventListenerForm the validated form containing updated listener configuration fields
+     * @param br binding result capturing validation errors from {@code @Valid} annotation
+     * @return ModelAndView with success fragment on valid update or error fragment on validation failure
      */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @PostMapping(value = _ID + _SETTINGS)
@@ -117,12 +154,19 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
     }
 
     /**
-     * Saves new {@link EventListenerEntry} in the database and prepares model and view for the resulting page
-     * See also {@link AbstractEventListenerController}
+     * Processes form submission to create a new event listener entity.
+     * <p>
+     * Maps to {@code POST _HTML/_EVENTLISTENER/_NEW_SETTINGS} and requires
+     * {@code CHECK_CAN_MANAGE_BACKEND} privilege. Validates the submitted {@link EventListenerForm}
+     * via Jakarta Bean Validation, then delegates to {@link #create(EventListenerForm, BindingResult)}
+     * which executes the Flow pipeline for database persistence. Returns conditional view fragments:
+     * "::eventlistener-settings-form-success" on successful creation or
+     * "::eventlistener-settings-form-error" on validation failure.
+     * 
      *
-     * @param eventListenerForm
-     * @param br
-     * @return java.lang.Object
+     * @param eventListenerForm the validated form containing new listener configuration including event type, consumer name, and code
+     * @param br binding result capturing validation errors such as required field violations
+     * @return ModelAndView with success fragment containing created entity or error fragment with validation messages
      */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @PostMapping(_NEW_SETTINGS)
@@ -134,11 +178,17 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
     }
 
     /**
-     * Removes {@link EventListenerEntry} from the database and prepares the result response
-     * See also {@link AbstractEventListenerController}
+     * Deletes an existing event listener entity from the database.
+     * <p>
+     * Maps to {@code POST _HTML/_EVENTLISTENER/{id}/_REMOVE} and requires
+     * {@code CHECK_CAN_MANAGE_BACKEND} privilege. Delegates to {@link #remove(long)} which
+     * executes the Flow pipeline for deletion, then generates a boolean-based ModelAndView
+     * response using lambda functions {@code (a -> true)} for success and {@code (a -> false)}
+     * for failure, enabling conditional view fragment selection.
+     * 
      *
-     * @param listenerId
-     * @return java.lang.Object
+     * @param listenerId the ID of the event listener entity to delete, bound from path variable "id"
+     * @return ModelAndView with boolean result indicating successful deletion (true) or failure (false)
      */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @PostMapping(value = _ID_REMOVE)
@@ -149,10 +199,15 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
     }
 
     /**
-     * Prepares model and view for the manual event sending functionality available in the Admin panel
-     * See also {@link AbstractEventListenerController}
+     * Displays the initial event type selection page for manual event emission from Admin panel.
+     * <p>
+     * Maps to {@code GET _HTML/_EVENTLISTENER/_SEND} and requires {@code CHECK_CAN_MANAGE_BACKEND}
+     * privilege. Delegates to {@link #chooseEvent()} which prepares the available {@link Event}
+     * types for selection, then renders the "eventlistener-send" view containing an event type
+     * picker form for administrative manual event triggering.
+     * 
      *
-     * @return java.lang.Object
+     * @return ModelAndView containing available event types for selection in "eventlistener-send" view
      */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @GetMapping(value = _SEND)
@@ -163,12 +218,18 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
     }
 
     /**
-     * Prepares model and view for the manual event sending of a particular {@link Event} type available in the Admin panel
-     * See also {@link AbstractEventListenerController}
+     * Processes event type selection and displays the DTO data entry form for manual event emission.
+     * <p>
+     * Maps to {@code POST _HTML/_EVENTLISTENER/_SEND} and requires {@code CHECK_CAN_MANAGE_BACKEND}
+     * privilege. Validates the {@link SendEventForm} containing the selected event type, then
+     * delegates to {@link #prepareEvent(SendEventForm, BindingResult)} which prepares the appropriate
+     * DTO input form. Returns conditional fragments: "::eventlistener-emit-event" for successful
+     * selection or "::eventlistener-choose-event-error" on validation failure.
+     * 
      *
-     * @param eventType
-     * @param br
-     * @return java.lang.Object
+     * @param eventType the form containing the selected {@link Event} type identifier to emit
+     * @param br binding result capturing validation errors from event type selection
+     * @return ModelAndView with DTO form fragment on success or error fragment on invalid selection
      */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @PostMapping(value = _SEND)
@@ -180,13 +241,19 @@ public class EventListenerControllerHtml extends AbstractEventListenerController
     }
 
     /**
-     * Emits the manually triggered {@link Event} with the DTO data provided with the request
-     * This is a functionality available in the Admin panel
-     * See also {@link AbstractEventListenerController}
+     * Processes the manual event emission with provided DTO data from Admin panel form submission.
+     * <p>
+     * Maps to {@code POST _HTML/_EVENTLISTENER/_EMIT} with content type
+     * {@code application/x-www-form-urlencoded} and requires {@code CHECK_CAN_MANAGE_BACKEND}
+     * privilege. Accepts form data as key-value pairs, delegates to {@link #emitEvent(Map)} which
+     * parses the form parameters into the appropriate DTO structure and publishes the event to
+     * registered listeners. Returns conditional fragments: "::eventlistener-emit-event-success"
+     * on successful emission or "::eventlistener-emit-event-error" on processing failure.
+     * 
      *
-     * @param formData
-     * @return
-     * @throws IOException
+     * @param formData map of form field names to values containing the event DTO payload from x-www-form-urlencoded submission
+     * @return ModelAndView with success fragment on event publication or error fragment on failure
+     * @throws IOException if JSON parsing of form data fails during DTO construction or event serialization
      */
     @PreAuthorize(CHECK_CAN_MANAGE_BACKEND)
     @PostMapping(value = _EMIT, headers = "Accept=application/x-www-form-urlencoded")

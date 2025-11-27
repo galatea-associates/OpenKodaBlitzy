@@ -29,7 +29,25 @@ import static com.openkoda.controller.common.URLConstants.FRONTENDRESOURCE;
 import static com.openkoda.model.common.ModelConstants.DEFAULT_ORGANIZATION_RELATED_REFERENCE_FIELD_FORMULA;
 
 /**
+ * Secure repository marker interface for FrontendResource entities with SearchableRepositoryMetadata.
+ * <p>
+ * Extends SecureRepository to provide privilege-enforced data access operations for UI frontend resources.
+ * This interface enables dynamic repository discovery through SearchableRepositoryMetadata annotation,
+ * facilitating frontend component indexing and search functionality across the application.
+ * 
+ * <p>
+ * The repository automatically enforces security privileges for all CRUD operations on FrontendResource
+ * entities, ensuring that only authorized users can access, create, modify, or delete frontend resources.
+ * Search indexing includes resource name, type, and organization-related reference fields for
+ * comprehensive discoverability.
+ * 
  *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see SecureRepository
+ * @see FrontendResource
+ * @see SearchableRepositoryMetadata
  */
 @Repository
 @SearchableRepositoryMetadata(

@@ -21,6 +21,41 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.openkoda.core.flow;
 
+/**
+ * Marker interface for PageAttr values that require post-execution processing after Flow pipeline completion.
+ * <p>
+ * This interface enables automatic finalization or cleanup operations for values stored in the Flow pipeline's
+ * PageModelMap. When a Flow pipeline completes successfully, the Flow executor automatically invokes the
+ * {@link #process()} method on all PageAttr values that implement this interface.
+ * <p>
+ * Processing occurs only after successful execution of all pipeline steps. If an exception occurs during
+ * Flow execution, post-execution processing is skipped to prevent inconsistent state.
+ * <p>
+ * Example usage:
+ * <pre>
+ * public class CleanupResource implements PostExecuteProcessablePageAttr {
+ *     public void process() { // finalization logic }
+ * }
+ * </pre>
+ *
+ * @see Flow
+ * @see PageAttr
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 public interface PostExecuteProcessablePageAttr {
+    
+    /**
+     * Processes this PageAttr value after successful Flow pipeline execution.
+     * <p>
+     * This method is invoked automatically by {@code Flow.execute()} after all pipeline steps complete
+     * successfully. Implementations should perform cleanup, finalization, or other post-processing tasks
+     * required by the PageAttr value.
+     * 
+     * <p>
+     * This method is called only on successful execution. If the Flow pipeline throws an exception during
+     * execution, this method is not invoked.
+     * 
+     */
     void process();
 }

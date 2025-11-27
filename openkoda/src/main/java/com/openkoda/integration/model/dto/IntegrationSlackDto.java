@@ -21,13 +21,56 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.openkoda.integration.model.dto;
 
+/**
+ * Data transfer object for Slack integration configuration form binding.
+ * <p>
+ * Mutable JavaBean for Slack webhook endpoint configuration. This DTO is used
+ * to capture and transfer Slack webhook settings between the web layer and
+ * service layer during integration setup and updates.
+ * 
+ * <p>
+ * The webhook URL is a sensitive endpoint that should be protected and stored
+ * securely to prevent unauthorized access to Slack channels.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ */
 public class IntegrationSlackDto {
+    
+    /**
+     * Slack incoming webhook URL for posting messages.
+     * <p>
+     * This is a sensitive endpoint that should be protected. The webhook URL
+     * allows the application to send messages to configured Slack channels.
+     * 
+     */
     public String webhookUrl;
 
+    /**
+     * Gets the Slack incoming webhook URL.
+     * <p>
+     * Returns the configured webhook endpoint for sending messages to Slack.
+     * This URL should be treated as sensitive configuration data.
+     * 
+     *
+     * @return the Slack webhook URL, may be null if not configured
+     */
     public String getWebhookUrl() {
         return webhookUrl;
     }
 
+    /**
+     * Sets the Slack incoming webhook URL.
+     * <p>
+     * Configures the webhook endpoint that will be used to send messages to
+     * Slack channels. The URL should be obtained from Slack's incoming webhook
+     * integration setup and kept secure.
+     * 
+     *
+     * @param webhookUrl the Slack webhook URL to configure, may be null
+     */
     public void setWebhookUrl(String webhookUrl) {
         this.webhookUrl = webhookUrl;
     }

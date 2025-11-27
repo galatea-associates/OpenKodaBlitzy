@@ -35,13 +35,44 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /**
+ * JPA Criteria API Specification builders for authorization-aware User and UserRole entity queries.
+ * <p>
+ * Provides static factory methods that return {@link Specification} instances implementing privilege-based
+ * access control for User queries. Specifications enforce authorization by consulting
+ * {@link UserProvider#getFromContext()} to filter results based on the current user's privileges and
+ * organization memberships. Unauthenticated requests return empty results via {@code disjunction()} predicates.
+ * Supports both global {@link Privilege#readUserData} privilege (allowing unrestricted access) and
+ * organization-scoped privilege checks. Uses {@link CollectionJoin} on the roles collection to filter users
+ * by organization membership. Calls {@code query.distinct(true)} to eliminate duplicate rows from the join.
+ * 
+ * <p>
+ * <b>Note:</b> Uses string-based attribute names ('organizationId', 'roles') which are fragile to entity
+ * refactoring. The dict() method currently returns null as a placeholder and should be implemented or removed.
+ * 
  *
- *
- * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.model.User
+ * @see com.openkoda.model.UserRole
+ * @see com.openkoda.core.security.UserProvider
+ * @see com.openkoda.core.security.OrganizationUser
+ * @see com.openkoda.model.Privilege
+ * @see org.springframework.data.jpa.domain.Specification
  */
 public class UserSpecifications implements ReadableCode {
 
+    /**
+     * Placeholder specification for Tuple queries - currently returns null.
+     * <p>
+     * This method is a placeholder that returns a Specification with a null predicate. This is potentially
+     * dangerous as it may cause NullPointerExceptions when evaluated by the JPA provider. This method should
+     * either be properly implemented with a valid predicate or removed from the API.
+     * 
+     *
+     * @return Specification for Tuple that returns null predicate (placeholder implementation)
+     * @deprecated This method returns null and should be implemented or removed
+     */
     public static Specification<Tuple> dict() {
         return new Specification<Tuple>() {
             @Override
@@ -50,6 +81,20 @@ public class UserSpecifications implements ReadableCode {
             }
         };
     }
+    /**
+     * Creates a Specification that filters UserRole entities by organization ID.
+     * <p>
+     * Constructs a specification that matches UserRole entities belonging to the specified organization.
+     * When specificOrganizationId is null, returns {@code conjunction()} (always-true predicate) allowing
+     * all roles. When non-null, applies exact equality matching on the organizationId attribute.
+     * 
+     * <p>
+     * Usage example: {@code searchUserRoleSpecification(123L).and(additionalFilters)}
+     * 
+     *
+     * @param specificOrganizationId The organization ID to filter by, or null to allow all organizations (returns conjunction)
+     * @return Specification for UserRole filtering by organizationId. Returns always-true predicate when parameter is null
+     */
     public static Specification<UserRole> searchUserRoleSpecification(Long specificOrganizationId) {
 
         return new Specification<UserRole>() {
@@ -69,6 +114,32 @@ public class UserSpecifications implements ReadableCode {
     }
 
 
+    /**
+     * Creates an authorization-aware Specification that filters User entities based on current user's privileges and organization access.
+     * <p>
+     * Constructs a complex privilege-enforcing predicate with the following authorization model:
+     * <ol>
+     * <li>Returns {@code disjunction()} (always-false) for unauthenticated requests.</li>
+     * <li>If user has global {@link Privilege#readUserData} privilege AND specificOrganizationId is null,
+     *     returns {@code conjunction()} (allows all users).</li>
+     * <li>If specificOrganizationId is provided, checks if user has readUserData privilege for that organization
+     *     (global or org-specific), then joins the 'roles' collection and filters by organizationId,
+     *     calling {@code query.distinct(true)} to avoid duplicate rows.</li>
+     * <li>If specificOrganizationId is null but user lacks global privilege, filters users by user's accessible
+     *     organizationIds via roles join.</li>
+     * <li>Returns {@code disjunction()} if user has no organization access.</li>
+     * </ol>
+     * 
+     * <p>
+     * Usage example: {@code searchSpecification(null).and(nameFilter)}
+     * 
+     * <p>
+     * <b>Security note:</b> This method enforces row-level security based on user privileges and organization memberships.
+     * 
+     *
+     * @param specificOrganizationId The specific organization ID to scope the query to, or null to use user's accessible organizations
+     * @return Specification for User filtering with privilege enforcement and organization scoping. Returns always-false predicate for unauthorized access
+     */
     public static Specification<User> searchSpecification(Long specificOrganizationId) {
 
         return new Specification<User>() {

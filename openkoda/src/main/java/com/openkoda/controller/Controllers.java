@@ -29,30 +29,101 @@ import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that aggregates (by injections) all Controllers.
- * Feel free to add more controllers here.
+ * Spring bean aggregator providing centralized access to controller instances and configuration maps.
+ * <p>
+ * Convenience registry collecting common controller beans and CRUD configuration maps for easy injection.
+ * Provides single {@code @Autowired} field instead of multiple controller injections. Contains
+ * {@link HtmlCRUDControllerConfigurationMap} and {@link ApiCRUDControllerConfigurationMap} for generic
+ * controller lookup. Used by controllers needing inter-controller communication or configuration access.
+ * 
+ * <p>
+ * Example usage:
+ * <pre>
+ * {@code @Autowired Controllers controllers;
+ * CRUDControllerConfiguration config = controllers.htmlCrudControllerConfigurationMap.get("users");}
+ * </pre>
  *
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
- * 
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see HtmlCRUDControllerConfigurationMap
+ * @see ApiCRUDControllerConfigurationMap
  */
 @Component("AllControllers")
 public class Controllers {
 
+    /**
+     * Organization management controller for HTML-based user interfaces.
+     * <p>
+     * Handles organization CRUD operations, tenant provisioning, and organization-scoped operations
+     * via Spring MVC endpoints.
+     * 
+     *
+     * @see OrganizationControllerHtml
+     */
     @Inject
     public OrganizationControllerHtml organization;
 
+    /**
+     * User management controller for HTML-based user interfaces.
+     * <p>
+     * Handles user CRUD operations, authentication, role assignments, and user profile management
+     * via Spring MVC endpoints.
+     * 
+     *
+     * @see UserControllerHtml
+     */
     @Inject
     public UserControllerHtml user;
 
+    /**
+     * Audit trail controller for viewing and managing application audit logs.
+     * <p>
+     * Provides access to audit records captured by the auditing subsystem, including entity changes,
+     * user actions, and system events.
+     * 
+     *
+     * @see AuditController
+     */
     @Inject
     public AuditController audit;
 
+    /**
+     * Frontend resource controller for managing UI components and assets.
+     * <p>
+     * Handles frontend resource operations including custom UI components, templates, and
+     * frontend mapping definitions.
+     * 
+     *
+     * @see FrontendResourceControllerHtml
+     */
     @Inject
     public FrontendResourceControllerHtml frontendResource;
 
+    /**
+     * Configuration registry for HTML-based generic CRUD controllers.
+     * <p>
+     * Maps entity names to their CRUD controller configuration, enabling dynamic lookup of HTML
+     * controller configurations for generic entity operations.
+     * 
+     *
+     * @see HtmlCRUDControllerConfigurationMap
+     * @see CRUDControllerHtml
+     */
     @Inject
     public HtmlCRUDControllerConfigurationMap htmlCrudControllerConfigurationMap;
 
+    /**
+     * Configuration registry for API-based generic CRUD controllers.
+     * <p>
+     * Maps entity names to their CRUD controller configuration, enabling dynamic lookup of REST API
+     * controller configurations for generic entity operations.
+     * 
+     *
+     * @see ApiCRUDControllerConfigurationMap
+     * @see com.openkoda.controller.api.CRUDApiController
+     */
     @Inject
     public ApiCRUDControllerConfigurationMap apiCrudControllerConfigurationMap;
 

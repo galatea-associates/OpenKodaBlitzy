@@ -27,6 +27,39 @@ import org.springframework.stereotype.Repository;
 
 import static com.openkoda.controller.common.URLConstants.SERVERJS;
 
+/**
+ * Secure repository marker interface for ServerJs JavaScript code entities with SearchableRepositoryMetadata.
+ * <p>
+ * Extends SecureRepository&lt;ServerJs&gt; to provide privilege-enforced repository operations for server-side
+ * JavaScript code entities. This interface adds metadata capabilities for code search and GraalVM script indexing
+ * through the {@code @SearchableRepositoryMetadata} annotation.
+
+ * <p>
+ * The repository enables secure management of JavaScript code fragments that are executed by the GraalVM
+ * JavaScript engine. It supports both storage and retrieval of server-side scripts while enforcing
+ * organization-scoped access control through the privilege system.
+
+ * <p>
+ * This repository is primarily used by JsFlowRunner for loading JavaScript flows and by FileSystemImpl
+ * for providing polyglot filesystem access to JavaScript contexts.
+
+ * <p>
+ * Example usage:
+ * <pre>
+ * SecureServerJsRepository repo = secureRepositories.serverJs;
+ * Optional&lt;ServerJs&gt; script = repo.findOne(scriptId);
+ * </pre>
+
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see SecureRepository
+ * @see ServerJs
+ * @see SearchableRepositoryMetadata
+ * @see com.openkoda.uicomponent.JsFlowRunner
+ * @see com.openkoda.uicomponent.FileSystemImpl
+ */
 @Repository
 @SearchableRepositoryMetadata(
         entityKey = "serverJs",

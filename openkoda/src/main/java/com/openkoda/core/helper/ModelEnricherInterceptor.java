@@ -65,56 +65,142 @@ import static com.openkoda.controller.common.URLConstants.DEBUG_MODEL;
 import static com.openkoda.controller.common.URLConstants.EXTERNAL_SESSION_ID;
 /* TODO: move to correct package */
 /**
- * <p>ModelEnricherInterceptor class.</p>
- * <p>This class adds organization.entity and organization.entity.id to request attributes so that
- * they can be added automatically to modelAndView
+ * Spring HandlerInterceptor that enriches view models with common attributes before rendering.
+ * <p>
+ * This interceptor automatically adds standard page attributes to the ModelAndView for all controller
+ * methods, providing a consistent set of data available to all views. The enrichment includes user context,
+ * organization data, notifications, date formatters, captcha configuration, build information, and session
+ * metadata. This ensures views have access to common attributes without requiring each controller to
+ * explicitly add them.
+ * <p>
+ * The enrichment process adds the following standard attributes:
+ * <ul>
+ *   <li>Current user context (userId, organizationIds)</li>
+ *   <li>Organization entity and ID from URL tenant resolution</li>
+ *   <li>Unread notifications for dropdown display</li>
+ *   <li>Date format helpers and resources version</li>
+ *   <li>Privilege helpers for authorization checks</li>
+ *   <li>Captcha keys for form protection</li>
+ *   <li>Build version and deployment information</li>
+ *   <li>Session ID and external session tracking</li>
+ *   <li>Common and organization-specific dictionaries</li>
+ * </ul>
+ * <p>
+ * <strong>Important Notes:</strong>
+ * <ul>
+ *   <li>This interceptor is NOT for security enforcement - use Spring Security for authorization</li>
+ *   <li>Redirect responses skip enrichment to avoid unnecessary processing</li>
+ *   <li>Uses RequestSessionCacheService for performance optimization via memoization</li>
+ *   <li>Thread-safe through Spring's request-scoped injection</li>
+ * </ul>
+ * <p>
+ * Example usage (automatic - no code required):
+ * <pre>{@code
+ * // In any controller method returning ModelAndView
+ * public ModelAndView showPage() {
+ *     ModelAndView mav = new ModelAndView("page");
+ *     // Interceptor automatically adds PageAttributes constants
+ *     return mav; // Will contain organizationEntity, userId, notifications, etc.
+ * }
+ * }</pre>
  *
- * The Interceptor is NOT for security reasons.
- *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see PageAttributes
+ * @see ModelAndView
+ * @see HandlerInterceptor
+ * @see RequestSessionCacheService
  */
 @Component
 public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentWithRequestId, HandlerInterceptor {
 
+    /** Repository for accessing secure entity dictionaries (common and organization-specific). */
     @Inject
     SecureEntityDictionaryRepository secureEntityDictionaryRepository;
+    
+    /** Repository for loading organization entities by ID from tenant resolution. */
     @Inject
     OrganizationRepository organizationRepository;
+    
+    /** Service for retrieving user notifications for dropdown display. */
     @Inject
     NotificationService notificationService;
+    
+    /** Controller for notification-related operations. */
     @Inject
     NotificationController notificationController;
+    
+    /** Helper for URL parsing and tenant resource resolution. */
     @Inject
     UrlHelper urlHelper;
+    
+    /** Resolver for determining tenant (organization) context from request. */
     @Inject
     TenantResolver tenantResolver;
+    
+    /** Service for handling captcha validation in requests. */
     @Inject
     CaptchaService captchaService;
     
+    /** Cache service for request-session scoped memoization to optimize repeated lookups. */
     @Inject RequestSessionCacheService cacheService;
+    
+    /** Default layout template name (configured via default.layout property, defaults to "main"). */
     @Value("${default.layout:main}")
     String defaultLayoutName;
+    
+    /** Plain layout template name for minimal UI (configured via default.layout.plain property). */
     @Value("${default.layout.plain:plain}")
     String plainLayoutName;
+    
+    /** Embedded layout template name for iframe contexts (configured via default.layout.embedded property). */
     @Value("${default.layout.embedded:embedded}")
     String embeddedLayoutName;
 
+    /** Service for session management and external session ID tracking. */
     @Inject
     SessionService sessionService;
 
+    /** Build properties from Maven build (optional - may be null in development). */
     @Autowired(required = false)
     private BuildProperties buildProperties;
     
+    /** Static resources version for cache busting (initialized at construction time). */
     private static String resourcesVersion;
+    
+    /** Cached build information map to avoid repeated BuildProperties parsing. */
     private Map<String, Object> buildInfo;
 
     /**
-     * <p>Constructor for ModelEnricherInterceptor.</p>
+     * Constructs a new ModelEnricherInterceptor and initializes the static resources version.
+     * <p>
+     * The resources version is generated from the current timestamp (format: yyMMddHHmm) and
+     * is used for cache busting static resources (CSS, JavaScript) in the view templates.
+     * This ensures browsers fetch updated resources after deployments.
+     * 
      */
     public ModelEnricherInterceptor() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmm");
         resourcesVersion = sdf.format(new Date());
     }
 
+    /**
+     * Pre-processes the request before handler execution to resolve tenant context and handle captcha.
+     * <p>
+     * This method executes before the controller method and performs several setup tasks:
+     * handles captcha token validation, resolves the current user from security context,
+     * determines the tenant (organization) from the URL, sets up external session tracking,
+     * and validates user privileges for organization access. If the user has readOrgData privilege,
+     * the organization entity is loaded and added to request attributes for use in postHandle.
+     * 
+     *
+     * @param request the current HTTP request to pre-process
+     * @param response the current HTTP response (not modified)
+     * @param handler the handler (controller method) that will be executed
+     * @return true to continue processing the request, false to abort
+     * @throws Exception if organization lookup fails or other processing errors occur
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
@@ -161,7 +247,30 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
     }
 
     /**
-     * {@inheritDoc}
+     * Enriches the ModelAndView with standard page attributes after handler execution.
+     * <p>
+     * This method is invoked after the controller method completes but before the view is rendered.
+     * It adds common attributes to the model including user context, organization data, notifications,
+     * dictionaries, date formatters, build information, and session metadata. The enrichment uses
+     * RequestSessionCacheService for performance optimization through memoization.
+     * 
+     * <p>
+     * Enrichment is skipped for redirect responses (RedirectView or view names starting with "redirect:")
+     * to avoid unnecessary processing when the view will not be rendered.
+     * 
+     * <p>
+     * Added attributes include: organizationEntity, organizationEntityId, userEntityId,
+     * unreadNotificationsList, unreadNotificationsNumber, commonDictionaries, organizationDictionariesJson,
+     * defaultLayout, resourcesVersion, buildInfo, and modelAndView reference.
+     * 
+     *
+     * @param request the current HTTP servlet request containing organization and user context
+     * @param response the current HTTP servlet response (not modified by this method)
+     * @param handler the executed handler (controller method) that generated the ModelAndView
+     * @param modelAndView the ModelAndView to enrich with standard attributes, or null if handler returned void
+     * @throws Exception if enrichment encounters errors (e.g., database access failures)
+     * @see PageAttributes
+     * @see RequestSessionCacheService
      */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
@@ -189,15 +298,26 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
     }
 
     /**
-     * Adds several variables, dictionary values etc., objects commonly used in multiple cases
+     * Performs the actual model enrichment by adding common attributes and dictionary values.
+     * <p>
+     * This method adds standard page attributes including organization context, user information,
+     * notifications, dictionaries, layout configuration, and build information. The enrichment
+     * validates consistency between URL-based organization context and controller-provided model
+     * to prevent mismatches. Results are cached in RequestSessionCacheService for performance.
      * 
-     * @param request
-     * @param modelAndView
-     * @param existingModel
-     * @param modelHasOrganization
-     * @param modelHasOrganizationId
-     * @param requestSessionMeta
-     * @return
+     * <p>
+     * For widget scopes, notification enrichment is skipped to optimize performance for embedded
+     * components. The method also handles special debug mode when user has global settings privilege
+     * and DEBUG_MODEL parameter is present.
+     * 
+     *
+     * @param request the current HTTP request containing organization and user attributes
+     * @param modelAndView the ModelAndView being enriched (may be modified for debug mode)
+     * @param existingModel the existing model map from the controller
+     * @param modelHasOrganization true if controller already added organization entity to model
+     * @param modelHasOrganizationId true if controller already added organization ID to model
+     * @param requestSessionMeta metadata for request-session caching and widget scope detection
+     * @return ModelCache containing the enriched model map to merge with existing model
      */
     protected ModelCache enrichModel(HttpServletRequest request, ModelAndView modelAndView,
                                      Map<String, Object> existingModel, boolean modelHasOrganization, boolean modelHasOrganizationId,
@@ -305,6 +425,17 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
         return dashboardModel;
     }
 
+    /**
+     * Detects the page layout template to use based on request parameters or referer.
+     * <p>
+     * Checks the "__view" parameter for explicit layout selection ("plain" or "embedded").
+     * If not present, examines the Referer header to maintain layout across page navigation.
+     * Defaults to the configured default layout if no indicators are found.
+     * 
+     *
+     * @param request the HTTP request to examine for layout indicators
+     * @return the layout template name (defaultLayoutName, plainLayoutName, or embeddedLayoutName)
+     */
     private String detectPageLayout(HttpServletRequest request) {
         String pageLayoutParameter = request.getParameter("__view");
 
@@ -328,6 +459,17 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
         return defaultLayoutName;
     }
 
+    /**
+     * Builds application build information map from Maven BuildProperties or defaults.
+     * <p>
+     * Extracts artifact, group, version, timestamp, git branch, commit ID, and hostname
+     * from BuildProperties when available (production builds). For development environments
+     * without BuildProperties, returns sensible defaults (version "HEAD", branch "local").
+     * The result is cached in buildInfo field to avoid repeated parsing.
+     * 
+     *
+     * @return map containing build metadata (Artifact, Version, Timestamp, Branch, CommitId, Hostname)
+     */
     private Map<String, Object> buildAppInfo(){
         Map<String, Object> map = new HashMap<>();
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -355,6 +497,20 @@ public class ModelEnricherInterceptor implements ReadableCode, LoggingComponentW
         return map;
     }
     
+    /**
+     * Cleans up after request completion, including single-request authentication cleanup.
+     * <p>
+     * This method executes after the view has been rendered and the response is complete.
+     * It checks if the current user was authenticated for a single request only (e.g., API token)
+     * and clears the authentication context to prevent session leakage.
+     * 
+     *
+     * @param request the current HTTP request
+     * @param response the current HTTP response
+     * @param handler the handler (controller method) that was executed
+     * @param ex any exception thrown during handler execution, or null if successful
+     * @throws Exception if cleanup encounters errors
+     */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         // After completing the request, if the authentication was for a single request, logout the user

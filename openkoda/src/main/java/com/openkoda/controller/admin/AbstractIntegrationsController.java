@@ -30,13 +30,79 @@ import com.openkoda.dto.EmailConfigDto;
 import com.openkoda.form.EmailConfigForm;
 import com.openkoda.model.EmailConfig;
 
+/**
+ * Abstract base controller providing Flow-based helper methods for integration configuration management.
+ * <p>
+ * This stateless abstract controller implements integration configuration UI workflows, specifically
+ * for email SMTP settings. It provides email configuration retrieval via {@code findEmailConfigFlow}
+ * and {@code getIntegrations}, as well as persistence through {@code saveEmailConfig} with validation.
+ * 
+ * <p>
+ * The controller uses unsecure repository access as email configuration is system-wide rather than
+ * tenant-scoped. It is designed for reuse by concrete controllers that handle HTTP bindings
+ * (such as {@code @GetMapping} and {@code @PostMapping} annotations) and view resolution.
+ * 
+ * <p>
+ * <b>Integration Context:</b> Currently supports email/SMTP configuration via the {@link EmailConfig}
+ * entity, extensible for additional integration types such as OAuth providers or API keys.
+ * 
+ * <p>
+ * <b>Thread-Safety:</b> This controller is stateless and thread-safe.
+ * 
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see com.openkoda.controller.admin.IntegrationsController IntegrationsController for concrete HTTP endpoint implementation
+ * @see EmailConfig Email configuration entity with SMTP host, port, and credentials
+ * @see EmailConfigForm Form binding and validation for email configuration
+ */
 public class AbstractIntegrationsController extends AbstractController {
 
+    /**
+     * Retrieves email configuration for integrations UI display.
+     * <p>
+     * This method delegates to {@link #findEmailConfigFlow()} to execute the Flow pipeline that
+     * fetches the system-wide email configuration and binds it to a form for display in the
+     * integrations management UI.
+     * 
+     * <p>
+     * Typical usage: Called by GET /integrations endpoint in concrete controller implementations.
+     * 
+     *
+     * @return PageModelMap containing model keys "emailConfig" (the {@link EmailConfig} entity)
+     *         and "emailConfigForm" (the bound {@link EmailConfigForm})
+     * @see #findEmailConfigFlow()
+     */
     protected PageModelMap getIntegrations(){
         return findEmailConfigFlow()
                 .execute();
     }
-        
+    
+    /**
+     * Creates a Flow pipeline for email configuration retrieval.
+     * <p>
+     * This method initializes a Flow with the current controller context and chains operations to:
+     * <ol>
+     *   <li>Fetch the system-wide email configuration (or create a new instance if none exists)</li>
+     *   <li>Bind the configuration to an {@link EmailConfigForm} with an empty {@link EmailConfigDto}</li>
+     * </ol>
+     * The Flow returns the first {@link EmailConfig} found in the system or creates a new instance,
+     * as only a single system-wide email configuration is supported.
+     * 
+     * <p>
+     * <b>Model Keys:</b>
+     * <ul>
+     *   <li>{@code emailConfig}: The fetched or newly created EmailConfig entity</li>
+     *   <li>{@code emailConfigForm}: A new EmailConfigForm initialized with the fetched configuration</li>
+     * </ul>
+     * 
+     *
+     * @return Flow pipeline initialized with this controller context, typed as
+     *         {@code Flow<Object, EmailConfigForm, AbstractIntegrationsController>}
+     * @see EmailConfig
+     * @see EmailConfigForm
+     */
     protected Flow<Object, EmailConfigForm, AbstractIntegrationsController> findEmailConfigFlow() {
         debug("[findEmailConfigFlow]");
         return Flow.init(this)
@@ -44,7 +110,37 @@ public class AbstractIntegrationsController extends AbstractController {
                 .thenSet(emailConfigForm, a -> new EmailConfigForm(new EmailConfigDto(), a.result)); 
     }
 
-    
+    /**
+     * Validates and persists email configuration submitted from the integrations UI.
+     * <p>
+     * This method executes a Flow pipeline that:
+     * <ol>
+     *   <li>Retrieves the existing system-wide email configuration (or creates new if none exists)</li>
+     *   <li>Validates the submitted form using {@code services.validation.validateAndPopulateToEntity}</li>
+     *   <li>Populates the entity from the validated form data</li>
+     *   <li>Saves the updated configuration via {@code repositories.unsecure.emailConfig.save}</li>
+     *   <li>Updates the model with the saved entity under the "emailConfig" key</li>
+     * </ol>
+     * The returned PageModelMap contains validation results and the updated email configuration,
+     * suitable for rendering success or error view fragments (typically for HTMX/Thymeleaf AJAX forms).
+     * 
+     * <p>
+     * <b>Validation Pattern:</b> Uses the validation service to perform Jakarta Bean Validation checks
+     * and populate the entity. Validation errors are captured in the {@link BindingResult}.
+     * 
+     * <p>
+     * <b>Repository Access:</b> Uses {@code repositories.unsecure} as email configuration is system-wide
+     * and not tenant-scoped.
+     * 
+     *
+     * @param form the submitted {@link EmailConfigForm} containing SMTP settings (host, port, username, password)
+     * @param br the {@link BindingResult} for capturing validation errors
+     * @return PageModelMap with validation results and the updated "emailConfig" model key containing
+     *         the persisted {@link EmailConfig} entity
+     * @see EmailConfigForm
+     * @see EmailConfig
+     * @see org.springframework.validation.BindingResult
+     */
     protected PageModelMap saveEmailConfig(EmailConfigForm form, BindingResult br) {
         debug("[saveEmailConfig] emailConfig [{}, {}]", form.getDto().getId(), form.getDto().getHost());
         return Flow.init(emailConfigForm, form)

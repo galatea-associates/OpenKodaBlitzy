@@ -25,12 +25,73 @@ import com.openkoda.controller.common.PageAttributes;
 import com.openkoda.core.flow.PageAttr;
 import com.openkoda.integration.form.*;
 
+/**
+ * Page model attributes container for integration views.
+ * Provides typed access to integration form models in Flow pipelines and Thymeleaf templates.
+ * <p>
+ * This interface follows the interface-as-constants pattern where each constant is a typed
+ * descriptor initialized at class load time with a stable attribute key matching the descriptor name.
+ * All descriptors are implicitly public static final as defined by Java interface semantics.
+
+ * <p>
+ * The PageAttr descriptors provide compile-time type safety for model binding and extraction,
+ * reducing reliance on brittle string-key access patterns. Controllers use these descriptors
+ * to add form models to page contexts, and views reference them for rendering.
+
+ * <p>
+ * Example usage in Flow pipeline:
+ * <pre>
+ * Flow.init(integrationGitHubForm, form).thenSet(...)
+ * </pre>
+
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see PageAttr
+ * @see PageAttributes
+ * @see IntegrationTrelloForm
+ * @see IntegrationGitHubForm
+ * @see IntegrationSlackForm
+ * @see IntegrationMsTeamsForm
+ * @see IntegrationJiraForm
+ * @see IntegrationBasecampForm
+ */
 public interface IntegrationPageAttributes extends PageAttributes {
 
+    /**
+     * Typed descriptor for Trello configuration form model.
+     * Used to bind and retrieve IntegrationTrelloForm instances in page contexts.
+     */
     PageAttr<IntegrationTrelloForm> integrationTrelloForm = new PageAttr<>("integrationTrelloForm");
+
+    /**
+     * Typed descriptor for GitHub configuration form model.
+     * Used to bind and retrieve IntegrationGitHubForm instances in page contexts.
+     */
     PageAttr<IntegrationGitHubForm> integrationGitHubForm = new PageAttr<>("integrationGitHubForm");
+
+    /**
+     * Typed descriptor for Slack configuration form model.
+     * Used to bind and retrieve IntegrationSlackForm instances in page contexts.
+     */
     PageAttr<IntegrationSlackForm> integrationSlackForm = new PageAttr<>("integrationSlackForm");
+
+    /**
+     * Typed descriptor for Microsoft Teams configuration form model.
+     * Used to bind and retrieve IntegrationMsTeamsForm instances in page contexts.
+     */
     PageAttr<IntegrationMsTeamsForm> integrationMsTeamsForm = new PageAttr<>("integrationMsTeamsForm");
+
+    /**
+     * Typed descriptor for Jira configuration form model.
+     * Used to bind and retrieve IntegrationJiraForm instances in page contexts.
+     */
     PageAttr<IntegrationJiraForm> integrationJiraForm = new PageAttr<>("integrationJiraForm");
+
+    /**
+     * Typed descriptor for Basecamp configuration form model.
+     * Used to bind and retrieve IntegrationBasecampForm instances in page contexts.
+     */
     PageAttr<IntegrationBasecampForm> integrationBasecampForm = new PageAttr<>("integrationBasecampForm");
 }

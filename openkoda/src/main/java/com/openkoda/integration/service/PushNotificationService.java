@@ -38,14 +38,67 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service containing different consumers methods which push created notifications to external apis or email
+ * Service for managing push notification subscriptions and delivering notifications via WebSocket or external push services.
+ * <p>
+ * Converts NotificationDto payloads into asynchronous HttpRequestTask entries for Slack and MS Teams webhooks and into 
+ * persisted Email entities for user or organization notifications. This service validates notification propagation flags,
+ * reads organization webhook URLs from IntegrationModuleOrganizationConfiguration, and formats JSON payloads for different
+ * external systems.
+
+ * <p>
+ * Key capabilities:
+ * <ul>
+ *   <li>Slack webhook integration with anchor tag extraction via StringUtils.substringBetween for rich message formatting</li>
+ *   <li>MS Teams webhook integration with double-quote escaping via StringUtils.replace for JSON safety</li>
+ *   <li>Email notification generation using templates NOTIFICATION_USER_EMAIL and NOTIFICATION_ORGANIZATION_EMAIL</li>
+ *   <li>Persists HttpRequestTask via repositories.unsecure.httpRequest.save() for background worker processing</li>
+ *   <li>Builds per-user or per-organization emails via services.emailConstructor.prepareEmail()</li>
+ * </ul>
+
+ * <p>
+ * For organization emails, this service temporarily sets UserProvider.setConsumerAuthentication() to enumerate organization
+ * members and then clears it with UserProvider.clearAuthentication(). All operations produce side effects through persisted
+ * tasks and emails for background workers.
+
+ * <p>
+ * Example usage:
+ * <pre>
+ * NotificationDto notification = new NotificationDto();
+ * notification.setPropagate(true);
+ * pushNotificationService.createSlackPostMessageRequest(notification);
+ * </pre>
+
  *
- * @author Martyna Litkowska (mlitkowska@stratoflow.com)
+ * @author Martyna Litkowska (mlitkowska@stratoflow.com), OpenKoda Team
  * @since 2019-07-03
+ * @version 1.7.1
  */
 @Service
 public class PushNotificationService extends IntegrationComponentProvider {
 
+    /**
+     * Creates a Slack webhook push message request for organization notifications.
+     * <p>
+     * This method validates that the notification should propagate and is organization-scoped (not user-specific).
+     * It retrieves the Slack webhook URL from the organization's integration configuration, formats the notification
+     * message into Slack-compatible JSON, and persists an HttpRequestTask for asynchronous delivery by background workers.
+
+     * <p>
+     * JSON formatting includes anchor tag extraction when the message contains HTML links. The method uses 
+     * StringUtils.substringBetween to extract link titles and hrefs, then constructs a Slack attachment with title_link.
+     * All {@code <br/>} tags are removed from the message before JSON formatting.
+
+     * <p>
+     * Side effects:
+     * <ul>
+     *   <li>Persists HttpRequestTask via repositories.unsecure.httpRequest.save() if webhook URL is configured</li>
+     *   <li>No action taken if notification.getPropagate() returns false or notification is user-specific</li>
+     * </ul>
+
+     *
+     * @param notification DTO containing message, organization context, and propagation flag; must have organizationId set
+     *                     and userId null for webhook delivery to occur
+     */
     public void createSlackPostMessageRequest(NotificationDto notification) {
         debug("[createSlackPostRequest]");
         if(!notification.getPropagate()){
@@ -74,6 +127,29 @@ public class PushNotificationService extends IntegrationComponentProvider {
         }
     }
 
+    /**
+     * Creates a Microsoft Teams webhook push message request for organization notifications.
+     * <p>
+     * This method validates that the notification should propagate and is organization-scoped (not user-specific).
+     * It retrieves the MS Teams webhook URL from the organization's integration configuration, formats the notification
+     * message into Teams-compatible JSON with proper quote escaping, and persists an HttpRequestTask for asynchronous
+     * delivery by background workers.
+
+     * <p>
+     * JSON formatting includes double-quote escaping using StringUtils.replace to ensure valid JSON structure. All
+     * double-quote characters in the message are escaped as {@code \"} to prevent JSON parsing errors.
+
+     * <p>
+     * Side effects:
+     * <ul>
+     *   <li>Persists HttpRequestTask via repositories.unsecure.httpRequest.save() if webhook URL is configured</li>
+     *   <li>No action taken if notification.getPropagate() returns false or notification is user-specific</li>
+     * </ul>
+
+     *
+     * @param notification DTO containing message, organization context, and propagation flag; must have organizationId set
+     *                     and userId null for webhook delivery to occur
+     */
     public void createMsTeamsPostMessageRequest(NotificationDto notification) {
         debug("[createMsTeamsPostMessageRequest]");
         if(!notification.getPropagate()) {
@@ -91,6 +167,47 @@ public class PushNotificationService extends IntegrationComponentProvider {
         }
     }
 
+    /**
+     * Creates email notifications for users or organizations based on notification scope.
+     * <p>
+     * This method handles both user-specific and organization-wide email notifications. It validates that the notification
+     * should propagate, prepares email messages using standard email templates, and persists Email entities for delivery
+     * by background email workers.
+
+     * <p>
+     * User-specific notifications (when userId is set):
+     * <ul>
+     *   <li>Creates a single email to the specified user</li>
+     *   <li>Uses StandardEmailTemplates.NOTIFICATION_USER_EMAIL template</li>
+     *   <li>Includes user name and email address from User entity</li>
+     * </ul>
+
+     * <p>
+     * Organization-wide notifications (when organizationId is set and userId is null):
+     * <ul>
+     *   <li>Creates emails for all users in the organization</li>
+     *   <li>Uses StandardEmailTemplates.NOTIFICATION_ORGANIZATION_EMAIL template</li>
+     *   <li>Temporarily sets UserProvider.setConsumerAuthentication() to enumerate organization members</li>
+     *   <li>Clears authentication with UserProvider.clearAuthentication() after enumeration</li>
+     *   <li>Includes organization name as the sender name</li>
+     * </ul>
+
+     * <p>
+     * The method builds a PageModelMap with notificationMessage, userEntity, and organizationEntity context for template
+     * rendering. All prepared emails include attachment URLs if present in the notification DTO.
+
+     * <p>
+     * Side effects:
+     * <ul>
+     *   <li>Persists Email entities via repositories.unsecure.email.saveAll() for background worker processing</li>
+     *   <li>Temporarily modifies UserProvider authentication context for organization member enumeration</li>
+     *   <li>No action taken if notification.getPropagate() returns false or notification scope is global</li>
+     * </ul>
+
+     *
+     * @param notification DTO containing message, subject, attachment URL, and scope (userId or organizationId);
+     *                     must have either userId or organizationId set for email generation to occur
+     */
     public void createEmailNotification(NotificationDto notification) {
         debug("[createEmailNotification]");
         if(!notification.getPropagate()){

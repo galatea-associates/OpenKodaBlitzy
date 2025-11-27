@@ -26,21 +26,69 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * The class responsible for helping to manage events
+ * Abstract base class for typed application event descriptors providing event registry and metadata management.
+ * <p>
+ * This class maintains a static registry (HashMap) of all event descriptors keyed by eventName for event lookup
+ * and discovery across the application. Subclasses (such as ApplicationEvent) declare canonical application-wide
+ * event types (USER_CREATED, ORGANIZATION_UPDATED, etc.) as static final instances.
+
+ * <p>
+ * Event descriptors are effectively immutable after construction, with all fields being final. The static registry
+ * is populated during class initialization and should not be modified at runtime.
+
+ * <p>
+ * <b>Thread-Safety Warning:</b> The static eventList HashMap is NOT synchronized. Registration occurs during
+ * class initialization and should not be modified concurrently at runtime.
+
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * // Event lookup
+ * AbstractApplicationEvent event = AbstractApplicationEvent.getEvent("user.created");
+ * 
+ * // Type-safe usage in ApplicationEvent subclass
+ * public static final ApplicationEvent<User> USER_CREATED = 
+ *     new ApplicationEvent<>(User.class, "user.created");
+ * }</pre>
+
  *
+ * @param <T> Payload type that event consumers will receive when this event is published (e.g., User, Organization, SchedulerDto)
  * @author Arkadiusz Drysch (adrysch@stratoflow.com)
+ * @author OpenKoda Team
+ * @since 1.7.1
+ * @see ApplicationEvent for concrete event type definitions
+ * @see ApplicationEventService for event publishing and listener registration
  */
 public class AbstractApplicationEvent<T> {
 
+    /**
+     * Runtime Class object representing the payload type T for reflection-based consumer verification and type safety.
+     */
     private final Class<T> eventClass;
+    
+    /**
+     * Unique canonical event identifier used for registry lookup and configuration persistence.
+     */
     private final String eventName;
+    
+    /**
+     * Static global registry mapping event names to event descriptor instances.
+     * <p>
+     * Populated during static initialization. NOT thread-safe for concurrent modifications.
+
+     */
     private final static Map<String, AbstractApplicationEvent> eventList = new HashMap<>();
 
 
     /**
-     * Constructor of the AbstractApplicationEvent class/
-     * @param eventClass
-     * @param eventName
+     * Protected constructor invoked only by ApplicationEvent static initializers to create event descriptors.
+     * <p>
+     * Registers this event descriptor in the static eventList HashMap as a side effect. The constructor is NOT
+     * thread-safe and should only be called during class initialization to avoid concurrent modification issues.
+
+     *
+     * @param eventClass Runtime Class representing payload type for type-safe event handling
+     * @param eventName Unique canonical event name used as registry key and configuration identifier; must not collide with existing events
      */
     protected AbstractApplicationEvent(Class<T> eventClass, String eventName) {
         this.eventClass = eventClass;
@@ -49,11 +97,13 @@ public class AbstractApplicationEvent<T> {
     }
 
     /**
-     * The equals() method is used to compare two objects for equality.
+     * Compares this event descriptor with another object for equality based on eventClass and eventName.
+     * <p>
+     * Two objects of this class are considered equal if they have the same eventClass and eventName fields.
+
      *
-     * Two objects of this class are considered equal if they have the same eventClass and eventName fields
-     * @param o object to compare
-     * @return the result of a boolean comparison of whether objects are equal
+     * @param o Object to compare for equality based on eventClass and eventName
+     * @return true if both objects have equal eventClass and eventName fields, false otherwise
      */
     @Override
     public boolean equals(Object o) {
@@ -65,12 +115,15 @@ public class AbstractApplicationEvent<T> {
     }
 
     /**
-     * Method is used to generate the hash code based on the eventClass and eventName fields.
-     *
+     * Generates the hash code based on the eventClass and eventName fields.
+     * <p>
      * By implementing the hashCode() method in this way, the hash code for an object of this class
      * will be based on the values of its eventClass and eventName fields.
      * This ensures that two objects that are equal according to their equals() method will also have the same hash code.
      * This is important for correctness when using hash-based data structures such as HashMap and HashSet.
+
+     *
+     * @return Hash code computed from eventClass and eventName for use in hash-based collections
      */
     @Override
     public int hashCode() {
@@ -78,9 +131,13 @@ public class AbstractApplicationEvent<T> {
     }
 
     /**
+     * Retrieves an event descriptor from the static registry by its unique event name.
+     * <p>
+     * Returns null for unregistered event names; callers should check for null before using the returned value.
+
      *
-     * @return the AbstractApplicationEvent object that corresponds to the eventName parameter.
-     * If there is no such event in the eventList collection, the method will return null.
+     * @param eventName Unique event identifier to look up in registry
+     * @return AbstractApplicationEvent descriptor matching eventName, or null if no matching event registered
      */
     public static AbstractApplicationEvent getEvent(String eventName){
         return eventList.get(eventName);

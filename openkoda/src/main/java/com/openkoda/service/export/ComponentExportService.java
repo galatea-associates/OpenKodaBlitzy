@@ -50,21 +50,114 @@ import java.util.zip.ZipOutputStream;
 
 import static com.openkoda.service.export.FolderPathConstants.*;
 
+/**
+ * Serializes OpenKoda component entities to YAML format and packages them into distributable ZIP archives for export and migration purposes.
+ * <p>
+ * This service orchestrates the complete export workflow by delegating entity-to-YAML conversion to {@link EntityToYamlConverterFactory},
+ * aggregating multiple entities and their dependencies, generating database upgrade scripts via {@link DatabaseValidationService},
+ * and packaging YAML files and supplemental resources using {@link ZipUtils}. When the configuration property
+ * {@code components.export.syncWithFilesystem=true} is set, the service also syncs artifacts to the filesystem.
+
+ * <p>
+ * Operations performed by this service are NOT transactional. Callers are responsible for managing transaction boundaries
+ * when invoking export operations. The service is stateless and thread-safe when used as a Spring singleton.
+
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * ComponentExportService service = ...;
+ * ByteArrayOutputStream zip = service.exportToZip(List.of(formEntity, privilegeEntity));
+ * }</pre>
+
+ *
+ * @see EntityToYamlConverterFactory for per-entity conversion logic
+ * @see ZipUtils for ZIP entry construction
+ * @see DatabaseValidationService for SQL upgrade script generation
+ * @see FolderPathConstants for export path constants
+ * @since 1.7.1
+ * @author OpenKoda Team
+ */
 @Service
 public class ComponentExportService implements LoggingComponent {
 
+    /**
+     * Factory that delegates entity-specific YAML serialization to registered converters.
+     * <p>
+     * This factory maintains a registry of converters for different ComponentEntity types and selects
+     * the appropriate converter based on entity class at runtime.
+
+     *
+     * @see EntityToYamlConverterFactory
+     */
     @Autowired
     private EntityToYamlConverterFactory entityToYamlConverterFactory;
 
+    /**
+     * Utility service for creating ZIP entries from content strings, files, and URLs.
+     * <p>
+     * Provides methods to add various types of content to ZIP archives, including string content,
+     * file system files, and resources loaded from URLs.
+
+     *
+     * @see ZipUtils
+     */
     @Autowired
     ZipUtils zipUtils;
 
+    /**
+     * Generates SQL upgrade scripts for database schema changes required by exported components.
+     * <p>
+     * This service analyzes the current database schema and generates migration scripts that can be
+     * packaged with exported components to ensure target environments have the required schema updates.
+
+     *
+     * @see DatabaseValidationService
+     */
     @Autowired
     DatabaseValidationService databaseValidationService;
 
+    /**
+     * Configuration flag controlling whether YAML artifacts are persisted to disk in addition to ZIP packaging.
+     * <p>
+     * When {@code true}, YAML files are written to filesystem locations specified by {@link FolderPathConstants}.
+     * When {@code false}, artifacts exist only in generated ZIP archives. This setting allows for development
+     * workflows where component YAML files are maintained in the file system for version control and editing.
+
+     * <p>
+     * Configured via application property: {@code components.export.syncWithFilesystem}
+
+     * Default: {@code false}
+     */
     @Value("${components.export.syncWithFilesystem:false}")
     private boolean syncWithFilesystem;
 
+    /**
+     * Exports a list of component entities into a ZIP archive containing YAML files, supplemental resources, and database upgrade scripts.
+     * <p>
+     * This method iterates through the provided entities, calling {@link EntityToYamlConverterFactory#exportToZip} for each entity.
+     * For {@link Form} entities, it automatically collects {@link DynamicPrivilege} dependencies from the read privilege field.
+     * Dependencies are then exported via {@link #addEntityDependencies}, and database migration scripts are appended via
+     * {@link #additionalExportFiles}. The method returns a {@link ByteArrayOutputStream} containing the complete ZIP archive.
+
+     * <p>
+     * The ZIP archive structure includes:
+     * <ul>
+     *   <li>Component YAML definitions in appropriate subdirectories</li>
+     *   <li>Supplemental files under {@code EXPORT_PATH}</li>
+     *   <li>Database upgrade script {@code upgrade.sql} under {@code EXPORT_MIGRATION_PATH_}</li>
+     * </ul>
+
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * ByteArrayOutputStream zip = service.exportToZip(formList);
+     * }</pre>
+
+     *
+     * @param entities list of {@link ComponentEntity} objects to export (Forms, Privileges, FrontendResources, etc.);
+     *                 null-safe but empty list returns empty ZIP
+     * @return {@link ByteArrayOutputStream} containing ZIP archive with YAML component definitions and supplemental files; never null
+     */
     public ByteArrayOutputStream exportToZip(List<?> entities){
         debug("[exportEntityList]");
 
@@ -100,6 +193,21 @@ public class ComponentExportService implements LoggingComponent {
 
         return zipByteArrayOutputStream;
     }
+    
+    /**
+     * Exports entity dependencies (privileges, related components) and appends their SQL upgrade scripts.
+     * <p>
+     * This method processes dependent entities, typically {@link DynamicPrivilege} instances collected from
+     * Form read privileges. It filters duplicates using {@code distinct()} and delegates to
+     * {@link EntityToYamlConverterFactory#exportToZip} for each dependency. SQL script lines generated by
+     * converters are collected in the {@code dbUpgradeEntries} list for aggregation into the final upgrade script.
+
+     *
+     * @param zipOut open {@link ZipOutputStream} to write dependency YAML entries; not closed by this method
+     * @param dependencies list of dependent entities (typically {@link DynamicPrivilege} instances); duplicates are filtered
+     * @param dbUpgradeEntries mutable list collecting SQL script lines from converters; may be null
+     * @param zipEntries set tracking already-added ZIP entry names to prevent duplicates
+     */
     private void addEntityDependencies(ZipOutputStream zipOut, List dependencies, List<String> dbUpgradeEntries, Set<String> zipEntries) {
         // TODO Auto-generated method stub
         debug("[addEntityDependencies] Adding entity dependencies {}", dependencies);
@@ -107,30 +215,100 @@ public class ComponentExportService implements LoggingComponent {
             entityToYamlConverterFactory.exportToZip(d, zipOut, dbUpgradeEntries, zipEntries);
         }); 
     }
+    
+    /**
+     * Conditionally persists component entities to filesystem YAML files based on {@code syncWithFilesystem} configuration.
+     * <p>
+     * When {@code syncWithFilesystem=true}, this method delegates to {@link EntityToYamlConverterFactory#exportToFile}
+     * for each entity, writing YAML representations to the filesystem locations specified by {@link FolderPathConstants}.
+     * When the feature is disabled or the entities list is null, the method returns null.
+
+     *
+     * @param entities list of {@link ComponentEntity} objects to persist; null-safe
+     * @return list of persisted entities with updated file paths if {@code syncWithFilesystem=true}; null if feature disabled or entities null
+     */
     public List<ComponentEntity> exportToFileIfRequired(List<ComponentEntity> entities){
         if(syncWithFilesystem && entities != null){
             return entities.stream().map(entityToYamlConverterFactory::exportToFile).toList();
         }
         return null;
     }
+    
+    /**
+     * Conditionally persists a single component entity to filesystem YAML file based on {@code syncWithFilesystem} configuration.
+     * <p>
+     * When {@code syncWithFilesystem=true}, this method delegates to {@link EntityToYamlConverterFactory#exportToFile}
+     * to write the entity's YAML representation to the filesystem. The entity's file path may be updated by the converter.
+
+     *
+     * @param entity {@link ComponentEntity} to persist; must not be null if {@code syncWithFilesystem=true}
+     * @return the entity unchanged (file path may be updated by converter)
+     */
     public ComponentEntity exportToFileIfRequired(ComponentEntity entity){
         if(syncWithFilesystem){
             entityToYamlConverterFactory.exportToFile(entity);
         }
         return entity;
     }
+    
+    /**
+     * Conditionally removes filesystem YAML files for component entities based on {@code syncWithFilesystem} configuration.
+     * <p>
+     * When {@code syncWithFilesystem=true}, this method delegates to {@link EntityToYamlConverterFactory#removeExportedFiles}
+     * for each entity to delete corresponding YAML files from the filesystem. This is typically used during component deletion
+     * or when rolling back exports.
+
+     *
+     * @param entities list of {@link ComponentEntity} objects whose files should be deleted; null-safe
+     * @return list of entities after file removal if {@code syncWithFilesystem=true}; null if feature disabled or entities null
+     */
     public List<ComponentEntity> removeExportedFilesIfRequired(List<ComponentEntity> entities){
         if(syncWithFilesystem && entities != null){
             return entities.stream().map(entityToYamlConverterFactory::removeExportedFiles).toList();
         }
         return null;
     }
+    
+    /**
+     * Conditionally removes filesystem YAML file for a single component entity based on {@code syncWithFilesystem} configuration.
+     * <p>
+     * When {@code syncWithFilesystem=true}, this method delegates to {@link EntityToYamlConverterFactory#removeExportedFiles}
+     * to delete the entity's corresponding YAML file from the filesystem.
+
+     *
+     * @param entity {@link ComponentEntity} whose file should be deleted
+     * @return the entity unchanged
+     */
     public ComponentEntity removeExportedFilesIfRequired(ComponentEntity entity){
         if(syncWithFilesystem){
             entityToYamlConverterFactory.removeExportedFiles(entity);
         }
         return entity;
     }
+    
+    /**
+     * Packages supplemental static resources and database upgrade scripts into the export ZIP archive.
+     * <p>
+     * This method scans the {@code COMPONENTS_ADDITIONAL_FILES_} classpath folder for static resources to include
+     * in the export. It handles both filesystem resources (during development) and JAR-packaged resources (in production).
+     * Application property files are added with the {@code EXPORT_PATH} prefix, while other files are added at the root level.
+
+     * <p>
+     * The method also generates an aggregate {@code upgrade.sql} script by:
+     * <ul>
+     *   <li>Retrieving base schema update script from {@link DatabaseValidationService#getUpdateScript(boolean)}</li>
+     *   <li>Appending converter-provided SQL lines from {@code dbScriptLines} parameter</li>
+     *   <li>Writing the complete script to {@code EXPORT_MIGRATION_PATH_/upgrade.sql}</li>
+     * </ul>
+
+     * <p>
+     * Implementation note: Handles both {@code file://} filesystem and {@code jar:file:} packaged resources via
+     * {@link #jarResources(URL)} helper method.
+
+     *
+     * @param zos open {@link ZipOutputStream} to write supplemental files; not closed by this method
+     * @param dbScriptLines optional list of SQL lines from entity converters to append to upgrade script; may be null
+     */
     private void additionalExportFiles(ZipOutputStream zos, List<String> dbScriptLines) {
         debug("[additionalExportFiles]");
         try {
@@ -170,12 +348,25 @@ public class ComponentExportService implements LoggingComponent {
     }
 
     /**
-     * lists a content of a folder within a JAR file
-     * 
-     * @param jarFile
-     * @return list of files/direcoties within folder in a jar
+     * Enumerates file entries within a folder inside a JAR archive.
+     * <p>
+     * This method parses a {@code jar:file:} URL to extract the JAR file path and the target folder within the JAR.
+     * It then iterates through all JAR entries, filtering those that start with the specified folder path prefix.
+     * The method is used to discover supplemental export resources when the application is deployed as a packaged JAR.
+
+     * <p>
+     * Implementation detail: The method splits the URL on the {@code '!'} separator to extract the JAR file path
+     * and entry folder path. It then opens the JAR file and iterates entries using {@link JarFile#entries()}.
+
+     * <p>
+     * Current limitation: The method is non-recursive and does not descend into subdirectories within the target folder.
+
+     *
+     * @param jarFile URL with {@code jar:file:} scheme pointing to folder within JAR
+     *                (e.g., {@code jar:file:/path/to.jar!/folder/subfolder/})
+     * @return list of entry paths (relative to JAR root) within the specified folder; empty list if folder not found or on IOException
      */
-    // TODO : list it recirsively
+    // TODO : list it recursively
     private List<String> jarResources(URL jarFile) {
         // at this point argument URL is useful but compatible when trying to list
         // actual nested folder within a JAR

@@ -73,14 +73,14 @@ certbot -d openkoda.com
 
 ## OpenJDK
 Openkoda core applications run on JVM.
-### Java 17
-https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
+### Java 21 LTS
+https://download.java.net/java/GA/jdk21.0.5/b0dc2e7cf62c4ea1ba5c276ca1c45b2f/11/GPL/openjdk-21.0.5_linux-x64_bin.tar.gz
 ```
 cd /usr/lib/
 mkdir jvm
 cd jvm/
-wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
-tar -xzf openjdk-17.0.2_linux-x64_bin.tar.gz
+wget https://download.java.net/java/GA/jdk21.0.5/b0dc2e7cf62c4ea1ba5c276ca1c45b2f/11/GPL/openjdk-21.0.5_linux-x64_bin.tar.gz
+tar -xzf openjdk-21.0.5_linux-x64_bin.tar.gz
 ```
 Logout and log in.
 
@@ -88,9 +88,9 @@ Confirm available Java runtime version:
 
 ```
 root@openkoda:~# java --version
-openjdk 17.0.2 2022-01-18
-OpenJDK Runtime Environment (build 17.0.2+8-86)
-OpenJDK 64-Bit Server VM (build 17.0.2+8-86, mixed mode, sharing)
+openjdk 21.0.5 2024-10-15
+OpenJDK Runtime Environment (build 21.0.5+11-LTS)
+OpenJDK 64-Bit Server VM (build 21.0.5+11-LTS, mixed mode, sharing)
 ```
 
 ## Openkoda installation

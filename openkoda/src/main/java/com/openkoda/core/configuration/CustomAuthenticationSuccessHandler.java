@@ -41,7 +41,34 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * <p>CustomAuthenticationSuccessHandler</p>
+ * Spring Security authentication success handler that manages post-login redirection based on user privileges and organization membership.
+ * <p>
+ * Extends {@link SavedRequestAwareAuthenticationSuccessHandler} to customize redirect logic after successful authentication.
+ * Implements intelligent routing: honors saved requests (intercepted unauthenticated URLs), redirects global admins to admin dashboard,
+ * single-organization users to their organization home, and multi-organization users to organization selector page.
+ * Also persists SecurityContext to configured repository for session management.
+ * <p>
+ * Redirect decision flow:
+ * <ol>
+ *     <li>If saved request exists → redirect to original URL</li>
+ *     <li>If user has canAccessGlobalSettings privilege → admin dashboard</li>
+ *     <li>If user in single organization → organization home</li>
+ *     <li>Else → organization selector</li>
+ * </ol>
+ * <p>
+ * Uses {@link UserProvider#getFromContext()} to access authenticated {@link OrganizationUser}.
+ * <b>WARNING:</b> Code uses {@link Optional#get()} without presence check which may throw NoSuchElementException
+ * if security context is not properly initialized.
+ * <p>
+ * Registered in WebSecurityConfig via formLogin().successHandler(customAuthenticationSuccessHandler).
+ *
+ * @author OpenKoda Team
+ * @version 1.7.1
+ * @since 1.7.1
+ * @see SavedRequestAwareAuthenticationSuccessHandler
+ * @see SecurityContextRepository
+ * @see OrganizationUser
+ * @see UserProvider
  */
 public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler implements LoggingComponentWithRequestId {
 
@@ -70,6 +97,14 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
      */
     private RequestCache requestCache = new HttpSessionRequestCache();
 
+    /**
+     * Constructs authentication success handler with configured redirect URLs and security context repository.
+     *
+     * @param pageAfterAuthForMultipleOrganizations redirect URL for users belonging to multiple organizations (e.g., '/html/organization')
+     * @param pageAfterAuthForOneOrganization redirect URL pattern for users in single organization (e.g., '/html/organization/%s/dashboard' with %s for organization ID)
+     * @param pageAfterAuthForGlobalAdmin redirect URL for users with global admin privileges (e.g., '/html/admin/home')
+     * @param securityContextRepository Spring Security repository for persisting authentication context between requests
+     */
     public CustomAuthenticationSuccessHandler(String pageAfterAuthForMultipleOrganizations, String pageAfterAuthForOneOrganization, String pageAfterAuthForGlobalAdmin, SecurityContextRepository securityContextRepository) {
         this.pageAfterAuthForMultipleOrganizations = pageAfterAuthForMultipleOrganizations;
         this.pageAfterAuthForOneOrganization = pageAfterAuthForOneOrganization;
@@ -78,7 +113,29 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     }
 
     /**
-     * Handles redirect after login, based on number of organizations assigned to user
+     * Handles successful authentication by persisting security context and determining appropriate redirect target.
+     * <p>
+     * Invoked by Spring Security after successful authentication. First persists SecurityContext to repository.
+     * Then checks for saved request (original URL that triggered authentication). If saved request exists,
+     * delegates to parent class. Otherwise, analyzes user's organization membership and privileges to determine
+     * redirect: global admins to admin dashboard, single-org users to organization home, multi-org users to
+     * organization selector.
+     * 
+     * <p>
+     * Uses {@link RequestCache} to retrieve saved request. Accesses {@link OrganizationUser} via
+     * {@link UserProvider#getFromContext()}.get() which assumes security context is populated
+     * (may throw NoSuchElementException if not). Uses String.format() for single-organization URL
+     * with organization ID substitution.
+     * 
+     *
+     * @param httpServletRequest the HTTP request that triggered authentication
+     * @param httpServletResponse the HTTP response used for redirect
+     * @param authentication the Authentication object containing authenticated principal (OrganizationUser)
+     * @throws IOException if redirect fails due to I/O error
+     * @throws ServletException if servlet error occurs during authentication handling
+     * @see SavedRequest
+     * @see OrganizationUser
+     * @see Privilege#canAccessGlobalSettings
      */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
